@@ -1,0 +1,115 @@
+{
+  "name": "@duplojs/http",
+  "version": "0.0.0",
+  "author": "mathcovax",
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/duplojs/http.git"
+  },
+  "scripts": {
+    "build": "rollup --config && tsc-alias -p tsconfig.build.json",
+    "test:tu": "vitest --coverage",
+    "test:tu:bench": "vitest bench",
+    "test:tu:watch": "vitest --coverage --watch",
+    "test:tu:update": "vitest --coverage --update",
+    "test:types": "tsc -p tsconfig.test.json",
+    "test:lint": "eslint",
+    "test:lint:fix": "eslint --fix",
+    "prepare": "husky"
+  },
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./array": {
+      "import": "./dist/array/index.mjs",
+      "require": "./dist/array/index.cjs",
+      "types": "./dist/array/index.d.ts"
+    },
+    "./common": {
+      "import": "./dist/common/index.mjs",
+      "require": "./dist/common/index.cjs",
+      "types": "./dist/common/index.d.ts"
+    },
+    "./dataParser": {
+      "import": "./dist/dataParser/index.mjs",
+      "require": "./dist/dataParser/index.cjs",
+      "types": "./dist/dataParser/index.d.ts"
+    },
+    "./dataParserCoerce": {
+      "import": "./dist/dataParser/parsers/coerce/index.mjs",
+      "require": "./dist/dataParser/parsers/coerce/index.cjs",
+      "types": "./dist/dataParser/parsers/coerce/index.d.ts"
+    },
+    "./dataParserExtended": {
+      "import": "./dist/dataParser/extended/index.mjs",
+      "require": "./dist/dataParser/extended/index.cjs",
+      "types": "./dist/dataParser/extended/index.d.ts"
+    },
+    "./either": {
+      "import": "./dist/either/index.mjs",
+      "require": "./dist/either/index.cjs",
+      "types": "./dist/either/index.d.ts"
+    },
+    "./generator": {
+      "import": "./dist/generator/index.mjs",
+      "require": "./dist/generator/index.cjs",
+      "types": "./dist/generator/index.d.ts"
+    },
+    "./number": {
+      "import": "./dist/number/index.mjs",
+      "require": "./dist/number/index.cjs",
+      "types": "./dist/number/index.d.ts"
+    },
+    "./object": {
+      "import": "./dist/object/index.mjs",
+      "require": "./dist/object/index.cjs",
+      "types": "./dist/object/index.d.ts"
+    },
+    "./pattern": {
+      "import": "./dist/pattern/index.mjs",
+      "require": "./dist/pattern/index.cjs",
+      "types": "./dist/pattern/index.d.ts"
+    },
+    "./string": {
+      "import": "./dist/string/index.mjs",
+      "require": "./dist/string/index.cjs",
+      "types": "./dist/string/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "devDependencies": {
+    "@commitlint/cli": "19.8.1",
+    "@commitlint/config-conventional": "19.8.1",
+    "@duplojs/eslint": "0.5.0",
+    "@rollup/plugin-typescript": "12.1.4",
+    "@types/node": "24.3.0",
+    "@vitest/coverage-istanbul": "3.2.4",
+    "eslint": "9.34.0",
+    "husky": "9.1.7",
+    "rollup": "4.50.0",
+    "rollup-plugin-delete": "3.0.1",
+    "rollup-plugin-esbuild": "6.2.1",
+    "tsc-alias": "1.8.16",
+    "tslib": "2.8.1",
+    "tsx": "4.20.5",
+    "typescript": "5.9.2",
+    "vite-tsconfig-paths": "5.1.4",
+    "vitest": "3.2.4"
+  },
+  "workspaces": [
+    "integration"
+  ],
+  "keywords": [],
+  "engines": {
+    "node": ">=22.15.1"
+  }
+}
