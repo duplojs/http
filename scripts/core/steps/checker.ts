@@ -3,8 +3,7 @@ import { pipe, type Kind } from "@duplojs/utils";
 import { type StepKind, stepKind } from "./kind";
 import { type Checker } from "@core/checker";
 import { type Floor } from "@core/floor";
-import { type ResponseContract } from "@core/responseContract";
-import { type ClientErrorResponseCode } from "@core/response";
+import { type ClientErrorResponseCode, type ResponseContract } from "@core/response";
 
 export interface CheckerStepDefinition {
 	readonly checker: Checker;

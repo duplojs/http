@@ -1,10 +1,9 @@
 import { createCoreLibKind } from "@core/kind";
 import { pipe, type WrappedValue, type Kind, type MaybePromise } from "@duplojs/utils";
 import { type StepKind, stepKind } from "./kind";
-import { type ResponseContract } from "@core/responseContract";
 import { type Floor } from "@core/floor";
 import { type StepFunctionParams } from "./types";
-import { type Response } from "@core/response";
+import { type Response, type ResponseContract } from "@core/response";
 import { type Request } from "@core/request";
 
 export const cutStepOutputKind = createCoreLibKind("cut-output");

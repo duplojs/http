@@ -3,9 +3,8 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-	  "@scripts": ["scripts/index.ts"],
-      "@scripts/*": ["scripts/*"],
-      "@test/*": ["test/*"],
+	  "@core": ["scripts/core/index.ts"],
+	  "@core/*": ["scripts/core/*"],
     },
     "types": ["vitest/globals", "node"],
   },

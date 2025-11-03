@@ -1,5 +1,7 @@
 import { kindHeritage, type S } from "@duplojs/utils";
-import { createCoreLibKind } from "./kind";
+import { createCoreLibKind } from "../kind";
+
+export * from "./contract";
 
 export type InformationResponseCode = `1${S.Digit}${S.Digit}`;
 

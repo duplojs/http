@@ -1,11 +1,10 @@
 import { type Floor } from "@core/floor";
-import { type ResponseContract } from "@core/responseContract";
 import { type RouteDefinition } from "@core/route";
 import { createCheckerStep, type CheckerStep } from "@core/steps";
 import { type O, type MaybeArray, type NeverCoalescing, type FixDeepFunctionInfer, type Adaptor, type AnyFunction } from "@duplojs/utils";
 import { routeBuilder } from "./builder";
 import { type Checker } from "@core/checker";
-import { type ClientErrorResponseCode } from "@core/response";
+import { type ClientErrorResponseCode, type ResponseContract } from "@core/response";
 import { type Request } from "@core/request";
 
 declare module "./builder" {

@@ -1,5 +1,5 @@
 import { type Floor } from "@core/floor";
-import { type ResponseContract } from "@core/responseContract";
+import { type ResponseContract } from "@core/response";
 import { createRoute, type Route, type RouteDefinition } from "@core/route";
 import { createHandlerStep, type HandlerStep, type HandlerStepFunctionParams } from "@core/steps";
 import { type AnyTuple, type O } from "@duplojs/utils";

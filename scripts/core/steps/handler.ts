@@ -1,9 +1,8 @@
 import { createCoreLibKind } from "@core/kind";
 import { pipe, type Kind } from "@duplojs/utils";
 import { type StepKind, stepKind } from "./kind";
-import { type ResponseContract } from "@core/responseContract";
 import { type Floor } from "@core/floor";
-import { type Response } from "@core/response";
+import { type Response, type ResponseContract } from "@core/response";
 import { type Request } from "@core/request";
 import { type StepFunctionParams } from "./types";
 

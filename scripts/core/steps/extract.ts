@@ -1,9 +1,8 @@
 import { createCoreLibKind } from "@core/kind";
 import { type DP, pipe, type Kind, type O, type AnyFunction } from "@duplojs/utils";
 import { type StepKind, stepKind } from "./kind";
-import { type ResponseContract } from "@core/responseContract";
 import { type Request } from "@core/request";
-import { type ClientErrorResponseCode } from "@core/response";
+import { type ClientErrorResponseCode, type ResponseContract } from "@core/response";
 
 export type ExtractShape<
 	GenericRequest extends Request = Request,

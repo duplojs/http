@@ -1,5 +1,5 @@
 import { type Floor } from "@core/floor";
-import { type ResponseContract } from "@core/responseContract";
+import { type ResponseContract } from "@core/response";
 import { type RouteDefinition } from "@core/route";
 import { type CutStepFunctionOutput, type CutStep, type CutStepFunctionParams, createCutStep } from "@core/steps";
 import { type Unwrap, type AnyTuple, type O, type MaybePromise } from "@duplojs/utils";

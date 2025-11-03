@@ -1,9 +1,8 @@
 import { type Floor } from "@core/floor";
-import { type ResponseContract } from "@core/responseContract";
 import { createExtractStep, type ExtractShape, type ExtractStep } from "@core/steps";
 import { type DP, type ObjectEntry, type O, type SimplifyTopLevel, type NeverCoalescing } from "@duplojs/utils";
 import { processBuilder } from "./builder";
-import { type ClientErrorResponseCode } from "@core/response";
+import { type ClientErrorResponseCode, type ResponseContract } from "@core/response";
 import { type ProcessDefinition } from "@core/process";
 import { type Request } from "@core/request";
 

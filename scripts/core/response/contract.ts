@@ -1,6 +1,6 @@
 import { type Kind, type DP, pipe } from "@duplojs/utils";
-import { createCoreLibKind } from "./kind";
-import { type ResponseCode, type Response } from "./response";
+import { createCoreLibKind } from "../kind";
+import { type ResponseCode, type Response } from ".";
 
 export namespace ResponseContract {
 	export const contractKind = createCoreLibKind("response-contract");
