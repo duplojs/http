@@ -1,0 +1,43 @@
+import { type ProcessDefinition } from "@core/process";
+import { type Floor } from "@core/floor";
+import { type Builder, createBuilder, type NeverCoalescing } from "@duplojs/utils";
+import { type MakeRequestFromHooks, type HookRouteLifeCycle } from "@core/route";
+import { type Request } from "@core/request";
+
+export interface ProcessBuilder<
+	GenericDefinition extends ProcessDefinition = ProcessDefinition,
+	GenericFloor extends Floor = {},
+	GenericRequest extends Request = Request,
+> extends Builder<ProcessDefinition> {
+
+}
+
+export const processBuilder = createBuilder<ProcessBuilder>("@duplojs/http/core/process");
+
+export function useProcessBuilder<
+	GenericOptions extends ProcessDefinition["options"] = never,
+	const GenericHooks extends readonly HookRouteLifeCycle[] = readonly [],
+>(
+	params?: {
+		options: GenericOptions;
+		hooks?: GenericHooks | readonly HookRouteLifeCycle[];
+	},
+): ProcessBuilder<
+		{
+			readonly steps: [];
+			readonly options: NeverCoalescing<GenericOptions, undefined>;
+			readonly hooks: GenericHooks;
+		},
+		{},
+		NeverCoalescing<
+			MakeRequestFromHooks<GenericHooks>,
+			Request
+		>
+	> {
+	return processBuilder.use({
+		options: undefined,
+		...params,
+		steps: [],
+		hooks: params?.hooks ?? [],
+	});
+}
