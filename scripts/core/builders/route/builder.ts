@@ -16,7 +16,7 @@ export const routeBuilder = createBuilder<RouteBuilder>("@duplojs/http/core/rout
 export function useRouteBuilder<
 	GenericMethod extends RequestMethods,
 	GenericPath extends string,
-	GenericPaths extends [GenericPath, ...GenericPath[]],
+	const GenericPaths extends readonly [GenericPath, ...GenericPath[]],
 	const GenericHooks extends readonly HookRouteLifeCycle[] = readonly [],
 >(
 	method: GenericMethod,
@@ -28,8 +28,8 @@ export function useRouteBuilder<
 	{
 		readonly method: GenericMethod;
 		readonly paths: GenericPaths;
-		readonly preFlightsStep: [];
-		readonly steps: [];
+		readonly preFlightsStep: readonly [];
+		readonly steps: readonly [];
 		readonly hooks: GenericHooks;
 	},
 	{},
@@ -52,9 +52,9 @@ export function useRouteBuilder<
 ): RouteBuilder<
 	{
 		readonly method: GenericMethod;
-		readonly paths: [GenericPath];
-		readonly preFlightsStep: [];
-		readonly steps: [];
+		readonly paths: readonly [GenericPath];
+		readonly preFlightsStep: readonly [];
+		readonly steps: readonly [];
 		readonly hooks: GenericHooks;
 	},
 	{},

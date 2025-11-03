@@ -137,7 +137,7 @@ export function createHookRouteLifeCycle(
 
 	return {
 		...args[1],
-		...args[0],
+		onConstructRequest: args[0],
 	};
 }
 

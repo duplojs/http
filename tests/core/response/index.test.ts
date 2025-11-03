@@ -1,0 +1,31 @@
+import { createCoreLibKind, Response } from "@core";
+import { kindHeritage } from "@duplojs/utils";
+
+describe("response", () => {
+	it("construct", () => {
+		expect({
+			...new Response(
+				"100",
+				"My Information",
+				{ my: "body" },
+			),
+		}).toStrictEqual({
+			"@duplojs/utils/kind/@DuplojsHttpCore/response": null,
+			code: "100",
+			information: "My Information",
+			body: { my: "body" },
+			headers: undefined,
+		});
+	});
+
+	it("multi instance", () => {
+		class CloneResponse extends kindHeritage(
+			"response",
+			createCoreLibKind("response"),
+			Response,
+		) {}
+
+		expect((new CloneResponse({}, [undefined, undefined, undefined])) instanceof Response).toBe(true);
+		expect((new Response("200", "OK", null)) instanceof CloneResponse).toBe(true);
+	});
+});

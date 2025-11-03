@@ -8,7 +8,9 @@ export interface RequestMethodsWrapper {
 	PUT: true;
 	DELETE: true;
 	HEAD: true;
-	OPTION: true;
+	OPTIONS: true;
+	TRACE: true;
+	CONNECT: true;
 }
 
 export type RequestMethods = GetPropsWithValue<RequestMethodsWrapper, true>;
@@ -60,6 +62,7 @@ export class Request extends kindHeritage(
 			params,
 			query,
 			matchedPath,
+			...rest
 		}: RequestInitializationData,
 	) {
 		super();
@@ -73,5 +76,9 @@ export class Request extends kindHeritage(
 		this.params = params;
 		this.query = query;
 		this.matchedPath = matchedPath;
+
+		for (const key in rest) {
+			this[key as never] = rest[key as never];
+		}
 	}
 }

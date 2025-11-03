@@ -5,6 +5,7 @@
     "paths": {
 	  "@core": ["scripts/core/index.ts"],
 	  "@core/*": ["scripts/core/*"],
+	  "@test-utils/*": ["tests/_utils/*"],
     },
     "types": ["vitest/globals", "node"],
   },

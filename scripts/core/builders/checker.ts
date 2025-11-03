@@ -27,7 +27,7 @@ export interface CheckerBuilder<
 	>;
 }
 
-export const checkerBuilder = createBuilder<CheckerBuilder>("@duplojs/http/core/route");
+export const checkerBuilder = createBuilder<CheckerBuilder>("@duplojs/http/core/checker");
 
 checkerBuilder.set(
 	"handler",
@@ -43,7 +43,7 @@ checkerBuilder.set(
 export function useCheckerBuilder<
 	GenericOptions extends CheckerDefinition["options"] = never,
 >(
-	params?: GenericOptions,
+	params?: { options?: GenericOptions },
 ): CheckerBuilder<{
 		readonly options: NeverCoalescing<GenericOptions, undefined>;
 	}> {
