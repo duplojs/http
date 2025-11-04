@@ -24,9 +24,11 @@ declare module "./builder" {
 					]> extends true
 						? {}
 						: ProcessExportValue<
-							Pick<
-								GenericFloor,
-								GenericExportation[number]
+							SimplifyTopLevel<
+								Pick<
+									GenericFloor,
+									GenericExportation[number]
+								>
 							>
 						>
 				)

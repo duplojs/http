@@ -15,7 +15,7 @@ declare module "./builder" {
 		exec<
 			GenericProcess extends Process,
 			GenericProcessExportValue extends GetProcessExportValue<GenericProcess>,
-			GenericImportation extends Extract<keyof GenericProcessExportValue, string>[] = never,
+			const GenericImportation extends readonly Extract<keyof GenericProcessExportValue, string>[] = never,
 			GenericOptions extends (
 				| GenericProcess["definition"]["options"]
 				| ((floor: GenericFloor) => Exclude<GenericProcess["definition"]["options"], undefined>)
@@ -23,8 +23,8 @@ declare module "./builder" {
 		>(
 			process: GenericProcess,
 			params?: {
-				import?: GenericImportation;
-				options?: FixDeepFunctionInfer<
+				readonly import?: GenericImportation;
+				readonly options?: FixDeepFunctionInfer<
 					| GenericProcess["definition"]["options"]
 					| ((floor: GenericFloor) => GenericProcess["definition"]["options"]),
 					GenericOptions
@@ -38,12 +38,12 @@ declare module "./builder" {
 						...GenericDefinition["steps"],
 						ProcessStep<
 							{
-								process: GenericProcess;
-								options: NeverCoalescing<
-									Adaptor<GenericOptions, AnyFunction>,
+								readonly process: GenericProcess;
+								readonly options: NeverCoalescing<
+									Adaptor<GenericOptions, AnyFunction | GenericProcess["definition"]["options"]>,
 									undefined
 								>;
-								import: NeverCoalescing<GenericImportation, undefined>;
+								readonly import: NeverCoalescing<GenericImportation, undefined>;
 							}
 						>,
 					];

@@ -1,0 +1,365 @@
+import { type Process, type ProcessStep, processStepKind, type RouteBuilder, stepKind, useProcessBuilder, useRouteBuilder, type Request, type ExtractStep, extractStepKind } from "@core";
+import { builderKind, DPE, type ExpectType } from "@duplojs/utils";
+
+describe("route builder process method", () => {
+	it("exec", () => {
+		const process = useProcessBuilder()
+			.export();
+
+		const routeBuilder = useRouteBuilder("GET", "/test")
+			.exec(process);
+
+		expect({ ...routeBuilder }).toStrictEqual(
+			expect.objectContaining({
+				[builderKind.runTimeKey]: {
+					hooks: [],
+					method: "GET",
+					paths: ["/test"],
+					preFlightsStep: [],
+					steps: [
+						{
+							[processStepKind.runTimeKey]: null,
+							[stepKind.runTimeKey]: null,
+							definition: {
+								process,
+							},
+						},
+					],
+				},
+			}),
+		);
+
+		type Check = ExpectType<
+			typeof routeBuilder,
+			RouteBuilder<
+				{
+					readonly hooks: readonly [];
+					readonly paths: readonly ["/test"];
+					readonly method: "GET";
+					readonly preFlightsStep: readonly [];
+					readonly steps: readonly [
+						ProcessStep<{
+							readonly process: typeof process;
+							readonly options: undefined;
+							readonly import: undefined;
+						}>,
+					];
+				},
+				{},
+				Request
+			>,
+			"strict"
+		>;
+	});
+
+	it("exec with option", () => {
+		const process = useProcessBuilder({
+			options: {
+				test: true,
+			},
+		})
+			.export();
+
+		const routeBuilder = useRouteBuilder("GET", "/test")
+			.exec(process, { options: { test: false } });
+
+		expect({ ...routeBuilder }).toStrictEqual(
+			expect.objectContaining({
+				[builderKind.runTimeKey]: {
+					hooks: [],
+					method: "GET",
+					paths: ["/test"],
+					preFlightsStep: [],
+					steps: [
+						{
+							[processStepKind.runTimeKey]: null,
+							[stepKind.runTimeKey]: null,
+							definition: {
+								process,
+								options: { test: false },
+							},
+						},
+					],
+				},
+			}),
+		);
+
+		type Check = ExpectType<
+			typeof routeBuilder,
+			RouteBuilder<
+				{
+					readonly hooks: readonly [];
+					readonly paths: readonly ["/test"];
+					readonly method: "GET";
+					readonly preFlightsStep: readonly [];
+					readonly steps: readonly [
+						ProcessStep<{
+							readonly process: typeof process;
+							readonly options: { test: boolean };
+							readonly import: undefined;
+						}>,
+					];
+				},
+				{},
+				Request
+			>,
+			"strict"
+		>;
+	});
+
+	it("exec with callback option", () => {
+		const process = useProcessBuilder({
+			options: {
+				test: true,
+			},
+		})
+			.export();
+
+		const routeBuilder = useRouteBuilder("GET", "/test")
+			.extract({ body: DPE.string() })
+			.exec(
+				process,
+				{
+					options: (floor) => {
+						type Check = ExpectType<
+							typeof floor,
+							{
+								body: string;
+							},
+							"strict"
+						>;
+
+						return {
+							test: false,
+						};
+					},
+				},
+			);
+
+		expect({ ...routeBuilder }).toStrictEqual(
+			expect.objectContaining({
+				[builderKind.runTimeKey]: {
+					hooks: [],
+					method: "GET",
+					paths: ["/test"],
+					preFlightsStep: [],
+					steps: [
+						expect.objectContaining({
+							[extractStepKind.runTimeKey]: null,
+						}),
+						{
+							[processStepKind.runTimeKey]: null,
+							[stepKind.runTimeKey]: null,
+							definition: {
+								process,
+								options: expect.any(Function),
+							},
+						},
+					],
+				},
+			}),
+		);
+
+		type Check = ExpectType<
+			typeof routeBuilder,
+			RouteBuilder<
+				// @ts-expect-error process input function options
+				{
+					readonly hooks: readonly [];
+					readonly paths: readonly ["/test"];
+					readonly method: "GET";
+					readonly preFlightsStep: readonly [];
+					readonly steps: readonly [
+						ExtractStep<{
+							readonly shape: {
+								body: DPE.DataParserStringExtended<{
+									readonly errorMessage?: string | undefined;
+									readonly coerce: boolean;
+									readonly checkers: readonly [];
+								}>;
+							};
+							readonly responseContract: undefined;
+						}>,
+						// @ts-expect-error process input function options
+						ProcessStep<{
+							readonly process: typeof process;
+							// eslint-disable-next-line @typescript-eslint/method-signature-style
+							readonly options: (floor: { body: string }) => { test: false };
+							readonly import: undefined;
+						}>,
+					];
+				},
+				{ body: string },
+				Request
+			>,
+			"strict"
+		>;
+	});
+
+	it("exec with import", () => {
+		const process = useProcessBuilder()
+			.extract({
+				query: DPE.number(),
+				body: DPE.string(),
+			})
+			.export(["body"]);
+
+		const routeBuilder = useRouteBuilder("GET", "/test")
+			.exec(process, { import: ["body"] });
+
+		expect({ ...routeBuilder }).toStrictEqual(
+			expect.objectContaining({
+				[builderKind.runTimeKey]: {
+					hooks: [],
+					method: "GET",
+					paths: ["/test"],
+					preFlightsStep: [],
+					steps: [
+						{
+							[processStepKind.runTimeKey]: null,
+							[stepKind.runTimeKey]: null,
+							definition: {
+								process,
+								import: ["body"],
+							},
+						},
+					],
+				},
+			}),
+		);
+
+		type Check = ExpectType<
+			typeof routeBuilder,
+			RouteBuilder<
+				{
+					readonly hooks: readonly [];
+					readonly paths: readonly ["/test"];
+					readonly method: "GET";
+					readonly preFlightsStep: readonly [];
+					readonly steps: readonly [
+						ProcessStep<{
+							readonly process: typeof process;
+							readonly options: undefined;
+							readonly import: readonly ["body"];
+						}>,
+					];
+				},
+				{ body: string },
+				Request
+			>,
+			"strict"
+		>;
+	});
+
+	it("exec with multi import", () => {
+		const process = useProcessBuilder()
+			.extract({
+				query: DPE.number(),
+				body: DPE.string(),
+			})
+			.export(["body", "query"]);
+
+		const routeBuilder = useRouteBuilder("GET", "/test")
+			.exec(process, { import: ["body", "query"] });
+
+		expect({ ...routeBuilder }).toStrictEqual(
+			expect.objectContaining({
+				[builderKind.runTimeKey]: {
+					hooks: [],
+					method: "GET",
+					paths: ["/test"],
+					preFlightsStep: [],
+					steps: [
+						{
+							[processStepKind.runTimeKey]: null,
+							[stepKind.runTimeKey]: null,
+							definition: {
+								process,
+								import: ["body", "query"],
+							},
+						},
+					],
+				},
+			}),
+		);
+
+		type Check = ExpectType<
+			typeof routeBuilder,
+			RouteBuilder<
+				{
+					readonly hooks: readonly [];
+					readonly paths: readonly ["/test"];
+					readonly method: "GET";
+					readonly preFlightsStep: readonly [];
+					readonly steps: readonly [
+						ProcessStep<{
+							readonly process: typeof process;
+							readonly options: undefined;
+							readonly import: readonly ["body", "query"];
+						}>,
+					];
+				},
+				{
+					body: string;
+					query: number;
+				},
+				Request
+			>,
+			"strict"
+		>;
+	});
+
+	it("exec with process with hook", () => {
+		const process = useProcessBuilder({
+			hooks: [{ onConstructRequest: ({ addRequestProperties }) => addRequestProperties({ prop: 1 }) }],
+		})
+			.export();
+
+		const routeBuilder = useRouteBuilder("GET", "/test")
+			.exec(process);
+
+		expect({ ...routeBuilder }).toStrictEqual(
+			expect.objectContaining({
+				[builderKind.runTimeKey]: {
+					hooks: [],
+					method: "GET",
+					paths: ["/test"],
+					preFlightsStep: [],
+					steps: [
+						{
+							[processStepKind.runTimeKey]: null,
+							[stepKind.runTimeKey]: null,
+							definition: {
+								process,
+							},
+						},
+					],
+				},
+			}),
+		);
+
+		type Check = ExpectType<
+			typeof routeBuilder,
+			RouteBuilder<
+				{
+					readonly hooks: readonly [];
+					readonly paths: readonly ["/test"];
+					readonly method: "GET";
+					readonly preFlightsStep: readonly [];
+					readonly steps: readonly [
+						ProcessStep<{
+							readonly process: typeof process;
+							readonly options: undefined;
+							readonly import: undefined;
+						}>,
+					];
+				},
+				{},
+				Request & {
+					prop: number;
+				}
+			>,
+			"strict"
+		>;
+	});
+});

@@ -2,7 +2,7 @@ import { type Floor } from "@core/floor";
 import { type ResponseContract } from "@core/response";
 import { createRoute, type Route, type RouteDefinition } from "@core/route";
 import { createHandlerStep, type HandlerStep, type HandlerStepFunctionParams } from "@core/steps";
-import { type AnyTuple, type O } from "@duplojs/utils";
+import { type MaybePromise, type AnyTuple, type O } from "@duplojs/utils";
 import { routeBuilder } from "./builder";
 import { type Request } from "@core/request";
 
@@ -30,7 +30,7 @@ declare module "./builder" {
 					GenericRequest,
 					GenericResponse
 				>
-			) => GenericResponse
+			) => MaybePromise<GenericResponse>
 		): Route<
 			O.AssignObjects<
 				GenericDefinition,
@@ -46,7 +46,7 @@ declare module "./builder" {
 										GenericRequest,
 										GenericResponse
 									>
-								): GenericResponse;
+								): MaybePromise<GenericResponse>;
 							}
 						>,
 					];

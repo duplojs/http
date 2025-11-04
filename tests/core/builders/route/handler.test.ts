@@ -1,5 +1,6 @@
-import { type ExtractStep, extractStepKind, type HandlerStep, handlerStepKind, ResponseContract, type Route, routeKind, stepKind, useRouteBuilder, type Response, type HandlerStepFunctionParams, type Request } from "@core";
+import { type ExtractStep, extractStepKind, type HandlerStep, handlerStepKind, ResponseContract, type Route, routeKind, stepKind, useRouteBuilder, type Response, type HandlerStepFunctionParams, type Request, type HookParamsOnConstructRequest } from "@core";
 import { type DP, DPE, type ExpectType } from "@duplojs/utils";
+import { type MaybePromise } from "rollup";
 
 describe("route builder handler method", () => {
 	it("handler", () => {
@@ -18,33 +19,31 @@ describe("route builder handler method", () => {
 				},
 			);
 
-		expect({ ...routeBuilder }).toStrictEqual(
-			expect.objectContaining({
-				[routeKind.runTimeKey]: null,
-				definition: {
-					hooks: [],
-					method: "GET",
-					paths: ["/test"],
-					preFlightsStep: [],
-					steps: [
-						expect.objectContaining({
-							[extractStepKind.runTimeKey]: null,
-						}),
-						{
-							[handlerStepKind.runTimeKey]: null,
-							[stepKind.runTimeKey]: null,
-							definition: {
-								theFunction: expect.any(Function),
-								responseContract: expect.objectContaining({
-									[ResponseContract.contractKind.runTimeKey]: null,
-									code: "200",
-								}),
-							},
+		expect({ ...routeBuilder }).toStrictEqual({
+			[routeKind.runTimeKey]: null,
+			definition: {
+				hooks: [],
+				method: "GET",
+				paths: ["/test"],
+				preFlightsStep: [],
+				steps: [
+					expect.objectContaining({
+						[extractStepKind.runTimeKey]: null,
+					}),
+					{
+						[handlerStepKind.runTimeKey]: null,
+						[stepKind.runTimeKey]: null,
+						definition: {
+							theFunction: expect.any(Function),
+							responseContract: expect.objectContaining({
+								[ResponseContract.contractKind.runTimeKey]: null,
+								code: "200",
+							}),
 						},
-					],
-				},
-			}),
-		);
+					},
+				],
+			},
+		});
 
 		type Check = ExpectType<
 			typeof routeBuilder,
@@ -81,7 +80,7 @@ describe("route builder handler method", () => {
 									Request,
 									Response<"200", "test", string>
 								>
-							): Response<"200", "test", string>;
+							): MaybePromise<Response<"200", "test", string>>;
 						}>,
 					];
 				}
@@ -97,36 +96,34 @@ describe("route builder handler method", () => {
 				(floor, { response }) => true.valueOf() ? response("test", "toto") : response("toto"),
 			);
 
-		expect({ ...routeBuilder }).toStrictEqual(
-			expect.objectContaining({
-				[routeKind.runTimeKey]: null,
-				definition: {
-					hooks: [],
-					method: "GET",
-					paths: ["/test"],
-					preFlightsStep: [],
-					steps: [
-						{
-							[handlerStepKind.runTimeKey]: null,
-							[stepKind.runTimeKey]: null,
-							definition: {
-								theFunction: expect.any(Function),
-								responseContract: [
-									expect.objectContaining({
-										[ResponseContract.contractKind.runTimeKey]: null,
-										code: "200",
-									}),
-									expect.objectContaining({
-										[ResponseContract.contractKind.runTimeKey]: null,
-										code: "204",
-									}),
-								],
-							},
+		expect({ ...routeBuilder }).toStrictEqual({
+			[routeKind.runTimeKey]: null,
+			definition: {
+				hooks: [],
+				method: "GET",
+				paths: ["/test"],
+				preFlightsStep: [],
+				steps: [
+					{
+						[handlerStepKind.runTimeKey]: null,
+						[stepKind.runTimeKey]: null,
+						definition: {
+							theFunction: expect.any(Function),
+							responseContract: [
+								expect.objectContaining({
+									[ResponseContract.contractKind.runTimeKey]: null,
+									code: "200",
+								}),
+								expect.objectContaining({
+									[ResponseContract.contractKind.runTimeKey]: null,
+									code: "204",
+								}),
+							],
 						},
-					],
-				},
-			}),
-		);
+					},
+				],
+			},
+		});
 
 		type Check = ExpectType<
 			typeof routeBuilder,
@@ -161,9 +158,91 @@ describe("route builder handler method", () => {
 									| Response<"200", "test", string>
 									| Response<"204", "toto", undefined>
 								>
-							):
+							): MaybePromise<
 								| Response<"200", "test", string>
-								| Response<"204", "toto", undefined>;
+								| Response<"204", "toto", undefined>
+							>;
+						}>,
+					];
+				}
+			>,
+			"strict"
+		>;
+	});
+
+	it("handler with hooks", () => {
+		const routeBuilder = useRouteBuilder("GET", "/test", {
+			hooks: [{ onConstructRequest: ({ addRequestProperties }) => addRequestProperties({ prop: 1 }) }],
+		})
+			.handler(
+				ResponseContract.noContent("toto"),
+				(floor, { response, request }) => {
+					type Check = ExpectType<
+						typeof request,
+						Request & {
+							prop: number;
+						},
+						"strict"
+					>;
+
+					return response("toto");
+				},
+			);
+
+		expect({ ...routeBuilder }).toStrictEqual({
+			[routeKind.runTimeKey]: null,
+			definition: {
+				hooks: [{ onConstructRequest: expect.any(Function) }],
+				method: "GET",
+				paths: ["/test"],
+				preFlightsStep: [],
+				steps: [
+					{
+						[handlerStepKind.runTimeKey]: null,
+						[stepKind.runTimeKey]: null,
+						definition: {
+							theFunction: expect.any(Function),
+							responseContract: expect.objectContaining({
+								[ResponseContract.contractKind.runTimeKey]: null,
+								code: "204",
+							}),
+						},
+					},
+				],
+			},
+		});
+
+		type Check = ExpectType<
+			typeof routeBuilder,
+			Route<
+				{
+					readonly method: "GET";
+					readonly paths: readonly ["/test"];
+					readonly preFlightsStep: readonly [];
+					readonly hooks: readonly [
+						{
+							// eslint-disable-next-line @typescript-eslint/method-signature-style
+							readonly onConstructRequest: (params: HookParamsOnConstructRequest) => Request & {
+								prop: number;
+							};
+						},
+					];
+					readonly steps: readonly [
+						HandlerStep<{
+							readonly responseContract: ResponseContract.Contract<
+								"204",
+								"toto",
+								DP.DataParserEmpty
+							>;
+							theFunction(
+								floor: {},
+								param: HandlerStepFunctionParams<
+									Request & {
+										prop: number;
+									},
+									Response<"204", "toto", undefined>
+								>
+							): MaybePromise<Response<"204", "toto", undefined>>;
 						}>,
 					];
 				}
