@@ -53,7 +53,7 @@ declare module "./builder" {
 								readonly indexing: NeverCoalescing<GenericIndex, undefined>;
 								input(floor: GenericFloor): GenericInput;
 								readonly options: NeverCoalescing<
-									Adaptor<GenericOptions, AnyFunction>,
+									Adaptor<GenericOptions, AnyFunction | GenericChecker["definition"]["options"]>,
 									undefined
 								>;
 								readonly responseContract: GenericResponseContract;

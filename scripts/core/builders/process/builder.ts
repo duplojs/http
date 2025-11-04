@@ -19,12 +19,12 @@ export function useProcessBuilder<
 	const GenericHooks extends readonly HookRouteLifeCycle[] = readonly [],
 >(
 	params?: {
-		options: GenericOptions;
+		options?: GenericOptions;
 		hooks?: GenericHooks | readonly HookRouteLifeCycle[];
 	},
 ): ProcessBuilder<
 		{
-			readonly steps: [];
+			readonly steps: readonly [];
 			readonly options: NeverCoalescing<GenericOptions, undefined>;
 			readonly hooks: GenericHooks;
 		},

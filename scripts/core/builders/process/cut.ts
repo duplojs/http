@@ -47,7 +47,7 @@ declare module "./builder" {
 										GenericRequest,
 										GenericResponse
 									>
-								): GenericResponse;
+								): MaybePromise<GenericOutput>;
 							}
 						>,
 					];
