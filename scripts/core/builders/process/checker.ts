@@ -1,6 +1,6 @@
 import { type Floor } from "@core/floor";
 import { createCheckerStep, type CheckerStep } from "@core/steps";
-import { type O, type MaybeArray, type NeverCoalescing, type FixDeepFunctionInfer, type Adaptor, type AnyFunction } from "@duplojs/utils";
+import { type O, type MaybeArray, type NeverCoalescing, type FixDeepFunctionInfer, type Adaptor, type AnyFunction, type DP } from "@duplojs/utils";
 import { processBuilder } from "./builder";
 import { type Checker } from "@core/checker";
 import { type ClientErrorResponseCode, type ResponseContract } from "@core/response";
@@ -17,7 +17,11 @@ declare module "./builder" {
 			GenericChecker extends Checker,
 			GenericResult extends MaybeArray<Awaited<ReturnType<GenericChecker["definition"]["theFunction"]>>["information"]>,
 			GenericInput extends Parameters<GenericChecker["definition"]["theFunction"]>[0],
-			GenericResponseContract extends ResponseContract.Contract<ClientErrorResponseCode>,
+			GenericResponseContract extends ResponseContract.Contract<
+				ClientErrorResponseCode,
+				string,
+				DP.DataParserEmpty
+			>,
 			GenericIndex extends string = never,
 			GenericOptions extends (
 				| GenericChecker["definition"]["options"]
@@ -27,14 +31,14 @@ declare module "./builder" {
 			checker: GenericChecker,
 			params: {
 				input(floor: GenericFloor): GenericInput;
-				result: GenericResult;
-				indexing?: GenericIndex;
-				options?: FixDeepFunctionInfer<
+				readonly result: GenericResult;
+				readonly indexing?: GenericIndex;
+				readonly options?: FixDeepFunctionInfer<
 					| GenericChecker["definition"]["options"]
 					| ((floor: GenericFloor) => GenericChecker["definition"]["options"]),
 					GenericOptions
 				>;
-				otherwise: GenericResponseContract;
+				readonly otherwise: GenericResponseContract;
 			},
 		): ProcessBuilder<
 			O.AssignObjects<
@@ -44,15 +48,15 @@ declare module "./builder" {
 						...GenericDefinition["steps"],
 						CheckerStep<
 							{
-								checker: GenericChecker;
-								result: GenericResult;
-								indexing: NeverCoalescing<GenericIndex, undefined>;
+								readonly checker: GenericChecker;
+								readonly result: GenericResult;
+								readonly indexing: NeverCoalescing<GenericIndex, undefined>;
 								input(floor: GenericFloor): GenericInput;
-								options: NeverCoalescing<
+								readonly options: NeverCoalescing<
 									Adaptor<GenericOptions, AnyFunction>,
 									undefined
 								>;
-								responseContract: GenericResponseContract;
+								readonly responseContract: GenericResponseContract;
 							}
 						>,
 					];

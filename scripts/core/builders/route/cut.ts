@@ -2,7 +2,7 @@ import { type Floor } from "@core/floor";
 import { type ResponseContract } from "@core/response";
 import { type RouteDefinition } from "@core/route";
 import { type CutStepFunctionOutput, type CutStep, type CutStepFunctionParams, createCutStep } from "@core/steps";
-import { type Unwrap, type AnyTuple, type O, type MaybePromise } from "@duplojs/utils";
+import { type Unwrap, type AnyTuple, type O, type MaybePromise, type IsEqual } from "@duplojs/utils";
 import { routeBuilder } from "./builder";
 import { type Request } from "@core/request";
 
@@ -47,18 +47,25 @@ declare module "./builder" {
 										GenericRequest,
 										GenericResponse
 									>
-								): GenericResponse;
+								): MaybePromise<GenericOutput>;
 							}
 						>,
 					];
 				}
 			>,
-			GenericOutput extends infer InferredOutputData extends CutStepFunctionOutput
-				? O.AssignObjects<
-					GenericFloor,
-					Unwrap<InferredOutputData>
-				>
-				: never,
+			IsEqual<
+				Extract<GenericOutput, CutStepFunctionOutput>,
+				never
+			> extends true
+				? GenericFloor
+				: (
+					GenericOutput extends infer InferredOutputData extends CutStepFunctionOutput
+						? O.AssignObjects<
+							GenericFloor,
+							Unwrap<InferredOutputData>
+						>
+						: never
+				),
 			GenericRequest
 		>;
 	}

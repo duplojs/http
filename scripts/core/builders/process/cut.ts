@@ -1,7 +1,7 @@
 import { type Floor } from "@core/floor";
 import { type ResponseContract } from "@core/response";
 import { type CutStepFunctionOutput, type CutStep, type CutStepFunctionParams, createCutStep } from "@core/steps";
-import { type Unwrap, type AnyTuple, type O, type MaybePromise } from "@duplojs/utils";
+import { type Unwrap, type AnyTuple, type O, type MaybePromise, type IsEqual } from "@duplojs/utils";
 import { processBuilder } from "./builder";
 import { type ProcessDefinition } from "@core/process";
 import { type Request } from "@core/request";
@@ -53,12 +53,19 @@ declare module "./builder" {
 					];
 				}
 			>,
-			GenericOutput extends infer InferredOutputData extends CutStepFunctionOutput
-				? O.AssignObjects<
-					GenericFloor,
-					Unwrap<InferredOutputData>
-				>
-				: never,
+			IsEqual<
+				Extract<GenericOutput, CutStepFunctionOutput>,
+				never
+			> extends true
+				? GenericFloor
+				: (
+					GenericOutput extends infer InferredOutputData extends CutStepFunctionOutput
+						? O.AssignObjects<
+							GenericFloor,
+							Unwrap<InferredOutputData>
+						>
+						: never
+				),
 			GenericRequest
 		>;
 	}

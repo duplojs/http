@@ -30,7 +30,7 @@ declare module "./builder" {
 					GenericRequest,
 					GenericResponse
 				>
-			) => NoInfer<GenericResponse>
+			) => GenericResponse
 		): Route<
 			O.AssignObjects<
 				GenericDefinition,
@@ -39,7 +39,7 @@ declare module "./builder" {
 						...GenericDefinition["steps"],
 						HandlerStep<
 							{
-								responseContract: GenericResponseContract;
+								readonly responseContract: GenericResponseContract;
 								theFunction(
 									floor: GenericFloor,
 									param: HandlerStepFunctionParams<

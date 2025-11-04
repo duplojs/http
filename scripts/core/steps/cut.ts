@@ -1,5 +1,5 @@
 import { createCoreLibKind } from "@core/kind";
-import { pipe, type WrappedValue, type Kind, type MaybePromise } from "@duplojs/utils";
+import { pipe, type WrappedValue, type Kind, type MaybePromise, type NeverCoalescing } from "@duplojs/utils";
 import { type StepKind, stepKind } from "./kind";
 import { type Floor } from "@core/floor";
 import { type StepFunctionParams } from "./types";
@@ -19,10 +19,12 @@ export interface CutStepFunctionParams<
 	GenericResponse extends Response = Response,
 > extends StepFunctionParams<GenericRequest, GenericResponse> {
 	output<
-		GenericData extends Record<string, unknown>,
+		GenericData extends Record<string, unknown> = never,
 	>(
-		data: GenericData,
-	): CutStepFunctionOutput<GenericData>;
+		data?: GenericData,
+	): CutStepFunctionOutput<
+		NeverCoalescing<GenericData, {}>
+	>;
 }
 
 export interface CutStepDefinition {

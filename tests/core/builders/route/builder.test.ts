@@ -1,6 +1,5 @@
 import { type RouteBuilder, useRouteBuilder, type Request, type HookParamsOnConstructRequest } from "@core";
 import { builderKind, type ExpectType } from "@duplojs/utils";
-import { blob } from "stream/consumers";
 
 describe("route builder", () => {
 	it("useRouteBuilder", () => {

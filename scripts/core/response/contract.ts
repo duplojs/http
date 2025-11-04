@@ -46,10 +46,12 @@ export namespace ResponseContract {
 				: IsEqual<GenericOptionsDefaultSchema, never> extends true
 					? [schema: GenericSchema]
 					: [schema?: GenericSchema]
-		): Contract<
-			GenericCode,
-			GenericInformation,
-			NeverCoalescing<GenericSchema, DP.DataParserEmpty>
+		): NoInfer<
+			Contract<
+				GenericCode,
+				GenericInformation,
+				NeverCoalescing<GenericSchema, DP.DataParserEmpty>
+			>
 		> => pipe(
 			{
 				code,

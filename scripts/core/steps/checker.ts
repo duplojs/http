@@ -24,7 +24,7 @@ export type _CheckerStep = (
 export interface CheckerStep<
 	GenericDefinition extends CheckerStepDefinition = CheckerStepDefinition,
 > extends _CheckerStep {
-	definition: GenericDefinition;
+	readonly definition: GenericDefinition;
 }
 
 export function createCheckerStep<

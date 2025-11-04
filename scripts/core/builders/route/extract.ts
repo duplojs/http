@@ -28,8 +28,8 @@ declare module "./builder" {
 						...GenericDefinition["steps"],
 						ExtractStep<
 							{
-								shape: GenericShape;
-								responseContract: NeverCoalescing<GenericResponseContract, undefined>;
+								readonly shape: GenericShape;
+								readonly responseContract: NeverCoalescing<GenericResponseContract, undefined>;
 							}
 						>,
 					];
