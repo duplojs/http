@@ -53,3 +53,15 @@ export function createChecker<
 		checkerKind.setTo,
 	);
 }
+
+export type GetCheckerInput<
+	GenericChecker extends Checker,
+> = Parameters<GenericChecker["definition"]["theFunction"]>[0];
+
+export type GetCheckerResult<
+	GenericChecker extends Checker,
+> = ReturnType<GenericChecker["definition"]["theFunction"]>;
+
+export type GetCheckerOptions<
+	GenericChecker extends Checker,
+> = GenericChecker["definition"]["options"];

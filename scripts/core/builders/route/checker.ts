@@ -3,7 +3,7 @@ import { type RouteDefinition } from "@core/route";
 import { createCheckerStep, type CheckerStep } from "@core/steps";
 import { type O, type MaybeArray, type NeverCoalescing, type FixDeepFunctionInfer, type Adaptor, type AnyFunction, type DP } from "@duplojs/utils";
 import { routeBuilder } from "./builder";
-import { type Checker } from "@core/checker";
+import { type GetCheckerInput, type Checker, type GetCheckerResult, type GetCheckerOptions } from "@core/checker";
 import { type ClientErrorResponseCode, type ResponseContract } from "@core/response";
 import { type Request } from "@core/request";
 
@@ -15,8 +15,8 @@ declare module "./builder" {
 	> {
 		check<
 			GenericChecker extends Checker,
-			GenericResult extends MaybeArray<Awaited<ReturnType<GenericChecker["definition"]["theFunction"]>>["information"]>,
-			GenericInput extends Parameters<GenericChecker["definition"]["theFunction"]>[0],
+			GenericResultInformation extends MaybeArray<Awaited<GetCheckerResult<GenericChecker>>["information"]>,
+			GenericInput extends GetCheckerInput<GenericChecker>,
 			GenericResponseContract extends ResponseContract.Contract<
 				ClientErrorResponseCode,
 				string,
@@ -24,14 +24,14 @@ declare module "./builder" {
 			>,
 			GenericIndex extends string = never,
 			GenericOptions extends (
-				| GenericChecker["definition"]["options"]
-				| ((floor: GenericFloor) => Exclude<GenericChecker["definition"]["options"], undefined>)
+				| GetCheckerOptions<GenericChecker>
+				| ((floor: GenericFloor) => Exclude<GetCheckerOptions<GenericChecker>, undefined>)
 			) = never,
 		>(
 			checker: GenericChecker,
 			params: {
 				input(floor: GenericFloor): GenericInput;
-				readonly result: GenericResult;
+				readonly result: GenericResultInformation;
 				readonly indexing?: GenericIndex;
 				readonly options?: FixDeepFunctionInfer<
 					| GenericChecker["definition"]["options"]
@@ -49,7 +49,7 @@ declare module "./builder" {
 						CheckerStep<
 							{
 								readonly checker: GenericChecker;
-								readonly result: GenericResult;
+								readonly result: GenericResultInformation;
 								readonly indexing: NeverCoalescing<GenericIndex, undefined>;
 								input(floor: GenericFloor): GenericInput;
 								readonly options: NeverCoalescing<
@@ -70,9 +70,9 @@ declare module "./builder" {
 							GenericChecker["definition"]["theFunction"]
 						>,
 						{
-							information: GenericResult extends readonly string[]
-								? GenericResult[number]
-								: GenericResult;
+							information: GenericResultInformation extends readonly string[]
+								? GenericResultInformation[number]
+								: GenericResultInformation;
 						}
 					>["value"]
 				}

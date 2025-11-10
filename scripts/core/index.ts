@@ -7,3 +7,4 @@ export * from "./floor";
 export * from "./kind";
 export * from "./process";
 export * from "./request";
+export * from "./presetChecker";

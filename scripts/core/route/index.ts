@@ -1,12 +1,21 @@
-import { pipe, type Kind } from "@duplojs/utils";
+import { type O, pipe, type Kind } from "@duplojs/utils";
 import { createCoreLibKind } from "../kind";
 import { type RequestMethods } from "../request";
-import { type ExtractStep, type CheckerStep, type CutStep, type HandlerStep, type ProcessStep } from "../steps";
+import { type ExtractStep, type CheckerStep, type CutStep, type HandlerStep, type ProcessStep, type stepKind } from "../steps";
 import { type HookRouteLifeCycle } from "./hooks";
 
 export * from "./hooks";
 
+export interface RouteStepsCustom {}
+
 export type RouteSteps = (
+	// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+	| RouteStepsCustom[
+		O.GetPropsWithValueExtends<
+			RouteStepsCustom,
+			Kind<typeof stepKind.definition>
+		>
+	]
 	| CheckerStep
 	| ProcessStep
 	| ExtractStep

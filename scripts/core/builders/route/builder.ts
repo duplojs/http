@@ -15,8 +15,7 @@ export const routeBuilder = createBuilder<RouteBuilder>("@duplojs/http/core/rout
 
 export function useRouteBuilder<
 	GenericMethod extends RequestMethods,
-	GenericPath extends string,
-	const GenericPaths extends readonly [GenericPath, ...GenericPath[]],
+	const GenericPaths extends readonly [string, ...string[]],
 	const GenericHooks extends readonly HookRouteLifeCycle[] = readonly [],
 >(
 	method: GenericMethod,
