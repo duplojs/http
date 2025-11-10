@@ -1,7 +1,7 @@
 import { type O, pipe, type Kind } from "@duplojs/utils";
 import { createCoreLibKind } from "../kind";
 import { type RequestMethods } from "../request";
-import { type ExtractStep, type CheckerStep, type CutStep, type HandlerStep, type ProcessStep, type stepKind } from "../steps";
+import { type ExtractStep, type CheckerStep, type CutStep, type HandlerStep, type ProcessStep, type stepKind, type PresetCheckerStep } from "../steps";
 import { type HookRouteLifeCycle } from "./hooks";
 
 export * from "./hooks";
@@ -17,6 +17,7 @@ export type RouteSteps = (
 		>
 	]
 	| CheckerStep
+	| PresetCheckerStep
 	| ProcessStep
 	| ExtractStep
 	| CutStep

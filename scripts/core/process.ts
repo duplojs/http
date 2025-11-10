@@ -1,6 +1,6 @@
 import { type IsEqual, pipe, type Kind, type O } from "@duplojs/utils";
 import { createCoreLibKind } from "./kind";
-import { type ProcessStep, type CheckerStep, type CutStep, type ExtractStep, type stepKind } from "./steps";
+import { type ProcessStep, type CheckerStep, type CutStep, type ExtractStep, type stepKind, type PresetCheckerStep } from "./steps";
 import { type Floor } from "./floor";
 import { type HookRouteLifeCycle } from "./route";
 import { type Request } from "./request";
@@ -17,6 +17,7 @@ export type ProcessSteps = (
 	]
 	| CheckerStep
 	| ExtractStep
+	| PresetCheckerStep
 	| CutStep
 	| ProcessStep
 );

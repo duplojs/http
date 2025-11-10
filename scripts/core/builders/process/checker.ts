@@ -1,6 +1,6 @@
 import { type Floor } from "@core/floor";
 import { createCheckerStep, type CheckerStep } from "@core/steps";
-import { type O, type MaybeArray, type NeverCoalescing, type FixDeepFunctionInfer, type Adaptor, type AnyFunction, type DP } from "@duplojs/utils";
+import { type O, type MaybeArray, type NeverCoalescing, type FixDeepFunctionInfer, type Adaptor, type AnyFunction, type DP, type A } from "@duplojs/utils";
 import { processBuilder } from "./builder";
 import { type GetCheckerResult, type Checker, type GetCheckerInput, type GetCheckerOptions } from "@core/checker";
 import { type ClientErrorResponseCode, type ResponseContract } from "@core/response";
@@ -66,13 +66,11 @@ declare module "./builder" {
 				GenericFloor,
 				{
 					[Prop in GenericIndex]: Extract<
-						ReturnType<
-							GenericChecker["definition"]["theFunction"]
-						>,
+						Awaited<GetCheckerResult<GenericChecker>>,
 						{
-							information: GenericResultInformation extends readonly string[]
-								? GenericResultInformation[number]
-								: GenericResultInformation;
+							information: A.ArrayCoalescing<
+								GenericResultInformation
+							>[number];
 						}
 					>["value"]
 				}

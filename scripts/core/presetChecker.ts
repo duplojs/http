@@ -1,4 +1,4 @@
-import { type O, pipe, type Kind, type RemoveKind, type MaybeArray } from "@duplojs/utils";
+import { type O, pipe, type Kind, type RemoveKind, type MaybeArray, type AnyFunction } from "@duplojs/utils";
 import { createCoreLibKind } from "./kind";
 import { type GetCheckerInput, type Checker, type GetCheckerOptions, type GetCheckerResult } from "./checker";
 import { type ClientErrorResponseCode, type ResponseContract } from "./response";
@@ -113,3 +113,23 @@ export function createPresetChecker<
 		presetCheckerKind.setTo,
 	) as never;
 }
+
+export type GetPresetCheckerInput<
+	GenericPresetChecker extends PresetChecker,
+> = GenericPresetChecker["definition"]["rewriteInput"] extends AnyFunction
+	? Parameters<GenericPresetChecker["definition"]["rewriteInput"]>[0]
+	: Parameters<GenericPresetChecker["definition"]["checker"]["definition"]["theFunction"]>[0];
+
+export type GetPresetCheckerResult<
+	GenericPresetChecker extends PresetChecker,
+> = ReturnType<GenericPresetChecker["definition"]["checker"]["definition"]["theFunction"]>;
+
+export type GetPresetCheckerIndex<
+	GenericPresetChecker extends PresetChecker,
+> = GenericPresetChecker["definition"]["indexing"] extends string
+	? GenericPresetChecker["definition"]["indexing"]
+	: never;
+
+export type GetPresetCheckerInformation<
+	GenericPresetChecker extends PresetChecker,
+> = GenericPresetChecker["definition"]["result"];
