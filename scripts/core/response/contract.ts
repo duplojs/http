@@ -1,6 +1,8 @@
-import { DP, type Kind, pipe, type IsEqual, type NeverCoalescing } from "@duplojs/utils";
+import { DP, type Kind, pipe, type IsEqual, type NeverCoalescing, kindHeritage } from "@duplojs/utils";
 import { createCoreLibKind } from "../kind";
 import { type ResponseCode, type Response } from ".";
+
+const errorClass = Error;
 
 export namespace ResponseContract {
 	export const contractKind = createCoreLibKind("response-contract");
@@ -136,4 +138,17 @@ export namespace ResponseContract {
 	export const loopDetected = createContractBuilder("508", { defaultSchema });
 	export const notExtended = createContractBuilder("510", { defaultSchema });
 	export const networkAuthenticationRequired = createContractBuilder("511", { defaultSchema });
+
+	export class Error extends kindHeritage(
+		"contract-error",
+		createCoreLibKind("contract-error"),
+		errorClass,
+	) {
+		public constructor(
+			public information: string,
+			public contract?: Contract,
+		) {
+			super({}, [`Error executing the response contract with the information: "${information}".`]);
+		}
+	}
 }

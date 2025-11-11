@@ -1,4 +1,6 @@
+export * from "./types";
 export * from "./kind";
+export * from "./identifier";
 
 export * from "./checker";
 export * from "./extract";

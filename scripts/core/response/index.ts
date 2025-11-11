@@ -1,5 +1,6 @@
 import { kindHeritage, type S } from "@duplojs/utils";
 import { createCoreLibKind } from "../kind";
+import { override } from "@duplojs/utils/object";
 
 export * from "./contract";
 
@@ -47,5 +48,24 @@ export class Response<
 		this.code = code;
 		this.information = information;
 		this.body = body;
+	}
+
+	public setHeaders(headers: Record<string, string | string[]>) {
+		this.headers = {
+			...this.headers,
+			...headers,
+		};
+
+		return this;
+	}
+
+	public setHeader(key: string, header: string | string[]) {
+		if (!this.headers) {
+			this.headers = {};
+		}
+
+		this.headers[key] = header;
+
+		return this;
 	}
 }

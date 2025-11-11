@@ -21,13 +21,13 @@ export type HookOnConstructRequest<
 	params: HookParamsOnConstructRequest
 ) => MaybePromise<GenericRequest>;
 
-const exitKind = createCoreLibKind("hook-exit");
+export const routeExitKind = createCoreLibKind("route-hook-exit");
 
-interface HookExit extends Kind<typeof exitKind.definition> {
+interface HookExit extends Kind<typeof routeExitKind.definition> {
 
 }
 
-export interface HookParams<
+export interface RouteHookParams<
 	GenericRequest extends Request = Request,
 > {
 	readonly request: GenericRequest;
@@ -51,20 +51,20 @@ export interface HookParams<
 export type HookBeforeRouteExecution<
 	GenericRequest extends Request = Request,
 > = (
-	params: HookParams<GenericRequest>
+	params: RouteHookParams<GenericRequest>
 ) => MaybePromise<HookResponse | HookExit>;
 
 export type HookParseBody<
 	GenericRequest extends Request = Request,
 > = (
-	params: HookParams<GenericRequest>
+	params: RouteHookParams<GenericRequest>
 ) => MaybePromise<HookResponse | HookExit>;
 
 export type HookError = (
-	params: HookParams<Request>
+	params: RouteHookParams<Request>
 ) => MaybePromise<HookResponse | HookExit>;
 
-export interface HookParamsAfter<
+export interface RouteHookParamsAfter<
 	GenericRequest extends Request = Request,
 > {
 	readonly request: GenericRequest;
@@ -75,19 +75,19 @@ export interface HookParamsAfter<
 export type HookBeforeSendResponse<
 	GenericRequest extends Request = Request,
 > = (
-	params: HookParamsAfter<GenericRequest>
+	params: RouteHookParamsAfter<GenericRequest>
 ) => MaybePromise<HookExit>;
 
 export type HookSendResponse<
 	GenericRequest extends Request = Request,
 > = (
-	params: HookParamsAfter<GenericRequest>
+	params: RouteHookParamsAfter<GenericRequest>
 ) => MaybePromise<HookExit>;
 
 export type HookAfterSendResponse<
 	GenericRequest extends Request = Request,
 > = (
-	params: HookParamsAfter<GenericRequest>
+	params: RouteHookParamsAfter<GenericRequest>
 ) => MaybePromise<HookExit>;
 
 export interface HookRouteLifeCycle<

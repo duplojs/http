@@ -4,6 +4,7 @@ import { type RequestMethods } from "../request";
 import { type ExtractStep, type CheckerStep, type CutStep, type HandlerStep, type ProcessStep, type stepKind, type PresetCheckerStep } from "../steps";
 import { type HookRouteLifeCycle } from "./hooks";
 
+export * from "./types";
 export * from "./hooks";
 
 export interface RouteStepsCustom {}
