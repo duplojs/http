@@ -9,3 +9,4 @@ export * from "./process";
 export * from "./request";
 export * from "./presetChecker";
 export * from "./hub";
+export * from "./functionBuilder";

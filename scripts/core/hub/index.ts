@@ -1,10 +1,11 @@
 import { createCoreLibKind } from "@core/kind";
 import { type Route, type HookRouteLifeCycle, routeKind } from "@core/route";
-import { A, pipe, type Kind, type RemoveKind, type MaybeArray, type SimplifyTopLevel, type O } from "@duplojs/utils";
+import { A, O, pipe, type Kind, type RemoveKind, type MaybeArray, type SimplifyTopLevel, P, isType } from "@duplojs/utils";
 import { type HookHubLifeCycle } from "./hooks";
 import { type createFunctionBuilder } from "@core/functionBuilder";
 import { type Process } from "@core/process";
 import { type Steps } from "@core/steps";
+import { Request } from "@core/request";
 
 export * from "./hooks";
 
@@ -42,15 +43,17 @@ export interface PluginDefinition extends HubDefinition {
 export const hubKind = createCoreLibKind("hub");
 
 export interface Hub<
-	GenericDefinition extends readonly HubDefinition[] = readonly HubDefinition[],
+	GenericDefinition extends readonly [HubFirstDefinition, ...(HubDefinition | PluginDefinition)[]]
+	= readonly [HubFirstDefinition, ...(HubDefinition | PluginDefinition)[]],
 > extends Kind<typeof hubKind.definition> {
 	readonly definitions: GenericDefinition;
+	readonly classRequest: typeof Request;
 	register(
 		routes: Route | Iterable<Route> | Record<string, Route>
 	): Hub<
 		readonly [
 			...GenericDefinition,
-			{ routes: Route[] },
+			{ readonly routes: Route[] },
 		]
 	>;
 	addFunctionBuilder(
@@ -71,6 +74,26 @@ export interface Hub<
 					| "processFunctionBuilder"
 					| "routeFunctionBuilder"
 					| "stepFunctionBuilder"
+				>
+			>,
+		]
+	>;
+	addHooks(
+		builders: SimplifyTopLevel<
+			Pick<
+				HubDefinition,
+				| "hooksHubLifeCycle"
+				| "hooksRouteLifeCycle"
+			>
+		>
+	): Hub<
+		readonly [
+			...GenericDefinition,
+			SimplifyTopLevel<
+				Pick<
+					HubDefinition,
+					| "hooksHubLifeCycle"
+					| "hooksRouteLifeCycle"
 				>
 			>,
 		]
@@ -107,6 +130,7 @@ export function createHub(
 	const self: Hub = pipe(
 		{
 			definitions,
+			classRequest: Request,
 			plug(plugin) {
 				return createHub([
 					...definitions,
@@ -121,9 +145,18 @@ export function createHub(
 				return createHub([
 					...definitions,
 					{
-						routes: routeKind.has(routes)
-							? [routes]
-							: Object.values(routes),
+						routes: pipe(
+							routes,
+							P.when(
+								routeKind.has,
+								A.coalescing,
+							),
+							P.when(
+								isType("iterable"),
+								A.from,
+							),
+							P.otherwise(O.values),
+						),
 					},
 				]);
 			},
@@ -131,6 +164,12 @@ export function createHub(
 				return createHub([
 					...definitions,
 					builders,
+				]);
+			},
+			addHooks(hooks) {
+				return createHub([
+					...definitions,
+					hooks,
 				]);
 			},
 		} satisfies RemoveKind<Hub>,
