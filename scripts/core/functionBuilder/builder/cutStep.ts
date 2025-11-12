@@ -4,7 +4,7 @@ import { A, E, unwrap, wrapValue } from "@duplojs/utils";
 import { Response, ResponseContract } from "@core/response";
 import { type Floor } from "@core/floor";
 
-export const cutFunctionBuilder = createFunctionBuilder(
+export const cutStepFunctionBuilder = createFunctionBuilder(
 	(element, { support, notSupport }) => cutStepKind.has(element)
 		? support(element)
 		: notSupport(),
@@ -68,8 +68,8 @@ export const cutFunctionBuilder = createFunctionBuilder(
 			return result;
 		}
 
-		return success(
-			(request, floor) => {
+		return success({
+			buildedFunction: (request, floor) => {
 				const result = cutFunction(
 					floor,
 					{
@@ -87,6 +87,7 @@ export const cutFunctionBuilder = createFunctionBuilder(
 
 				return treatResult(result, floor);
 			},
-		);
+			hooksRouteLifeCycle: [],
+		});
 	},
 );

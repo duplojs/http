@@ -1,8 +1,8 @@
 import { type HubEnvironment } from "@core/hub";
 import { type BuildedProcess, type Process } from "@core/process";
-import { type BuildedRoute, type Route } from "@core/route";
+import { type HookRouteLifeCycle, type BuildedRoute, type Route } from "@core/route";
 import { type BuildedStep, type Steps } from "@core/steps";
-import { E, pipe, type A } from "@duplojs/utils";
+import { E, pipe } from "@duplojs/utils";
 
 type Element = (
 	| Steps
@@ -10,14 +10,37 @@ type Element = (
 	| Process
 );
 
-type BuildedResult<
+export type FunctionBuilderResult<
 	GenericElement extends Element,
-> = A.ExtractTuple<
-	| [Steps, BuildedStep]
-	| [Route, BuildedRoute]
-	| [Process, BuildedProcess],
-	[GenericElement, any]
->[1];
+> = Extract<
+	| (
+		Steps extends infer InferredStep
+			? InferredStep extends Steps
+				? {
+					element: InferredStep;
+					value: {
+						readonly buildedFunction: BuildedStep;
+						readonly hooksRouteLifeCycle: HookRouteLifeCycle[];
+					};
+				}
+				: never
+			: never
+	)
+	| {
+		element: Process;
+		value: {
+			readonly buildedFunction: BuildedProcess;
+			readonly hooksRouteLifeCycle: HookRouteLifeCycle[];
+		};
+	}
+	| {
+		element: Route;
+		value: BuildedRoute;
+	},
+	{
+		element: GenericElement;
+	}
+>["value"];
 
 type SupportEither<
 	GenericElement extends Element,
@@ -31,7 +54,7 @@ type BuildedEither<
 	GenericElement extends Element,
 > = E.EitherRight<
 	"successBuild",
-	BuildedResult<
+	FunctionBuilderResult<
 		GenericElement
 	>
 >;
@@ -54,10 +77,12 @@ export interface BuildParamsFunctionBuilder<
 	);
 
 	success(
-		result: BuildedResult<GenericSupportElement>
+		result: FunctionBuilderResult<GenericSupportElement>
 	): BuildedEither<GenericSupportElement>;
 
 	readonly environment: HubEnvironment;
+
+	readonly hooksRouteLifeCycle: readonly HookRouteLifeCycle[];
 }
 
 export interface SupportParams {

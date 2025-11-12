@@ -4,14 +4,17 @@ import { kindHeritage } from "@duplojs/utils";
 describe("hook response", () => {
 	it("construct", () => {
 		expect(
-			{ ...new HookResponse("200", "OK", { message: "success" }) },
+			{ ...new HookResponse("afterSendResponse", "200", "OK", { message: "success" }) },
 		).toStrictEqual({
 			"@duplojs/utils/kind/@DuplojsHttpCore/hook-response": null,
 			"@duplojs/utils/kind/@DuplojsHttpCore/response": null,
 			code: "200",
 			information: "OK",
 			body: { message: "success" },
-			headers: undefined,
+			headers: {
+				hook: "afterSendResponse",
+			},
+			from: "afterSendResponse",
 		});
 	});
 
@@ -23,6 +26,6 @@ describe("hook response", () => {
 		) {}
 
 		expect((new CloneHookResponse({}, [undefined, undefined, undefined])) instanceof HookResponse).toBe(true);
-		expect((new HookResponse("200", "OK", null)) instanceof CloneHookResponse).toBe(true);
+		expect((new HookResponse("afterSendResponse", "200", "OK", null)) instanceof CloneHookResponse).toBe(true);
 	});
 });

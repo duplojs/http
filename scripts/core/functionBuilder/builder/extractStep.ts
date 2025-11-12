@@ -7,7 +7,7 @@ import { type Floor } from "@core/floor";
 
 type Extractor = (request: Request, floor: Floor) => Response | Floor;
 
-export const extractFunctionBuilder = createFunctionBuilder(
+export const extractStepFunctionBuilder = createFunctionBuilder(
 	(element, { support, notSupport }) => extractStepKind.has(element)
 		? support(element)
 		: notSupport(),
@@ -109,9 +109,9 @@ export const extractFunctionBuilder = createFunctionBuilder(
 			),
 		);
 
-		return success(
-			(request, floor) => {
-				const newFloor = floor;
+		return success({
+			buildedFunction: (request, floor) => {
+				let newFloor = floor;
 
 				// eslint-disable-next-line @typescript-eslint/prefer-for-of
 				for (let index = 0; index < extractors.length; index++) {
@@ -120,10 +120,13 @@ export const extractFunctionBuilder = createFunctionBuilder(
 					if (result instanceof Response) {
 						return result;
 					}
+
+					newFloor = result;
 				}
 
 				return newFloor;
 			},
-		);
+			hooksRouteLifeCycle: [],
+		});
 	},
 );

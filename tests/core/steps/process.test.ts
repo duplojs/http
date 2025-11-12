@@ -6,7 +6,7 @@ describe("processStep", () => {
 		const definition: ProcessStepDefinition = {
 			process: testProcess,
 			options: (floor: Floor) => ({ floor }),
-			import: ["shared"],
+			imports: ["shared"],
 		};
 
 		expect(createProcessStep(definition)).toStrictEqual({

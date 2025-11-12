@@ -7,7 +7,7 @@ import { type Floor } from "@core/floor";
 export interface ProcessStepDefinition {
 	readonly process: Process;
 	readonly options?: Record<string, unknown> | ((input: Floor) => Record<string, unknown>);
-	readonly import?: readonly string[];
+	readonly imports?: readonly string[];
 }
 
 export const processStepKind = createCoreLibKind("process-step");

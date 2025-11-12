@@ -23,7 +23,7 @@ declare module "./builder" {
 		>(
 			process: GenericProcess,
 			params?: {
-				readonly import?: GenericImportation;
+				readonly imports?: GenericImportation;
 				readonly options?: FixDeepFunctionInfer<
 					| GenericProcess["definition"]["options"]
 					| ((floor: GenericFloor) => GenericProcess["definition"]["options"]),
@@ -43,7 +43,7 @@ declare module "./builder" {
 									Adaptor<GenericOptions, AnyFunction | GenericProcess["definition"]["options"]>,
 									undefined
 								>;
-								readonly import: NeverCoalescing<GenericImportation, undefined>;
+								readonly imports: NeverCoalescing<GenericImportation, undefined>;
 							}
 						>,
 					];

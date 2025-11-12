@@ -6,7 +6,7 @@ describe("route", () => {
 			createRoute({
 				paths: ["/test"],
 				method: "GET",
-				preFlightsStep: [],
+				preFlightSteps: [],
 				steps: [],
 				hooks: [],
 			}),
@@ -14,7 +14,7 @@ describe("route", () => {
 			definition: {
 				paths: ["/test"],
 				method: "GET",
-				preFlightsStep: [],
+				preFlightSteps: [],
 				steps: [],
 				hooks: [],
 			},

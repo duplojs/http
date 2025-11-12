@@ -25,10 +25,23 @@ export type RouteSteps = (
 	| HandlerStep
 );
 
+export interface RoutePreFlightStepsCustom {}
+
+export type RoutePreFlightSteps = (
+	// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+	| RoutePreFlightStepsCustom[
+		O.GetPropsWithValueExtends<
+			RoutePreFlightStepsCustom,
+			Kind<typeof stepKind.definition>
+		>
+	]
+	| ProcessStep
+);
+
 export interface RouteDefinition {
 	readonly paths: readonly [string, ...string[]];
 	readonly method: RequestMethods;
-	readonly preFlightsStep: readonly [];
+	readonly preFlightSteps: readonly RoutePreFlightSteps[];
 	readonly steps: readonly RouteSteps[];
 	readonly hooks: readonly HookRouteLifeCycle[];
 }

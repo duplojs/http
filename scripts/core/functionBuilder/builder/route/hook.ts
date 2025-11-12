@@ -1,0 +1,70 @@
+/* eslint-disable @typescript-eslint/prefer-for-of */
+import { type HookAfterSendResponse, type HookBeforeRouteExecution, type HookBeforeSendResponse, type HookError, type HookParseBody, HookResponse, hookRouteExitKind, type HookRouteLifeCycle, hookRouteNextKind, type HookSendResponse, type RouteHookParams, type RouteHookParamsAfter } from "@core/route";
+
+const hookExit = hookRouteExitKind.setTo({});
+const hookNext = hookRouteNextKind.setTo({});
+
+export function exitHookFunction() {
+	return hookExit;
+}
+
+export function nextHookFunction() {
+	return hookNext;
+}
+
+export function buildHookBefore(
+	hooks: (
+		| HookBeforeRouteExecution
+		| HookParseBody
+		| HookError
+	)[],
+) {
+	if (!hooks.length) {
+		return () => hookExit;
+	}
+	return async(params: RouteHookParams) => {
+		for (let index = 0; index < hooks.length; index++) {
+			const result = await hooks[index]!(params);
+
+			if (
+				hookRouteExitKind.has(result)
+				|| result instanceof HookResponse
+			) {
+				return result;
+			}
+		}
+
+		return hookNext;
+	};
+}
+
+export function buildHookAfter(
+	hooks: (
+		| HookBeforeSendResponse
+		| HookSendResponse
+		| HookAfterSendResponse
+	)[],
+) {
+	if (!hooks.length) {
+		return () => hookExit;
+	}
+	return async(params: RouteHookParamsAfter) => {
+		for (let index = 0; index < hooks.length; index++) {
+			const result = await hooks[index]!(params);
+
+			if (hookRouteExitKind.has(result)) {
+				return result;
+			}
+		}
+
+		return hookNext;
+	};
+}
+
+export function createHookResponse(from: keyof HookRouteLifeCycle): RouteHookParams["response"] {
+	return (
+		code,
+		information,
+		body,
+	) => new HookResponse(from, code, information, body);
+}

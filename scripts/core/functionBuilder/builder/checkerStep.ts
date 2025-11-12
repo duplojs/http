@@ -5,7 +5,7 @@ import { forward, isType, or, P, pipe } from "@duplojs/utils";
 import { type Floor } from "@core/floor";
 import { Response } from "@core/response";
 
-export const checkerFunctionBuilder = createFunctionBuilder(
+export const checkerStepFunctionBuilder = createFunctionBuilder(
 	(element, { support, notSupport }) => checkerStepKind.has(element)
 		? support(element)
 		: notSupport(),
@@ -81,8 +81,8 @@ export const checkerFunctionBuilder = createFunctionBuilder(
 			return floor;
 		}
 
-		return success(
-			(_request, floor) => {
+		return success({
+			buildedFunction: (_request, floor) => {
 				const result = checkerFunction(
 					input(floor),
 					{
@@ -99,6 +99,7 @@ export const checkerFunctionBuilder = createFunctionBuilder(
 
 				return treatResult(result, floor);
 			},
-		);
+			hooksRouteLifeCycle: [],
+		});
 	},
 );

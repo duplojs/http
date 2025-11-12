@@ -15,7 +15,7 @@ describe("route builder process method", () => {
 					hooks: [],
 					method: "GET",
 					paths: ["/test"],
-					preFlightsStep: [],
+					preFlightSteps: [],
 					steps: [
 						{
 							[processStepKind.runTimeKey]: null,
@@ -36,12 +36,12 @@ describe("route builder process method", () => {
 					readonly hooks: readonly [];
 					readonly paths: readonly ["/test"];
 					readonly method: "GET";
-					readonly preFlightsStep: readonly [];
+					readonly preFlightSteps: readonly [];
 					readonly steps: readonly [
 						ProcessStep<{
 							readonly process: typeof process;
 							readonly options: undefined;
-							readonly import: undefined;
+							readonly imports: undefined;
 						}>,
 					];
 				},
@@ -69,7 +69,7 @@ describe("route builder process method", () => {
 					hooks: [],
 					method: "GET",
 					paths: ["/test"],
-					preFlightsStep: [],
+					preFlightSteps: [],
 					steps: [
 						{
 							[processStepKind.runTimeKey]: null,
@@ -91,12 +91,12 @@ describe("route builder process method", () => {
 					readonly hooks: readonly [];
 					readonly paths: readonly ["/test"];
 					readonly method: "GET";
-					readonly preFlightsStep: readonly [];
+					readonly preFlightSteps: readonly [];
 					readonly steps: readonly [
 						ProcessStep<{
 							readonly process: typeof process;
 							readonly options: { test: boolean };
-							readonly import: undefined;
+							readonly imports: undefined;
 						}>,
 					];
 				},
@@ -142,7 +142,7 @@ describe("route builder process method", () => {
 					hooks: [],
 					method: "GET",
 					paths: ["/test"],
-					preFlightsStep: [],
+					preFlightSteps: [],
 					steps: [
 						expect.objectContaining({
 							[extractStepKind.runTimeKey]: null,
@@ -168,7 +168,7 @@ describe("route builder process method", () => {
 					readonly hooks: readonly [];
 					readonly paths: readonly ["/test"];
 					readonly method: "GET";
-					readonly preFlightsStep: readonly [];
+					readonly preFlightSteps: readonly [];
 					readonly steps: readonly [
 						ExtractStep<{
 							readonly shape: {
@@ -185,7 +185,7 @@ describe("route builder process method", () => {
 							readonly process: typeof process;
 							// eslint-disable-next-line @typescript-eslint/method-signature-style
 							readonly options: (floor: { body: string }) => { test: false };
-							readonly import: undefined;
+							readonly imports: undefined;
 						}>,
 					];
 				},
@@ -205,7 +205,7 @@ describe("route builder process method", () => {
 			.export(["body"]);
 
 		const routeBuilder = useRouteBuilder("GET", "/test")
-			.exec(process, { import: ["body"] });
+			.exec(process, { imports: ["body"] });
 
 		expect({ ...routeBuilder }).toStrictEqual(
 			expect.objectContaining({
@@ -213,14 +213,14 @@ describe("route builder process method", () => {
 					hooks: [],
 					method: "GET",
 					paths: ["/test"],
-					preFlightsStep: [],
+					preFlightSteps: [],
 					steps: [
 						{
 							[processStepKind.runTimeKey]: null,
 							[stepKind.runTimeKey]: null,
 							definition: {
 								process,
-								import: ["body"],
+								imports: ["body"],
 							},
 						},
 					],
@@ -235,12 +235,12 @@ describe("route builder process method", () => {
 					readonly hooks: readonly [];
 					readonly paths: readonly ["/test"];
 					readonly method: "GET";
-					readonly preFlightsStep: readonly [];
+					readonly preFlightSteps: readonly [];
 					readonly steps: readonly [
 						ProcessStep<{
 							readonly process: typeof process;
 							readonly options: undefined;
-							readonly import: readonly ["body"];
+							readonly imports: readonly ["body"];
 						}>,
 					];
 				},
@@ -260,7 +260,7 @@ describe("route builder process method", () => {
 			.export(["body", "query"]);
 
 		const routeBuilder = useRouteBuilder("GET", "/test")
-			.exec(process, { import: ["body", "query"] });
+			.exec(process, { imports: ["body", "query"] });
 
 		expect({ ...routeBuilder }).toStrictEqual(
 			expect.objectContaining({
@@ -268,14 +268,14 @@ describe("route builder process method", () => {
 					hooks: [],
 					method: "GET",
 					paths: ["/test"],
-					preFlightsStep: [],
+					preFlightSteps: [],
 					steps: [
 						{
 							[processStepKind.runTimeKey]: null,
 							[stepKind.runTimeKey]: null,
 							definition: {
 								process,
-								import: ["body", "query"],
+								imports: ["body", "query"],
 							},
 						},
 					],
@@ -290,12 +290,12 @@ describe("route builder process method", () => {
 					readonly hooks: readonly [];
 					readonly paths: readonly ["/test"];
 					readonly method: "GET";
-					readonly preFlightsStep: readonly [];
+					readonly preFlightSteps: readonly [];
 					readonly steps: readonly [
 						ProcessStep<{
 							readonly process: typeof process;
 							readonly options: undefined;
-							readonly import: readonly ["body", "query"];
+							readonly imports: readonly ["body", "query"];
 						}>,
 					];
 				},
@@ -324,7 +324,7 @@ describe("route builder process method", () => {
 					hooks: [],
 					method: "GET",
 					paths: ["/test"],
-					preFlightsStep: [],
+					preFlightSteps: [],
 					steps: [
 						{
 							[processStepKind.runTimeKey]: null,
@@ -345,12 +345,12 @@ describe("route builder process method", () => {
 					readonly hooks: readonly [];
 					readonly paths: readonly ["/test"];
 					readonly method: "GET";
-					readonly preFlightsStep: readonly [];
+					readonly preFlightSteps: readonly [];
 					readonly steps: readonly [
 						ProcessStep<{
 							readonly process: typeof process;
 							readonly options: undefined;
-							readonly import: undefined;
+							readonly imports: undefined;
 						}>,
 					];
 				},

@@ -3,7 +3,7 @@ import { createFunctionBuilder } from "../createFunctionBuilder";
 import { A, E } from "@duplojs/utils";
 import { Response, ResponseContract } from "@core/response";
 
-export const handlerFunctionBuilder = createFunctionBuilder(
+export const handlerStepFunctionBuilder = createFunctionBuilder(
 	(element, { support, notSupport }) => handlerStepKind.has(element)
 		? support(element)
 		: notSupport(),
@@ -47,14 +47,15 @@ export const handlerFunctionBuilder = createFunctionBuilder(
 			) as never;
 		};
 
-		return success(
-			(request, floor) => handlerFunction(
+		return success({
+			buildedFunction: (request, floor) => handlerFunction(
 				floor,
 				{
 					request,
 					response,
 				},
 			),
-		);
+			hooksRouteLifeCycle: [],
+		});
 	},
 );

@@ -37,7 +37,7 @@ describe("process builder process method", () => {
 						ProcessStep<{
 							readonly process: typeof process;
 							readonly options: undefined;
-							readonly import: undefined;
+							readonly imports: undefined;
 						}>,
 					];
 				},
@@ -88,7 +88,7 @@ describe("process builder process method", () => {
 						ProcessStep<{
 							readonly process: typeof process;
 							readonly options: { test: boolean };
-							readonly import: undefined;
+							readonly imports: undefined;
 						}>,
 					];
 				},
@@ -173,7 +173,7 @@ describe("process builder process method", () => {
 							readonly process: typeof process;
 							// eslint-disable-next-line @typescript-eslint/method-signature-style
 							readonly options: (floor: { body: string }) => { test: false };
-							readonly import: undefined;
+							readonly imports: undefined;
 						}>,
 					];
 				},
@@ -193,7 +193,7 @@ describe("process builder process method", () => {
 			.export(["body"]);
 
 		const processBuilder = useProcessBuilder()
-			.exec(process, { import: ["body"] });
+			.exec(process, { imports: ["body"] });
 
 		expect({ ...processBuilder }).toStrictEqual(
 			expect.objectContaining({
@@ -206,7 +206,7 @@ describe("process builder process method", () => {
 							[stepKind.runTimeKey]: null,
 							definition: {
 								process,
-								import: ["body"],
+								imports: ["body"],
 							},
 						},
 					],
@@ -224,7 +224,7 @@ describe("process builder process method", () => {
 						ProcessStep<{
 							readonly process: typeof process;
 							readonly options: undefined;
-							readonly import: readonly ["body"];
+							readonly imports: readonly ["body"];
 						}>,
 					];
 				},
@@ -244,7 +244,7 @@ describe("process builder process method", () => {
 			.export(["body", "query"]);
 
 		const processBuilder = useProcessBuilder()
-			.exec(process, { import: ["body", "query"] });
+			.exec(process, { imports: ["body", "query"] });
 
 		expect({ ...processBuilder }).toStrictEqual(
 			expect.objectContaining({
@@ -257,7 +257,7 @@ describe("process builder process method", () => {
 							[stepKind.runTimeKey]: null,
 							definition: {
 								process,
-								import: ["body", "query"],
+								imports: ["body", "query"],
 							},
 						},
 					],
@@ -275,7 +275,7 @@ describe("process builder process method", () => {
 						ProcessStep<{
 							readonly process: typeof process;
 							readonly options: undefined;
-							readonly import: readonly ["body", "query"];
+							readonly imports: readonly ["body", "query"];
 						}>,
 					];
 				},
@@ -326,7 +326,7 @@ describe("process builder process method", () => {
 						ProcessStep<{
 							readonly process: typeof process;
 							readonly options: undefined;
-							readonly import: undefined;
+							readonly imports: undefined;
 						}>,
 					];
 				},

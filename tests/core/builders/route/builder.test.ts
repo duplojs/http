@@ -11,7 +11,7 @@ describe("route builder", () => {
 					hooks: [],
 					method: "GET",
 					paths: ["/test"],
-					preFlightsStep: [],
+					preFlightSteps: [],
 					steps: [],
 				},
 			}),
@@ -23,7 +23,7 @@ describe("route builder", () => {
 				{
 					readonly method: "GET";
 					readonly paths: readonly ["/test"];
-					readonly preFlightsStep: readonly [];
+					readonly preFlightSteps: readonly [];
 					readonly steps: readonly [];
 					readonly hooks: readonly [];
 				},
@@ -43,7 +43,7 @@ describe("route builder", () => {
 					hooks: [],
 					method: "GET",
 					paths: ["/test", "/toto"],
-					preFlightsStep: [],
+					preFlightSteps: [],
 					steps: [],
 				},
 			}),
@@ -55,7 +55,7 @@ describe("route builder", () => {
 				{
 					readonly method: "GET";
 					readonly paths: readonly ["/test", "/toto"];
-					readonly preFlightsStep: readonly [];
+					readonly preFlightSteps: readonly [];
 					readonly steps: readonly [];
 					readonly hooks: readonly [];
 				},
@@ -83,7 +83,7 @@ describe("route builder", () => {
 					],
 					method: "GET",
 					paths: ["/test"],
-					preFlightsStep: [],
+					preFlightSteps: [],
 					steps: [],
 				},
 			}),
@@ -95,7 +95,7 @@ describe("route builder", () => {
 				{
 					readonly method: "GET";
 					readonly paths: readonly ["/test"];
-					readonly preFlightsStep: readonly [];
+					readonly preFlightSteps: readonly [];
 					readonly steps: readonly [];
 					readonly hooks: readonly [
 						{

@@ -27,7 +27,7 @@ export function useRouteBuilder<
 	{
 		readonly method: GenericMethod;
 		readonly paths: GenericPaths;
-		readonly preFlightsStep: readonly [];
+		readonly preFlightSteps: readonly [];
 		readonly steps: readonly [];
 		readonly hooks: GenericHooks;
 	},
@@ -52,7 +52,7 @@ export function useRouteBuilder<
 	{
 		readonly method: GenericMethod;
 		readonly paths: readonly [GenericPath];
-		readonly preFlightsStep: readonly [];
+		readonly preFlightSteps: readonly [];
 		readonly steps: readonly [];
 		readonly hooks: GenericHooks;
 	},
@@ -71,7 +71,7 @@ export function useRouteBuilder(
 	return routeBuilder.use({
 		method,
 		paths: A.coalescing(path),
-		preFlightsStep: [],
+		preFlightSteps: [],
 		steps: [],
 		hooks: options?.hooks ?? [],
 	});
