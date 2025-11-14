@@ -1,3 +1,15 @@
-import { type BuildedRoute } from "@core/route";
+import { type RequestInitializationData } from "@core/request";
 
-export type BuildedRouter = (method: string, path: string) => BuildedRoute;
+export type BuildedRouter = (
+	initializationData: Pick<
+		RequestInitializationData,
+		| "headers"
+		| "host"
+		| "method"
+		| "origin"
+		| "path"
+		| "query"
+		| "url"
+	>
+) => Promise<void>;
+

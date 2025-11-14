@@ -1,5 +1,5 @@
 import { extractStepKind } from "@core/steps";
-import { createFunctionBuilder } from "../createFunctionBuilder";
+import { createFunctionBuilder } from "../create";
 import { A, DP, E, innerPipe, isType, justReturn, O, P, pipe, unwrap } from "@duplojs/utils";
 import { type Request } from "@core/request";
 import { Response, ResponseContract } from "@core/response";

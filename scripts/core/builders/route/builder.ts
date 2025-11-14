@@ -1,4 +1,4 @@
-import { type MakeRequestFromHooks, type HookRouteLifeCycle, type RouteDefinition } from "@core/route";
+import { type MakeRequestFromHooks, type HookRouteLifeCycle, type RouteDefinition, type RoutePath } from "@core/route";
 import { type Floor } from "@core/floor";
 import { type RequestMethods, type Request } from "@core/request";
 import { A, type Builder, createBuilder, type NeverCoalescing } from "@duplojs/utils";
@@ -15,7 +15,7 @@ export const routeBuilder = createBuilder<RouteBuilder>("@duplojs/http/core/rout
 
 export function useRouteBuilder<
 	GenericMethod extends RequestMethods,
-	const GenericPaths extends readonly [string, ...string[]],
+	const GenericPaths extends readonly [RoutePath, ...RoutePath[]],
 	const GenericHooks extends readonly HookRouteLifeCycle[] = readonly [],
 >(
 	method: GenericMethod,
@@ -40,7 +40,7 @@ export function useRouteBuilder<
 
 export function useRouteBuilder<
 	GenericMethod extends RequestMethods,
-	GenericPath extends string,
+	GenericPath extends RoutePath,
 	const GenericHooks extends readonly HookRouteLifeCycle[] = readonly [],
 >(
 	method: GenericMethod,
@@ -65,7 +65,7 @@ export function useRouteBuilder<
 
 export function useRouteBuilder(
 	method: RequestMethods,
-	path: string | [string, ...string[]],
+	path: RoutePath | [RoutePath, ...RoutePath[]],
 	options?: { hooks?: HookRouteLifeCycle[] },
 ) {
 	return routeBuilder.use({

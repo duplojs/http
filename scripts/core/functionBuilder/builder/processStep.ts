@@ -1,6 +1,6 @@
 import { processStepKind } from "@core/steps";
 import { Response } from "@core/response";
-import { createFunctionBuilder } from "../createFunctionBuilder";
+import { createFunctionBuilder } from "../create";
 import { E, forward, isType, or, P, pipe, unwrap } from "@duplojs/utils";
 
 export const processStepFunctionBuilder = createFunctionBuilder(

@@ -1,5 +1,5 @@
 import { type HandlerStepFunctionParams, handlerStepKind } from "@core/steps";
-import { createFunctionBuilder } from "../createFunctionBuilder";
+import { createFunctionBuilder } from "../create";
 import { A, E } from "@duplojs/utils";
 import { Response, ResponseContract } from "@core/response";
 

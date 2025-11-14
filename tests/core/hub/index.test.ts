@@ -147,7 +147,7 @@ describe("hub", () => {
 	});
 
 	it("hub addFunctionBuilder", () => {
-		const newHub = hub.addFunctionBuilder({ processFunctionBuilder: [] });
+		const newHub = hub.addFunctionBuilder({ processFunctionBuilders: [] });
 
 		expect(newHub).toStrictEqual({
 			[hubKind.runTimeKey]: null,
@@ -158,7 +158,7 @@ describe("hub", () => {
 			classRequest: Request,
 			definitions: [
 				{ environment: "DEV" },
-				{ processFunctionBuilder: [] },
+				{ processFunctionBuilders: [] },
 			],
 		});
 
@@ -170,9 +170,9 @@ describe("hub", () => {
 						readonly environment: "DEV";
 					},
 					{
-						readonly routeFunctionBuilder?: readonly ReturnType<typeof createFunctionBuilder<Route>>[];
-						readonly processFunctionBuilder?: readonly ReturnType<typeof createFunctionBuilder<Process>>[];
-						readonly stepFunctionBuilder?: readonly ReturnType<typeof createFunctionBuilder<Steps>>[];
+						readonly routeFunctionBuilders?: readonly ReturnType<typeof createFunctionBuilder<Route>>[];
+						readonly processFunctionBuilders?: readonly ReturnType<typeof createFunctionBuilder<Process>>[];
+						readonly stepFunctionBuilders?: readonly ReturnType<typeof createFunctionBuilder<Steps>>[];
 					},
 				]
 			>,

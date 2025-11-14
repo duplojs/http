@@ -1,5 +1,5 @@
 import { type CheckerFunctionParams, checkerOutputKind } from "@core/checker";
-import { createFunctionBuilder } from "../createFunctionBuilder";
+import { createFunctionBuilder } from "../create";
 import { checkerStepKind } from "@core/steps";
 import { forward, isType, or, P, pipe } from "@duplojs/utils";
 import { type Floor } from "@core/floor";

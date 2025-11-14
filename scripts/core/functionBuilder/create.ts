@@ -2,16 +2,16 @@ import { type HubEnvironment } from "@core/hub";
 import { type BuildedProcess, type Process } from "@core/process";
 import { type HookRouteLifeCycle, type BuildedRoute, type Route } from "@core/route";
 import { type BuildedStep, type Steps } from "@core/steps";
-import { E, pipe } from "@duplojs/utils";
+import { asyncPipe, E, type MaybePromise } from "@duplojs/utils";
 
-type Element = (
+export type ElementsToBeBuilt = (
 	| Steps
 	| Route
 	| Process
 );
 
 export type FunctionBuilderResult<
-	GenericElement extends Element,
+	GenericElement extends ElementsToBeBuilt,
 > = Extract<
 	| (
 		Steps extends infer InferredStep
@@ -42,16 +42,16 @@ export type FunctionBuilderResult<
 	}
 >["value"];
 
-type SupportEither<
-	GenericElement extends Element,
+export type BuildSupportEither<
+	GenericElement extends ElementsToBeBuilt,
 > = E.EitherRight<"support", GenericElement>;
 
-type NotSupportEither = E.EitherLeft<"notSupport", undefined>;
+export type BuildNotSupportEither = E.EitherLeft<"notSupport", undefined>;
 
-type BuildErrorEither = E.EitherLeft<"buildError", Element>;
+export type BuildErrorEither = E.EitherLeft<"buildError", ElementsToBeBuilt>;
 
-type BuildedEither<
-	GenericElement extends Element,
+export type BuildedEither<
+	GenericElement extends ElementsToBeBuilt,
 > = E.EitherRight<
 	"successBuild",
 	FunctionBuilderResult<
@@ -60,7 +60,7 @@ type BuildedEither<
 >;
 
 export interface BuildParamsFunctionBuilder<
-	GenericSupportElement extends Element = Element,
+	GenericSupportElement extends ElementsToBeBuilt = ElementsToBeBuilt,
 > {
 	buildElement<
 		GenericElement extends (
@@ -82,16 +82,16 @@ export interface BuildParamsFunctionBuilder<
 
 	readonly environment: HubEnvironment;
 
-	readonly hooksRouteLifeCycle: readonly HookRouteLifeCycle[];
+	readonly globalHooksRouteLifeCycle: readonly HookRouteLifeCycle[];
 }
 
 export interface SupportParams {
 	support<
-		GenericElement extends Element,
+		GenericElement extends ElementsToBeBuilt,
 	>(
 		value: GenericElement
-	): SupportEither<GenericElement>;
-	notSupport(): NotSupportEither;
+	): BuildSupportEither<GenericElement>;
+	notSupport(): BuildNotSupportEither;
 }
 
 const supportParams: SupportParams = {
@@ -100,12 +100,12 @@ const supportParams: SupportParams = {
 };
 
 export function createFunctionBuilder<
-	GenericSupportElement extends Element,
+	GenericSupportElement extends ElementsToBeBuilt,
 >(
 	support: (
-		element: Element,
+		element: ElementsToBeBuilt,
 		params: SupportParams,
-	) => SupportEither<GenericSupportElement> | NotSupportEither,
+	) => MaybePromise<BuildSupportEither<GenericSupportElement> | BuildNotSupportEither>,
 	builder: (
 		element: GenericSupportElement,
 		params: BuildParamsFunctionBuilder<
@@ -117,9 +117,9 @@ export function createFunctionBuilder<
 	),
 ) {
 	return (
-		element: Element,
+		element: ElementsToBeBuilt,
 		params: BuildParamsFunctionBuilder<GenericSupportElement>,
-	) => pipe(
+	) => asyncPipe(
 		element,
 		(element) => support(
 			element,

@@ -1,4 +1,4 @@
-import { type BuildParamsFunctionBuilder, type FunctionBuilderResult } from "@core/functionBuilder/createFunctionBuilder";
+import { type BuildParamsFunctionBuilder, type FunctionBuilderResult } from "@core/functionBuilder/create";
 import { type Steps } from "@core/steps";
 import { A, E, pipe, when } from "@duplojs/utils";
 

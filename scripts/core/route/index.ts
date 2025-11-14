@@ -38,8 +38,10 @@ export type RoutePreFlightSteps = (
 	| ProcessStep
 );
 
+export type RoutePath = `/${string}`;
+
 export interface RouteDefinition {
-	readonly paths: readonly [string, ...string[]];
+	readonly paths: readonly [RoutePath, ...RoutePath[]];
 	readonly method: RequestMethods;
 	readonly preFlightSteps: readonly RoutePreFlightSteps[];
 	readonly steps: readonly RouteSteps[];

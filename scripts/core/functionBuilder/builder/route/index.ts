@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/prefer-for-of */
 import { type HookAfterSendResponse, type HookBeforeRouteExecution, type HookBeforeSendResponse, type HookError, type HookOnConstructRequest, type HookParseBody, HookResponse, type HookRouteLifeCycle, type HookSendResponse, routeKind } from "@core/route";
-import { createFunctionBuilder } from "../../createFunctionBuilder";
+import { createFunctionBuilder } from "../../create";
 import { A, E, forward, isType, pipe } from "@duplojs/utils";
 import { Response } from "@core/response";
 import { type Request } from "@core/request";
@@ -19,7 +19,7 @@ export const routeFunctionBuilder = createFunctionBuilder(
 		{
 			success,
 			buildElement,
-			hooksRouteLifeCycle,
+			globalHooksRouteLifeCycle,
 		},
 	) => {
 		const {
@@ -60,7 +60,7 @@ export const routeFunctionBuilder = createFunctionBuilder(
 				buildedSteps,
 				({ hooksRouteLifeCycle }) => hooksRouteLifeCycle,
 			),
-			...hooksRouteLifeCycle,
+			...globalHooksRouteLifeCycle,
 		];
 
 		const hookAfterSendResponse: HookAfterSendResponse[] = pipe(

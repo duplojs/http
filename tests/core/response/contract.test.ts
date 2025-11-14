@@ -103,4 +103,10 @@ describe("ResponseContract", () => {
 			"strict"
 		>;
 	});
+
+	it("error", () => {
+		const error = new ResponseContract.Error("test");
+
+		expect(error).instanceof(Error);
+	});
 });

@@ -1,4 +1,4 @@
-import { kindHeritage, type S } from "@duplojs/utils";
+import { kindHeritage, O, type S } from "@duplojs/utils";
 import { createCoreLibKind } from "../kind";
 import { override } from "@duplojs/utils/object";
 
@@ -50,21 +50,23 @@ export class Response<
 		this.body = body;
 	}
 
-	public setHeaders(headers: Record<string, string | string[]>) {
-		this.headers = {
-			...this.headers,
-			...headers,
-		};
+	public setHeaders(headers: Partial<Record<string, string | string[]>>) {
+		this.headers = O.override(
+			this.headers ?? {},
+			headers,
+		);
 
 		return this;
 	}
 
-	public setHeader(key: string, header: string | string[]) {
+	public setHeader(key: string, header?: string | string[]) {
 		if (!this.headers) {
 			this.headers = {};
 		}
 
-		this.headers[key] = header;
+		if (typeof header !== "undefined") {
+			this.headers[key] = header;
+		}
 
 		return this;
 	}

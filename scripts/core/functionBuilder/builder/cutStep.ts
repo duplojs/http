@@ -1,5 +1,5 @@
 import { type CutStepDefinition, type CutStepFunctionParams, cutStepKind, cutStepOutputKind } from "@core/steps";
-import { createFunctionBuilder } from "../createFunctionBuilder";
+import { createFunctionBuilder } from "../create";
 import { A, E, unwrap, wrapValue } from "@duplojs/utils";
 import { Response, ResponseContract } from "@core/response";
 import { type Floor } from "@core/floor";
