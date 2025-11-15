@@ -2,29 +2,16 @@ import { createCoreLibKind } from "@core/kind";
 import { type Route, type HookRouteLifeCycle, routeKind } from "@core/route";
 import { A, O, pipe, type Kind, type RemoveKind, type MaybeArray, type SimplifyTopLevel, P, isType, type MaybePromise } from "@duplojs/utils";
 import { type HookHubLifeCycle } from "./hooks";
-import { type createFunctionBuilder } from "@core/functionBuilder";
+import { type BuildElementParams, type createFunctionBuilder } from "@core/functionBuilder";
 import { type Process } from "@core/process";
-import { type HandlerStepFunctionParams, type HandlerStep, type Steps, createHandlerStep } from "@core/steps";
+import { type HandlerStepFunctionParams, type HandlerStep, createHandlerStep } from "@core/steps";
 import { Request } from "@core/request";
 import { type ResponseContract } from "@core/response";
 import { defaultNotfoundHandler } from "./defaultNotfoundHandler";
+import { type Environment } from "@core/types";
 
 export * from "./hooks";
 export * from "./defaultNotfoundHandler";
-
-export interface HubEnvironmentCustom {}
-
-export type HubEnvironment = (
-	// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-	| HubEnvironmentCustom[
-		O.GetPropsWithValue<
-			HubEnvironmentCustom,
-			true
-		>
-	]
-	| "DEV"
-	| "PROD"
-);
 
 export interface HubDefinition {
 	readonly hooksRouteLifeCycle?: readonly HookRouteLifeCycle[];
@@ -32,11 +19,11 @@ export interface HubDefinition {
 	readonly routes?: readonly Route[];
 	readonly routeFunctionBuilders?: readonly ReturnType<typeof createFunctionBuilder<Route>>[];
 	readonly processFunctionBuilders?: readonly ReturnType<typeof createFunctionBuilder<Process>>[];
-	readonly stepFunctionBuilders?: readonly ReturnType<typeof createFunctionBuilder<Steps>>[];
+	readonly stepFunctionBuilders?: BuildElementParams["stepFunctionBuilders"];
 }
 
 export interface HubFirstDefinition extends HubDefinition {
-	readonly environment: HubEnvironment;
+	readonly environment: Environment;
 }
 
 export interface PluginDefinition extends HubDefinition {
@@ -57,7 +44,7 @@ export interface Hub<
 	): Hub<
 		readonly [
 			...GenericDefinition,
-			{ readonly routes: Route[] },
+			HubDefinition,
 		]
 	>;
 	addFunctionBuilder(
@@ -72,14 +59,7 @@ export interface Hub<
 	): Hub<
 		readonly [
 			...GenericDefinition,
-			SimplifyTopLevel<
-				Pick<
-					HubDefinition,
-					| "processFunctionBuilders"
-					| "routeFunctionBuilders"
-					| "stepFunctionBuilders"
-				>
-			>,
+			HubDefinition,
 		]
 	>;
 	addHooks(
@@ -93,13 +73,7 @@ export interface Hub<
 	): Hub<
 		readonly [
 			...GenericDefinition,
-			SimplifyTopLevel<
-				Pick<
-					HubDefinition,
-					| "hooksHubLifeCycle"
-					| "hooksRouteLifeCycle"
-				>
-			>,
+			HubDefinition,
 		]
 	>;
 	plug<
@@ -202,12 +176,12 @@ export function createHub(
 					notfoundHandler: self.notfoundHandler,
 				};
 			},
-			setNotfoundHandler(responseContract, theFunction: never) {
+			setNotfoundHandler(responseContract, theFunction) {
 				return {
 					...self,
 					notfoundHandler: createHandlerStep({
 						responseContract,
-						theFunction,
+						theFunction: (floor, params) => theFunction(params),
 					}),
 				};
 			},

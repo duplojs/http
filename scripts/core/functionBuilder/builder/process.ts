@@ -9,14 +9,14 @@ export const processFunctionBuilder = createFunctionBuilder(
 	(element, { support, notSupport }) => processKind.has(element)
 		? support(element)
 		: notSupport(),
-	(process, { success, buildElement }) => {
+	async(process, { success, buildElement }) => {
 		const {
 			steps,
 			hooks,
 			options: processOptions,
 		} = process.definition;
 
-		const maybeBuildedSteps = buildSteps(
+		const maybeBuildedSteps = await buildSteps(
 			steps,
 			buildElement,
 		);

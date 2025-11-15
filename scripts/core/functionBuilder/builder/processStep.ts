@@ -7,14 +7,14 @@ export const processStepFunctionBuilder = createFunctionBuilder(
 	(element, { support, notSupport }) => processStepKind.has(element)
 		? support(element)
 		: notSupport(),
-	(step, { success, buildElement }) => {
+	async(step, { success, buildElement }) => {
 		const {
 			process,
 			imports,
 			options: stepOptions,
 		} = step.definition;
 
-		const maybeProcessBuilded = buildElement(process);
+		const maybeProcessBuilded = await buildElement(process);
 
 		if (E.isLeft(maybeProcessBuilded)) {
 			return maybeProcessBuilded;

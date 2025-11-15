@@ -1,7 +1,7 @@
-import { type HubEnvironment } from "@core/hub";
 import { type BuildedProcess, type Process } from "@core/process";
 import { type HookRouteLifeCycle, type BuildedRoute, type Route } from "@core/route";
 import { type BuildedStep, type Steps } from "@core/steps";
+import { type Environment } from "@core/types";
 import { asyncPipe, E, type MaybePromise } from "@duplojs/utils";
 
 export type ElementsToBeBuilt = (
@@ -50,7 +50,7 @@ export type BuildNotSupportEither = E.EitherLeft<"notSupport", undefined>;
 
 export type BuildErrorEither = E.EitherLeft<"buildError", ElementsToBeBuilt>;
 
-export type BuildedEither<
+export type BuildSuccessEither<
 	GenericElement extends ElementsToBeBuilt,
 > = E.EitherRight<
 	"successBuild",
@@ -69,18 +69,18 @@ export interface BuildParamsFunctionBuilder<
 		),
 	>(
 		element: GenericElement
-	): (
-		| BuildedEither<
+	): Promise<
+		| BuildSuccessEither<
 			GenericElement
 		>
 		| BuildErrorEither
-	);
+	>;
 
 	success(
 		result: FunctionBuilderResult<GenericSupportElement>
-	): BuildedEither<GenericSupportElement>;
+	): BuildSuccessEither<GenericSupportElement>;
 
-	readonly environment: HubEnvironment;
+	readonly environment: Environment;
 
 	readonly globalHooksRouteLifeCycle: readonly HookRouteLifeCycle[];
 }
@@ -105,16 +105,16 @@ export function createFunctionBuilder<
 	support: (
 		element: ElementsToBeBuilt,
 		params: SupportParams,
-	) => MaybePromise<BuildSupportEither<GenericSupportElement> | BuildNotSupportEither>,
+	) => BuildSupportEither<GenericSupportElement> | BuildNotSupportEither,
 	builder: (
 		element: GenericSupportElement,
 		params: BuildParamsFunctionBuilder<
 			GenericSupportElement
 		>,
-	) => (
-		| BuildedEither<GenericSupportElement>
+	) => MaybePromise<(
+		| BuildSuccessEither<GenericSupportElement>
 		| BuildErrorEither
-	),
+	)>,
 ) {
 	return (
 		element: ElementsToBeBuilt,

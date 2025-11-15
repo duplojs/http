@@ -14,7 +14,7 @@ export const routeFunctionBuilder = createFunctionBuilder(
 	(element, { support, notSupport }) => routeKind.has(element)
 		? support(element)
 		: notSupport(),
-	(
+	async(
 		route,
 		{
 			success,
@@ -28,7 +28,7 @@ export const routeFunctionBuilder = createFunctionBuilder(
 			steps,
 		} = route.definition;
 
-		const maybeBuildedSteps = buildSteps(
+		const maybeBuildedSteps = await buildSteps(
 			steps,
 			buildElement,
 		);
@@ -39,7 +39,7 @@ export const routeFunctionBuilder = createFunctionBuilder(
 
 		const buildedSteps = maybeBuildedSteps;
 
-		const maybeBuildedPreFlightSteps = buildSteps(
+		const maybeBuildedPreFlightSteps = await buildSteps(
 			preFlightSteps,
 			buildElement,
 		);

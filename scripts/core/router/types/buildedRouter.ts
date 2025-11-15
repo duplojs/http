@@ -1,8 +1,13 @@
+import { type BuildElementParams, type createFunctionBuilder } from "@core/functionBuilder";
+import { type HookHubLifeCycle } from "@core/hub";
+import { type Process } from "@core/process";
 import { type RequestInitializationData } from "@core/request";
+import { type HookRouteLifeCycle, type Route, type RouteDefinition } from "@core/route";
 
-export type BuildedRouter = (
-	initializationData: Pick<
-		RequestInitializationData,
+export interface BuildedRouter {
+	find(
+		initializationData: Pick<
+			RequestInitializationData,
 		| "headers"
 		| "host"
 		| "method"
@@ -10,6 +15,14 @@ export type BuildedRouter = (
 		| "path"
 		| "query"
 		| "url"
-	>
-) => Promise<void>;
+		>
+	): Promise<void>;
+	readonly routes: readonly Route<RouteDefinition>[];
+	readonly processFunctionBuilders: readonly ReturnType<typeof createFunctionBuilder<Process>>[];
+	readonly hooksRouteLifeCycle: readonly HookRouteLifeCycle[];
+	readonly routeFunctionBuilders: readonly ReturnType<typeof createFunctionBuilder<Route>>[];
+	readonly stepFunctionBuilders: BuildElementParams["stepFunctionBuilders"];
+	readonly hooksHubLifeCycle: readonly HookHubLifeCycle[];
+
+}
 

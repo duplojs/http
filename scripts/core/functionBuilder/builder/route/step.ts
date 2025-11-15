@@ -1,15 +1,15 @@
 import { type BuildParamsFunctionBuilder, type FunctionBuilderResult } from "@core/functionBuilder/create";
 import { type Steps } from "@core/steps";
-import { A, E, pipe, when } from "@duplojs/utils";
+import { A, asyncPipe, E, G, when } from "@duplojs/utils";
 
 export function buildSteps(
 	steps: readonly Steps[],
 	buildElement: BuildParamsFunctionBuilder["buildElement"],
 ) {
-	return A.reduce(
+	return G.asyncReduce(
 		steps,
-		A.reduceFrom<FunctionBuilderResult<Steps>[]>([]),
-		({ lastValue, element, next, exit }) => pipe(
+		G.reduceFrom<FunctionBuilderResult<Steps>[]>([]),
+		({ lastValue, element, next, exit }) => asyncPipe(
 			buildElement(element),
 			when(
 				E.isLeft,

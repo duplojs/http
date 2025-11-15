@@ -1,4 +1,4 @@
-import { type createFunctionBuilder, createHub, type HookHubLifeCycle, type HookRouteLifeCycle, type Hub, hubKind, type Process, Request, type Route, type Steps } from "@core";
+import { type createFunctionBuilder, createHub, defaultNotfoundHandler, type HookHubLifeCycle, type HookRouteLifeCycle, type Hub, hubKind, type Process, Request, ResponseContract, type Route, type Steps } from "@core";
 import { type ExpectType } from "@duplojs/utils";
 import { testRoute } from "@test-utils/route";
 
@@ -14,8 +14,10 @@ describe("hub", () => {
 			addHooks: expect.any(Function),
 			plug: expect.any(Function),
 			register: expect.any(Function),
+			setNotfoundHandler: expect.any(Function),
 			classRequest: Request,
 			definitions: [{ environment: "DEV" }],
+			notfoundHandler: defaultNotfoundHandler,
 		});
 	});
 
@@ -28,11 +30,13 @@ describe("hub", () => {
 			addHooks: expect.any(Function),
 			plug: expect.any(Function),
 			register: expect.any(Function),
+			setNotfoundHandler: expect.any(Function),
 			classRequest: Request,
 			definitions: [
 				{ environment: "DEV" },
 				{ routes: [testRoute] },
 			],
+			notfoundHandler: defaultNotfoundHandler,
 		});
 
 		type Check = ExpectType<
@@ -56,11 +60,13 @@ describe("hub", () => {
 			addHooks: expect.any(Function),
 			plug: expect.any(Function),
 			register: expect.any(Function),
+			setNotfoundHandler: expect.any(Function),
 			classRequest: Request,
 			definitions: [
 				{ environment: "DEV" },
 				{ routes: [testRoute] },
 			],
+			notfoundHandler: defaultNotfoundHandler,
 		});
 
 		expect(hub.register({ testRoute })).toStrictEqual({
@@ -69,11 +75,13 @@ describe("hub", () => {
 			addHooks: expect.any(Function),
 			plug: expect.any(Function),
 			register: expect.any(Function),
+			setNotfoundHandler: expect.any(Function),
 			classRequest: Request,
 			definitions: [
 				{ environment: "DEV" },
 				{ routes: [testRoute] },
 			],
+			notfoundHandler: defaultNotfoundHandler,
 		});
 	});
 
@@ -86,11 +94,13 @@ describe("hub", () => {
 			addHooks: expect.any(Function),
 			plug: expect.any(Function),
 			register: expect.any(Function),
+			setNotfoundHandler: expect.any(Function),
 			classRequest: Request,
 			definitions: [
 				{ environment: "DEV" },
 				{ name: "test" },
 			],
+			notfoundHandler: defaultNotfoundHandler,
 		});
 
 		type Check = ExpectType<
@@ -119,6 +129,7 @@ describe("hub", () => {
 			addHooks: expect.any(Function),
 			plug: expect.any(Function),
 			register: expect.any(Function),
+			setNotfoundHandler: expect.any(Function),
 			classRequest: Request,
 			definitions: [
 				{ environment: "DEV" },
@@ -127,6 +138,7 @@ describe("hub", () => {
 					hub,
 				},
 			],
+			notfoundHandler: defaultNotfoundHandler,
 		});
 
 		type Check1 = ExpectType<
@@ -155,11 +167,13 @@ describe("hub", () => {
 			addHooks: expect.any(Function),
 			plug: expect.any(Function),
 			register: expect.any(Function),
+			setNotfoundHandler: expect.any(Function),
 			classRequest: Request,
 			definitions: [
 				{ environment: "DEV" },
 				{ processFunctionBuilders: [] },
 			],
+			notfoundHandler: defaultNotfoundHandler,
 		});
 
 		type Check = ExpectType<
@@ -189,11 +203,13 @@ describe("hub", () => {
 			addHooks: expect.any(Function),
 			plug: expect.any(Function),
 			register: expect.any(Function),
+			setNotfoundHandler: expect.any(Function),
 			classRequest: Request,
 			definitions: [
 				{ environment: "DEV" },
 				{ hooksRouteLifeCycle: [] },
 			],
+			notfoundHandler: defaultNotfoundHandler,
 		});
 
 		type Check = ExpectType<
@@ -211,5 +227,32 @@ describe("hub", () => {
 			>,
 			"strict"
 		>;
+	});
+
+	it("hub set", () => {
+		const contract = ResponseContract.notFound("test");
+
+		const newHub = hub.setNotfoundHandler(
+			contract,
+			({ response }) => response("test"),
+		);
+
+		expect(newHub).toStrictEqual({
+			[hubKind.runTimeKey]: null,
+			addFunctionBuilder: expect.any(Function),
+			addHooks: expect.any(Function),
+			plug: expect.any(Function),
+			register: expect.any(Function),
+			setNotfoundHandler: expect.any(Function),
+			classRequest: Request,
+			definitions: [{ environment: "DEV" }],
+			notfoundHandler: {
+				...newHub.notfoundHandler,
+				definition: {
+					...newHub.notfoundHandler.definition,
+					responseContract: contract,
+				},
+			},
+		});
 	});
 });
