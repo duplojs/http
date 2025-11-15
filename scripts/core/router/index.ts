@@ -137,7 +137,7 @@ export async function buildRouter(inputHub: Hub): Promise<BuildedRouter> {
 							route.definition.paths,
 							O.to({
 								pattern: pathToRegExp,
-								buildedRoute: justReturn(buildedRoute),
+								buildedRoute: justReturn(unwrap(buildedRoute)),
 								matchedPath: forward,
 							}),
 						),
@@ -165,6 +165,7 @@ export async function buildRouter(inputHub: Hub): Promise<BuildedRouter> {
 				throw new RouterBuildError(element);
 			},
 		),
+		unwrap,
 	);
 
 	const Request = hub.classRequest;

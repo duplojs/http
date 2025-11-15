@@ -1,4 +1,4 @@
-import { type createFunctionBuilder, createHub, defaultNotfoundHandler, type HookHubLifeCycle, type HookRouteLifeCycle, type Hub, hubKind, type Process, Request, ResponseContract, type Route, type Steps } from "@core";
+import { type createFunctionBuilder, createHub, defaultNotfoundHandler, type HookHubLifeCycle, type HookRouteLifeCycle, type Hub, type HubDefinition, hubKind, type Process, Request, ResponseContract, type Route, type Steps } from "@core";
 import { type ExpectType } from "@duplojs/utils";
 import { testRoute } from "@test-utils/route";
 
@@ -46,9 +46,7 @@ describe("hub", () => {
 					{
 						readonly environment: "DEV";
 					},
-					{
-						readonly routes: Route[];
-					},
+					HubDefinition,
 				]
 			>,
 			"strict"
@@ -183,11 +181,7 @@ describe("hub", () => {
 					{
 						readonly environment: "DEV";
 					},
-					{
-						readonly routeFunctionBuilders?: readonly ReturnType<typeof createFunctionBuilder<Route>>[];
-						readonly processFunctionBuilders?: readonly ReturnType<typeof createFunctionBuilder<Process>>[];
-						readonly stepFunctionBuilders?: readonly ReturnType<typeof createFunctionBuilder<Steps>>[];
-					},
+					HubDefinition,
 				]
 			>,
 			"strict"
@@ -219,10 +213,7 @@ describe("hub", () => {
 					{
 						readonly environment: "DEV";
 					},
-					{
-						readonly hooksRouteLifeCycle?: readonly HookRouteLifeCycle[];
-						readonly hooksHubLifeCycle?: readonly HookHubLifeCycle[];
-					},
+					HubDefinition,
 				]
 			>,
 			"strict"

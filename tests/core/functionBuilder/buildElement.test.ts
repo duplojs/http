@@ -1,4 +1,4 @@
-import { type BuildedProcess, type BuildedStep, buildElement, createFunctionBuilder, createProcess, createProcessStep, type HookRouteLifeCycle, processKind, stepKind, type BuildElementParams, type Process, type Steps } from "@core";
+import { type BuildedProcess, type BuildedStep, buildElement, createFunctionBuilder, createProcess, createProcessStep, type HookRouteLifeCycle, processKind, stepKind, type BuildElementParams, type Process, type Steps, processStepKind } from "@core";
 import { E, unwrap } from "@duplojs/utils";
 import { testProcess } from "@test-utils/process";
 
@@ -36,10 +36,10 @@ describe("buildElement", () => {
 		},
 	);
 
-	const createSupportingStepBuilder = (
+	const createSupportingProcessStepBuilder = (
 		spy?: (step: Steps) => void,
-	) => createFunctionBuilder<Steps>(
-		(element, { support, notSupport }) => stepKind.has(element)
+	) => createFunctionBuilder(
+		(element, { support, notSupport }) => processStepKind.has(element)
 			? support(element)
 			: notSupport(),
 		(step, { success }) => {
@@ -126,7 +126,7 @@ describe("buildElement", () => {
 		const nestedProcessSpy = vi.fn();
 
 		const params = createParams({
-			stepFunctionBuilders: [createSupportingStepBuilder(stepSpy)],
+			stepFunctionBuilders: [createSupportingProcessStepBuilder(stepSpy)],
 			processFunctionBuilders: [createSupportingProcessBuilder(nestedProcessSpy)],
 		});
 
