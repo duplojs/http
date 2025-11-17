@@ -20,7 +20,7 @@ export function buildHookBefore(
 	)[],
 ) {
 	if (!hooks.length) {
-		return () => hookExit;
+		return exitHookFunction;
 	}
 	return async(params: RouteHookParams) => {
 		for (let index = 0; index < hooks.length; index++) {
@@ -46,7 +46,7 @@ export function buildHookAfter(
 	)[],
 ) {
 	if (!hooks.length) {
-		return () => hookExit;
+		return exitHookFunction;
 	}
 	return async(params: RouteHookParamsAfter) => {
 		for (let index = 0; index < hooks.length; index++) {

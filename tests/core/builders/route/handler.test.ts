@@ -25,7 +25,7 @@ describe("route builder handler method", () => {
 				hooks: [],
 				method: "GET",
 				paths: ["/test"],
-				preFlightSteps: [],
+				preflightSteps: [],
 				steps: [
 					expect.objectContaining({
 						[extractStepKind.runTimeKey]: null,
@@ -51,7 +51,7 @@ describe("route builder handler method", () => {
 				{
 					readonly method: "GET";
 					readonly paths: readonly ["/test"];
-					readonly preFlightSteps: readonly [];
+					readonly preflightSteps: readonly [];
 					readonly hooks: readonly [];
 					readonly steps: readonly [
 						ExtractStep<{
@@ -102,7 +102,7 @@ describe("route builder handler method", () => {
 				hooks: [],
 				method: "GET",
 				paths: ["/test"],
-				preFlightSteps: [],
+				preflightSteps: [],
 				steps: [
 					{
 						[handlerStepKind.runTimeKey]: null,
@@ -131,7 +131,7 @@ describe("route builder handler method", () => {
 				{
 					readonly method: "GET";
 					readonly paths: readonly ["/test"];
-					readonly preFlightSteps: readonly [];
+					readonly preflightSteps: readonly [];
 					readonly hooks: readonly [];
 					readonly steps: readonly [
 						HandlerStep<{
@@ -195,7 +195,7 @@ describe("route builder handler method", () => {
 				hooks: [{ onConstructRequest: expect.any(Function) }],
 				method: "GET",
 				paths: ["/test"],
-				preFlightSteps: [],
+				preflightSteps: [],
 				steps: [
 					{
 						[handlerStepKind.runTimeKey]: null,
@@ -218,7 +218,7 @@ describe("route builder handler method", () => {
 				{
 					readonly method: "GET";
 					readonly paths: readonly ["/test"];
-					readonly preFlightSteps: readonly [];
+					readonly preflightSteps: readonly [];
 					readonly hooks: readonly [
 						{
 							// eslint-disable-next-line @typescript-eslint/method-signature-style

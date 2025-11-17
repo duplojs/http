@@ -15,63 +15,34 @@ export const routeBuilder = createBuilder<RouteBuilder>("@duplojs/http/core/rout
 
 export function useRouteBuilder<
 	GenericMethod extends RequestMethods,
-	const GenericPaths extends readonly [RoutePath, ...RoutePath[]],
+	const GenericPaths extends RoutePath | readonly [RoutePath, ...RoutePath[]],
 	const GenericHooks extends readonly HookRouteLifeCycle[] = readonly [],
 >(
 	method: GenericMethod,
 	path: GenericPaths,
 	options?: {
 		hooks?: GenericHooks | readonly HookRouteLifeCycle[];
-	}
-): RouteBuilder<
-	{
-		readonly method: GenericMethod;
-		readonly paths: GenericPaths;
-		readonly preFlightSteps: readonly [];
-		readonly steps: readonly [];
-		readonly hooks: GenericHooks;
 	},
-	{},
-	NeverCoalescing<
-		MakeRequestFromHooks<GenericHooks>,
-		Request
-	>
->;
-
-export function useRouteBuilder<
-	GenericMethod extends RequestMethods,
-	GenericPath extends RoutePath,
-	const GenericHooks extends readonly HookRouteLifeCycle[] = readonly [],
->(
-	method: GenericMethod,
-	path: GenericPath,
-	options?: {
-		hooks?: GenericHooks | readonly HookRouteLifeCycle[];
-	}
 ): RouteBuilder<
-	{
-		readonly method: GenericMethod;
-		readonly paths: readonly [GenericPath];
-		readonly preFlightSteps: readonly [];
-		readonly steps: readonly [];
-		readonly hooks: GenericHooks;
-	},
-	{},
-	NeverCoalescing<
-		MakeRequestFromHooks<GenericHooks>,
-		Request
-	>
->;
-
-export function useRouteBuilder(
-	method: RequestMethods,
-	path: RoutePath | [RoutePath, ...RoutePath[]],
-	options?: { hooks?: HookRouteLifeCycle[] },
-) {
+		{
+			readonly method: GenericMethod;
+			readonly paths: GenericPaths extends string
+				? readonly [GenericPaths]
+				: GenericPaths;
+			readonly preflightSteps: readonly [];
+			readonly steps: readonly [];
+			readonly hooks: GenericHooks;
+		},
+		{},
+		NeverCoalescing<
+			MakeRequestFromHooks<GenericHooks>,
+			Request
+		>
+	> {
 	return routeBuilder.use({
 		method,
 		paths: A.coalescing(path),
-		preFlightSteps: [],
+		preflightSteps: [],
 		steps: [],
 		hooks: options?.hooks ?? [],
 	});

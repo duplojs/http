@@ -102,6 +102,10 @@ export interface Hub<
 	): this;
 }
 
+export interface HubProperties {
+	readonly notfoundHandler: HandlerStep;
+}
+
 export function createHub<
 	const GenericDefinition extends HubFirstDefinition,
 >(
@@ -111,11 +115,13 @@ export function createHub<
 export function createHub<
 	const GenericDefinition extends [HubFirstDefinition, ...HubDefinition[]],
 >(
-	definition: GenericDefinition,
+	definitions: GenericDefinition,
+	properties: HubProperties,
 ): Hub<GenericDefinition>;
 
 export function createHub(
 	definition: HubFirstDefinition | [HubFirstDefinition, ...HubDefinition[]],
+	properties: HubProperties = { notfoundHandler: defaultNotfoundHandler },
 ) {
 	const definitions = A.coalescing(definition);
 
@@ -124,21 +130,21 @@ export function createHub(
 			definitions,
 			classRequest: Request,
 			plug(plugin) {
-				return {
-					...createHub([
+				return createHub(
+					[
 						...definitions,
 						...A.coalescing(
 							typeof plugin === "function"
 								? plugin(self)
 								: plugin,
 						),
-					]),
-					notfoundHandler: self.notfoundHandler,
-				};
+					],
+					properties,
+				);
 			},
 			register(routes) {
-				return {
-					...createHub([
+				return createHub(
+					[
 						...definitions,
 						{
 							routes: pipe(
@@ -154,38 +160,41 @@ export function createHub(
 								P.otherwise(O.values),
 							),
 						},
-					]),
-					notfoundHandler: self.notfoundHandler,
-				};
+					],
+					properties,
+				);
 			},
 			addFunctionBuilder(builders) {
-				return {
-					...createHub([
+				return createHub(
+					[
 						...definitions,
 						builders,
-					]),
-					notfoundHandler: self.notfoundHandler,
-				};
+					],
+					properties,
+				);
 			},
 			addHooks(hooks) {
-				return {
-					...createHub([
+				return createHub(
+					[
 						...definitions,
 						hooks,
-					]),
-					notfoundHandler: self.notfoundHandler,
-				};
+					],
+					properties,
+				);
 			},
 			setNotfoundHandler(responseContract, theFunction) {
-				return {
-					...self,
-					notfoundHandler: createHandlerStep({
-						responseContract,
-						theFunction: (floor, params) => theFunction(params),
-					}),
-				};
+				return createHub(
+					definitions,
+					{
+						...properties,
+						notfoundHandler: createHandlerStep({
+							responseContract,
+							theFunction: (floor, params) => theFunction(params),
+						}),
+					},
+				);
 			},
-			notfoundHandler: defaultNotfoundHandler,
+			notfoundHandler: properties.notfoundHandler,
 		} satisfies RemoveKind<Hub>,
 		hubKind.setTo,
 	);

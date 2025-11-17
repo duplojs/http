@@ -5,7 +5,7 @@ import { type RequestInitializationData } from "@core/request";
 import { type HookRouteLifeCycle, type Route, type RouteDefinition } from "@core/route";
 
 export interface BuildedRouter {
-	find(
+	exec(
 		initializationData: Pick<
 			RequestInitializationData,
 		| "headers"

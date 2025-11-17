@@ -37,7 +37,7 @@ describe("route builder preset checker method", () => {
 					hooks: [],
 					method: "GET",
 					paths: ["/test"],
-					preFlightSteps: [],
+					preflightSteps: [],
 					steps: [
 						expect.objectContaining({
 							[extractStepKind.runTimeKey]: null,
@@ -61,7 +61,7 @@ describe("route builder preset checker method", () => {
 				{
 					readonly method: "GET";
 					readonly paths: readonly ["/test"];
-					readonly preFlightSteps: readonly [];
+					readonly preflightSteps: readonly [];
 					readonly hooks: readonly [];
 					readonly steps: readonly [
 						ExtractStep<{

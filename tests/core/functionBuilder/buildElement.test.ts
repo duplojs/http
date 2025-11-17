@@ -68,10 +68,15 @@ describe("buildElement", () => {
 			],
 		);
 
-		expect(result).toStrictEqual({
-			buildedFunction: expect.any(Function),
-			hooksRouteLifeCycle: [],
-		});
+		expect(result).toStrictEqual(
+			E.right(
+				"successBuild",
+				{
+					buildedFunction: expect.any(Function),
+					hooksRouteLifeCycle: [],
+				},
+			),
+		);
 		expect(successSpy).toHaveBeenCalledWith(testProcess);
 	});
 
@@ -148,10 +153,16 @@ describe("buildElement", () => {
 			[mainBuilder],
 		);
 
-		expect(result).toStrictEqual({
-			buildedFunction: expect.any(Function),
-			hooksRouteLifeCycle: [],
-		});
+		expect(result).toStrictEqual(
+			E.right(
+				"successBuild",
+				{
+					buildedFunction: expect.any(Function),
+					hooksRouteLifeCycle: [],
+
+				},
+			),
+		);
 		expect(stepSpy).toHaveBeenCalledWith(delegatedStep);
 		expect(nestedProcessSpy).toHaveBeenCalledWith(nestedProcess);
 	});

@@ -43,7 +43,7 @@ export type RoutePath = `/${string}`;
 export interface RouteDefinition {
 	readonly paths: readonly [RoutePath, ...RoutePath[]];
 	readonly method: RequestMethods;
-	readonly preFlightSteps: readonly RoutePreFlightSteps[];
+	readonly preflightSteps: readonly RoutePreFlightSteps[];
 	readonly steps: readonly RouteSteps[];
 	readonly hooks: readonly HookRouteLifeCycle[];
 }

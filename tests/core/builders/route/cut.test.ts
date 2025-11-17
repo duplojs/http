@@ -29,7 +29,7 @@ describe("route builder cut method", () => {
 					hooks: [],
 					method: "GET",
 					paths: ["/test"],
-					preFlightSteps: [],
+					preflightSteps: [],
 					steps: [
 						expect.objectContaining({
 							[extractStepKind.runTimeKey]: null,
@@ -56,7 +56,7 @@ describe("route builder cut method", () => {
 				{
 					readonly method: "GET";
 					readonly paths: readonly ["/test"];
-					readonly preFlightSteps: readonly [];
+					readonly preflightSteps: readonly [];
 					readonly hooks: readonly [];
 					readonly steps: readonly [
 						ExtractStep<{
@@ -120,7 +120,7 @@ describe("route builder cut method", () => {
 					hooks: [],
 					method: "GET",
 					paths: ["/test"],
-					preFlightSteps: [],
+					preflightSteps: [],
 					steps: [
 						{
 							[cutStepKind.runTimeKey]: null,
@@ -150,7 +150,7 @@ describe("route builder cut method", () => {
 				{
 					readonly paths: readonly ["/test"];
 					readonly method: "GET";
-					readonly preFlightSteps: readonly [];
+					readonly preflightSteps: readonly [];
 					readonly hooks: readonly [];
 					readonly steps: readonly [
 						CutStep<{
@@ -216,7 +216,7 @@ describe("route builder cut method", () => {
 					hooks: [],
 					method: "GET",
 					paths: ["/test"],
-					preFlightSteps: [],
+					preflightSteps: [],
 					steps: [
 						expect.objectContaining({
 							[extractStepKind.runTimeKey]: null,
@@ -243,7 +243,7 @@ describe("route builder cut method", () => {
 				{
 					readonly paths: readonly ["/test"];
 					readonly method: "GET";
-					readonly preFlightSteps: readonly [];
+					readonly preflightSteps: readonly [];
 					readonly hooks: readonly [];
 					readonly steps: readonly [
 						ExtractStep<{
@@ -311,7 +311,7 @@ describe("route builder cut method", () => {
 					hooks: [],
 					method: "GET",
 					paths: ["/test"],
-					preFlightSteps: [],
+					preflightSteps: [],
 					steps: [
 						expect.objectContaining({
 							[extractStepKind.runTimeKey]: null,
@@ -338,7 +338,7 @@ describe("route builder cut method", () => {
 				{
 					readonly paths: readonly ["/test"];
 					readonly method: "GET";
-					readonly preFlightSteps: readonly [];
+					readonly preflightSteps: readonly [];
 					readonly hooks: readonly [];
 					readonly steps: readonly [
 						ExtractStep<{
@@ -403,7 +403,7 @@ describe("route builder cut method", () => {
 					hooks: [],
 					method: "GET",
 					paths: ["/test"],
-					preFlightSteps: [],
+					preflightSteps: [],
 					steps: [
 						expect.objectContaining({
 							[extractStepKind.runTimeKey]: null,
@@ -430,7 +430,7 @@ describe("route builder cut method", () => {
 				{
 					readonly paths: readonly ["/test"];
 					readonly method: "GET";
-					readonly preFlightSteps: readonly [];
+					readonly preflightSteps: readonly [];
 					readonly hooks: readonly [];
 					readonly steps: readonly [
 						ExtractStep<{

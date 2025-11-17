@@ -4,6 +4,6 @@ export const testRoute = createRoute({
 	hooks: [],
 	method: "GET",
 	paths: ["/test"],
-	preFlightSteps: [],
+	preflightSteps: [],
 	steps: [],
 });

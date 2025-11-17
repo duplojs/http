@@ -152,7 +152,7 @@ export async function buildRouter(inputHub: Hub): Promise<BuildedRouter> {
 			method: "GET",
 			paths: ["/"],
 			hooks: [],
-			preFlightSteps: [],
+			preflightSteps: [],
 			steps: [hub.notfoundHandler],
 		}),
 		(route) => buildElement(
@@ -171,7 +171,7 @@ export async function buildRouter(inputHub: Hub): Promise<BuildedRouter> {
 	const Request = hub.classRequest;
 
 	return {
-		find: (initializationData) => {
+		exec: (initializationData) => {
 			const routerElements = groupedRoute[initializationData.method];
 
 			if (!routerElements) {

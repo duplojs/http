@@ -13,7 +13,7 @@ describe("route builder extract method", () => {
 						hooks: [],
 						method: "GET",
 						paths: ["/test"],
-						preFlightSteps: [],
+						preflightSteps: [],
 						steps: [
 							{
 								[extractStepKind.runTimeKey]: null,
@@ -38,7 +38,7 @@ describe("route builder extract method", () => {
 				{
 					readonly method: "GET";
 					readonly paths: readonly ["/test"];
-					readonly preFlightSteps: readonly [];
+					readonly preflightSteps: readonly [];
 					readonly hooks: readonly [];
 					readonly steps: readonly [
 						ExtractStep<{
@@ -74,7 +74,7 @@ describe("route builder extract method", () => {
 						hooks: [],
 						method: "GET",
 						paths: ["/test"],
-						preFlightSteps: [],
+						preflightSteps: [],
 						steps: [
 							{
 								[extractStepKind.runTimeKey]: null,
@@ -102,7 +102,7 @@ describe("route builder extract method", () => {
 				{
 					readonly method: "GET";
 					readonly paths: readonly ["/test"];
-					readonly preFlightSteps: readonly [];
+					readonly preflightSteps: readonly [];
 					readonly hooks: readonly [];
 					readonly steps: readonly [
 						ExtractStep<{
@@ -143,7 +143,7 @@ describe("route builder extract method", () => {
 						hooks: [],
 						method: "GET",
 						paths: ["/test"],
-						preFlightSteps: [],
+						preflightSteps: [],
 						steps: [
 							{
 								[extractStepKind.runTimeKey]: null,
@@ -170,7 +170,7 @@ describe("route builder extract method", () => {
 				{
 					readonly method: "GET";
 					readonly paths: readonly ["/test"];
-					readonly preFlightSteps: readonly [];
+					readonly preflightSteps: readonly [];
 					readonly hooks: readonly [];
 					readonly steps: readonly [
 						ExtractStep<{
@@ -229,7 +229,7 @@ describe("route builder extract method", () => {
 						hooks: [],
 						method: "GET",
 						paths: ["/test"],
-						preFlightSteps: [],
+						preflightSteps: [],
 						steps: [
 							{
 								[extractStepKind.runTimeKey]: null,

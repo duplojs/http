@@ -24,7 +24,7 @@ export const routeFunctionBuilder = createFunctionBuilder(
 	) => {
 		const {
 			hooks: routeHooks,
-			preFlightSteps,
+			preflightSteps: preflightSteps,
 			steps,
 		} = route.definition;
 
@@ -40,7 +40,7 @@ export const routeFunctionBuilder = createFunctionBuilder(
 		const buildedSteps = maybeBuildedSteps;
 
 		const maybeBuildedPreFlightSteps = await buildSteps(
-			preFlightSteps,
+			preflightSteps,
 			buildElement,
 		);
 

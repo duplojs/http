@@ -1,3 +1,5 @@
+export * from "./types";
+
 export * from "./builders";
 export * from "./response";
 export * from "./route";
@@ -11,4 +13,3 @@ export * from "./presetChecker";
 export * from "./hub";
 export * from "./functionBuilder";
 export * from "./router";
-export * from "./types";

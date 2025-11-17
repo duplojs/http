@@ -1,22 +1,19 @@
-import { type Process, type ProcessStep, processStepKind, type RouteBuilder, stepKind, useProcessBuilder, useRouteBuilder, type Request, type ExtractStep, extractStepKind } from "@core";
+import { type ProcessStep, processStepKind, type RouteBuilder, stepKind, useProcessBuilder, useRouteBuilder, type Request, type ExtractStep, extractStepKind, usePreflightBuilder, type PreflightBuilder } from "@core";
 import { builderKind, DPE, type ExpectType } from "@duplojs/utils";
 
-describe("route builder process method", () => {
+describe("preflight builder process method", () => {
 	it("exec", () => {
 		const process = useProcessBuilder()
 			.export();
 
-		const routeBuilder = useRouteBuilder("GET", "/test")
+		const preflightBuilder = usePreflightBuilder()
 			.exec(process);
 
-		expect({ ...routeBuilder }).toStrictEqual(
+		expect({ ...preflightBuilder }).toStrictEqual(
 			expect.objectContaining({
 				[builderKind.runTimeKey]: {
 					hooks: [],
-					method: "GET",
-					paths: ["/test"],
-					preflightSteps: [],
-					steps: [
+					preflightSteps: [
 						{
 							[processStepKind.runTimeKey]: null,
 							[stepKind.runTimeKey]: null,
@@ -30,20 +27,17 @@ describe("route builder process method", () => {
 		);
 
 		type Check = ExpectType<
-			typeof routeBuilder,
-			RouteBuilder<
+			typeof preflightBuilder,
+			PreflightBuilder<
 				{
-					readonly hooks: readonly [];
-					readonly paths: readonly ["/test"];
-					readonly method: "GET";
-					readonly preflightSteps: readonly [];
-					readonly steps: readonly [
+					readonly preflightSteps: readonly [
 						ProcessStep<{
 							readonly process: typeof process;
 							readonly options: undefined;
 							readonly imports: undefined;
 						}>,
 					];
+					readonly hooks: readonly [];
 				},
 				{},
 				Request
@@ -60,17 +54,14 @@ describe("route builder process method", () => {
 		})
 			.export();
 
-		const routeBuilder = useRouteBuilder("GET", "/test")
+		const preflightBuilder = usePreflightBuilder()
 			.exec(process, { options: { test: false } });
 
-		expect({ ...routeBuilder }).toStrictEqual(
+		expect({ ...preflightBuilder }).toStrictEqual(
 			expect.objectContaining({
 				[builderKind.runTimeKey]: {
 					hooks: [],
-					method: "GET",
-					paths: ["/test"],
-					preflightSteps: [],
-					steps: [
+					preflightSteps: [
 						{
 							[processStepKind.runTimeKey]: null,
 							[stepKind.runTimeKey]: null,
@@ -85,20 +76,17 @@ describe("route builder process method", () => {
 		);
 
 		type Check = ExpectType<
-			typeof routeBuilder,
-			RouteBuilder<
+			typeof preflightBuilder,
+			PreflightBuilder<
 				{
-					readonly hooks: readonly [];
-					readonly paths: readonly ["/test"];
-					readonly method: "GET";
-					readonly preflightSteps: readonly [];
-					readonly steps: readonly [
+					readonly preflightSteps: readonly [
 						ProcessStep<{
 							readonly process: typeof process;
 							readonly options: { test: boolean };
 							readonly imports: undefined;
 						}>,
 					];
+					readonly hooks: readonly [];
 				},
 				{},
 				Request
@@ -107,7 +95,63 @@ describe("route builder process method", () => {
 		>;
 	});
 
+	it("exec with import", () => {
+		const process = useProcessBuilder()
+			.extract({
+				query: DPE.number(),
+				body: DPE.string(),
+			})
+			.export(["body"]);
+
+		const preflightBuilder = usePreflightBuilder()
+			.exec(process, { imports: ["body"] });
+
+		expect({ ...preflightBuilder }).toStrictEqual(
+			expect.objectContaining({
+				[builderKind.runTimeKey]: {
+					hooks: [],
+					preflightSteps: [
+						{
+							[processStepKind.runTimeKey]: null,
+							[stepKind.runTimeKey]: null,
+							definition: {
+								process,
+								imports: ["body"],
+							},
+						},
+					],
+				},
+			}),
+		);
+
+		type Check = ExpectType<
+			typeof preflightBuilder,
+			PreflightBuilder<
+				{
+					readonly preflightSteps: readonly [
+						ProcessStep<{
+							readonly process: typeof process;
+							readonly options: undefined;
+							readonly imports: readonly ["body"];
+						}>,
+					];
+					readonly hooks: readonly [];
+				},
+				{ body: string },
+				Request
+			>,
+			"strict"
+		>;
+	});
+
 	it("exec with callback option", () => {
+		const processWithExport = useProcessBuilder()
+			.extract({
+				query: DPE.number(),
+				body: DPE.string(),
+			})
+			.export(["body"]);
+
 		const process = useProcessBuilder({
 			options: {
 				test: true,
@@ -115,8 +159,13 @@ describe("route builder process method", () => {
 		})
 			.export();
 
-		const routeBuilder = useRouteBuilder("GET", "/test")
-			.extract({ body: DPE.string() })
+		const preflightBuilder = usePreflightBuilder()
+			.exec(
+				processWithExport,
+				{
+					imports: ["body"],
+				},
+			)
 			.exec(
 				process,
 				{
@@ -136,17 +185,19 @@ describe("route builder process method", () => {
 				},
 			);
 
-		expect({ ...routeBuilder }).toStrictEqual(
+		expect({ ...preflightBuilder }).toStrictEqual(
 			expect.objectContaining({
 				[builderKind.runTimeKey]: {
 					hooks: [],
-					method: "GET",
-					paths: ["/test"],
-					preflightSteps: [],
-					steps: [
-						expect.objectContaining({
-							[extractStepKind.runTimeKey]: null,
-						}),
+					preflightSteps: [
+						{
+							[processStepKind.runTimeKey]: null,
+							[stepKind.runTimeKey]: null,
+							definition: {
+								process: processWithExport,
+								imports: ["body"],
+							},
+						},
 						{
 							[processStepKind.runTimeKey]: null,
 							[stepKind.runTimeKey]: null,
@@ -161,24 +212,15 @@ describe("route builder process method", () => {
 		);
 
 		type Check = ExpectType<
-			typeof routeBuilder,
-			RouteBuilder<
+			typeof preflightBuilder,
+			PreflightBuilder<
 				// @ts-expect-error process input function options
 				{
-					readonly hooks: readonly [];
-					readonly paths: readonly ["/test"];
-					readonly method: "GET";
-					readonly preflightSteps: readonly [];
-					readonly steps: readonly [
-						ExtractStep<{
-							readonly shape: {
-								body: DPE.DataParserStringExtended<{
-									readonly errorMessage?: string | undefined;
-									readonly coerce: boolean;
-									readonly checkers: readonly [];
-								}>;
-							};
-							readonly responseContract: undefined;
+					readonly preflightSteps: readonly [
+						ProcessStep<{
+							readonly process: typeof processWithExport;
+							readonly options: undefined;
+							readonly imports: readonly ["body"];
 						}>,
 						// @ts-expect-error process input function options
 						ProcessStep<{
@@ -188,61 +230,7 @@ describe("route builder process method", () => {
 							readonly imports: undefined;
 						}>,
 					];
-				},
-				{ body: string },
-				Request
-			>,
-			"strict"
-		>;
-	});
-
-	it("exec with import", () => {
-		const process = useProcessBuilder()
-			.extract({
-				query: DPE.number(),
-				body: DPE.string(),
-			})
-			.export(["body"]);
-
-		const routeBuilder = useRouteBuilder("GET", "/test")
-			.exec(process, { imports: ["body"] });
-
-		expect({ ...routeBuilder }).toStrictEqual(
-			expect.objectContaining({
-				[builderKind.runTimeKey]: {
-					hooks: [],
-					method: "GET",
-					paths: ["/test"],
-					preflightSteps: [],
-					steps: [
-						{
-							[processStepKind.runTimeKey]: null,
-							[stepKind.runTimeKey]: null,
-							definition: {
-								process,
-								imports: ["body"],
-							},
-						},
-					],
-				},
-			}),
-		);
-
-		type Check = ExpectType<
-			typeof routeBuilder,
-			RouteBuilder<
-				{
 					readonly hooks: readonly [];
-					readonly paths: readonly ["/test"];
-					readonly method: "GET";
-					readonly preflightSteps: readonly [];
-					readonly steps: readonly [
-						ProcessStep<{
-							readonly process: typeof process;
-							readonly options: undefined;
-							readonly imports: readonly ["body"];
-						}>,
-					];
 				},
 				{ body: string },
 				Request
@@ -259,22 +247,19 @@ describe("route builder process method", () => {
 			})
 			.export(["body", "query"]);
 
-		const routeBuilder = useRouteBuilder("GET", "/test")
+		const preflightBuilder = usePreflightBuilder()
 			.exec(process, { imports: ["body", "query"] });
 
-		expect({ ...routeBuilder }).toStrictEqual(
+		expect({ ...preflightBuilder }).toStrictEqual(
 			expect.objectContaining({
 				[builderKind.runTimeKey]: {
 					hooks: [],
-					method: "GET",
-					paths: ["/test"],
-					preflightSteps: [],
-					steps: [
+					preflightSteps: [
 						{
 							[processStepKind.runTimeKey]: null,
 							[stepKind.runTimeKey]: null,
 							definition: {
-								process,
+								process: process,
 								imports: ["body", "query"],
 							},
 						},
@@ -284,20 +269,17 @@ describe("route builder process method", () => {
 		);
 
 		type Check = ExpectType<
-			typeof routeBuilder,
-			RouteBuilder<
+			typeof preflightBuilder,
+			PreflightBuilder<
 				{
-					readonly hooks: readonly [];
-					readonly paths: readonly ["/test"];
-					readonly method: "GET";
-					readonly preflightSteps: readonly [];
-					readonly steps: readonly [
+					readonly preflightSteps: readonly [
 						ProcessStep<{
 							readonly process: typeof process;
 							readonly options: undefined;
 							readonly imports: readonly ["body", "query"];
 						}>,
 					];
+					readonly hooks: readonly [];
 				},
 				{
 					body: string;
@@ -315,17 +297,14 @@ describe("route builder process method", () => {
 		})
 			.export();
 
-		const routeBuilder = useRouteBuilder("GET", "/test")
+		const routeBuilder = usePreflightBuilder()
 			.exec(process);
 
 		expect({ ...routeBuilder }).toStrictEqual(
 			expect.objectContaining({
 				[builderKind.runTimeKey]: {
 					hooks: [],
-					method: "GET",
-					paths: ["/test"],
-					preflightSteps: [],
-					steps: [
+					preflightSteps: [
 						{
 							[processStepKind.runTimeKey]: null,
 							[stepKind.runTimeKey]: null,
@@ -340,19 +319,16 @@ describe("route builder process method", () => {
 
 		type Check = ExpectType<
 			typeof routeBuilder,
-			RouteBuilder<
+			PreflightBuilder<
 				{
-					readonly hooks: readonly [];
-					readonly paths: readonly ["/test"];
-					readonly method: "GET";
-					readonly preflightSteps: readonly [];
-					readonly steps: readonly [
+					readonly preflightSteps: readonly [
 						ProcessStep<{
 							readonly process: typeof process;
 							readonly options: undefined;
 							readonly imports: undefined;
 						}>,
 					];
+					readonly hooks: readonly [];
 				},
 				{},
 				Request & {
