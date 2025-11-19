@@ -66,13 +66,11 @@ export namespace ResponseContract {
 
 	const defaultSchema = DP.empty();
 
-	// 1xx Informational responses
 	export const http100Continue = createContractBuilder("100", { defaultSchema });
 	export const switchingProtocols = createContractBuilder("101", { defaultSchema });
 	export const processing = createContractBuilder("102", { defaultSchema });
 	export const earlyHints = createContractBuilder("103", { defaultSchema });
 
-	// 2xx Success
 	export const ok = createContractBuilder("200");
 	export const created = createContractBuilder("201", { defaultSchema });
 	export const accepted = createContractBuilder("202", { defaultSchema });
@@ -84,7 +82,6 @@ export namespace ResponseContract {
 	export const alreadyReported = createContractBuilder("208", { defaultSchema });
 	export const imUsed = createContractBuilder("226", { defaultSchema });
 
-	// 3xx Redirection
 	export const multipleChoices = createContractBuilder("300", { noSchema: true });
 	export const movedPermanently = createContractBuilder("301", { noSchema: true });
 	export const found = createContractBuilder("302", { noSchema: true });
@@ -95,7 +92,6 @@ export namespace ResponseContract {
 	export const temporaryRedirect = createContractBuilder("307", { noSchema: true });
 	export const permanentRedirect = createContractBuilder("308", { noSchema: true });
 
-	// 4xx Client errors
 	export const badRequest = createContractBuilder("400", { defaultSchema });
 	export const unauthorized = createContractBuilder("401", { defaultSchema });
 	export const paymentRequired = createContractBuilder("402", { defaultSchema });
@@ -126,7 +122,6 @@ export namespace ResponseContract {
 	export const requestHeaderFieldsTooLarge = createContractBuilder("431", { defaultSchema });
 	export const unavailableForLegalReasons = createContractBuilder("451", { defaultSchema });
 
-	// 5xx Server errors
 	export const internalServerError = createContractBuilder("500", { defaultSchema });
 	export const notImplemented = createContractBuilder("501", { defaultSchema });
 	export const badGateway = createContractBuilder("502", { defaultSchema });
@@ -146,7 +141,7 @@ export namespace ResponseContract {
 	) {
 		public constructor(
 			public information: string,
-			public contract?: Contract,
+			public dataParserError?: DP.DataParserError,
 		) {
 			super({}, [`Error executing the response contract with the information: "${information}".`]);
 		}

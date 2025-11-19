@@ -4,7 +4,7 @@ import { builderKind, DPE, type ExpectType } from "@duplojs/utils";
 describe("process builder process method", () => {
 	it("exec", () => {
 		const process = useProcessBuilder()
-			.export();
+			.exports();
 
 		const processBuilder = useProcessBuilder()
 			.exec(process);
@@ -54,7 +54,7 @@ describe("process builder process method", () => {
 				test: true,
 			},
 		})
-			.export();
+			.exports();
 
 		const processBuilder = useProcessBuilder()
 			.exec(process, { options: { test: false } });
@@ -105,7 +105,7 @@ describe("process builder process method", () => {
 				test: true,
 			},
 		})
-			.export();
+			.exports();
 
 		const processBuilder = useProcessBuilder()
 			.extract({ body: DPE.string() })
@@ -153,7 +153,6 @@ describe("process builder process method", () => {
 		type Check = ExpectType<
 			typeof processBuilder,
 			ProcessBuilder<
-				// @ts-expect-error process input function options
 				{
 					readonly hooks: readonly [];
 					readonly options: undefined;
@@ -168,7 +167,6 @@ describe("process builder process method", () => {
 							};
 							readonly responseContract: undefined;
 						}>,
-						// @ts-expect-error process input function options
 						ProcessStep<{
 							readonly process: typeof process;
 							// eslint-disable-next-line @typescript-eslint/method-signature-style
@@ -190,7 +188,7 @@ describe("process builder process method", () => {
 				query: DPE.number(),
 				body: DPE.string(),
 			})
-			.export(["body"]);
+			.exports(["body"]);
 
 		const processBuilder = useProcessBuilder()
 			.exec(process, { imports: ["body"] });
@@ -241,7 +239,7 @@ describe("process builder process method", () => {
 				query: DPE.number(),
 				body: DPE.string(),
 			})
-			.export(["body", "query"]);
+			.exports(["body", "query"]);
 
 		const processBuilder = useProcessBuilder()
 			.exec(process, { imports: ["body", "query"] });
@@ -293,7 +291,7 @@ describe("process builder process method", () => {
 		const process = useProcessBuilder({
 			hooks: [{ onConstructRequest: ({ addRequestProperties }) => addRequestProperties({ prop: 1 }) }],
 		})
-			.export();
+			.exports();
 
 		const processBuilder = useProcessBuilder()
 			.exec(process);

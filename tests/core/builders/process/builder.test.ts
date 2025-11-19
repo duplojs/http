@@ -55,7 +55,7 @@ describe("process builder", () => {
 					};
 					readonly hooks: readonly [];
 				},
-				{},
+				{ options: { test: boolean } },
 				Request
 			>,
 			"strict"

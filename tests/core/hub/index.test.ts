@@ -1,4 +1,4 @@
-import { type createFunctionBuilder, createHub, defaultNotfoundHandler, type HookHubLifeCycle, type HookRouteLifeCycle, type Hub, type HubDefinition, hubKind, type Process, Request, ResponseContract, type Route, type Steps } from "@core";
+import { createHub, defaultExtractContract, defaultNotfoundHandler, type Hub, type HubDefinition, hubKind, Request, ResponseContract } from "@core";
 import { type ExpectType } from "@duplojs/utils";
 import { testRoute } from "@test-utils/route";
 
@@ -18,6 +18,8 @@ describe("hub", () => {
 			classRequest: Request,
 			definitions: [{ environment: "DEV" }],
 			notfoundHandler: defaultNotfoundHandler,
+			defaultExtractContract,
+			setDefaultExtractContract: expect.any(Function),
 		});
 	});
 
@@ -31,6 +33,8 @@ describe("hub", () => {
 			plug: expect.any(Function),
 			register: expect.any(Function),
 			setNotfoundHandler: expect.any(Function),
+			setDefaultExtractContract: expect.any(Function),
+			defaultExtractContract,
 			classRequest: Request,
 			definitions: [
 				{ environment: "DEV" },
@@ -59,6 +63,8 @@ describe("hub", () => {
 			plug: expect.any(Function),
 			register: expect.any(Function),
 			setNotfoundHandler: expect.any(Function),
+			setDefaultExtractContract: expect.any(Function),
+			defaultExtractContract,
 			classRequest: Request,
 			definitions: [
 				{ environment: "DEV" },
@@ -74,6 +80,8 @@ describe("hub", () => {
 			plug: expect.any(Function),
 			register: expect.any(Function),
 			setNotfoundHandler: expect.any(Function),
+			setDefaultExtractContract: expect.any(Function),
+			defaultExtractContract,
 			classRequest: Request,
 			definitions: [
 				{ environment: "DEV" },
@@ -93,6 +101,8 @@ describe("hub", () => {
 			plug: expect.any(Function),
 			register: expect.any(Function),
 			setNotfoundHandler: expect.any(Function),
+			setDefaultExtractContract: expect.any(Function),
+			defaultExtractContract,
 			classRequest: Request,
 			definitions: [
 				{ environment: "DEV" },
@@ -128,6 +138,8 @@ describe("hub", () => {
 			plug: expect.any(Function),
 			register: expect.any(Function),
 			setNotfoundHandler: expect.any(Function),
+			setDefaultExtractContract: expect.any(Function),
+			defaultExtractContract,
 			classRequest: Request,
 			definitions: [
 				{ environment: "DEV" },
@@ -157,7 +169,7 @@ describe("hub", () => {
 	});
 
 	it("hub addFunctionBuilder", () => {
-		const newHub = hub.addFunctionBuilder({ processFunctionBuilders: [] });
+		const newHub = hub.addFunctionBuilder({ routeFunctionBuilders: [] });
 
 		expect(newHub).toStrictEqual({
 			[hubKind.runTimeKey]: null,
@@ -166,10 +178,12 @@ describe("hub", () => {
 			plug: expect.any(Function),
 			register: expect.any(Function),
 			setNotfoundHandler: expect.any(Function),
+			setDefaultExtractContract: expect.any(Function),
+			defaultExtractContract,
 			classRequest: Request,
 			definitions: [
 				{ environment: "DEV" },
-				{ processFunctionBuilders: [] },
+				{ routeFunctionBuilders: [] },
 			],
 			notfoundHandler: defaultNotfoundHandler,
 		});
@@ -198,6 +212,8 @@ describe("hub", () => {
 			plug: expect.any(Function),
 			register: expect.any(Function),
 			setNotfoundHandler: expect.any(Function),
+			setDefaultExtractContract: expect.any(Function),
+			defaultExtractContract,
 			classRequest: Request,
 			definitions: [
 				{ environment: "DEV" },
@@ -220,7 +236,7 @@ describe("hub", () => {
 		>;
 	});
 
-	it("hub set", () => {
+	it("hub set not found handler", () => {
 		const contract = ResponseContract.notFound("test");
 
 		const newHub = hub.setNotfoundHandler(
@@ -235,6 +251,8 @@ describe("hub", () => {
 			plug: expect.any(Function),
 			register: expect.any(Function),
 			setNotfoundHandler: expect.any(Function),
+			setDefaultExtractContract: expect.any(Function),
+			defaultExtractContract,
 			classRequest: Request,
 			definitions: [{ environment: "DEV" }],
 			notfoundHandler: {
@@ -244,6 +262,28 @@ describe("hub", () => {
 					responseContract: contract,
 				},
 			},
+		});
+	});
+
+	it("hub set default extract contract", () => {
+		const contract = ResponseContract.notFound("test");
+
+		const newHub = hub.setDefaultExtractContract(
+			contract,
+		);
+
+		expect(newHub).toStrictEqual({
+			[hubKind.runTimeKey]: null,
+			addFunctionBuilder: expect.any(Function),
+			addHooks: expect.any(Function),
+			plug: expect.any(Function),
+			register: expect.any(Function),
+			setNotfoundHandler: expect.any(Function),
+			setDefaultExtractContract: expect.any(Function),
+			defaultExtractContract: contract,
+			classRequest: Request,
+			definitions: [{ environment: "DEV" }],
+			notfoundHandler: defaultNotfoundHandler,
 		});
 	});
 });

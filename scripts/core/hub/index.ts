@@ -1,25 +1,26 @@
 import { createCoreLibKind } from "@core/kind";
 import { type Route, type HookRouteLifeCycle, routeKind } from "@core/route";
-import { A, O, pipe, type Kind, type RemoveKind, type MaybeArray, type SimplifyTopLevel, P, isType, type MaybePromise } from "@duplojs/utils";
+import { A, O, pipe, type Kind, type RemoveKind, type MaybeArray, type SimplifyTopLevel, P, isType, type MaybePromise, type DP } from "@duplojs/utils";
 import { type HookHubLifeCycle } from "./hooks";
-import { type BuildElementParams, type createFunctionBuilder } from "@core/functionBuilder";
-import { type Process } from "@core/process";
 import { type HandlerStepFunctionParams, type HandlerStep, createHandlerStep } from "@core/steps";
 import { Request } from "@core/request";
-import { type ResponseContract } from "@core/response";
+import { type ClientErrorResponseCode, type ResponseContract } from "@core/response";
 import { defaultNotfoundHandler } from "./defaultNotfoundHandler";
 import { type Environment } from "@core/types";
+import { defaultExtractContract } from "./defaultExtractContract";
+import { type createStepFunctionBuilder } from "@core/functionsBuilders/steps";
+import { type createRouteFunctionBuilder } from "@core/functionsBuilders/route";
 
 export * from "./hooks";
 export * from "./defaultNotfoundHandler";
+export * from "./defaultExtractContract";
 
 export interface HubDefinition {
 	readonly hooksRouteLifeCycle?: readonly HookRouteLifeCycle[];
 	readonly hooksHubLifeCycle?: readonly HookHubLifeCycle[];
 	readonly routes?: readonly Route[];
-	readonly routeFunctionBuilders?: readonly ReturnType<typeof createFunctionBuilder<Route>>[];
-	readonly processFunctionBuilders?: readonly ReturnType<typeof createFunctionBuilder<Process>>[];
-	readonly stepFunctionBuilders?: BuildElementParams["stepFunctionBuilders"];
+	readonly routeFunctionBuilders?: readonly ReturnType<typeof createRouteFunctionBuilder>[];
+	readonly stepFunctionBuilders?: readonly ReturnType<typeof createStepFunctionBuilder>[];
 }
 
 export interface HubFirstDefinition extends HubDefinition {
@@ -37,8 +38,16 @@ export interface Hub<
 	= readonly [HubFirstDefinition, ...(HubDefinition | PluginDefinition)[]],
 > extends Kind<typeof hubKind.definition> {
 	readonly definitions: GenericDefinition;
+
 	readonly classRequest: typeof Request;
+
 	readonly notfoundHandler: HandlerStep;
+
+	readonly defaultExtractContract: ResponseContract.Contract<
+		ClientErrorResponseCode,
+		string, DP.DataParserEmpty
+	>;
+
 	register(
 		routes: Route | Iterable<Route> | Record<string, Route>
 	): Hub<
@@ -47,11 +56,11 @@ export interface Hub<
 			HubDefinition,
 		]
 	>;
+
 	addFunctionBuilder(
 		builders: SimplifyTopLevel<
 			Pick<
 				HubDefinition,
-				| "processFunctionBuilders"
 				| "routeFunctionBuilders"
 				| "stepFunctionBuilders"
 			>
@@ -62,6 +71,7 @@ export interface Hub<
 			HubDefinition,
 		]
 	>;
+
 	addHooks(
 		builders: SimplifyTopLevel<
 			Pick<
@@ -76,6 +86,7 @@ export interface Hub<
 			HubDefinition,
 		]
 	>;
+
 	plug<
 		const GenericPluginDefinition extends MaybeArray<PluginDefinition>,
 	>(
@@ -86,6 +97,7 @@ export interface Hub<
 			...A.ArrayCoalescing<GenericPluginDefinition>,
 		]
 	>;
+
 	setNotfoundHandler<
 		GenericResponseContract extends ResponseContract.Contract,
 		GenericResponse extends ResponseContract.Convert<
@@ -100,10 +112,18 @@ export interface Hub<
 			>
 		) => MaybePromise<GenericResponse>
 	): this;
+
+	setDefaultExtractContract(
+		responseContract: Hub["defaultExtractContract"]
+	): this;
 }
 
 export interface HubProperties {
 	readonly notfoundHandler: HandlerStep;
+	readonly defaultExtractContract: ResponseContract.Contract<
+		ClientErrorResponseCode,
+		string, DP.DataParserEmpty
+	>;
 }
 
 export function createHub<
@@ -121,13 +141,18 @@ export function createHub<
 
 export function createHub(
 	definition: HubFirstDefinition | [HubFirstDefinition, ...HubDefinition[]],
-	properties: HubProperties = { notfoundHandler: defaultNotfoundHandler },
+	properties: HubProperties = {
+		notfoundHandler: defaultNotfoundHandler,
+		defaultExtractContract: defaultExtractContract,
+	},
 ) {
 	const definitions = A.coalescing(definition);
 
 	const self: Hub = pipe(
 		{
 			definitions,
+			notfoundHandler: properties.notfoundHandler,
+			defaultExtractContract: properties.defaultExtractContract,
 			classRequest: Request,
 			plug(plugin) {
 				return createHub(
@@ -194,7 +219,15 @@ export function createHub(
 					},
 				);
 			},
-			notfoundHandler: properties.notfoundHandler,
+			setDefaultExtractContract(defaultExtractContract) {
+				return createHub(
+					definitions,
+					{
+						...properties,
+						defaultExtractContract,
+					},
+				);
+			},
 		} satisfies RemoveKind<Hub>,
 		hubKind.setTo,
 	);

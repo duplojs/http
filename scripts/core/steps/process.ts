@@ -6,7 +6,7 @@ import { type Floor } from "@core/floor";
 
 export interface ProcessStepDefinition {
 	readonly process: Process;
-	readonly options?: Record<string, unknown> | ((input: Floor) => Record<string, unknown>);
+	readonly options?: Record<string, unknown> | ((input: any) => Record<string, unknown>);
 	readonly imports?: readonly string[];
 }
 

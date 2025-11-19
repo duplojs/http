@@ -1,12 +1,10 @@
 import { type HandlerStepFunctionParams, handlerStepKind } from "@core/steps";
-import { createFunctionBuilder } from "../create";
-import { A, E } from "@duplojs/utils";
+import { createStepFunctionBuilder } from "../create";
+import { A, E, unwrap } from "@duplojs/utils";
 import { Response, ResponseContract } from "@core/response";
 
-export const handlerStepFunctionBuilder = createFunctionBuilder(
-	(element, { support, notSupport }) => handlerStepKind.has(element)
-		? support(element)
-		: notSupport(),
+export const defaultHandlerStepFunctionBuilder = createStepFunctionBuilder(
+	handlerStepKind.has,
 	(step, { success }) => {
 		const {
 			responseContract,
@@ -37,7 +35,10 @@ export const handlerStepFunctionBuilder = createFunctionBuilder(
 			const result = currentContract.schema.parse(body);
 
 			if (E.isLeft(result)) {
-				throw new ResponseContract.Error(information, currentContract);
+				throw new ResponseContract.Error(
+					information,
+					unwrap(result),
+				);
 			}
 
 			return new Response(

@@ -249,7 +249,6 @@ describe("process builder checker method", () => {
 		type Check = ExpectType<
 			typeof processBuilder,
 			ProcessBuilder<
-				// @ts-expect-error checker input function options
 				{
 					readonly options: undefined;
 					readonly hooks: readonly [];
@@ -264,7 +263,6 @@ describe("process builder checker method", () => {
 							};
 							readonly responseContract: undefined;
 						}>,
-						// @ts-expect-error checker input function options
 						CheckerStep<{
 							readonly checker: typeof checker;
 							input(floor: { body: string }): string;

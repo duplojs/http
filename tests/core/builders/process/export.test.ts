@@ -4,7 +4,7 @@ import { DP, DPE, type SimplifyTopLevel, type ExpectType } from "@duplojs/utils"
 describe("process builder export method", () => {
 	it("export", () => {
 		const processBuilder = useProcessBuilder()
-			.export();
+			.exports();
 
 		expect({ ...processBuilder })
 			.toStrictEqual({
@@ -35,7 +35,7 @@ describe("process builder export method", () => {
 				query: DPE.number(),
 				body: DPE.string(),
 			})
-			.export(["body"]);
+			.exports(["body"]);
 
 		expect({ ...processBuilder })
 			.toStrictEqual({
@@ -101,7 +101,7 @@ describe("process builder export method", () => {
 				query: DPE.number(),
 				body: DPE.string(),
 			})
-			.export(["body", "query"]);
+			.exports(["body", "query"]);
 
 		expect({ ...processBuilder })
 			.toStrictEqual({
@@ -169,7 +169,7 @@ describe("process builder export method", () => {
 			options: { test: true },
 			hooks: [{ onConstructRequest: ({ addRequestProperties }) => addRequestProperties({ prop: 1 }) }],
 		})
-			.export();
+			.exports();
 
 		expect({ ...processBuilder })
 			.toStrictEqual({

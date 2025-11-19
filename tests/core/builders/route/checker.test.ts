@@ -259,7 +259,6 @@ describe("route builder checker method", () => {
 		type Check = ExpectType<
 			typeof routeBuilder,
 			RouteBuilder<
-				// @ts-expect-error checker input function options
 				{
 					readonly method: "GET";
 					readonly paths: readonly ["/test"];
@@ -276,7 +275,6 @@ describe("route builder checker method", () => {
 							};
 							readonly responseContract: undefined;
 						}>,
-						// @ts-expect-error checker input function options
 						CheckerStep<{
 							readonly checker: typeof checker;
 							input(floor: { body: string }): string;

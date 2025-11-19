@@ -29,7 +29,7 @@ export interface CutStepFunctionParams<
 
 export interface CutStepDefinition {
 	theFunction(floor: Floor, params: CutStepFunctionParams): MaybePromise<CutStepFunctionOutput | Response>;
-	readonly responseContract: ResponseContract.Contract | ResponseContract.Contract[];
+	readonly responseContract: ResponseContract.Contract | readonly ResponseContract.Contract[];
 }
 
 export const cutStepKind = createCoreLibKind("cut-step");

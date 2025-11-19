@@ -1,28 +1,49 @@
 import { type CheckerFunctionParams, checkerOutputKind } from "@core/checker";
-import { createFunctionBuilder } from "../create";
-import { checkerStepKind } from "@core/steps";
+import { createStepFunctionBuilder } from "../create";
+import { checkerStepKind, presetCheckerStepKind } from "@core/steps";
 import { forward, isType, or, P, pipe } from "@duplojs/utils";
 import { type Floor } from "@core/floor";
 import { Response } from "@core/response";
 
-export const checkerStepFunctionBuilder = createFunctionBuilder(
-	(element, { support, notSupport }) => checkerStepKind.has(element)
-		? support(element)
-		: notSupport(),
+export const defaultCheckerStepFunctionBuilder = createStepFunctionBuilder(
+	(element) => checkerStepKind.has(element) || presetCheckerStepKind.has(element),
 	(step, { success }) => {
 		const {
-			checker: {
-				definition: {
-					options: checkerOptions,
-					theFunction: checkerFunction,
-				},
-			},
+			checkerOptions,
+			checkerFunction,
 			input,
 			responseContract,
-			result: stepResult,
+			stepResult,
 			indexing,
-			options: stepOptions,
-		} = step.definition;
+			stepOptions,
+		} = pipe(
+			step,
+			P.when(
+				checkerStepKind.has,
+				({ definition }) => ({
+					checkerOptions: definition.checker.definition.options,
+					checkerFunction: definition.checker.definition.theFunction,
+					input: definition.input,
+					responseContract: definition.responseContract,
+					stepResult: definition.result,
+					indexing: definition.indexing,
+					stepOptions: definition.options,
+				}),
+			),
+			P.when(
+				presetCheckerStepKind.has,
+				({ definition }) => ({
+					checkerOptions: definition.presetChecker.definition.checker.definition.options,
+					checkerFunction: definition.presetChecker.definition.checker.definition.theFunction,
+					input: definition.input,
+					responseContract: definition.presetChecker.definition.responseContract,
+					stepResult: definition.presetChecker.definition.result,
+					indexing: definition.presetChecker.definition.indexing,
+					stepOptions: definition.presetChecker.definition.options,
+				}),
+			),
+			P.exhaustive,
+		);
 
 		const getOptions = pipe(
 			stepOptions ?? checkerOptions,

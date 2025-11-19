@@ -4,7 +4,7 @@ import { builderKind, DPE, type ExpectType } from "@duplojs/utils";
 describe("route builder process method", () => {
 	it("exec", () => {
 		const process = useProcessBuilder()
-			.export();
+			.exports();
 
 		const routeBuilder = useRouteBuilder("GET", "/test")
 			.exec(process);
@@ -58,7 +58,7 @@ describe("route builder process method", () => {
 				test: true,
 			},
 		})
-			.export();
+			.exports();
 
 		const routeBuilder = useRouteBuilder("GET", "/test")
 			.exec(process, { options: { test: false } });
@@ -113,7 +113,7 @@ describe("route builder process method", () => {
 				test: true,
 			},
 		})
-			.export();
+			.exports();
 
 		const routeBuilder = useRouteBuilder("GET", "/test")
 			.extract({ body: DPE.string() })
@@ -163,7 +163,6 @@ describe("route builder process method", () => {
 		type Check = ExpectType<
 			typeof routeBuilder,
 			RouteBuilder<
-				// @ts-expect-error process input function options
 				{
 					readonly hooks: readonly [];
 					readonly paths: readonly ["/test"];
@@ -180,7 +179,6 @@ describe("route builder process method", () => {
 							};
 							readonly responseContract: undefined;
 						}>,
-						// @ts-expect-error process input function options
 						ProcessStep<{
 							readonly process: typeof process;
 							// eslint-disable-next-line @typescript-eslint/method-signature-style
@@ -202,7 +200,7 @@ describe("route builder process method", () => {
 				query: DPE.number(),
 				body: DPE.string(),
 			})
-			.export(["body"]);
+			.exports(["body"]);
 
 		const routeBuilder = useRouteBuilder("GET", "/test")
 			.exec(process, { imports: ["body"] });
@@ -257,7 +255,7 @@ describe("route builder process method", () => {
 				query: DPE.number(),
 				body: DPE.string(),
 			})
-			.export(["body", "query"]);
+			.exports(["body", "query"]);
 
 		const routeBuilder = useRouteBuilder("GET", "/test")
 			.exec(process, { imports: ["body", "query"] });
@@ -313,7 +311,7 @@ describe("route builder process method", () => {
 		const process = useProcessBuilder({
 			hooks: [{ onConstructRequest: ({ addRequestProperties }) => addRequestProperties({ prop: 1 }) }],
 		})
-			.export();
+			.exports();
 
 		const routeBuilder = useRouteBuilder("GET", "/test")
 			.exec(process);

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/prefer-for-of */
-import { type HookAfterSendResponse, type HookBeforeRouteExecution, type HookBeforeSendResponse, type HookError, type HookParseBody, HookResponse, hookRouteExitKind, type HookRouteLifeCycle, hookRouteNextKind, type HookSendResponse, type RouteHookParams, type RouteHookParamsAfter } from "@core/route";
+import { type HookAfterSendResponse, type HookBeforeRouteExecution, type HookBeforeSendResponse, type HookError, type HookParseBody, HookResponse, hookRouteExitKind, type HookRouteLifeCycle, hookRouteNextKind, type HookSendResponse, type RouteHookErrorParams, type RouteHookParams, type RouteHookParamsAfter } from "@core/route";
 
 const hookExit = hookRouteExitKind.setTo({});
 const hookNext = hookRouteNextKind.setTo({});
@@ -16,13 +16,34 @@ export function buildHookBefore(
 	hooks: (
 		| HookBeforeRouteExecution
 		| HookParseBody
-		| HookError
 	)[],
 ) {
 	if (!hooks.length) {
 		return exitHookFunction;
 	}
 	return async(params: RouteHookParams) => {
+		for (let index = 0; index < hooks.length; index++) {
+			const result = await hooks[index]!(params);
+
+			if (
+				hookRouteExitKind.has(result)
+				|| result instanceof HookResponse
+			) {
+				return result;
+			}
+		}
+
+		return hookNext;
+	};
+}
+
+export function buildHookErrorBefore(
+	hooks: HookError[],
+) {
+	if (!hooks.length) {
+		return exitHookFunction;
+	}
+	return async(params: RouteHookErrorParams) => {
 		for (let index = 0; index < hooks.length; index++) {
 			const result = await hooks[index]!(params);
 

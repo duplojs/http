@@ -1,4 +1,4 @@
-import { buildRouter, checkerStepFunctionBuilder, createHub, cutStepFunctionBuilder, extractStepFunctionBuilder, handlerStepFunctionBuilder, processFunctionBuilder, processStepFunctionBuilder, ResponseContract, routeFunctionBuilder, RouterBuildError, stepKind, useRouteBuilder } from "@core";
+import { buildRouter, createHub, defaultCheckerStepFunctionBuilder, defaultCutStepFunctionBuilder, defaultExtractStepFunctionBuilder, defaultHandlerStepFunctionBuilder, defaultProcessStepFunctionBuilder, defaultRouteFunctionBuilder, ResponseContract, RouterBuildError, stepKind, useRouteBuilder } from "@core";
 import { DP } from "@duplojs/utils";
 import { testRoute } from "@test-utils/route";
 
@@ -13,9 +13,8 @@ describe("buildRouter", () => {
 					hooksRouteLifeCycle: [{}],
 				})
 				.addFunctionBuilder({
-					routeFunctionBuilders: [routeFunctionBuilder],
-					stepFunctionBuilders: [checkerStepFunctionBuilder],
-					processFunctionBuilders: [processFunctionBuilder],
+					routeFunctionBuilders: [defaultRouteFunctionBuilder],
+					stepFunctionBuilders: [defaultCheckerStepFunctionBuilder],
 				})
 				.register([testRoute]),
 		);
@@ -24,22 +23,18 @@ describe("buildRouter", () => {
 			exec: expect.any(Function),
 			hooksHubLifeCycle: [{}],
 			hooksRouteLifeCycle: [{}],
-			processFunctionBuilders: [
-				processFunctionBuilder,
-				processFunctionBuilder,
-			],
 			routeFunctionBuilders: [
-				routeFunctionBuilder,
-				routeFunctionBuilder,
+				defaultRouteFunctionBuilder,
+				defaultRouteFunctionBuilder,
 			],
 			routes: [testRoute],
 			stepFunctionBuilders: [
-				checkerStepFunctionBuilder,
-				checkerStepFunctionBuilder,
-				cutStepFunctionBuilder,
-				handlerStepFunctionBuilder,
-				extractStepFunctionBuilder,
-				processStepFunctionBuilder,
+				defaultCheckerStepFunctionBuilder,
+				defaultCheckerStepFunctionBuilder,
+				defaultCutStepFunctionBuilder,
+				defaultHandlerStepFunctionBuilder,
+				defaultExtractStepFunctionBuilder,
+				defaultProcessStepFunctionBuilder,
 			],
 		});
 	});
@@ -58,7 +53,10 @@ describe("buildRouter", () => {
 	it("throw error when build notfound route", async() => {
 		const hub = createHub(
 			[{ environment: "DEV" }],
-			{ notfoundHandler: stepKind.setTo({}) as any },
+			{
+				notfoundHandler: stepKind.setTo({}) as any,
+				defaultExtractContract: ResponseContract.badRequest("test"),
+			},
 		);
 
 		(hub as any).notfoundHandler = stepKind.setTo({}) as any;

@@ -1,5 +1,5 @@
 import { type CheckerDefinition, createChecker, type Checker, type CheckerFunctionOutput, type CheckerFunctionParams } from "@core/checker";
-import { type Builder, createBuilder, type NeverCoalescing } from "@duplojs/utils";
+import { type Builder, createBuilder, type MaybePromise, type NeverCoalescing } from "@duplojs/utils";
 
 export interface CheckerBuilderParams {
 	readonly options?: Record<string, unknown>;
@@ -15,13 +15,13 @@ export interface CheckerBuilder<
 		theFunction: (
 			input: GenericInput,
 			params: CheckerFunctionParams<GenericParams["options"]>,
-		) => GenericOutput
+		) => MaybePromise<GenericOutput>
 	): Checker<
 		{
 			theFunction(
 				input: GenericInput,
 				params: CheckerFunctionParams<GenericParams["options"]>
-			): GenericOutput;
+			): MaybePromise<GenericOutput>;
 			options: GenericParams["options"];
 		}
 	>;

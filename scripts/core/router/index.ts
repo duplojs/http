@@ -2,10 +2,11 @@ import { type HubDefinition, type Hub, launchHookBeforeBuildRoute } from "@core/
 import { type BuildedRouter } from "./types";
 import { A, asyncPipe, E, forward, G, isType, justReturn, O, pipe, unwrap } from "@duplojs/utils";
 import { type BuildedRoute } from "@core/route/types";
-import { buildElement, checkerStepFunctionBuilder, cutStepFunctionBuilder, extractStepFunctionBuilder, handlerStepFunctionBuilder, processFunctionBuilder, processStepFunctionBuilder, routeFunctionBuilder, type BuildElementParams } from "@core/functionBuilder";
 import { pathToRegExp } from "./pathToRegExp";
 import { createRoute } from "@core/route";
 import { RouterBuildError } from "./buildError";
+import { buildRouteFunction, type BuildRouteFunctionParams, defaultRouteFunctionBuilder } from "@core/functionsBuilders/route";
+import { defaultCheckerStepFunctionBuilder, defaultCutStepFunctionBuilder, defaultExtractStepFunctionBuilder, defaultHandlerStepFunctionBuilder, defaultProcessStepFunctionBuilder } from "@core/functionsBuilders/steps";
 
 export * from "./types";
 export * from "./pathToRegExp";
@@ -15,7 +16,6 @@ type ReducedDefinition = Required<
 	Pick<
 		HubDefinition,
 		| "routes"
-		| "processFunctionBuilders"
 		| "hooksRouteLifeCycle"
 		| "routeFunctionBuilders"
 		| "stepFunctionBuilders"
@@ -36,20 +36,18 @@ type GroupedRoute = Record<
 
 export async function buildRouter(inputHub: Hub): Promise<BuildedRouter> {
 	const hub = inputHub.addFunctionBuilder({
-		routeFunctionBuilders: [routeFunctionBuilder],
-		processFunctionBuilders: [processFunctionBuilder],
+		routeFunctionBuilders: [defaultRouteFunctionBuilder],
 		stepFunctionBuilders: [
-			checkerStepFunctionBuilder,
-			cutStepFunctionBuilder,
-			handlerStepFunctionBuilder,
-			extractStepFunctionBuilder,
-			processStepFunctionBuilder,
+			defaultCheckerStepFunctionBuilder,
+			defaultCutStepFunctionBuilder,
+			defaultHandlerStepFunctionBuilder,
+			defaultExtractStepFunctionBuilder,
+			defaultProcessStepFunctionBuilder,
 		],
 	});
 	const { environment } = hub.definitions[0];
 	const {
 		hooksRouteLifeCycle,
-		processFunctionBuilders,
 		routeFunctionBuilders,
 		routes,
 		stepFunctionBuilders,
@@ -58,7 +56,6 @@ export async function buildRouter(inputHub: Hub): Promise<BuildedRouter> {
 		hub.definitions,
 		A.reduceFrom<ReducedDefinition>({
 			hooksRouteLifeCycle: [],
-			processFunctionBuilders: [],
 			routeFunctionBuilders: [],
 			stepFunctionBuilders: [],
 			routes: [],
@@ -72,9 +69,6 @@ export async function buildRouter(inputHub: Hub): Promise<BuildedRouter> {
 			hooksRouteLifeCycle: definition.hooksRouteLifeCycle
 				? A.concat(lastValue.hooksRouteLifeCycle, definition.hooksRouteLifeCycle)
 				: lastValue.hooksRouteLifeCycle,
-			processFunctionBuilders: definition.processFunctionBuilders
-				? A.concat(lastValue.processFunctionBuilders, definition.processFunctionBuilders)
-				: lastValue.processFunctionBuilders,
 			routeFunctionBuilders: definition.routeFunctionBuilders
 				? A.concat(lastValue.routeFunctionBuilders, definition.routeFunctionBuilders)
 				: lastValue.routeFunctionBuilders,
@@ -96,11 +90,11 @@ export async function buildRouter(inputHub: Hub): Promise<BuildedRouter> {
 		A.filter(isType("function")),
 	);
 
-	const buildParams: BuildElementParams = {
+	const buildParams: BuildRouteFunctionParams = {
 		environment,
 		globalHooksRouteLifeCycle: hooksRouteLifeCycle,
-		processFunctionBuilders,
 		stepFunctionBuilders,
+		routeFunctionBuilders,
 	};
 
 	const groupedRoute = await G.asyncReduce(
@@ -116,10 +110,9 @@ export async function buildRouter(inputHub: Hub): Promise<BuildedRouter> {
 				route,
 			);
 
-			const buildedRoute = await buildElement(
+			const buildedRoute = await buildRouteFunction(
 				routeAfterHook,
 				buildParams,
-				routeFunctionBuilders,
 			);
 
 			if (E.isLeft(buildedRoute)) {
@@ -155,10 +148,9 @@ export async function buildRouter(inputHub: Hub): Promise<BuildedRouter> {
 			preflightSteps: [],
 			steps: [hub.notfoundHandler],
 		}),
-		(route) => buildElement(
+		(route) => buildRouteFunction(
 			route,
 			buildParams,
-			routeFunctionBuilders,
 		),
 		E.whenIsLeft(
 			(element) => {
@@ -211,7 +203,6 @@ export async function buildRouter(inputHub: Hub): Promise<BuildedRouter> {
 			);
 		},
 		hooksRouteLifeCycle,
-		processFunctionBuilders,
 		routeFunctionBuilders,
 		routes,
 		stepFunctionBuilders,

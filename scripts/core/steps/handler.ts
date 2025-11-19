@@ -13,7 +13,7 @@ export interface HandlerStepFunctionParams<
 
 export interface HandlerStepDefinition {
 	theFunction(floor: Floor, params: HandlerStepFunctionParams): MaybePromise<Response>;
-	readonly responseContract: ResponseContract.Contract | ResponseContract.Contract[];
+	readonly responseContract: ResponseContract.Contract | readonly ResponseContract.Contract[];
 }
 
 export const handlerStepKind = createCoreLibKind("handler-step");

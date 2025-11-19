@@ -2,7 +2,7 @@ import { type Floor } from "@core/floor";
 import { type ResponseContract } from "@core/response";
 import { type RouteDefinition } from "@core/route";
 import { type CutStepFunctionOutput, type CutStep, type CutStepFunctionParams, createCutStep } from "@core/steps";
-import { type Unwrap, type AnyTuple, type O, type MaybePromise, type IsEqual } from "@duplojs/utils";
+import { type Unwrap, type O, type MaybePromise, type IsEqual, type A } from "@duplojs/utils";
 import { routeBuilder } from "./builder";
 import { type Request } from "@core/request";
 
@@ -13,14 +13,12 @@ declare module "./builder" {
 		GenericRequest extends Request = Request,
 	> {
 		cut<
-			GenericResponseContract extends (
+			const GenericResponseContract extends (
 				| ResponseContract.Contract
-				| [ResponseContract.Contract, ...ResponseContract.Contract[]]
+				| readonly ResponseContract.Contract[]
 			),
 			GenericResponse extends ResponseContract.Convert<
-				GenericResponseContract extends AnyTuple
-					? GenericResponseContract[number]
-					: GenericResponseContract
+				A.ArrayCoalescing<GenericResponseContract>[number]
 			>,
 			GenericOutput extends CutStepFunctionOutput | GenericResponse,
 		>(
@@ -40,7 +38,7 @@ declare module "./builder" {
 						...GenericDefinition["steps"],
 						CutStep<
 							{
-								responseContract: GenericResponseContract;
+								readonly responseContract: GenericResponseContract;
 								theFunction(
 									floor: GenericFloor,
 									param: CutStepFunctionParams<

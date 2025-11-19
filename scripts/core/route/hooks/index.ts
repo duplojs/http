@@ -27,7 +27,7 @@ interface HookExit extends Kind<typeof hookRouteExitKind.definition> {
 
 }
 
-export const hookRouteNextKind = createCoreLibKind("route-hook-exit");
+export const hookRouteNextKind = createCoreLibKind("route-hook-next");
 
 interface HookNext extends Kind<typeof hookRouteNextKind.definition> {
 
@@ -66,8 +66,30 @@ export type HookParseBody<
 	params: RouteHookParams<GenericRequest>
 ) => MaybePromise<HookResponse | HookExit | HookNext>;
 
+export interface RouteHookErrorParams<
+	GenericRequest extends Request = Request,
+> {
+	readonly request: GenericRequest;
+	readonly error: unknown;
+	next(): HookNext;
+	exit(): HookExit;
+	response<
+		GenericCode extends ResponseCode = ResponseCode,
+		GenericInformation extends string = string,
+		GenericBody extends unknown = unknown,
+	>(
+		code: GenericCode,
+		information: GenericInformation,
+		body?: GenericBody,
+	): HookResponse<
+		GenericCode,
+		GenericInformation,
+		GenericBody | undefined
+	>;
+}
+
 export type HookError = (
-	params: RouteHookParams<Request>
+	params: RouteHookErrorParams<Request>
 ) => MaybePromise<HookResponse | HookExit | HookNext>;
 
 export interface RouteHookParamsAfter<

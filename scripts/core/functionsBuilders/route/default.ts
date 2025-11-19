@@ -1,36 +1,31 @@
 /* eslint-disable @typescript-eslint/prefer-for-of */
 import { type HookAfterSendResponse, type HookBeforeRouteExecution, type HookBeforeSendResponse, type HookError, type HookOnConstructRequest, type HookParseBody, HookResponse, type HookRouteLifeCycle, type HookSendResponse, routeKind } from "@core/route";
-import { createFunctionBuilder } from "../../create";
 import { A, E, forward, isType, pipe } from "@duplojs/utils";
 import { Response } from "@core/response";
 import { type Request } from "@core/request";
-import { buildSteps } from "./step";
-import { buildHookAfter, buildHookBefore, createHookResponse, exitHookFunction, nextHookFunction } from "./hook";
+import { buildHookAfter, buildHookBefore, buildHookErrorBefore, createHookResponse, exitHookFunction, nextHookFunction } from "./hook";
+import { createRouteFunctionBuilder } from "./create";
+import { buildStepsFunction } from "../steps";
 
-export * from "./hook";
-export * from "./step";
-
-export const routeFunctionBuilder = createFunctionBuilder(
-	(element, { support, notSupport }) => routeKind.has(element)
-		? support(element)
-		: notSupport(),
+export const defaultRouteFunctionBuilder = createRouteFunctionBuilder(
+	routeKind.has,
 	async(
 		route,
 		{
 			success,
-			buildElement,
+			buildStep,
 			globalHooksRouteLifeCycle,
 		},
 	) => {
 		const {
 			hooks: routeHooks,
-			preflightSteps: preflightSteps,
+			preflightSteps,
 			steps,
 		} = route.definition;
 
-		const maybeBuildedSteps = await buildSteps(
+		const maybeBuildedSteps = await buildStepsFunction(
 			steps,
-			buildElement,
+			buildStep,
 		);
 
 		if (E.isLeft(maybeBuildedSteps)) {
@@ -39,9 +34,9 @@ export const routeFunctionBuilder = createFunctionBuilder(
 
 		const buildedSteps = maybeBuildedSteps;
 
-		const maybeBuildedPreFlightSteps = await buildSteps(
+		const maybeBuildedPreFlightSteps = await buildStepsFunction(
 			preflightSteps,
-			buildElement,
+			buildStep,
 		);
 
 		if (E.isLeft(maybeBuildedPreFlightSteps)) {
@@ -125,7 +120,7 @@ export const routeFunctionBuilder = createFunctionBuilder(
 				}
 				: (params) => params.request,
 			parseBody: buildHookBefore(hookParseBody),
-			error: buildHookBefore(hookError),
+			error: buildHookErrorBefore(hookError),
 			sendResponse: buildHookAfter(hookSendResponse),
 		};
 
@@ -183,6 +178,7 @@ export const routeFunctionBuilder = createFunctionBuilder(
 			} catch (error: unknown) {
 				const errorResult = await hooks.error({
 					request,
+					error,
 					exit: exitHookFunction,
 					next: nextHookFunction,
 					response: createHookResponse("error"),

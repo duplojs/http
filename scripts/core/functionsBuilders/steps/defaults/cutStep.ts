@@ -1,13 +1,11 @@
 import { type CutStepDefinition, type CutStepFunctionParams, cutStepKind, cutStepOutputKind } from "@core/steps";
-import { createFunctionBuilder } from "../create";
+import { createStepFunctionBuilder } from "../create";
 import { A, E, unwrap, wrapValue } from "@duplojs/utils";
 import { Response, ResponseContract } from "@core/response";
 import { type Floor } from "@core/floor";
 
-export const cutStepFunctionBuilder = createFunctionBuilder(
-	(element, { support, notSupport }) => cutStepKind.has(element)
-		? support(element)
-		: notSupport(),
+export const defaultCutStepFunctionBuilder = createStepFunctionBuilder(
+	cutStepKind.has,
 	(step, { success }) => {
 		const {
 			responseContract,
@@ -44,7 +42,10 @@ export const cutStepFunctionBuilder = createFunctionBuilder(
 			const result = currentContract.schema.parse(body);
 
 			if (E.isLeft(result)) {
-				throw new ResponseContract.Error(information, currentContract);
+				throw new ResponseContract.Error(
+					information,
+					unwrap(result),
+				);
 			}
 
 			return new Response(

@@ -130,7 +130,7 @@ describe("preflight builder use route builder", () => {
 				query: DPE.number(),
 				body: DPE.string(),
 			})
-			.export(["body", "query"]);
+			.exports(["body", "query"]);
 
 		const routeBuilder = usePreflightBuilder()
 			.exec(process, { imports: ["body"] })

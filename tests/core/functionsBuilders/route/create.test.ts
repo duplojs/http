@@ -1,14 +1,11 @@
-import { createFunctionBuilder, type Route, routeKind } from "@core";
+import { createRoute, createRouteFunctionBuilder, type Route, routeKind } from "@core";
 import { E, type ExpectType } from "@duplojs/utils";
-import { testProcess } from "@test-utils/process";
 import { testRoute } from "@test-utils/route";
 
 describe("createFunctionBuilder", () => {
 	const fakeFnc = vi.fn();
-	const functionBuilder = createFunctionBuilder(
-		(element, { support, notSupport }) => routeKind.has(element)
-			? support(element)
-			: notSupport(),
+	const functionBuilder = createRouteFunctionBuilder(
+		(route) => route.definition.method === "GET",
 		(route, { success }) => {
 			type Check = ExpectType<
 				typeof route,
@@ -17,7 +14,7 @@ describe("createFunctionBuilder", () => {
 			>;
 			fakeFnc(route);
 
-			return success(async(request) => {});
+			return success(() => Promise.resolve());
 		},
 	);
 
@@ -29,8 +26,8 @@ describe("createFunctionBuilder", () => {
 		const result = await functionBuilder(
 			testRoute,
 			{
-				success: (element) => E.right("successBuild", element),
-				buildElement: () => void undefined as never,
+				success: (element) => E.right("buildSuccess", element),
+				buildStep: () => void undefined as never,
 				environment: "DEV",
 				globalHooksRouteLifeCycle: [],
 			},
@@ -42,16 +39,22 @@ describe("createFunctionBuilder", () => {
 
 	it("not support element", async() => {
 		const result = await functionBuilder(
-			testProcess,
+			createRoute({
+				hooks: [],
+				method: "POST",
+				paths: ["/test"],
+				preflightSteps: [],
+				steps: [],
+			}),
 			{
-				success: (element) => E.right("successBuild", element),
-				buildElement: () => void undefined as never,
+				success: (element) => E.right("buildSuccess", element),
+				buildStep: () => void undefined as never,
 				environment: "DEV",
 				globalHooksRouteLifeCycle: [],
 			},
 		);
 
-		expect(E.hasInformation(result, "notSupport")).toBe(true);
+		expect(E.hasInformation(result, "routeNotSupport")).toBe(true);
 		expect(fakeFnc).not.toBeCalled();
 	});
 });

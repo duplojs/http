@@ -10,7 +10,7 @@ declare module "./builder" {
 		GenericFloor extends Floor = {},
 		GenericRequest extends Request = Request,
 	> {
-		export<
+		exports<
 			GenericExportation extends (keyof GenericFloor)[] = never,
 		>(
 			exportedKey?: GenericExportation
@@ -43,7 +43,7 @@ declare module "./builder" {
 }
 
 processBuilder.set(
-	"export",
+	"exports",
 	({
 		accumulator,
 	}) => createProcess(accumulator),

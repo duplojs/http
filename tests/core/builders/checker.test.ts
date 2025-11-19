@@ -1,5 +1,6 @@
 import { type Checker, type CheckerFunctionOutput, type CheckerFunctionParams, checkerKind, useCheckerBuilder } from "@core";
 import { type ExpectType } from "@duplojs/utils";
+import { type MaybePromise } from "rollup";
 
 describe("build checker", () => {
 	it("create checker", () => {
@@ -32,7 +33,7 @@ describe("build checker", () => {
 				theFunction(
 					input: string,
 					params: CheckerFunctionParams<undefined>
-				): CheckerFunctionOutput<"info", number> | CheckerFunctionOutput<"error", string>;
+				): MaybePromise<CheckerFunctionOutput<"info", number> | CheckerFunctionOutput<"error", string>>;
 				options: undefined;
 			}>,
 			"strict"
@@ -71,7 +72,7 @@ describe("build checker", () => {
 				theFunction(
 					input: string,
 					params: CheckerFunctionParams<{ flag: boolean }>
-				): CheckerFunctionOutput<"info", number> | CheckerFunctionOutput<"error", string>;
+				): MaybePromise<CheckerFunctionOutput<"info", number> | CheckerFunctionOutput<"error", string>>;
 				options: { flag: boolean };
 			}>,
 			"strict"

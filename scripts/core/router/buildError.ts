@@ -1,5 +1,5 @@
-import { type ElementsToBeBuilt } from "@core/functionBuilder";
 import { createCoreLibKind } from "@core/kind";
+import { type Route } from "@core/route";
 import { kindHeritage } from "@duplojs/utils";
 
 export class RouterBuildError extends kindHeritage(
@@ -8,7 +8,7 @@ export class RouterBuildError extends kindHeritage(
 	Error,
 ) {
 	public constructor(
-		public element: ElementsToBeBuilt,
+		public element: Route,
 	) {
 		super({}, ["Error during build route."]);
 	}

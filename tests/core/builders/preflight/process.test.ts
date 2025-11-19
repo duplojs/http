@@ -4,7 +4,7 @@ import { builderKind, DPE, type ExpectType } from "@duplojs/utils";
 describe("preflight builder process method", () => {
 	it("exec", () => {
 		const process = useProcessBuilder()
-			.export();
+			.exports();
 
 		const preflightBuilder = usePreflightBuilder()
 			.exec(process);
@@ -52,7 +52,7 @@ describe("preflight builder process method", () => {
 				test: true,
 			},
 		})
-			.export();
+			.exports();
 
 		const preflightBuilder = usePreflightBuilder()
 			.exec(process, { options: { test: false } });
@@ -101,7 +101,7 @@ describe("preflight builder process method", () => {
 				query: DPE.number(),
 				body: DPE.string(),
 			})
-			.export(["body"]);
+			.exports(["body"]);
 
 		const preflightBuilder = usePreflightBuilder()
 			.exec(process, { imports: ["body"] });
@@ -150,14 +150,14 @@ describe("preflight builder process method", () => {
 				query: DPE.number(),
 				body: DPE.string(),
 			})
-			.export(["body"]);
+			.exports(["body"]);
 
 		const process = useProcessBuilder({
 			options: {
 				test: true,
 			},
 		})
-			.export();
+			.exports();
 
 		const preflightBuilder = usePreflightBuilder()
 			.exec(
@@ -214,7 +214,6 @@ describe("preflight builder process method", () => {
 		type Check = ExpectType<
 			typeof preflightBuilder,
 			PreflightBuilder<
-				// @ts-expect-error process input function options
 				{
 					readonly preflightSteps: readonly [
 						ProcessStep<{
@@ -222,7 +221,6 @@ describe("preflight builder process method", () => {
 							readonly options: undefined;
 							readonly imports: readonly ["body"];
 						}>,
-						// @ts-expect-error process input function options
 						ProcessStep<{
 							readonly process: typeof process;
 							// eslint-disable-next-line @typescript-eslint/method-signature-style
@@ -245,7 +243,7 @@ describe("preflight builder process method", () => {
 				query: DPE.number(),
 				body: DPE.string(),
 			})
-			.export(["body", "query"]);
+			.exports(["body", "query"]);
 
 		const preflightBuilder = usePreflightBuilder()
 			.exec(process, { imports: ["body", "query"] });
@@ -295,7 +293,7 @@ describe("preflight builder process method", () => {
 		const process = useProcessBuilder({
 			hooks: [{ onConstructRequest: ({ addRequestProperties }) => addRequestProperties({ prop: 1 }) }],
 		})
-			.export();
+			.exports();
 
 		const routeBuilder = usePreflightBuilder()
 			.exec(process);

@@ -1,16 +1,14 @@
 import { extractStepKind } from "@core/steps";
-import { createFunctionBuilder } from "../create";
 import { A, DP, E, innerPipe, isType, justReturn, O, P, pipe, unwrap } from "@duplojs/utils";
 import { type Request } from "@core/request";
 import { Response, ResponseContract } from "@core/response";
 import { type Floor } from "@core/floor";
+import { createStepFunctionBuilder } from "../create";
 
 type Extractor = (request: Request, floor: Floor) => Response | Floor;
 
-export const extractStepFunctionBuilder = createFunctionBuilder(
-	(element, { support, notSupport }) => extractStepKind.has(element)
-		? support(element)
-		: notSupport(),
+export const defaultExtractStepFunctionBuilder = createStepFunctionBuilder(
+	extractStepKind.has,
 	(step, { success, environment }) => {
 		const {
 			shape,
@@ -22,37 +20,23 @@ export const extractStepFunctionBuilder = createFunctionBuilder(
 				"extract-error",
 			);
 
-		const getResponse = environment === "DEV"
-			? (
-				result: E.EitherError<DP.DataParserError>,
-				key: string,
-				subKey?: string,
-			) => {
-				const response = new Response(
-					responseContract.code,
-					responseContract.information,
-					unwrap(result),
-				);
+		function getResponse(
+			result: E.EitherError<DP.DataParserError>,
+			key: string,
+			subKey?: string,
+		) {
+			const response = new Response(
+				responseContract.code,
+				responseContract.information,
+				environment === "DEV"
+					? unwrap(result)
+					: undefined,
+			);
 
-				return subKey === undefined
-					? response.setHeader("extract-key", `request.${key}`)
-					: response.setHeader("extract-key", `request.${key}.${subKey}`);
-			}
-			: (
-				_result: E.EitherError<DP.DataParserError>,
-				key: string,
-				subKey?: string,
-			) => {
-				const response = new Response(
-					responseContract.code,
-					responseContract.information,
-					undefined,
-				);
-
-				return subKey === undefined
-					? response.setHeader("extract-key", `request.${key}`)
-					: response.setHeader("extract-key", `request.${key}.${subKey}`);
-			};
+			return subKey === undefined
+				? response.setHeader("extract-key", `request.${key}`)
+				: response.setHeader("extract-key", `request.${key}.${subKey}`);
+		}
 
 		function treatResult(
 			result: E.EitherError<DP.DataParserError> | E.EitherSuccess<unknown>,

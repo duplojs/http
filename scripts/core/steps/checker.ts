@@ -10,7 +10,7 @@ export interface CheckerStepDefinition {
 	readonly result: string | readonly string[];
 	readonly indexing?: string;
 	input(input: Floor): unknown;
-	readonly options?: Record<string, unknown> | ((input: Floor) => Record<string, unknown>);
+	readonly options?: Record<string, unknown> | ((input: any) => Record<string, unknown>);
 	readonly responseContract: ResponseContract.Contract<ClientErrorResponseCode>;
 }
 

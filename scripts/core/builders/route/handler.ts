@@ -15,7 +15,7 @@ declare module "./builder" {
 		handler<
 			GenericResponseContract extends (
 				| ResponseContract.Contract
-				| [ResponseContract.Contract, ...ResponseContract.Contract[]]
+				| readonly [ResponseContract.Contract, ...ResponseContract.Contract[]]
 			),
 			GenericResponse extends ResponseContract.Convert<
 				GenericResponseContract extends AnyTuple

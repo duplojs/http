@@ -1,6 +1,6 @@
 import { type ProcessDefinition } from "@core/process";
 import { type Floor } from "@core/floor";
-import { type Builder, createBuilder, type NeverCoalescing } from "@duplojs/utils";
+import { type Builder, createBuilder, type IsEqual, type NeverCoalescing } from "@duplojs/utils";
 import { type MakeRequestFromHooks, type HookRouteLifeCycle } from "@core/route";
 import { type Request } from "@core/request";
 
@@ -28,7 +28,9 @@ export function useProcessBuilder<
 			readonly options: NeverCoalescing<GenericOptions, undefined>;
 			readonly hooks: GenericHooks;
 		},
-		{},
+		IsEqual<GenericOptions, never> extends true
+			? {}
+			: { options: GenericOptions },
 		NeverCoalescing<
 			MakeRequestFromHooks<GenericHooks>,
 			Request

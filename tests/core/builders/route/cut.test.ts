@@ -70,7 +70,7 @@ describe("route builder cut method", () => {
 							readonly responseContract: undefined;
 						}>,
 						CutStep<{
-							responseContract: ResponseContract.Contract<
+							readonly responseContract: ResponseContract.Contract<
 								"403",
 								"test",
 								DP.DataParserEmpty<{
@@ -154,7 +154,7 @@ describe("route builder cut method", () => {
 					readonly hooks: readonly [];
 					readonly steps: readonly [
 						CutStep<{
-							responseContract: [
+							readonly responseContract: readonly [
 								ResponseContract.Contract<
 									"403",
 									"test",
@@ -257,7 +257,7 @@ describe("route builder cut method", () => {
 							readonly responseContract: undefined;
 						}>,
 						CutStep<{
-							responseContract: ResponseContract.Contract<
+							readonly responseContract: ResponseContract.Contract<
 								"403",
 								"test",
 								DP.DataParserEmpty<{
@@ -352,7 +352,7 @@ describe("route builder cut method", () => {
 							readonly responseContract: undefined;
 						}>,
 						CutStep<{
-							responseContract: ResponseContract.Contract<
+							readonly responseContract: ResponseContract.Contract<
 								"403",
 								"test",
 								DP.DataParserEmpty<{
@@ -444,7 +444,7 @@ describe("route builder cut method", () => {
 							readonly responseContract: undefined;
 						}>,
 						CutStep<{
-							responseContract: ResponseContract.Contract<
+							readonly responseContract: ResponseContract.Contract<
 								"403",
 								"test",
 								DP.DataParserEmpty<{
