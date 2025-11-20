@@ -14,7 +14,7 @@
     "test:tu:bench": "vitest bench",
     "test:tu:watch": "vitest --coverage --watch",
     "test:tu:update": "vitest --coverage --update",
-    "test:types": "tsc -p tsconfig.test.json",
+    "test:types": "tsc -p tests/core/tsconfig.json && tsc -p tests/interfaces/node/tsconfig.json",
     "test:lint": "eslint",
     "test:lint:fix": "eslint --fix",
     "prepare": "husky"

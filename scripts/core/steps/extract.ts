@@ -4,16 +4,27 @@ import { type StepKind, stepKind } from "./kind";
 import { type Request } from "@core/request";
 import { type ClientErrorResponseCode, type ResponseContract } from "@core/response";
 
+export interface DisabledExtractKeysCustom {
+
+}
+
+export type DisabledExtractKeys = O.GetPropsWithValue<
+	DisabledExtractKeysCustom,
+	true
+>;
+
 export type ExtractShape<
 	GenericRequest extends Request = Request,
 > = Partial<
 	Record<
 		Exclude<
 			keyof GenericRequest,
-			O.GetPropsWithValueExtends<
+			| O.GetPropsWithValueExtends<
 				GenericRequest,
 				AnyFunction
 			>
+			// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+			| DisabledExtractKeys
 		>,
 		| DP.DataParser
 		| Record<string, DP.DataParser>

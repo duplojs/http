@@ -1,4 +1,4 @@
-import { type HubDefinition, type Hub, launchHookBeforeBuildRoute } from "@core/hub";
+import { type Hub, launchHookBeforeBuildRoute } from "@core/hub";
 import { type BuildedRouter } from "./types";
 import { A, asyncPipe, E, forward, G, isType, justReturn, O, pipe, unwrap } from "@duplojs/utils";
 import { type BuildedRoute } from "@core/route/types";
@@ -7,21 +7,12 @@ import { createRoute } from "@core/route";
 import { RouterBuildError } from "./buildError";
 import { buildRouteFunction, type BuildRouteFunctionParams, defaultRouteFunctionBuilder } from "@core/functionsBuilders/route";
 import { defaultCheckerStepFunctionBuilder, defaultCutStepFunctionBuilder, defaultExtractStepFunctionBuilder, defaultHandlerStepFunctionBuilder, defaultProcessStepFunctionBuilder } from "@core/functionsBuilders/steps";
+import { decodeUrl } from "./decodeUrl";
 
 export * from "./types";
 export * from "./pathToRegExp";
 export * from "./buildError";
-
-type ReducedDefinition = Required<
-	Pick<
-		HubDefinition,
-		| "routes"
-		| "hooksRouteLifeCycle"
-		| "routeFunctionBuilders"
-		| "stepFunctionBuilders"
-		| "hooksHubLifeCycle"
-	>
->;
+export * from "./decodeUrl";
 
 interface RouterElement {
 	pattern: RegExp;
@@ -35,54 +26,24 @@ type GroupedRoute = Record<
 >;
 
 export async function buildRouter(inputHub: Hub): Promise<BuildedRouter> {
-	const hub = inputHub.addFunctionBuilder({
-		routeFunctionBuilders: [defaultRouteFunctionBuilder],
-		stepFunctionBuilders: [
+	const hub = inputHub
+		.addRouteFunctionBuilder(defaultRouteFunctionBuilder)
+		.addStepFunctionBuilder([
 			defaultCheckerStepFunctionBuilder,
 			defaultCutStepFunctionBuilder,
 			defaultHandlerStepFunctionBuilder,
 			defaultExtractStepFunctionBuilder,
 			defaultProcessStepFunctionBuilder,
-		],
-	});
-	const { environment } = hub.definitions[0];
+		]);
+
+	const { environment } = hub.config;
 	const {
 		hooksRouteLifeCycle,
 		routeFunctionBuilders,
 		routes,
 		stepFunctionBuilders,
 		hooksHubLifeCycle,
-	} = A.reduce(
-		hub.definitions,
-		A.reduceFrom<ReducedDefinition>({
-			hooksRouteLifeCycle: [],
-			routeFunctionBuilders: [],
-			stepFunctionBuilders: [],
-			routes: [],
-			hooksHubLifeCycle: [],
-		}),
-		({
-			lastValue,
-			element: definition,
-			next,
-		}) => next({
-			hooksRouteLifeCycle: definition.hooksRouteLifeCycle
-				? A.concat(lastValue.hooksRouteLifeCycle, definition.hooksRouteLifeCycle)
-				: lastValue.hooksRouteLifeCycle,
-			routeFunctionBuilders: definition.routeFunctionBuilders
-				? A.concat(lastValue.routeFunctionBuilders, definition.routeFunctionBuilders)
-				: lastValue.routeFunctionBuilders,
-			stepFunctionBuilders: definition.stepFunctionBuilders
-				? A.concat(lastValue.stepFunctionBuilders, definition.stepFunctionBuilders)
-				: lastValue.stepFunctionBuilders,
-			routes: definition.routes
-				? A.concat(lastValue.routes, definition.routes)
-				: lastValue.routes,
-			hooksHubLifeCycle: definition.hooksHubLifeCycle
-				? A.concat(lastValue.hooksHubLifeCycle, definition.hooksHubLifeCycle)
-				: lastValue.hooksHubLifeCycle,
-		}),
-	);
+	} = hub.aggregates();
 
 	const hooksBeforeBuildRoute = pipe(
 		hooksHubLifeCycle,
@@ -165,11 +126,13 @@ export async function buildRouter(inputHub: Hub): Promise<BuildedRouter> {
 	return {
 		exec: (initializationData) => {
 			const routerElements = groupedRoute[initializationData.method];
+			const decodedUrl = decodeUrl(initializationData.url);
 
 			if (!routerElements) {
 				return buildedNotfoundRoute(
 					new Request({
 						...initializationData,
+						...decodedUrl,
 						params: {},
 						matchedPath: null,
 					}),
@@ -179,7 +142,7 @@ export async function buildRouter(inputHub: Hub): Promise<BuildedRouter> {
 			// eslint-disable-next-line @typescript-eslint/prefer-for-of
 			for (let index = 0; index < routerElements.length; index++) {
 				const routerElement = routerElements[index]!;
-				const result = routerElement.pattern.exec(initializationData.path);
+				const result = routerElement.pattern.exec(decodedUrl.path);
 
 				if (!result) {
 					continue;
@@ -188,6 +151,7 @@ export async function buildRouter(inputHub: Hub): Promise<BuildedRouter> {
 				return routerElement.buildedRoute(
 					new Request({
 						...initializationData,
+						...decodedUrl,
 						params: result.groups ?? {},
 						matchedPath: routerElement.matchedPath,
 					}),
@@ -197,6 +161,7 @@ export async function buildRouter(inputHub: Hub): Promise<BuildedRouter> {
 			return buildedNotfoundRoute(
 				new Request({
 					...initializationData,
+					...decodedUrl,
 					params: {},
 					matchedPath: null,
 				}),

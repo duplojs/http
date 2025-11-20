@@ -5,15 +5,12 @@ import { type HookRouteLifeCycle, type Route, type RouteDefinition } from "@core
 
 export interface BuildedRouter {
 	exec(
-		initializationData: Pick<
+		initializationData: Omit<
 			RequestInitializationData,
-		| "headers"
-		| "host"
-		| "method"
-		| "origin"
-		| "path"
-		| "query"
-		| "url"
+			| "matchedPath"
+			| "params"
+			| "path"
+			| "query"
 		>
 	): Promise<void>;
 	readonly routes: readonly Route<RouteDefinition>[];

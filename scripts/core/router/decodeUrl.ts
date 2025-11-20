@@ -1,0 +1,69 @@
+export const regexUrlAnalyser = /^(?<path>[^?]*)(?:\?(?<query>[^#]*))?(?:#(?<fragment>[^]*))?$/;
+export const regexQueryAnalyser = /(?<key>[^=&]+)=(?<value>[^&]*)/g;
+
+export interface DecodedUrl {
+	path: string;
+	query: Record<string, string | string[]>;
+}
+
+export function decodeUrl(url: string): DecodedUrl {
+	try {
+		const result = regexUrlAnalyser.exec(url);
+
+		if (!result) {
+			return {
+				path: "/",
+				query: {},
+			};
+		}
+
+		const groups = result.groups ?? {};
+
+		const path = decodeURIComponent(groups.path || "/");
+		const queryString = groups.query;
+
+		if (!queryString) {
+			return {
+				path,
+				query: {},
+			};
+		}
+
+		const query: DecodedUrl["query"] = {};
+
+		for (const result of queryString.matchAll(regexQueryAnalyser)) {
+			const groups = result.groups;
+
+			if (
+				!groups
+				|| !("key" in groups)
+				|| !("value" in groups)
+			) {
+				continue;
+			}
+
+			const key = decodeURIComponent(groups.key);
+			const value = decodeURIComponent(groups.value);
+
+			const currentValue = query[key];
+
+			if (typeof currentValue === "undefined") {
+				query[key] = value;
+			} else if (currentValue instanceof Array) {
+				currentValue.push(value);
+			} else {
+				query[key] = [currentValue, value];
+			}
+		}
+
+		return {
+			path,
+			query,
+		};
+	} catch {
+		return {
+			path: "/",
+			query: {},
+		};
+	}
+}

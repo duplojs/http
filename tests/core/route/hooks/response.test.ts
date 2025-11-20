@@ -11,9 +11,7 @@ describe("hook response", () => {
 			code: "200",
 			information: "OK",
 			body: { message: "success" },
-			headers: {
-				hook: "afterSendResponse",
-			},
+			headers: undefined,
 			from: "afterSendResponse",
 		});
 	});

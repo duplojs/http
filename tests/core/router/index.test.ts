@@ -1,4 +1,4 @@
-import { buildRouter, createHub, defaultCheckerStepFunctionBuilder, defaultCutStepFunctionBuilder, defaultExtractStepFunctionBuilder, defaultHandlerStepFunctionBuilder, defaultProcessStepFunctionBuilder, defaultRouteFunctionBuilder, ResponseContract, RouterBuildError, stepKind, useRouteBuilder } from "@core";
+import { buildRouter, createHub, defaultCheckerStepFunctionBuilder, defaultCutStepFunctionBuilder, defaultExtractStepFunctionBuilder, defaultHandlerStepFunctionBuilder, defaultProcessStepFunctionBuilder, defaultRouteFunctionBuilder, ResponseContract, routeKind, RouterBuildError, stepKind, useRouteBuilder } from "@core";
 import { DP } from "@duplojs/utils";
 import { testRoute } from "@test-utils/route";
 
@@ -8,14 +8,10 @@ describe("buildRouter", () => {
 			createHub({
 				environment: "DEV",
 			})
-				.addHooks({
-					hooksHubLifeCycle: [{}],
-					hooksRouteLifeCycle: [{}],
-				})
-				.addFunctionBuilder({
-					routeFunctionBuilders: [defaultRouteFunctionBuilder],
-					stepFunctionBuilders: [defaultCheckerStepFunctionBuilder],
-				})
+				.addHubHooks([{}])
+				.addRouteHooks([{}])
+				.addRouteFunctionBuilder([defaultRouteFunctionBuilder])
+				.addStepFunctionBuilder([defaultCheckerStepFunctionBuilder])
 				.register([testRoute]),
 		);
 
@@ -44,20 +40,14 @@ describe("buildRouter", () => {
 			buildRouter(
 				createHub({
 					environment: "DEV",
-					routes: [{} as any],
-				}),
+				})
+					.register([{}] as any),
 			),
 		).rejects.instanceof(RouterBuildError);
 	});
 
 	it("throw error when build notfound route", async() => {
-		const hub = createHub(
-			[{ environment: "DEV" }],
-			{
-				notfoundHandler: stepKind.setTo({}) as any,
-				defaultExtractContract: ResponseContract.badRequest("test"),
-			},
-		);
+		const hub = createHub({ environment: "DEV" });
 
 		(hub as any).notfoundHandler = stepKind.setTo({}) as any;
 
@@ -86,9 +76,7 @@ describe("buildRouter", () => {
 			host: "",
 			method: "SuperMethod",
 			origin: "",
-			path: "/test",
-			query: {},
-			url: "",
+			url: "/test",
 		});
 
 		expect(spy).toHaveBeenCalled();
@@ -115,9 +103,7 @@ describe("buildRouter", () => {
 			host: "",
 			method: "GET",
 			origin: "",
-			path: "/user",
-			query: {},
-			url: "",
+			url: "/user",
 		});
 
 		expect(spy).toHaveBeenCalled();
@@ -138,8 +124,8 @@ describe("buildRouter", () => {
 		const buildedRouter = await buildRouter(
 			createHub({
 				environment: "DEV",
-				routes: [route],
 			})
+				.register(route)
 				.setNotfoundHandler(
 					ResponseContract.notFound("notfound"),
 					({ response }) => {
@@ -154,9 +140,7 @@ describe("buildRouter", () => {
 			host: "",
 			method: "GET",
 			origin: "",
-			path: "/users",
-			query: {},
-			url: "",
+			url: "/users",
 		});
 
 		expect(spyRoute).toHaveBeenCalled();
@@ -183,8 +167,8 @@ describe("buildRouter", () => {
 		const buildedRouter = await buildRouter(
 			createHub({
 				environment: "DEV",
-				routes: [route],
 			})
+				.register(route)
 				.setNotfoundHandler(
 					ResponseContract.notFound("notfound"),
 					({ response }) => {
@@ -199,9 +183,7 @@ describe("buildRouter", () => {
 			host: "",
 			method: "GET",
 			origin: "",
-			path: "/users/12",
-			query: {},
-			url: "",
+			url: "/users/12",
 		});
 
 		expect(spyRoute).toHaveBeenCalledWith("12");

@@ -35,7 +35,5 @@ export class HookResponse<
 		this.information = information;
 		this.body = body;
 		this.from = from;
-
-		this.setHeader("hook", from);
 	}
 }

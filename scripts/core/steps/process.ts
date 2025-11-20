@@ -2,7 +2,6 @@ import { createCoreLibKind } from "@core/kind";
 import { pipe, type Kind } from "@duplojs/utils";
 import { type StepKind, stepKind } from "./kind";
 import { type Process } from "@core/process";
-import { type Floor } from "@core/floor";
 
 export interface ProcessStepDefinition {
 	readonly process: Process;

@@ -16,7 +16,7 @@ export interface RequestMethodsWrapper {
 export type RequestMethods = GetPropsWithValue<RequestMethodsWrapper, true>;
 
 export interface RequestInitializationData {
-	readonly headers: Record<string, string | string[]>;
+	readonly headers: Partial<Record<string, string | string[]>>;
 	readonly host: string;
 	readonly matchedPath: string | null;
 	readonly method: string;
@@ -33,7 +33,7 @@ export class Request extends kindHeritage(
 ) implements RequestInitializationData {
 	public method: string;
 
-	public headers: Record<string, string | string[]>;
+	public headers: Partial<Record<string, string | string[]>>;
 
 	public url: string;
 

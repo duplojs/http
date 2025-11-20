@@ -11,6 +11,6 @@ export function pathToRegExp(path: RoutePath) {
 			/\\\{([A-zÀ-ÿ0-9_-]+)\\\}/g,
 			"(?<$1>[A-zÀ-ÿ0-9_\\-. ]+)",
 		),
-		(regExp) => new RegExp(`^${regExp}$`),
+		(regExp) => new RegExp(`^${regExp}\\/?$`),
 	);
 }

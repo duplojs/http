@@ -1,4 +1,4 @@
-import { createRoute, createRouteFunctionBuilder, type Route, routeKind } from "@core";
+import { createRoute, createRouteFunctionBuilder, type Route } from "@core";
 import { E, type ExpectType } from "@duplojs/utils";
 import { testRoute } from "@test-utils/route";
 
