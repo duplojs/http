@@ -132,6 +132,15 @@ export interface HookRouteLifeCycle<
 }
 
 export function createHookRouteLifeCycle<
+	GenericHookLiveCycle extends Omit<
+		HookRouteLifeCycle,
+		"onConstructRequest"
+	>,
+>(
+	hookRouteLifeCycle: GenericHookLiveCycle,
+): GenericHookLiveCycle;
+
+export function createHookRouteLifeCycle<
 	GenericOnConstructRequest extends HookOnConstructRequest,
 	GenericHookLiveCycle extends Omit<
 		HookRouteLifeCycle<
@@ -146,15 +155,6 @@ export function createHookRouteLifeCycle<
 	& { onConstructRequest: GenericOnConstructRequest }
 	& GenericHookLiveCycle
 >;
-
-export function createHookRouteLifeCycle<
-	GenericHookLiveCycle extends Omit<
-		HookRouteLifeCycle,
-		"onConstructRequest"
-	>,
->(
-	hookRouteLifeCycle: GenericHookLiveCycle,
-): GenericHookLiveCycle;
 
 export function createHookRouteLifeCycle(
 	...args: [HookOnConstructRequest, HookRouteLifeCycle]

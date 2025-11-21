@@ -1,22 +1,29 @@
 import { type Route } from "@core/route";
-import { G, type MaybePromise } from "@duplojs/utils";
+import { type EscapeVoid, G, type MaybePromise } from "@duplojs/utils";
 import { type Hub } from ".";
 
 export type HookBeforeBuildRoute = (
 	route: Route,
 ) => MaybePromise<Route>;
 
+export interface HttpServerParams {
+
+}
+
 export type HookBeforeServerBuildRoute = (
 	hub: Hub,
-) => MaybePromise<Hub>;
+	httpServerParams: HttpServerParams
+) => MaybePromise<Hub | EscapeVoid>;
 
 export type HookBeforeStartServer = (
 	hub: Hub,
-) => MaybePromise<Hub>;
+	httpServerParams: HttpServerParams
+) => MaybePromise<Hub | EscapeVoid>;
 
 export type HookAfterStartServer = (
 	hub: Hub,
-) => MaybePromise<Hub>;
+	httpServerParams: HttpServerParams
+) => MaybePromise<Hub | EscapeVoid>;
 
 export interface HookHubLifeCycle {
 	beforeBuildRoute?: HookBeforeBuildRoute;
@@ -43,6 +50,7 @@ export async function launchHookBeforeBuildRoute(
 export async function launchHookServer(
 	hooks: Iterable<HookBeforeStartServer | HookAfterStartServer | HookBeforeServerBuildRoute>,
 	hub: Hub,
+	httpServerParams: HttpServerParams,
 ) {
 	return G.asyncReduce(
 		hooks,
@@ -52,7 +60,7 @@ export async function launchHookServer(
 			lastValue,
 			next,
 		}) => next(
-			await hook(lastValue),
+			await hook(lastValue, httpServerParams) ?? lastValue,
 		),
 	);
 }

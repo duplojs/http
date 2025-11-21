@@ -2,6 +2,7 @@ import { type MakeRequestFromHooks, type HookRouteLifeCycle, type RouteDefinitio
 import { type Floor } from "@core/floor";
 import { type RequestMethods, type Request } from "@core/request";
 import { A, type Builder, createBuilder, type NeverCoalescing } from "@duplojs/utils";
+import { createCoreLibStringIdentifier } from "@core/stringIdentifier";
 
 export interface RouteBuilder<
 	GenericDefinition extends RouteDefinition = RouteDefinition,
@@ -11,7 +12,7 @@ export interface RouteBuilder<
 
 }
 
-export const routeBuilder = createBuilder<RouteBuilder>("@duplojs/http/core/route");
+export const routeBuilderHandler = createBuilder<RouteBuilder>(createCoreLibStringIdentifier("route"));
 
 export function useRouteBuilder<
 	GenericMethod extends RequestMethods,
@@ -39,7 +40,7 @@ export function useRouteBuilder<
 			Request
 		>
 	> {
-	return routeBuilder.use({
+	return routeBuilderHandler.use({
 		method,
 		paths: A.coalescing(path),
 		preflightSteps: [],

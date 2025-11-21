@@ -2,7 +2,7 @@ import { type Floor } from "@core/floor";
 import { type RouteDefinition } from "@core/route";
 import { createPresetCheckerStep, type PresetCheckerStep } from "@core/steps";
 import { type O, type A } from "@duplojs/utils";
-import { routeBuilder } from "./builder";
+import { routeBuilderHandler } from "./builder";
 import { type Request } from "@core/request";
 import { type GetPresetCheckerIndex, type GetPresetCheckerInformation, type GetPresetCheckerResult, type GetPresetCheckerInput, type PresetChecker } from "@core/presetChecker";
 
@@ -51,7 +51,7 @@ declare module "./builder" {
 	}
 }
 
-routeBuilder.set(
+routeBuilderHandler.set(
 	"presetCheck",
 	({
 		args: [

@@ -2,7 +2,7 @@ import { type Floor } from "@core/floor";
 import { type RequestMethods, type Request } from "@core/request";
 import { preflightBuilder } from "./builder";
 import { type MakeRequestFromHooks, type HookRouteLifeCycle, type RoutePath } from "@core/route";
-import { routeBuilder, type RouteBuilder } from "../route";
+import { routeBuilderHandler, type RouteBuilder } from "../route";
 import { A, type NeverCoalescing } from "@duplojs/utils";
 
 declare module "./builder" {
@@ -55,7 +55,7 @@ preflightBuilder.set(
 			options,
 		],
 		accumulator,
-	}) => routeBuilder.use({
+	}) => routeBuilderHandler.use({
 		method,
 		paths: A.coalescing(paths),
 		preflightSteps: accumulator.preflightSteps,

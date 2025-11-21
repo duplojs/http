@@ -17,11 +17,11 @@ export class HookResponse<
 	) {
 	public override code: GenericCode;
 
-	public override information: GenericInformation;
+	public override information: `from-hook-${GenericInformation}`;
 
 	public override body: GenericBody;
 
-	public from: keyof HookRouteLifeCycle;
+	public fromHook: keyof HookRouteLifeCycle;
 
 	public constructor(
 		from: keyof HookRouteLifeCycle,
@@ -32,8 +32,8 @@ export class HookResponse<
 		super(defaultParams, defaultParamsParent);
 
 		this.code = code;
-		this.information = information;
+		this.information = `from-hook-${information}`;
 		this.body = body;
-		this.from = from;
+		this.fromHook = from;
 	}
 }

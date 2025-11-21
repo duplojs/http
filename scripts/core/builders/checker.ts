@@ -1,4 +1,5 @@
 import { type CheckerDefinition, createChecker, type Checker, type CheckerFunctionOutput, type CheckerFunctionParams } from "@core/checker";
+import { createCoreLibStringIdentifier } from "@core/stringIdentifier";
 import { type Builder, createBuilder, type MaybePromise, type NeverCoalescing } from "@duplojs/utils";
 
 export interface CheckerBuilderParams {
@@ -27,7 +28,9 @@ export interface CheckerBuilder<
 	>;
 }
 
-export const checkerBuilder = createBuilder<CheckerBuilder>("@duplojs/http/core/checker");
+export const checkerBuilder = createBuilder<CheckerBuilder>(
+	createCoreLibStringIdentifier("checker"),
+);
 
 checkerBuilder.set(
 	"handler",

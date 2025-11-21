@@ -13,6 +13,24 @@ describe("decodeUrl", () => {
 		});
 	});
 
+	it("decodes paths without query parameters", () => {
+		const result = decodeUrl("/users%2f/%20list");
+
+		expect(result).toStrictEqual({
+			path: "/users// list",
+			query: {},
+		});
+	});
+
+	it("decodes paths with empty path", () => {
+		const result = decodeUrl("");
+
+		expect(result).toStrictEqual({
+			path: "/",
+			query: {},
+		});
+	});
+
 	it("aggregates duplicated query keys into arrays", () => {
 		const result = decodeUrl("/search?tag=node&tag=typescript&tag=vitest");
 

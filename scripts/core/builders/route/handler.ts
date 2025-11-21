@@ -3,8 +3,9 @@ import { type ResponseContract } from "@core/response";
 import { createRoute, type Route, type RouteDefinition } from "@core/route";
 import { createHandlerStep, type HandlerStep, type HandlerStepFunctionParams } from "@core/steps";
 import { type MaybePromise, type AnyTuple, type O } from "@duplojs/utils";
-import { routeBuilder } from "./builder";
+import { routeBuilderHandler } from "./builder";
 import { type Request } from "@core/request";
+import { routeStore } from "./store";
 
 declare module "./builder" {
 	interface RouteBuilder<
@@ -56,19 +57,25 @@ declare module "./builder" {
 	}
 }
 
-routeBuilder.set(
+routeBuilderHandler.set(
 	"handler",
 	({
 		args: [responseContract, theFunction],
 		accumulator,
-	}) => createRoute({
-		...accumulator,
-		steps: [
-			...accumulator.steps,
-			createHandlerStep({
-				responseContract,
-				theFunction,
-			}),
-		],
-	}),
+	}) => {
+		const route = createRoute({
+			...accumulator,
+			steps: [
+				...accumulator.steps,
+				createHandlerStep({
+					responseContract,
+					theFunction,
+				}),
+			] as const,
+		});
+
+		routeStore.add(route);
+
+		return route;
+	},
 );

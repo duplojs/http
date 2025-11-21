@@ -3,6 +3,7 @@ import { type Floor } from "@core/floor";
 import { type Builder, createBuilder, type IsEqual, type NeverCoalescing } from "@duplojs/utils";
 import { type MakeRequestFromHooks, type HookRouteLifeCycle } from "@core/route";
 import { type Request } from "@core/request";
+import { createCoreLibStringIdentifier } from "@core/stringIdentifier";
 
 export interface ProcessBuilder<
 	GenericDefinition extends ProcessDefinition = ProcessDefinition,
@@ -12,7 +13,9 @@ export interface ProcessBuilder<
 
 }
 
-export const processBuilder = createBuilder<ProcessBuilder>("@duplojs/http/core/process");
+export const processBuilder = createBuilder<ProcessBuilder>(
+	createCoreLibStringIdentifier("process"),
+);
 
 export function useProcessBuilder<
 	GenericOptions extends ProcessDefinition["options"] = never,

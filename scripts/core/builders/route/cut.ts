@@ -3,7 +3,7 @@ import { type ResponseContract } from "@core/response";
 import { type RouteDefinition } from "@core/route";
 import { type CutStepFunctionOutput, type CutStep, type CutStepFunctionParams, createCutStep } from "@core/steps";
 import { type Unwrap, type O, type MaybePromise, type IsEqual, type A } from "@duplojs/utils";
-import { routeBuilder } from "./builder";
+import { routeBuilderHandler } from "./builder";
 import { type Request } from "@core/request";
 
 declare module "./builder" {
@@ -69,7 +69,7 @@ declare module "./builder" {
 	}
 }
 
-routeBuilder.set(
+routeBuilderHandler.set(
 	"cut",
 	({
 		args: [responseContract, theFunction],

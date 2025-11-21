@@ -9,123 +9,54 @@ describe("hub", () => {
 		environment: "DEV",
 	});
 
+	const baseHub = {
+		[hubKind.runTimeKey]: null,
+		addHubHooks: expect.any(Function),
+		addRouteFunctionBuilder: expect.any(Function),
+		addRouteHooks: expect.any(Function),
+		addStepFunctionBuilder: expect.any(Function),
+		aggregates: expect.any(Function),
+		aggregatesHooksHubLifeCycle: expect.any(Function),
+		aggregatesHooksRouteLifeCycle: expect.any(Function),
+		aggregatesRouteFunctionBuilders: expect.any(Function),
+		aggregatesRoutes: expect.any(Function),
+		aggregatesStepFunctionBuilders: expect.any(Function),
+		register: expect.any(Function),
+		plug: expect.any(Function),
+		setDefaultExtractContract: expect.any(Function),
+		setNotfoundHandler: expect.any(Function),
+		classRequest: Request,
+		config: { environment: "DEV" },
+		defaultExtractContract,
+		hooksHubLifeCycle: [],
+		hooksRouteLifeCycle: [],
+		notfoundHandler: defaultNotfoundHandler,
+		plugins: [],
+		routeFunctionBuilders: [],
+		routes: [],
+		stepFunctionBuilders: [],
+	};
+
 	it("hub shape", () => {
-		expect(hub).toStrictEqual({
-			[hubKind.runTimeKey]: null,
-			addHubHooks: expect.any(Function),
-			addRouteFunctionBuilder: expect.any(Function),
-			addRouteHooks: expect.any(Function),
-			addStepFunctionBuilder: expect.any(Function),
-			aggregates: expect.any(Function),
-			classRequest: Request,
-			config: {
-				environment: "DEV",
-				fromHookHeaderKey: "from-hook",
-				informationHeaderKey: "information",
-			},
-			defaultExtractContract,
-			hooksHubLifeCycle: [],
-			hooksRouteLifeCycle: [],
-			notfoundHandler: defaultNotfoundHandler,
-			plug: expect.any(Function),
-			plugins: [],
-			register: expect.any(Function),
-			routeFunctionBuilders: [],
-			routes: [],
-			setDefaultExtractContract: expect.any(Function),
-			setNotfoundHandler: expect.any(Function),
-			stepFunctionBuilders: [],
-		});
+		expect(hub).toStrictEqual(baseHub);
 	});
 
 	it("hub register", () => {
 		const newHub = hub.register(testRoute);
 
 		expect(newHub).toStrictEqual({
-			[hubKind.runTimeKey]: null,
-			addHubHooks: expect.any(Function),
-			addRouteFunctionBuilder: expect.any(Function),
-			addRouteHooks: expect.any(Function),
-			addStepFunctionBuilder: expect.any(Function),
-			aggregates: expect.any(Function),
-			classRequest: Request,
-			config: {
-				environment: "DEV",
-				fromHookHeaderKey: "from-hook",
-				informationHeaderKey: "information",
-			},
-			defaultExtractContract,
-			hooksHubLifeCycle: [],
-			hooksRouteLifeCycle: [],
-			notfoundHandler: defaultNotfoundHandler,
-			plug: expect.any(Function),
-			plugins: [],
-			register: expect.any(Function),
-			routeFunctionBuilders: [],
+			...baseHub,
 			routes: [testRoute],
-			setDefaultExtractContract: expect.any(Function),
-			setNotfoundHandler: expect.any(Function),
-			stepFunctionBuilders: [],
 		});
 
-		type Check = ExpectType<
-			typeof newHub,
-			typeof hub,
-			"strict"
-		>;
-
 		expect(hub.register([testRoute])).toStrictEqual({
-			[hubKind.runTimeKey]: null,
-			addHubHooks: expect.any(Function),
-			addRouteFunctionBuilder: expect.any(Function),
-			addRouteHooks: expect.any(Function),
-			addStepFunctionBuilder: expect.any(Function),
-			aggregates: expect.any(Function),
-			classRequest: Request,
-			config: {
-				environment: "DEV",
-				fromHookHeaderKey: "from-hook",
-				informationHeaderKey: "information",
-			},
-			defaultExtractContract,
-			hooksHubLifeCycle: [],
-			hooksRouteLifeCycle: [],
-			notfoundHandler: defaultNotfoundHandler,
-			plug: expect.any(Function),
-			plugins: [],
-			register: expect.any(Function),
-			routeFunctionBuilders: [],
+			...baseHub,
 			routes: [testRoute],
-			setDefaultExtractContract: expect.any(Function),
-			setNotfoundHandler: expect.any(Function),
-			stepFunctionBuilders: [],
 		});
 
 		expect(hub.register({ testRoute })).toStrictEqual({
-			[hubKind.runTimeKey]: null,
-			addHubHooks: expect.any(Function),
-			addRouteFunctionBuilder: expect.any(Function),
-			addRouteHooks: expect.any(Function),
-			addStepFunctionBuilder: expect.any(Function),
-			aggregates: expect.any(Function),
-			classRequest: Request,
-			config: {
-				environment: "DEV",
-				fromHookHeaderKey: "from-hook",
-				informationHeaderKey: "information",
-			},
-			defaultExtractContract,
-			hooksHubLifeCycle: [],
-			hooksRouteLifeCycle: [],
-			notfoundHandler: defaultNotfoundHandler,
-			plug: expect.any(Function),
-			plugins: [],
-			register: expect.any(Function),
-			routeFunctionBuilders: [],
+			...baseHub,
 			routes: [testRoute],
-			setDefaultExtractContract: expect.any(Function),
-			setNotfoundHandler: expect.any(Function),
-			stepFunctionBuilders: [],
 		});
 	});
 
@@ -133,37 +64,9 @@ describe("hub", () => {
 		const newHub = hub.plug({ name: "test" });
 
 		expect(newHub).toStrictEqual({
-			[hubKind.runTimeKey]: null,
-			addHubHooks: expect.any(Function),
-			addRouteFunctionBuilder: expect.any(Function),
-			addRouteHooks: expect.any(Function),
-			addStepFunctionBuilder: expect.any(Function),
-			aggregates: expect.any(Function),
-			classRequest: Request,
-			config: {
-				environment: "DEV",
-				fromHookHeaderKey: "from-hook",
-				informationHeaderKey: "information",
-			},
-			defaultExtractContract,
-			hooksHubLifeCycle: [],
-			hooksRouteLifeCycle: [],
-			notfoundHandler: defaultNotfoundHandler,
-			plug: expect.any(Function),
+			...baseHub,
 			plugins: [{ name: "test" }],
-			register: expect.any(Function),
-			routeFunctionBuilders: [],
-			routes: [],
-			setDefaultExtractContract: expect.any(Function),
-			setNotfoundHandler: expect.any(Function),
-			stepFunctionBuilders: [],
 		});
-
-		type Check = ExpectType<
-			typeof newHub,
-			typeof hub,
-			"strict"
-		>;
 
 		const newHub1 = hub.plug((hub) => ({
 			name: "test",
@@ -171,35 +74,13 @@ describe("hub", () => {
 		}));
 
 		expect(newHub1).toStrictEqual({
-			[hubKind.runTimeKey]: null,
-			addHubHooks: expect.any(Function),
-			addRouteFunctionBuilder: expect.any(Function),
-			addRouteHooks: expect.any(Function),
-			addStepFunctionBuilder: expect.any(Function),
-			aggregates: expect.any(Function),
-			classRequest: Request,
-			config: {
-				environment: "DEV",
-				fromHookHeaderKey: "from-hook",
-				informationHeaderKey: "information",
-			},
-			defaultExtractContract,
-			hooksHubLifeCycle: [],
-			hooksRouteLifeCycle: [],
-			notfoundHandler: defaultNotfoundHandler,
-			plug: expect.any(Function),
+			...baseHub,
 			plugins: [
 				{
 					name: "test",
 					hub,
 				},
 			],
-			register: expect.any(Function),
-			routeFunctionBuilders: [],
-			routes: [],
-			setDefaultExtractContract: expect.any(Function),
-			setNotfoundHandler: expect.any(Function),
-			stepFunctionBuilders: [],
 		});
 	});
 
@@ -207,74 +88,18 @@ describe("hub", () => {
 		const newHub = hub.addRouteFunctionBuilder(defaultRouteFunctionBuilder);
 
 		expect(newHub).toStrictEqual({
-			[hubKind.runTimeKey]: null,
-			addHubHooks: expect.any(Function),
-			addRouteFunctionBuilder: expect.any(Function),
-			addRouteHooks: expect.any(Function),
-			addStepFunctionBuilder: expect.any(Function),
-			aggregates: expect.any(Function),
-			classRequest: Request,
-			config: {
-				environment: "DEV",
-				fromHookHeaderKey: "from-hook",
-				informationHeaderKey: "information",
-			},
-			defaultExtractContract,
-			hooksHubLifeCycle: [],
-			hooksRouteLifeCycle: [],
-			notfoundHandler: defaultNotfoundHandler,
-			plug: expect.any(Function),
-			plugins: [],
-			register: expect.any(Function),
+			...baseHub,
 			routeFunctionBuilders: [defaultRouteFunctionBuilder],
-			routes: [],
-			setDefaultExtractContract: expect.any(Function),
-			setNotfoundHandler: expect.any(Function),
-			stepFunctionBuilders: [],
 		});
-
-		type Check = ExpectType<
-			typeof newHub,
-			typeof hub,
-			"strict"
-		>;
 	});
 
 	it("hub add step function builder", () => {
 		const newHub = hub.addStepFunctionBuilder(defaultCheckerStepFunctionBuilder);
 
 		expect(newHub).toStrictEqual({
-			[hubKind.runTimeKey]: null,
-			addHubHooks: expect.any(Function),
-			addRouteFunctionBuilder: expect.any(Function),
-			addRouteHooks: expect.any(Function),
-			addStepFunctionBuilder: expect.any(Function),
-			aggregates: expect.any(Function),
-			classRequest: Request,
-			config: {
-				environment: "DEV",
-				fromHookHeaderKey: "from-hook",
-				informationHeaderKey: "information",
-			},
-			defaultExtractContract,
-			hooksHubLifeCycle: [],
-			hooksRouteLifeCycle: [],
-			notfoundHandler: defaultNotfoundHandler,
-			plug: expect.any(Function),
-			plugins: [],
-			register: expect.any(Function),
-			routeFunctionBuilders: [],
-			routes: [],
-			setDefaultExtractContract: expect.any(Function),
-			setNotfoundHandler: expect.any(Function),
+			...baseHub,
 			stepFunctionBuilders: [defaultCheckerStepFunctionBuilder],
 		});
-
-		type Check = ExpectType<
-			typeof newHub,
-			typeof hub,
-			"strict"
-		>;
 	});
 
 	it("hub add route hooks", () => {
@@ -282,30 +107,8 @@ describe("hub", () => {
 		const newHub = hub.addRouteHooks(routeHook);
 
 		expect(newHub).toStrictEqual({
-			[hubKind.runTimeKey]: null,
-			addHubHooks: expect.any(Function),
-			addRouteFunctionBuilder: expect.any(Function),
-			addRouteHooks: expect.any(Function),
-			addStepFunctionBuilder: expect.any(Function),
-			aggregates: expect.any(Function),
-			classRequest: Request,
-			config: {
-				environment: "DEV",
-				fromHookHeaderKey: "from-hook",
-				informationHeaderKey: "information",
-			},
-			defaultExtractContract,
-			hooksHubLifeCycle: [],
+			...baseHub,
 			hooksRouteLifeCycle: [routeHook],
-			notfoundHandler: defaultNotfoundHandler,
-			plug: expect.any(Function),
-			plugins: [],
-			register: expect.any(Function),
-			routeFunctionBuilders: [],
-			routes: [],
-			setDefaultExtractContract: expect.any(Function),
-			setNotfoundHandler: expect.any(Function),
-			stepFunctionBuilders: [],
 		});
 
 		type Check = ExpectType<
@@ -320,62 +123,58 @@ describe("hub", () => {
 		const newHub = hub.addHubHooks(hubHook);
 
 		expect(newHub).toStrictEqual({
-			[hubKind.runTimeKey]: null,
-			addHubHooks: expect.any(Function),
-			addRouteFunctionBuilder: expect.any(Function),
-			addRouteHooks: expect.any(Function),
-			addStepFunctionBuilder: expect.any(Function),
-			aggregates: expect.any(Function),
-			classRequest: Request,
-			config: {
-				environment: "DEV",
-				fromHookHeaderKey: "from-hook",
-				informationHeaderKey: "information",
-			},
-			defaultExtractContract,
+			...baseHub,
 			hooksHubLifeCycle: [hubHook],
-			hooksRouteLifeCycle: [],
-			notfoundHandler: defaultNotfoundHandler,
-			plug: expect.any(Function),
-			plugins: [],
-			register: expect.any(Function),
-			routeFunctionBuilders: [],
-			routes: [],
-			setDefaultExtractContract: expect.any(Function),
-			setNotfoundHandler: expect.any(Function),
-			stepFunctionBuilders: [],
 		});
-
-		type Check = ExpectType<
-			typeof newHub,
-			typeof hub,
-			"strict"
-		>;
 	});
 
 	it("hub aggregates combine plugins", () => {
-		const routeHook: HookRouteLifeCycle = {};
-		const hubHook: HookHubLifeCycle = {};
+		const routeHook: HookRouteLifeCycle = {
+			beforeRouteExecution: () => undefined as any,
+		};
+		const hubHook: HookHubLifeCycle = {
+			beforeStartServer: (hub) => hub,
+		};
 
-		const aggregated = hub
-			.addRouteHooks(routeHook)
-			.addHubHooks(hubHook)
+		const aggregatedHub = hub
+			.addRouteHooks([routeHook, {}])
+			.addHubHooks([hubHook, {}])
 			.addRouteFunctionBuilder(defaultRouteFunctionBuilder)
 			.addStepFunctionBuilder(defaultCheckerStepFunctionBuilder)
 			.register(testRoute)
 			.plug({
 				name: "test",
-				hooksRouteLifeCycle: [routeHook],
-				hooksHubLifeCycle: [hubHook],
+				hooksRouteLifeCycle: [routeHook, {}],
+				hooksHubLifeCycle: [hubHook, {}],
 				routes: [testRoute],
 				routeFunctionBuilders: [defaultRouteFunctionBuilder],
 				stepFunctionBuilders: [defaultCheckerStepFunctionBuilder],
 			})
-			.aggregates();
+			.plug({ name: "empty" });
 
-		expect(aggregated).toStrictEqual({
-			hooksRouteLifeCycle: [routeHook, routeHook],
-			hooksHubLifeCycle: [hubHook, hubHook],
+		expect(aggregatedHub.aggregatesRoutes()).toStrictEqual([
+			testRoute,
+			testRoute,
+		]);
+		expect(aggregatedHub.aggregatesRouteFunctionBuilders()).toStrictEqual([
+			defaultRouteFunctionBuilder,
+			defaultRouteFunctionBuilder,
+		]);
+		expect(aggregatedHub.aggregatesStepFunctionBuilders()).toStrictEqual([
+			defaultCheckerStepFunctionBuilder,
+			defaultCheckerStepFunctionBuilder,
+		]);
+		expect(aggregatedHub.aggregatesHooksHubLifeCycle("beforeStartServer")).toStrictEqual([
+			hubHook.beforeStartServer,
+			hubHook.beforeStartServer,
+		]);
+		expect(aggregatedHub.aggregatesHooksRouteLifeCycle("beforeRouteExecution")).toStrictEqual([
+			routeHook.beforeRouteExecution,
+			routeHook.beforeRouteExecution,
+		]);
+		expect(aggregatedHub.aggregates()).toStrictEqual({
+			hooksRouteLifeCycle: [routeHook, {}, routeHook, {}],
+			hooksHubLifeCycle: [hubHook, {}, hubHook, {}],
 			routes: [testRoute, testRoute],
 			routeFunctionBuilders: [
 				defaultRouteFunctionBuilder,
@@ -397,34 +196,12 @@ describe("hub", () => {
 		);
 
 		expect(newHub).toStrictEqual({
-			[hubKind.runTimeKey]: null,
-			addHubHooks: expect.any(Function),
-			addRouteFunctionBuilder: expect.any(Function),
-			addRouteHooks: expect.any(Function),
-			addStepFunctionBuilder: expect.any(Function),
-			aggregates: expect.any(Function),
-			classRequest: Request,
-			config: {
-				environment: "DEV",
-				fromHookHeaderKey: "from-hook",
-				informationHeaderKey: "information",
-			},
-			defaultExtractContract,
-			hooksHubLifeCycle: [],
-			hooksRouteLifeCycle: [],
+			...baseHub,
 			notfoundHandler: expect.objectContaining({
 				definition: expect.objectContaining({
 					responseContract: contract,
 				}),
 			}),
-			plug: expect.any(Function),
-			plugins: [],
-			register: expect.any(Function),
-			routeFunctionBuilders: [],
-			routes: [],
-			setDefaultExtractContract: expect.any(Function),
-			setNotfoundHandler: expect.any(Function),
-			stepFunctionBuilders: [],
 		});
 	});
 
@@ -434,30 +211,8 @@ describe("hub", () => {
 		const newHub = hub.setDefaultExtractContract(contract);
 
 		expect(newHub).toStrictEqual({
-			[hubKind.runTimeKey]: null,
-			addHubHooks: expect.any(Function),
-			addRouteFunctionBuilder: expect.any(Function),
-			addRouteHooks: expect.any(Function),
-			addStepFunctionBuilder: expect.any(Function),
-			aggregates: expect.any(Function),
-			classRequest: Request,
-			config: {
-				environment: "DEV",
-				fromHookHeaderKey: "from-hook",
-				informationHeaderKey: "information",
-			},
+			...baseHub,
 			defaultExtractContract: contract,
-			hooksHubLifeCycle: [],
-			hooksRouteLifeCycle: [],
-			notfoundHandler: defaultNotfoundHandler,
-			plug: expect.any(Function),
-			plugins: [],
-			register: expect.any(Function),
-			routeFunctionBuilders: [],
-			routes: [],
-			setDefaultExtractContract: expect.any(Function),
-			setNotfoundHandler: expect.any(Function),
-			stepFunctionBuilders: [],
 		});
 	});
 });

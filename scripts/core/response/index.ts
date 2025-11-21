@@ -70,4 +70,19 @@ export class Response<
 
 		return this;
 	}
+
+	public deleteHeader(key: string) {
+		if (!this.headers) {
+			return this;
+		}
+
+		const {
+			[key]: deleteHeader,
+			...rest
+		} = this.headers;
+
+		this.headers = rest;
+
+		return this;
+	}
 }

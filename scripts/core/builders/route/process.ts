@@ -2,7 +2,7 @@ import { type Floor } from "@core/floor";
 import { type RouteDefinition } from "@core/route";
 import { createProcessStep, type ProcessStep } from "@core/steps";
 import { type O, type NeverCoalescing, type FixDeepFunctionInfer, type Adaptor, type AnyFunction } from "@duplojs/utils";
-import { routeBuilder } from "./builder";
+import { routeBuilderHandler } from "./builder";
 import { type GetProcessRequest, type GetProcessExportValue, type Process } from "@core/process";
 import { type Request } from "@core/request";
 
@@ -64,7 +64,7 @@ declare module "./builder" {
 	}
 }
 
-routeBuilder.set(
+routeBuilderHandler.set(
 	"exec",
 	({
 		args: [

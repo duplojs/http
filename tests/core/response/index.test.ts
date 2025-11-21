@@ -51,4 +51,24 @@ describe("response", () => {
 			test: "oo",
 		});
 	});
+
+	it("deleteHeader with headers", () => {
+		expect(
+			new Response("200", "test", undefined)
+				.setHeader("keep", "ok")
+				.setHeader("remove", "oo")
+				.deleteHeader("remove")
+				.headers,
+		).toStrictEqual({
+			keep: "ok",
+		});
+	});
+
+	it("deleteHeader without headers", () => {
+		expect(
+			new Response("200", "test", undefined)
+				.deleteHeader("remove")
+				.headers,
+		).toBeUndefined();
+	});
 });

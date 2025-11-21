@@ -13,3 +13,4 @@ export * from "./presetChecker";
 export * from "./hub";
 export * from "./functionsBuilders";
 export * from "./router";
+export * from "./stringIdentifier";

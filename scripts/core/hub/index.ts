@@ -19,8 +19,6 @@ export const hubKind = createCoreLibKind("hub");
 
 export interface HubConfig {
 	readonly environment: Environment;
-	readonly informationHeaderKey: string;
-	readonly fromHookHeaderKey: string;
 }
 
 export interface HubPlugin {
@@ -111,28 +109,30 @@ export interface Hub<
 	): Hub<GenericConfig>;
 
 	aggregates(): HubAggregates;
+
+	aggregatesRoutes(): readonly Route[];
+
+	aggregatesRouteFunctionBuilders(): readonly ReturnType<typeof createRouteFunctionBuilder>[];
+
+	aggregatesStepFunctionBuilders(): readonly ReturnType<typeof createStepFunctionBuilder>[];
+
+	aggregatesHooksHubLifeCycle<
+		GenericHookName extends keyof HookHubLifeCycle,
+	>(hookName: GenericHookName): readonly Exclude<HookHubLifeCycle[GenericHookName], undefined>[];
+
+	aggregatesHooksRouteLifeCycle<
+		GenericHookName extends keyof HookRouteLifeCycle,
+	>(hookName: GenericHookName): readonly Exclude<HookRouteLifeCycle[GenericHookName], undefined>[];
 }
 
 export function createHub<
-	const GenericConfig extends O.PartialKeys<
-		HubConfig,
-		| "informationHeaderKey"
-		| "fromHookHeaderKey"
-	>,
+	const GenericConfig extends HubConfig,
 >(
 	config: GenericConfig,
-): Hub<{
-		environment: GenericConfig["environment"];
-		informationHeaderKey: string;
-		fromHookHeaderKey: string;
-	}> {
+): Hub<GenericConfig> {
 	return {
 		...hubKind.addTo({}),
-		config: {
-			environment: config.environment,
-			informationHeaderKey: config.informationHeaderKey ?? "information",
-			fromHookHeaderKey: config.informationHeaderKey ?? "from-hook",
-		},
+		config,
 		plugins: [],
 		hooksHubLifeCycle: [],
 		hooksRouteLifeCycle: [],
@@ -244,6 +244,105 @@ export function createHub<
 						: lastValue.hooksHubLifeCycle,
 				}),
 			);
+		},
+		aggregatesRoutes() {
+			return A.reduce(
+				this.plugins,
+				A.reduceFrom(this.routes),
+				({
+					lastValue,
+					element: { routes },
+					next,
+				}) => routes
+					? next(A.concat(lastValue, routes))
+					: next(lastValue),
+			);
+		},
+		aggregatesRouteFunctionBuilders() {
+			return A.reduce(
+				this.plugins,
+				A.reduceFrom(this.routeFunctionBuilders),
+				({
+					lastValue,
+					element: { routeFunctionBuilders },
+					next,
+				}) => routeFunctionBuilders
+					? next(A.concat(lastValue, routeFunctionBuilders))
+					: next(lastValue),
+			);
+		},
+		aggregatesStepFunctionBuilders() {
+			return A.reduce(
+				this.plugins,
+				A.reduceFrom(this.stepFunctionBuilders),
+				({
+					lastValue,
+					element: { stepFunctionBuilders },
+					next,
+				}) => stepFunctionBuilders
+					? next(A.concat(lastValue, stepFunctionBuilders))
+					: next(lastValue),
+			);
+		},
+		aggregatesHooksHubLifeCycle(hookName) {
+			const hooks = A.flatMap(
+				this.hooksHubLifeCycle,
+				(hooks) => hooks[hookName] ?? [],
+			);
+
+			return A.reduce(
+				this.plugins,
+				A.reduceFrom<HookHubLifeCycle[keyof HookHubLifeCycle][]>(hooks),
+				({
+					lastValue,
+					element: { hooksHubLifeCycle },
+					next,
+				}) => {
+					if (!hooksHubLifeCycle) {
+						return next(lastValue);
+					}
+
+					return next(
+						A.concat(
+							lastValue,
+							A.flatMap(
+								hooksHubLifeCycle,
+								(hooks) => hooks[hookName] ?? [],
+							),
+						),
+					);
+				},
+			) as never;
+		},
+		aggregatesHooksRouteLifeCycle(hookName) {
+			const hooks = A.flatMap(
+				this.hooksRouteLifeCycle,
+				(hooks) => hooks[hookName] ?? [],
+			);
+
+			return A.reduce(
+				this.plugins,
+				A.reduceFrom<HookRouteLifeCycle[keyof HookRouteLifeCycle][]>(hooks),
+				({
+					lastValue,
+					element: { hooksRouteLifeCycle },
+					next,
+				}) => {
+					if (!hooksRouteLifeCycle) {
+						return next(lastValue);
+					}
+
+					return next(
+						A.concat(
+							lastValue,
+							A.flatMap(
+								hooksRouteLifeCycle,
+								(hooks) => hooks[hookName] ?? [],
+							),
+						),
+					);
+				},
+			) as never;
 		},
 	};
 }

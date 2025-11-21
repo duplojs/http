@@ -12,18 +12,27 @@ describe("buildRouter", () => {
 				.addRouteHooks([{}])
 				.addRouteFunctionBuilder([defaultRouteFunctionBuilder])
 				.addStepFunctionBuilder([defaultCheckerStepFunctionBuilder])
-				.register([testRoute]),
+				.register([testRoute])
+				.plug({
+					name: "plugin",
+					hooksHubLifeCycle: [{}],
+					hooksRouteLifeCycle: [{}],
+					routeFunctionBuilders: [defaultRouteFunctionBuilder],
+					stepFunctionBuilders: [defaultCutStepFunctionBuilder],
+					routes: [testRoute],
+				}),
 		);
 
 		expect(router).toStrictEqual({
 			exec: expect.any(Function),
-			hooksHubLifeCycle: [{}],
-			hooksRouteLifeCycle: [{}],
+			hooksHubLifeCycle: [{}, {}],
+			hooksRouteLifeCycle: [{}, {}],
 			routeFunctionBuilders: [
 				defaultRouteFunctionBuilder,
 				defaultRouteFunctionBuilder,
+				defaultRouteFunctionBuilder,
 			],
-			routes: [testRoute],
+			routes: [testRoute, testRoute],
 			stepFunctionBuilders: [
 				defaultCheckerStepFunctionBuilder,
 				defaultCheckerStepFunctionBuilder,
@@ -31,6 +40,7 @@ describe("buildRouter", () => {
 				defaultHandlerStepFunctionBuilder,
 				defaultExtractStepFunctionBuilder,
 				defaultProcessStepFunctionBuilder,
+				defaultCutStepFunctionBuilder,
 			],
 		});
 	});
@@ -83,12 +93,22 @@ describe("buildRouter", () => {
 	});
 
 	it("buildedRouter use notfound route after search route", async() => {
+		const spyRoute = vi.fn();
+		const route = useRouteBuilder("GET", "/users")
+			.handler(
+				ResponseContract.ok("users.find", DP.empty()),
+				(floor, { response }) => {
+					spyRoute();
+					return response("users.find");
+				},
+			);
+
 		const spy = vi.fn();
 		const buildedRouter = await buildRouter(
 			createHub({
 				environment: "DEV",
-				routes: [testRoute],
 			})
+				.register(route)
 				.setNotfoundHandler(
 					ResponseContract.notFound("notfound"),
 					({ response }) => {
@@ -103,9 +123,10 @@ describe("buildRouter", () => {
 			host: "",
 			method: "GET",
 			origin: "",
-			url: "/user",
+			url: "/admins",
 		});
 
+		expect(spyRoute).not.toHaveBeenCalled();
 		expect(spy).toHaveBeenCalled();
 	});
 
@@ -144,6 +165,55 @@ describe("buildRouter", () => {
 		});
 
 		expect(spyRoute).toHaveBeenCalled();
+		expect(spyNotfound).not.toHaveBeenCalled();
+	});
+
+	it("buildedRouter skip route when pattern not match and execute next", async() => {
+		const spyRoute = vi.fn();
+		const route = useRouteBuilder("GET", "/users")
+			.handler(
+				ResponseContract.ok("users.find", DP.empty()),
+				(floor, { response }) => {
+					spyRoute();
+					return response("users.find");
+				},
+			);
+
+		const spyRoute2 = vi.fn();
+		const route2 = useRouteBuilder("GET", "/admins")
+			.handler(
+				ResponseContract.ok("admins.find", DP.empty()),
+				(floor, { response }) => {
+					spyRoute2();
+					return response("admins.find");
+				},
+			);
+
+		const spyNotfound = vi.fn();
+		const buildedRouter = await buildRouter(
+			createHub({
+				environment: "DEV",
+			})
+				.register([route, route2])
+				.setNotfoundHandler(
+					ResponseContract.notFound("notfound"),
+					({ response }) => {
+						spyNotfound();
+						return response("notfound");
+					},
+				),
+		);
+
+		await buildedRouter.exec({
+			headers: {},
+			host: "",
+			method: "GET",
+			origin: "",
+			url: "/admins",
+		});
+
+		expect(spyRoute).not.toHaveBeenCalled();
+		expect(spyRoute2).toHaveBeenCalled();
 		expect(spyNotfound).not.toHaveBeenCalled();
 	});
 

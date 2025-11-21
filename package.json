@@ -31,8 +31,8 @@
     "dist",
     "README.md"
   ],
-  "dependencies": {
-    "@duplojs/utils": "1.1.16"
+  "peerDependencies": {
+    "@duplojs/utils": ">=1.1.16 <2.0.0"
   },
   "devDependencies": {
     "@commitlint/cli": "19.8.1",

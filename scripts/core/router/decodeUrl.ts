@@ -8,16 +8,7 @@ export interface DecodedUrl {
 
 export function decodeUrl(url: string): DecodedUrl {
 	try {
-		const result = regexUrlAnalyser.exec(url);
-
-		if (!result) {
-			return {
-				path: "/",
-				query: {},
-			};
-		}
-
-		const groups = result.groups ?? {};
+		const groups = regexUrlAnalyser.exec(url)!.groups!;
 
 		const path = decodeURIComponent(groups.path || "/");
 		const queryString = groups.query;
@@ -32,15 +23,7 @@ export function decodeUrl(url: string): DecodedUrl {
 		const query: DecodedUrl["query"] = {};
 
 		for (const result of queryString.matchAll(regexQueryAnalyser)) {
-			const groups = result.groups;
-
-			if (
-				!groups
-				|| !("key" in groups)
-				|| !("value" in groups)
-			) {
-				continue;
-			}
+			const groups = result.groups as Record<"key" | "value", string>;
 
 			const key = decodeURIComponent(groups.key);
 			const value = decodeURIComponent(groups.value);

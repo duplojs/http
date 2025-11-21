@@ -26,8 +26,9 @@ describe("hub hooks", () => {
 		await launchHookServer(
 			[fakeHook],
 			hub,
+			{},
 		);
 
-		expect(fakeHook).toBeCalledWith(hub);
+		expect(fakeHook).toBeCalledWith(hub, {});
 	});
 });
