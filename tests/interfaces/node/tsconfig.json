@@ -7,7 +7,7 @@
 	  "@core/*": ["../../../scripts/core/*"],
 	  "@interfaces-node": ["../../../scripts/interfaces/node/index.ts"],
 	  "@interfaces-node/*": ["../../../scripts/interfaces/node/*"],
-	  "@test-utils/*": ["../../_utils/*"],
+	  "@test-utils/*": ["../../_utils/*", "./_utils/*"],
     },
   },
   "include": [

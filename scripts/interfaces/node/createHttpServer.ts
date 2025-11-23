@@ -1,4 +1,4 @@
-import { type HttpServerParams, launchHookServer, type Hub } from "@core/hub";
+import { type HttpServerParams, launchHookServer, type Hub, launchHookServerError, serverErrorNextHookFunction, serverErrorExitHookFunction } from "@core/hub";
 import { buildRouter } from "@core/router";
 import { type Hosts } from "./types/host";
 import { type O, type BytesInString, type MaybePromise } from "@duplojs/utils";
@@ -21,7 +21,11 @@ declare module "@core/hub" {
 		readonly fromHookHeaderKey: string;
 		readonly http?: http.ServerOptions;
 		readonly https?: https.ServerOptions;
-		readonly whenServerError?: WhenServerError;
+	}
+
+	interface HttpServerErrorParams {
+		readonly serverRequest: http.IncomingMessage;
+		readonly serverResponse: http.ServerResponse;
 	}
 }
 
@@ -65,9 +69,11 @@ export async function createHttpServer(
 		? https.createServer(params.https)
 		: http.createServer(params.http ?? {});
 
+	const serverErrorHooks = newHub1.aggregatesHooksHubLifeCycle("serverError");
+
 	server.addListener(
 		"request",
-		(serverRequest, serverResponse) => void router
+		(serverRequest, serverResponse) => router
 			.exec({
 				method: serverRequest.method ?? "",
 				headers: serverRequest.headers,
@@ -80,11 +86,13 @@ export async function createHttpServer(
 				},
 			})
 			.catch(async(error: unknown) => {
-				await params.whenServerError?.(
+				await launchHookServerError(serverErrorHooks, {
+					error,
+					exit: serverErrorExitHookFunction,
+					next: serverErrorNextHookFunction,
 					serverRequest,
 					serverResponse,
-					error,
-				);
+				});
 
 				if (!serverResponse.headersSent && !serverResponse.writableEnded) {
 					serverResponse.writeHead(500, {
@@ -105,4 +113,6 @@ export async function createHttpServer(
 		newHub2,
 		httpServerParams,
 	);
+
+	return server;
 }

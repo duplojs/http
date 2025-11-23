@@ -1,10 +1,26 @@
 import { type Route } from "@core/route";
-import { type EscapeVoid, G, type MaybePromise } from "@duplojs/utils";
+import { type EscapeVoid, G, type Kind, type MaybePromise } from "@duplojs/utils";
 import { type Hub } from ".";
+import { createCoreLibKind } from "@core/kind";
 
 export type HookBeforeBuildRoute = (
 	route: Route,
 ) => MaybePromise<Route>;
+
+export async function launchHookBeforeBuildRoute(
+	hooks: Iterable<HookBeforeBuildRoute>,
+	route: Route,
+) {
+	return G.asyncReduce(
+		hooks,
+		G.reduceFrom(route),
+		async({
+			element: hook,
+			lastValue,
+			next,
+		}) => next(await hook(lastValue)),
+	);
+}
 
 export interface HttpServerParams {
 
@@ -25,28 +41,6 @@ export type HookAfterStartServer = (
 	httpServerParams: HttpServerParams
 ) => MaybePromise<Hub | EscapeVoid>;
 
-export interface HookHubLifeCycle {
-	beforeBuildRoute?: HookBeforeBuildRoute;
-	beforeStartServer?: HookBeforeStartServer;
-	afterStartServer?: HookAfterStartServer;
-	beforeServerBuildRoute?: HookBeforeServerBuildRoute;
-}
-
-export async function launchHookBeforeBuildRoute(
-	hooks: Iterable<HookBeforeBuildRoute>,
-	route: Route,
-) {
-	return G.asyncReduce(
-		hooks,
-		G.reduceFrom(route),
-		async({
-			element: hook,
-			lastValue,
-			next,
-		}) => next(await hook(lastValue)),
-	);
-}
-
 export async function launchHookServer(
 	hooks: Iterable<HookBeforeStartServer | HookAfterStartServer | HookBeforeServerBuildRoute>,
 	hub: Hub,
@@ -60,7 +54,62 @@ export async function launchHookServer(
 			lastValue,
 			next,
 		}) => next(
-			await hook(lastValue, httpServerParams) ?? lastValue,
+			(await hook(lastValue, httpServerParams)) ?? lastValue,
 		),
 	);
+}
+
+export const hookServerExitKind = createCoreLibKind("server-hook-exit");
+
+interface HookExit extends Kind<typeof hookServerExitKind.definition> {
+
+}
+
+export const hookServerNextKind = createCoreLibKind("server-hook-next");
+
+interface HookNext extends Kind<typeof hookServerNextKind.definition> {
+
+}
+
+export interface HttpServerErrorParams {
+	readonly error: unknown;
+	next(): HookNext;
+	exit(): HookExit;
+}
+
+export type HookServerError = (
+	httpServerErrorParams: HttpServerErrorParams
+) => MaybePromise<HookExit | HookNext>;
+
+const hookExit = hookServerExitKind.setTo({});
+const hookNext = hookServerNextKind.setTo({});
+
+export function serverErrorExitHookFunction() {
+	return hookExit;
+}
+
+export function serverErrorNextHookFunction() {
+	return hookNext;
+}
+
+export async function launchHookServerError(
+	hooks: readonly HookServerError[],
+	params: HttpServerErrorParams,
+) {
+	// eslint-disable-next-line @typescript-eslint/prefer-for-of
+	for (let index = 0; index < hooks.length; index++) {
+		const result = await hooks[index]!(params);
+
+		if (hookServerExitKind.has(result)) {
+			return;
+		}
+	}
+}
+
+export interface HookHubLifeCycle {
+	beforeBuildRoute?: HookBeforeBuildRoute;
+	beforeStartServer?: HookBeforeStartServer;
+	afterStartServer?: HookAfterStartServer;
+	beforeServerBuildRoute?: HookBeforeServerBuildRoute;
+	serverError?: HookServerError;
 }
