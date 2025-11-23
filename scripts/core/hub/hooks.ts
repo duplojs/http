@@ -3,6 +3,18 @@ import { type EscapeVoid, G, type Kind, type MaybePromise } from "@duplojs/utils
 import { type Hub } from ".";
 import { createCoreLibKind } from "@core/kind";
 
+export const hookServerExitKind = createCoreLibKind("server-hook-exit");
+
+export interface ServerHookExit extends Kind<typeof hookServerExitKind.definition> {
+
+}
+
+export const hookServerNextKind = createCoreLibKind("server-hook-next");
+
+export interface ServerHookNext extends Kind<typeof hookServerNextKind.definition> {
+
+}
+
 export type HookBeforeBuildRoute = (
 	route: Route,
 ) => MaybePromise<Route>;
@@ -59,27 +71,15 @@ export async function launchHookServer(
 	);
 }
 
-export const hookServerExitKind = createCoreLibKind("server-hook-exit");
-
-interface HookExit extends Kind<typeof hookServerExitKind.definition> {
-
-}
-
-export const hookServerNextKind = createCoreLibKind("server-hook-next");
-
-interface HookNext extends Kind<typeof hookServerNextKind.definition> {
-
-}
-
 export interface HttpServerErrorParams {
 	readonly error: unknown;
-	next(): HookNext;
-	exit(): HookExit;
+	next(): ServerHookNext;
+	exit(): ServerHookExit;
 }
 
 export type HookServerError = (
 	httpServerErrorParams: HttpServerErrorParams
-) => MaybePromise<HookExit | HookNext>;
+) => MaybePromise<ServerHookExit | ServerHookNext>;
 
 const hookExit = hookServerExitKind.setTo({});
 const hookNext = hookServerNextKind.setTo({});

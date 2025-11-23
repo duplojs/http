@@ -23,13 +23,13 @@ export type HookOnConstructRequest<
 
 export const hookRouteExitKind = createCoreLibKind("route-hook-exit");
 
-interface HookExit extends Kind<typeof hookRouteExitKind.definition> {
+export interface RouteHookExit extends Kind<typeof hookRouteExitKind.definition> {
 
 }
 
 export const hookRouteNextKind = createCoreLibKind("route-hook-next");
 
-interface HookNext extends Kind<typeof hookRouteNextKind.definition> {
+export interface RouteHookNext extends Kind<typeof hookRouteNextKind.definition> {
 
 }
 
@@ -37,8 +37,8 @@ export interface RouteHookParams<
 	GenericRequest extends Request = Request,
 > {
 	readonly request: GenericRequest;
-	next(): HookNext;
-	exit(): HookExit;
+	next(): RouteHookNext;
+	exit(): RouteHookExit;
 	response<
 		GenericCode extends ResponseCode = ResponseCode,
 		GenericInformation extends string = string,
@@ -58,21 +58,21 @@ export type HookBeforeRouteExecution<
 	GenericRequest extends Request = Request,
 > = (
 	params: RouteHookParams<GenericRequest>
-) => MaybePromise<HookResponse | HookExit | HookNext>;
+) => MaybePromise<HookResponse | RouteHookExit | RouteHookNext>;
 
 export type HookParseBody<
 	GenericRequest extends Request = Request,
 > = (
 	params: RouteHookParams<GenericRequest>
-) => MaybePromise<HookResponse | HookExit | HookNext>;
+) => MaybePromise<HookResponse | RouteHookExit | RouteHookNext>;
 
 export interface RouteHookErrorParams<
 	GenericRequest extends Request = Request,
 > {
 	readonly request: GenericRequest;
 	readonly error: unknown;
-	next(): HookNext;
-	exit(): HookExit;
+	next(): RouteHookNext;
+	exit(): RouteHookExit;
 	response<
 		GenericCode extends ResponseCode = ResponseCode,
 		GenericInformation extends string = string,
@@ -90,34 +90,34 @@ export interface RouteHookErrorParams<
 
 export type HookError = (
 	params: RouteHookErrorParams<Request>
-) => MaybePromise<HookResponse | HookExit | HookNext>;
+) => MaybePromise<HookResponse | RouteHookExit | RouteHookNext>;
 
 export interface RouteHookParamsAfter<
 	GenericRequest extends Request = Request,
 > {
 	readonly request: GenericRequest;
 	readonly currentResponse: Response;
-	next(): HookNext;
-	exit(): HookExit;
+	next(): RouteHookNext;
+	exit(): RouteHookExit;
 }
 
 export type HookBeforeSendResponse<
 	GenericRequest extends Request = Request,
 > = (
 	params: RouteHookParamsAfter<GenericRequest>
-) => MaybePromise<HookExit | HookNext>;
+) => MaybePromise<RouteHookExit | RouteHookNext>;
 
 export type HookSendResponse<
 	GenericRequest extends Request = Request,
 > = (
 	params: RouteHookParamsAfter<GenericRequest>
-) => MaybePromise<HookExit | HookNext>;
+) => MaybePromise<RouteHookExit | RouteHookNext>;
 
 export type HookAfterSendResponse<
 	GenericRequest extends Request = Request,
 > = (
 	params: RouteHookParamsAfter<GenericRequest>
-) => MaybePromise<HookExit | HookNext>;
+) => MaybePromise<RouteHookExit | RouteHookNext>;
 
 export interface HookRouteLifeCycle<
 	GenericRequest extends Request = Request,
