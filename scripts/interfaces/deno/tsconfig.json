@@ -1,0 +1,13 @@
+{
+  "extends": "../../../tsconfig.app.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+	  "@core/*": ["../../core/*"],
+	  "@interfaces-deno/*": ["./*"],
+    },
+	"lib": ["ESNext", "DOM"],
+	"types": ["deno"],
+  },
+  "include": ["**/*.ts", "../../core/**/*.ts"],
+}

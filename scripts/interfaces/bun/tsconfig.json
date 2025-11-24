@@ -1,0 +1,12 @@
+{
+  "extends": "../../../tsconfig.app.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+	  "@core/*": ["../../core/*"],
+	  "@interfaces-bun/*": ["./*"],
+    },
+	"types": ["bun"],
+  },
+  "include": ["**/*.ts", "../../core/**/*.ts"],
+}

@@ -1,0 +1,89 @@
+import { type IsEqual, pipe, type Kind, type O } from "@duplojs/utils";
+import { createCoreLibKind } from "../kind";
+import { type ProcessStep, type CheckerStep, type CutStep, type ExtractStep, type stepKind, type PresetCheckerStep } from "../steps";
+import { type Floor } from "../floor";
+import { type HookRouteLifeCycle } from "../route";
+import { type Request } from "../request";
+
+export * from "./types";
+
+export interface ProcessStepsCustom {}
+
+export type ProcessSteps = (
+	// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+	| ProcessStepsCustom[
+		O.GetPropsWithValueExtends<
+			ProcessStepsCustom,
+			Kind<typeof stepKind.definition>
+		>
+	]
+	| CheckerStep
+	| ExtractStep
+	| PresetCheckerStep
+	| CutStep
+	| ProcessStep
+);
+
+declare const SymbolProcessExportValue: unique symbol;
+
+declare const SymbolProcessRequest: unique symbol;
+
+export interface ProcessDefinition {
+	steps: readonly ProcessSteps[];
+	options?: Record<string, unknown>;
+	readonly hooks: readonly HookRouteLifeCycle[];
+	[SymbolProcessExportValue]?: Floor;
+	[SymbolProcessRequest]?: Request;
+}
+
+export interface ProcessExportValue<
+	GenericExportValue extends Floor,
+> {
+	[SymbolProcessExportValue]: GenericExportValue;
+}
+
+export type GetProcessExportValue<
+	GenericProcess extends Process,
+> = IsEqual<
+	GenericProcess["definition"][typeof SymbolProcessExportValue],
+	unknown
+> extends true
+	? never
+	: GenericProcess["definition"][typeof SymbolProcessExportValue];
+
+export interface ProcessRequest<
+	GenericRequest extends Request,
+> {
+	[SymbolProcessRequest]: GenericRequest;
+}
+
+export type GetProcessRequest<
+	GenericProcess extends Process,
+> = IsEqual<
+	GenericProcess["definition"][typeof SymbolProcessRequest],
+	unknown
+> extends true
+	? never
+	: GenericProcess["definition"][typeof SymbolProcessRequest];
+
+export const processKind = createCoreLibKind("process");
+
+export interface Process<
+	GenericDefinition extends ProcessDefinition = ProcessDefinition,
+> extends Kind<typeof processKind.definition> {
+	definition: GenericDefinition;
+}
+
+export function createProcess<
+	GenericDefinition extends Pick<
+		ProcessDefinition,
+		"steps" | "options" | "hooks"
+	>,
+>(
+	definition: GenericDefinition,
+): Process<GenericDefinition> {
+	return pipe(
+		{ definition },
+		processKind.setTo,
+	);
+}

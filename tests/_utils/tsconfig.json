@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.test.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+	  "@core": ["../../scripts/core/index.ts"],
+	  "@core/*": ["../../scripts/core/*"],
+    },
+  },
+  "include": ["**/*.ts"],
+}
