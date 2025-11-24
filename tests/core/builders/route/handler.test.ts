@@ -1,4 +1,4 @@
-import { type ExtractStep, extractStepKind, type HandlerStep, handlerStepKind, ResponseContract, type Route, routeKind, stepKind, useRouteBuilder, type Response, type HandlerStepFunctionParams, type Request, type HookParamsOnConstructRequest } from "@core";
+import { type ExtractStep, extractStepKind, type HandlerStep, handlerStepKind, ResponseContract, type Route, routeKind, stepKind, useRouteBuilder, type Response, type HandlerStepFunctionParams, type Request, type HookParamsOnConstructRequest, routeStore } from "@core";
 import { type DP, DPE, type ExpectType } from "@duplojs/utils";
 import { type MaybePromise } from "rollup";
 
@@ -44,6 +44,8 @@ describe("route builder handler method", () => {
 				],
 			},
 		});
+
+		expect(routeStore.getAll()).toStrictEqual([routeBuilder]);
 
 		type Check = ExpectType<
 			typeof routeBuilder,

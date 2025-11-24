@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+	  "@core": ["../../../scripts/core/index.ts"],
+	  "@core/*": ["../../../scripts/core/*"],
+	  "@interfaces-deno": ["../../../scripts/interfaces/deno/index.ts"],
+	  "@interfaces-deno/*": ["../../../scripts/interfaces/deno/*"],
+	  "@test-utils/*": ["../../_utils/*", "./_utils/*"],
+    },
+  },
+  "include": [
+	"**/*.ts",
+	"../../../scripts/interfaces/deno/**/*.ts",
+  ],
+}

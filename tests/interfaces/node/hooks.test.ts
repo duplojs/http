@@ -5,6 +5,7 @@ import { testHub } from "@test-utils/hub";
 
 describe("makeNodeHook", () => {
 	const baseServerParams: HttpServerParams = {
+		interface: "node",
 		host: "localhost",
 		port: 3000,
 		maxBodySize: 100,

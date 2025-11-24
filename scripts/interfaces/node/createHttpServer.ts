@@ -1,19 +1,14 @@
 import { type HttpServerParams, launchHookServer, type Hub, launchHookServerError, serverErrorNextHookFunction, serverErrorExitHookFunction } from "@core/hub";
 import { buildRouter } from "@core/router";
 import { type Hosts } from "./types/host";
-import { type O, type BytesInString, type MaybePromise } from "@duplojs/utils";
+import { type O, type BytesInString } from "@duplojs/utils";
 import http from "http";
 import https from "https";
 import { makeNodeHook } from "./hooks";
 
-type WhenServerError = (
-	serverRequest: http.IncomingMessage,
-	serverResponse: http.ServerResponse,
-	error: unknown,
-) => MaybePromise<void>;
-
 declare module "@core/hub" {
 	interface HttpServerParams {
+		readonly interface: "node";
 		readonly host: Hosts;
 		readonly port: number;
 		readonly maxBodySize: BytesInString | number;
@@ -30,7 +25,7 @@ declare module "@core/hub" {
 }
 
 export type CreateHttpServerParams = O.PartialKeys<
-	HttpServerParams,
+	Omit<HttpServerParams, "interface">,
 	| "maxBodySize"
 	| "informationHeaderKey"
 	| "fromHookHeaderKey"
@@ -45,6 +40,7 @@ export async function createHttpServer(
 		maxBodySize: "50mb",
 		informationHeaderKey: "information",
 		fromHookHeaderKey: "from-hook",
+		interface: "node",
 	};
 
 	const newHub1 = await launchHookServer(

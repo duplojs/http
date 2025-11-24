@@ -5,6 +5,8 @@
     "paths": {
 	  "@core/*": ["core/*"],
 	  "@interfaces-node/*": ["interfaces/node/*"],
+	  "@interfaces-bun/*": ["interfaces/bun/*"],
+	  "@interfaces-deno/*": ["interfaces/deno/*"],
     },
   },
   "include": ["**/*.ts"],
