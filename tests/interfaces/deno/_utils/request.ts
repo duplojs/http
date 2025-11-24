@@ -18,10 +18,7 @@ export function createFakeRequest({ raw, ...initializationData }: Initialization
 		matchedPath: "/",
 		origin: "",
 		url: "",
-		// raw: {
-		// request,
-		// response,
-		// },
+		raw: {} as any,
 		...initializationData,
 	});
 }

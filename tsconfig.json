@@ -5,6 +5,7 @@
 	{ "path": "./scripts/interfaces/node/tsconfig.json" },
 	{ "path": "./scripts/interfaces/bun/tsconfig.json" },
 	{ "path": "./scripts/interfaces/deno/tsconfig.json" },
+	{ "path": "./tests/_utils/tsconfig.json" },
 	{ "path": "./tests/core/tsconfig.json" },
 	{ "path": "./tests/interfaces/node/tsconfig.json" },
 	{ "path": "./tests/interfaces/bun/tsconfig.json" },

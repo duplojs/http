@@ -45,7 +45,7 @@ describe("route builder handler method", () => {
 			},
 		});
 
-		expect(routeStore.getAll()).toStrictEqual([routeBuilder]);
+		expect([...routeStore.getAll()]).toStrictEqual([routeBuilder]);
 
 		type Check = ExpectType<
 			typeof routeBuilder,

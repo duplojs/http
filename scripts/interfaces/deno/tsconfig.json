@@ -6,6 +6,7 @@
 	  "@core/*": ["../../core/*"],
 	  "@interfaces-deno/*": ["./*"],
     },
+	"lib": ["ESNext", "DOM"],
 	"types": ["deno"],
   },
   "include": ["**/*.ts", "../../core/**/*.ts"],
