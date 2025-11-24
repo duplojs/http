@@ -22,9 +22,24 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs",
-      "types": "./dist/index.d.ts"
+      "import": "./dist/core/index.mjs",
+      "require": "./dist/core/index.cjs",
+      "types": "./dist/core/index.d.ts"
+    },
+    "./node": {
+      "import": "./dist/interfaces/node/index.mjs",
+      "require": "./dist/interfaces/node/index.cjs",
+      "types": "./dist/interfaces/node/index.d.ts"
+    },
+    "./bun": {
+      "import": "./dist/interfaces/bun/index.mjs",
+      "require": "./dist/interfaces/bun/index.cjs",
+      "types": "./dist/interfaces/bun/index.d.ts"
+    },
+    "./deno": {
+      "import": "./dist/interfaces/deno/index.mjs",
+      "require": "./dist/interfaces/deno/index.cjs",
+      "types": "./dist/interfaces/deno/index.d.ts"
     }
   },
   "files": [

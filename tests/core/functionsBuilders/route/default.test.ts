@@ -1,4 +1,4 @@
-import { ResponseContract, useRouteBuilder, Request, Response, usePreflightBuilder, useProcessBuilder, defaultExtractStepFunctionBuilder, defaultHandlerStepFunctionBuilder, HookResponse } from "@core";
+import { ResponseContract, useRouteBuilder, Request, Response, usePreflightBuilder, useProcessBuilder, defaultExtractStepFunctionBuilder, defaultHandlerStepFunctionBuilder, HookResponse, type HookRouteLifeCycle } from "@core";
 import { DPE } from "@duplojs/utils";
 import { useTestRouteFunctionBuilder } from "@test-utils/useTestRouteFunctionBuilder";
 
@@ -341,6 +341,134 @@ describe("route function builder", () => {
 					currentResponse: new Response("500", "server-error", new Error("test")),
 				}),
 			);
+		});
+
+		it("order exec hook", async() => {
+			const checkpoint: string[] = [];
+
+			function createCheckpointHook(value: string): HookRouteLifeCycle {
+				return {
+					afterSendResponse: ({ next }) => {
+						checkpoint.push(`afterSendResponse ${value}`);
+						return next();
+					},
+					beforeRouteExecution: ({ next }) => {
+						checkpoint.push(`beforeRouteExecution ${value}`);
+						return next();
+					},
+					beforeSendResponse: ({ next }) => {
+						checkpoint.push(`beforeSendResponse ${value}`);
+						return next();
+					},
+					error: ({ next }) => {
+						checkpoint.push(`error ${value}`);
+						return next();
+					},
+					onConstructRequest: ({ request }) => {
+						checkpoint.push(`onConstructRequest ${value}`);
+						return request;
+					},
+					parseBody: ({ next }) => {
+						checkpoint.push(`parseBody ${value}`);
+						return next();
+					},
+					sendResponse: ({ next }) => {
+						checkpoint.push(`sendResponse ${value}`);
+						return next();
+					},
+				};
+			}
+
+			const route = usePreflightBuilder({ hooks: [createCheckpointHook("builder preflight process")] })
+				.exec(
+					useProcessBuilder({ hooks: [createCheckpointHook("preflight process")] })
+						.exec(
+							useProcessBuilder({ hooks: [createCheckpointHook("preflight deep process")] })
+								.exports(),
+						)
+						.exports(),
+				)
+				.useRouteBuilder("GET", "/", { hooks: [createCheckpointHook("route")] })
+				.exec(
+					useProcessBuilder({ hooks: [createCheckpointHook("process")] })
+						.exec(
+							useProcessBuilder({ hooks: [createCheckpointHook("deep process")] })
+								.exports(),
+						)
+						.exports(),
+				)
+				.handler(
+					ResponseContract.noContent("ok"),
+					(floor, { response }) => response("ok"),
+				);
+
+			const buildedRoute = await useTestRouteFunctionBuilder(route, {
+				globalHooksRouteLifeCycle: [createCheckpointHook("global")],
+			});
+
+			await buildedRoute(
+				new Request({
+					headers: {},
+					host: "",
+					matchedPath: "",
+					method: "",
+					origin: "",
+					path: "",
+					params: { },
+					query: {},
+					url: "",
+				}),
+			);
+
+			expect(checkpoint).toStrictEqual([
+				"onConstructRequest route",
+				"onConstructRequest builder preflight process",
+				"onConstructRequest preflight process",
+				"onConstructRequest preflight deep process",
+				"onConstructRequest process",
+				"onConstructRequest deep process",
+				"onConstructRequest global",
+
+				"beforeRouteExecution route",
+				"beforeRouteExecution builder preflight process",
+				"beforeRouteExecution preflight process",
+				"beforeRouteExecution preflight deep process",
+				"beforeRouteExecution process",
+				"beforeRouteExecution deep process",
+				"beforeRouteExecution global",
+
+				"parseBody route",
+				"parseBody builder preflight process",
+				"parseBody preflight process",
+				"parseBody preflight deep process",
+				"parseBody process",
+				"parseBody deep process",
+				"parseBody global",
+
+				"beforeSendResponse route",
+				"beforeSendResponse builder preflight process",
+				"beforeSendResponse preflight process",
+				"beforeSendResponse preflight deep process",
+				"beforeSendResponse process",
+				"beforeSendResponse deep process",
+				"beforeSendResponse global",
+
+				"sendResponse route",
+				"sendResponse builder preflight process",
+				"sendResponse preflight process",
+				"sendResponse preflight deep process",
+				"sendResponse process",
+				"sendResponse deep process",
+				"sendResponse global",
+
+				"afterSendResponse route",
+				"afterSendResponse builder preflight process",
+				"afterSendResponse preflight process",
+				"afterSendResponse preflight deep process",
+				"afterSendResponse process",
+				"afterSendResponse deep process",
+				"afterSendResponse global",
+			]);
 		});
 	});
 });

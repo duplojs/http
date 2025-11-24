@@ -12,6 +12,7 @@ const createMockServer = () => {
 		}),
 		emit: (event: string, ...args: any[]) => handlers.get(event)?.(...args),
 		handlers,
+		listen: vi.fn((__, callback) => callback()),
 	};
 	return self;
 };

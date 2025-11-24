@@ -104,6 +104,16 @@ export async function createHttpServer(
 			}),
 	);
 
+	await new Promise<void>((resolve) => {
+		server.listen(
+			{
+				port: httpServerParams.port,
+				host: httpServerParams.host,
+			},
+			() => void resolve(),
+		);
+	});
+
 	await launchHookServer(
 		newHub2.aggregatesHooksHubLifeCycle("afterStartServer"),
 		newHub2,

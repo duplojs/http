@@ -1,9 +1,9 @@
-import { buildRouteFunction, type BuildStepFunctionParams, defaultCheckerStepFunctionBuilder, defaultCutStepFunctionBuilder, defaultExtractStepFunctionBuilder, defaultHandlerStepFunctionBuilder, defaultProcessStepFunctionBuilder, defaultRouteFunctionBuilder, type Route } from "@core";
+import { buildRouteFunction, type BuildRouteFunctionParams, defaultCheckerStepFunctionBuilder, defaultCutStepFunctionBuilder, defaultExtractStepFunctionBuilder, defaultHandlerStepFunctionBuilder, defaultProcessStepFunctionBuilder, defaultRouteFunctionBuilder, type Route } from "@core";
 import { E, unwrap } from "@duplojs/utils";
 
 export async function useTestRouteFunctionBuilder(
 	route: Route,
-	params: Partial<BuildStepFunctionParams> = {},
+	params: Partial<BuildRouteFunctionParams> = {},
 ) {
 	const result = await buildRouteFunction(
 		route,
