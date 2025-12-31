@@ -1,4 +1,4 @@
-import { BodySizeExceedsLimitError } from "@interfaces-node";
+import { BodySizeExceedsLimitError } from "@interface-node";
 
 describe("BodySizeExceedsLimitError", () => {
 	it("stores size and message", () => {

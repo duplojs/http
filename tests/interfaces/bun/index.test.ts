@@ -1,4 +1,4 @@
-import "@interfaces-bun";
+import "@interface-bun";
 
 it("bun", () => {
 

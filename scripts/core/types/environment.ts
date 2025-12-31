@@ -12,4 +12,5 @@ export type Environment = (
 	]
 	| "DEV"
 	| "PROD"
+	| "BUILD"
 );

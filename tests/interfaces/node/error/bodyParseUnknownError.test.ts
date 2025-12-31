@@ -1,4 +1,4 @@
-import { BodyParseUnknownError } from "@interfaces-node";
+import { BodyParseUnknownError } from "@interface-node";
 
 describe("BodyParseUnknownError", () => {
 	it("stores content type, unknown error and message", () => {

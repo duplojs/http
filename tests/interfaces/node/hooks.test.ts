@@ -1,4 +1,4 @@
-import { makeNodeHook, BodyParseUnknownError, BodyParseWrongChunkReceived, BodySizeExceedsLimitError } from "@interfaces-node";
+import { makeNodeHook, BodyParseUnknownError, BodyParseWrongChunkReceived, BodySizeExceedsLimitError } from "@interface-node";
 import { HookResponse, type HttpServerParams, Response, createHub, exitHookFunction } from "@core";
 import { createFakeRequest } from "@test-utils/request";
 import { testHub } from "@test-utils/hub";

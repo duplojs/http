@@ -5,13 +5,13 @@
     "paths": {
 	  "@core": ["../../../scripts/core/index.ts"],
 	  "@core/*": ["../../../scripts/core/*"],
-	  "@interface-deno": ["../../../scripts/interfaces/deno/index.ts"],
-	  "@interface-deno/*": ["../../../scripts/interfaces/deno/*"],
+	  "@plugin-codeGenerator": ["../../../scripts/plugins/codeGenerator/index.ts"],
+	  "@plugin-codeGenerator/*": ["../../../scripts/plugins/codeGenerator/*"],
 	  "@test-utils/*": ["../../_utils/*", "./_utils/*"],
     },
   },
   "include": [
 	"**/*.ts",
-	"../../../scripts/interfaces/deno/**/*.ts",
+	"../../../scripts/plugins/codeGenerator/**/*.ts",
   ],
 }

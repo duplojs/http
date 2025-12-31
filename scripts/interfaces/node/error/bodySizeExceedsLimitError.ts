@@ -1,5 +1,5 @@
 import { type BytesInString, kindHeritage } from "@duplojs/utils";
-import { createInterfacesNodeLibKind } from "@interfaces-node/kind";
+import { createInterfacesNodeLibKind } from "@interface-node/kind";
 
 export class BodySizeExceedsLimitError extends kindHeritage(
 	"body-size-exceeds-limit-error",

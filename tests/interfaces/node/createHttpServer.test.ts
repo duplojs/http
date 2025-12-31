@@ -32,7 +32,7 @@ vi.mock("https", () => ({
 	createServer: httpsCreateServer,
 }));
 
-const { createHttpServer } = await import("@interfaces-node");
+const { createHttpServer } = await import("@interface-node");
 
 describe("createHttpServer", () => {
 	beforeEach(() => {
