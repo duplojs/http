@@ -32,7 +32,7 @@ export const defaultHandlerStepFunctionBuilder = createStepFunctionBuilder(
 				throw new ResponseContract.Error(information);
 			}
 
-			const result = currentContract.schema.parse(body);
+			const result = currentContract.body.parse(body);
 
 			if (E.isLeft(result)) {
 				throw new ResponseContract.Error(

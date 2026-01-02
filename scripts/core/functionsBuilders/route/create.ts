@@ -4,6 +4,7 @@ import { type Request } from "@core/request";
 import { type Environment } from "@core/types";
 import { type BuildStepSuccessEither, type BuildStepNotSupportEither } from "../steps";
 import { type Steps } from "@core/steps";
+import { type ResponseContract } from "@core/response";
 
 export type BuildedRouteFunction = (
 	request: Request,
@@ -29,6 +30,8 @@ export interface RouteFunctionBuilderParams {
 	success(
 		result: BuildedRouteFunction
 	): BuildRouteSuccessEither;
+
+	readonly defaultExtractContract: ResponseContract.Contract;
 }
 
 export function createRouteFunctionBuilder(

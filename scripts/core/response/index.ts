@@ -1,6 +1,5 @@
 import { kindHeritage, O, type S } from "@duplojs/utils";
 import { createCoreLibKind } from "../kind";
-import { override } from "@duplojs/utils/object";
 
 export * from "./contract";
 

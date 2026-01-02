@@ -1,12 +1,15 @@
-import { E, G } from "@duplojs/utils";
+import { E, G, unwrap } from "@duplojs/utils";
 import { type Steps } from "../../steps/types";
 import { type BuildStepNotSupportEither, type StepFunctionBuilderParams, type createStepFunctionBuilder } from "./create";
 import { type Environment } from "@core/types";
+import { type ResponseContract } from "@core/response";
 
 export interface BuildStepFunctionParams {
 	readonly stepFunctionBuilders: readonly ReturnType<typeof createStepFunctionBuilder>[];
 
 	readonly environment: Environment;
+
+	readonly defaultExtractContract: ResponseContract.Contract;
 }
 
 export function buildStepFunction(
@@ -21,6 +24,7 @@ export function buildStepFunction(
 			return buildStepFunction(step, params);
 		},
 		environment: params.environment,
+		defaultExtractContract: params.defaultExtractContract,
 	};
 
 	return G.asyncReduce(
@@ -35,6 +39,9 @@ export function buildStepFunction(
 			const result = await functionBuilder(step, functionParams);
 
 			if (E.isLeft(result)) {
+				if (unwrap(result) !== step) {
+					return exit(result);
+				}
 				return next(lastValue);
 			}
 
