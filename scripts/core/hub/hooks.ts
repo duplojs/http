@@ -38,7 +38,7 @@ export interface HttpServerParams {
 
 }
 
-export type HookBeforeServerBuildRoute = (
+export type HookBeforeServerBuildRoutes = (
 	hub: Hub,
 	httpServerParams: HttpServerParams
 ) => MaybePromise<Hub | EscapeVoid>;
@@ -54,7 +54,7 @@ export type HookAfterStartServer = (
 ) => MaybePromise<Hub | EscapeVoid>;
 
 export async function launchHookServer(
-	hooks: Iterable<HookBeforeStartServer | HookAfterStartServer | HookBeforeServerBuildRoute>,
+	hooks: Iterable<HookBeforeStartServer | HookAfterStartServer | HookBeforeServerBuildRoutes>,
 	hub: Hub,
 	httpServerParams: HttpServerParams,
 ) {
@@ -110,6 +110,6 @@ export interface HookHubLifeCycle {
 	beforeBuildRoute?: HookBeforeBuildRoute;
 	beforeStartServer?: HookBeforeStartServer;
 	afterStartServer?: HookAfterStartServer;
-	beforeServerBuildRoute?: HookBeforeServerBuildRoute;
+	beforeServerBuildRoutes?: HookBeforeServerBuildRoutes;
 	serverError?: HookServerError;
 }

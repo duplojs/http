@@ -1,4 +1,4 @@
-import { buildRouteFunction, createRouteFunctionBuilder } from "@core";
+import { buildRouteFunction, createRouteFunctionBuilder, defaultExtractContract } from "@core";
 import { E } from "@duplojs/utils";
 import { testRoute } from "@test-utils/route";
 
@@ -36,6 +36,7 @@ describe("buildStepFunction", () => {
 				stepFunctionBuilders: [],
 				routeFunctionBuilders: [routeFunctionBuilders],
 				globalHooksRouteLifeCycle: [],
+				defaultExtractContract,
 			},
 		);
 
@@ -53,6 +54,7 @@ describe("buildStepFunction", () => {
 				stepFunctionBuilders: [],
 				routeFunctionBuilders: [routeFunctionBuilders],
 				globalHooksRouteLifeCycle: [],
+				defaultExtractContract,
 			},
 		);
 

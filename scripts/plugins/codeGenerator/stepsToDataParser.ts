@@ -1,5 +1,5 @@
 import { checkerStepKind, cutStepKind, extractStepKind, handlerStepKind, presetCheckerStepKind, processStepKind, type Steps } from "@core/steps";
-import { A, DP, hasSomeKinds, O, P, pipe } from "@duplojs/utils";
+import { A, DP, hasSomeKinds, N, O, P, pipe } from "@duplojs/utils";
 import { type EntrypointKey } from "./types";
 import { type ResponseContract } from "@core/response";
 
@@ -8,18 +8,18 @@ type EntrypointReduceResult = Record<
 	DP.DataParser | Record<string, DP.DataParser>
 >;
 
-interface StepsToDataParser {
+export interface StepsToDataParserParams {
 	readonly defaultExtractContract: ResponseContract.Contract;
 }
 
 export interface StepsToDataParserResult {
-	entryPointContract: EntrypointReduceResult;
+	entrypointContract: EntrypointReduceResult;
 	endpointContract: DP.DataParser[];
 }
 
 export function stepsToDataParser(
 	steps: readonly Steps[],
-	params: StepsToDataParser,
+	params: StepsToDataParserParams,
 ): StepsToDataParserResult {
 	const processContracts = pipe(
 		steps,
@@ -31,16 +31,16 @@ export function stepsToDataParser(
 			),
 		),
 		O.to({
-			entryPointContract: A.map((result) => result.entryPointContract),
+			entrypointContract: A.map((result) => result.entrypointContract),
 			endpointContract: A.flatMap((result) => result.endpointContract),
 		}),
 	);
 
-	const entryPointContract = pipe(
+	const entrypointContract = pipe(
 		steps,
 		A.filter(extractStepKind.has),
 		A.map((extractStep) => extractStep.definition.shape),
-		A.concat(processContracts.entryPointContract),
+		A.concat(processContracts.entrypointContract),
 		A.reduce(
 			A.reduceFrom<EntrypointReduceResult>({
 				body: {},
@@ -48,14 +48,23 @@ export function stepsToDataParser(
 				params: {},
 				query: {},
 			}),
-			({ element: shape, lastValue, next }) => pipe(
+			({ element: shape, lastValue, nextWithObject }) => pipe(
 				lastValue,
 				O.entries,
 				A.map(
 					([key, accumulatorValue]) => {
 						const currentExtractDataParser = shape[key];
 
-						if (DP.dataParserKind.has(accumulatorValue) || !currentExtractDataParser) {
+						if (
+							DP.dataParserKind.has(accumulatorValue)
+							|| !currentExtractDataParser
+							|| (
+								!DP.dataParserKind.has(accumulatorValue)
+								&& O.countKeys(accumulatorValue) > 1
+								&& DP.dataParserKind.has(currentExtractDataParser)
+								&& !DP.objectKind.has(currentExtractDataParser)
+							)
+						) {
 							return O.entry(key, accumulatorValue);
 						}
 
@@ -83,13 +92,7 @@ export function stepsToDataParser(
 					},
 				),
 				O.fromEntries,
-				O.transformProperties({
-					body: (value) => value ?? {},
-					headers: (value) => value ?? {},
-					params: (value) => value ?? {},
-					query: (value) => value ?? {},
-				}),
-				next,
+				(object) => nextWithObject(lastValue, object),
 			),
 		),
 	);
@@ -131,7 +134,7 @@ export function stepsToDataParser(
 	);
 
 	return {
-		entryPointContract,
+		entrypointContract,
 		endpointContract,
 	};
 }

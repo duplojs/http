@@ -7,7 +7,7 @@
 	  "@core/*": ["../../../scripts/core/*"],
 	  "@plugin-codeGenerator": ["../../../scripts/plugins/codeGenerator/index.ts"],
 	  "@plugin-codeGenerator/*": ["../../../scripts/plugins/codeGenerator/*"],
-	  "@test-utils/*": ["../../_utils/*", "./_utils/*"],
+	  "@test-utils/*": ["../../_utils/*"],
     },
   },
   "include": [

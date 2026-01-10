@@ -1,4 +1,4 @@
-import { buildStepFunction, createExtractStep, createStepFunctionBuilder } from "@core";
+import { buildStepFunction, createExtractStep, createStepFunctionBuilder, defaultExtractContract } from "@core";
 import { E } from "@duplojs/utils";
 
 describe("buildStepFunction", () => {
@@ -33,6 +33,7 @@ describe("buildStepFunction", () => {
 			{
 				environment: "DEV",
 				stepFunctionBuilders: [stepFunctionBuilders],
+				defaultExtractContract,
 			},
 		);
 
@@ -48,6 +49,7 @@ describe("buildStepFunction", () => {
 			{
 				environment: "DEV",
 				stepFunctionBuilders: [stepFunctionBuilders],
+				defaultExtractContract,
 			},
 		);
 
