@@ -62,7 +62,7 @@ describe("routeToDataParser", () => {
 					responses: DP.union([
 						DP.object({
 							code: responseCodeDataParser,
-							information: DP.templateLiteral(["from-hook-", DP.string()]),
+							information: DP.string(),
 							body: DP.unknown(),
 							fromHook: DP.literal(true),
 						}),

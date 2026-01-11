@@ -1,4 +1,3 @@
-import "@duplojs/data-parser-tools/toTypescript";
 import { defaultExtractContract, ResponseContract, useProcessBuilder, useRouteBuilder } from "@core";
 import { DP, DPE } from "@duplojs/utils";
 import { stepsToDataParser } from "@plugin-codeGenerator";

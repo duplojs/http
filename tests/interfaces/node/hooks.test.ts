@@ -257,7 +257,7 @@ describe("makeNodeHook", () => {
 
 			expect(currentResponse.headers).toStrictEqual({
 				"content-type": "text/plain; charset=utf-8",
-				[baseServerParams.informationHeaderKey]: "from-hook-info",
+				[baseServerParams.informationHeaderKey]: "info",
 				[baseServerParams.fromHookHeaderKey]: "parseBody",
 			});
 		});

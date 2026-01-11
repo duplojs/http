@@ -1,6 +1,6 @@
 import { A, type AnyValue, forward, innerPipe, isType, justReturn, O, P } from "@duplojs/utils";
 
-export const omitFunctions: ((input: AnyValue | AnyValue[]) => AnyValue) = innerPipe(
+export const omitFunctions: ((input: AnyValue) => AnyValue) = innerPipe(
 	P.when(
 		isType("function"),
 		justReturn(undefined),
@@ -15,12 +15,11 @@ export const omitFunctions: ((input: AnyValue | AnyValue[]) => AnyValue) = inner
 	P.when(
 		isType("object"),
 		innerPipe(
-			// need for not ignore kind
-			Object.entries,
+			O.entries.unsafe,
 			A.map(
 				([key, value]) => O.entry(
 					key,
-					omitFunctions(value as AnyValue),
+					omitFunctions(value),
 				),
 			),
 			A.filter(([, value]) => value !== undefined),
