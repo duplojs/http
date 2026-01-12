@@ -56,6 +56,7 @@ export async function buildRouter(inputHub: Hub): Promise<BuildedRouter> {
 		globalHooksRouteLifeCycle: hooksRouteLifeCycle,
 		stepFunctionBuilders,
 		routeFunctionBuilders,
+		defaultExtractContract: hub.defaultExtractContract,
 	};
 
 	const groupedRoute = await G.asyncReduce(
@@ -78,6 +79,7 @@ export async function buildRouter(inputHub: Hub): Promise<BuildedRouter> {
 
 			if (E.isLeft(buildedRoute)) {
 				throw new RouterBuildError(
+					route,
 					unwrap(buildedRoute),
 				);
 			}
@@ -109,15 +111,19 @@ export async function buildRouter(inputHub: Hub): Promise<BuildedRouter> {
 			preflightSteps: [],
 			steps: [hub.notfoundHandler],
 		}),
-		(route) => buildRouteFunction(
-			route,
-			buildParams,
-		),
-		E.whenIsLeft(
-			(element) => {
-				throw new RouterBuildError(element);
-			},
-		),
+		async(route) => {
+			const result = await buildRouteFunction(
+				route,
+				buildParams,
+			);
+
+			return E.whenIsLeft(
+				result,
+				(element) => {
+					throw new RouterBuildError(route, element);
+				},
+			);
+		},
 		unwrap,
 	);
 

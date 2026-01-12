@@ -1,5 +1,5 @@
 import { kindHeritage } from "@duplojs/utils";
-import { createInterfacesNodeLibKind } from "@interfaces-node/kind";
+import { createInterfacesNodeLibKind } from "@interface-node/kind";
 
 export class BodyParseWrongChunkReceived extends kindHeritage(
 	"body-parse-wrong-chunk-received",

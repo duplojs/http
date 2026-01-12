@@ -1,4 +1,4 @@
-import { createCutStep, createExtractStep, createStepFunctionBuilder, type ExtractStep, extractStepKind } from "@core";
+import { createCutStep, createExtractStep, createStepFunctionBuilder, defaultExtractContract, type ExtractStep, extractStepKind } from "@core";
 import { E, type ExpectType } from "@duplojs/utils";
 
 describe("createStepFunctionBuilder", () => {
@@ -31,6 +31,7 @@ describe("createStepFunctionBuilder", () => {
 				success: (element) => E.right("buildSuccess", element),
 				buildStep: () => void undefined as never,
 				environment: "DEV",
+				defaultExtractContract,
 			},
 		);
 
@@ -48,6 +49,7 @@ describe("createStepFunctionBuilder", () => {
 				success: (element) => E.right("buildSuccess", element),
 				buildStep: () => void undefined as never,
 				environment: "DEV",
+				defaultExtractContract,
 			},
 		);
 

@@ -1,0 +1,88 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`codeGenerator > correct generate file 1`] = `
+"export type Digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
+
+export type ResponseCode = \`1\${Digit}\${Digit}\` | \`2\${Digit}\${Digit}\` | \`3\${Digit}\${Digit}\` | \`4\${Digit}\${Digit}\` | \`5\${Digit}\${Digit}\`;
+
+export type Routes = {
+    method: "GET";
+    path: "/users";
+    responses: {
+        code: ResponseCode;
+        information: string;
+        body: unknown;
+        fromHook: true;
+    } | {
+        code: \`5\${Digit}\${Digit}\`;
+        information: string;
+        body: unknown;
+    } | {
+        code: "200";
+        information: "users.findMany";
+        body: {
+            id: number;
+            name: string;
+            age: number;
+        }[];
+    };
+} | {
+    method: "GET";
+    path: "/users/{userId}";
+    params: {
+        userId: number;
+    };
+    responses: {
+        code: ResponseCode;
+        information: string;
+        body: unknown;
+        fromHook: true;
+    } | {
+        code: \`5\${Digit}\${Digit}\`;
+        information: string;
+        body: unknown;
+    } | {
+        code: "422";
+        information: "extract-error";
+        body?: undefined;
+    } | {
+        code: "200";
+        information: "users.find";
+        body: {
+            id: number;
+            name: string;
+            age: number;
+        };
+    };
+} | {
+    method: "POST";
+    path: "/users";
+    body: {
+        id: number;
+        name: string;
+        age: number;
+    };
+    responses: {
+        code: ResponseCode;
+        information: string;
+        body: unknown;
+        fromHook: true;
+    } | {
+        code: \`5\${Digit}\${Digit}\`;
+        information: string;
+        body: unknown;
+    } | {
+        code: "422";
+        information: "extract-error";
+        body?: undefined;
+    } | {
+        code: "200";
+        information: "users.create";
+        body: {
+            id: number;
+            name: string;
+            age: number;
+        };
+    };
+};"
+`;

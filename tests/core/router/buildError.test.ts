@@ -2,7 +2,7 @@ import { RouterBuildError } from "@core";
 import { testRoute } from "@test-utils/route";
 
 it("buildError", () => {
-	const error = new RouterBuildError(testRoute);
+	const error = new RouterBuildError(testRoute, testRoute);
 
 	expect(error).instanceOf(Error);
 	expect(error).instanceOf(RouterBuildError);

@@ -4,7 +4,7 @@
     "baseUrl": "./",
     "paths": {
 	  "@core/*": ["../../core/*"],
-	  "@interfaces-node/*": ["./*"],
+	  "@interface-node/*": ["./*"],
     },
 	"types": ["node"],
   },

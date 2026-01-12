@@ -1,7 +1,7 @@
 import { extractStepKind } from "@core/steps";
 import { A, DP, E, innerPipe, isType, justReturn, O, P, pipe, unwrap } from "@duplojs/utils";
 import { type Request } from "@core/request";
-import { Response, ResponseContract } from "@core/response";
+import { Response } from "@core/response";
 import { type Floor } from "@core/floor";
 import { createStepFunctionBuilder } from "../create";
 
@@ -9,16 +9,13 @@ type Extractor = (request: Request, floor: Floor) => Response | Floor;
 
 export const defaultExtractStepFunctionBuilder = createStepFunctionBuilder(
 	extractStepKind.has,
-	(step, { success, environment }) => {
+	(step, { success, environment, defaultExtractContract }) => {
 		const {
 			shape,
 			responseContract: stepResponseContract,
 		} = step.definition;
 
-		const responseContract = stepResponseContract ?? ResponseContract
-			.unprocessableContent(
-				"extract-error",
-			);
+		const responseContract = stepResponseContract ?? defaultExtractContract;
 
 		function getResponse(
 			result: E.EitherError<DP.DataParserError>,

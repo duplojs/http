@@ -3,7 +3,7 @@ import { type Steps } from "../../steps/types";
 import { type Floor } from "@core/floor";
 import { type HookRouteLifeCycle } from "@core/route";
 import { type Request } from "@core/request";
-import { type Response } from "@core/response";
+import { type ResponseContract, type Response } from "@core/response";
 import { type Environment } from "@core/types";
 
 export type BuildedStepFunction = (
@@ -34,6 +34,8 @@ export interface StepFunctionBuilderParams {
 	): BuildStepSuccessEither;
 
 	readonly environment: Environment;
+
+	readonly defaultExtractContract: ResponseContract.Contract;
 }
 
 export function createStepFunctionBuilder<

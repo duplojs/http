@@ -5,8 +5,8 @@
     "paths": {
 	  "@core": ["../../../scripts/core/index.ts"],
 	  "@core/*": ["../../../scripts/core/*"],
-	  "@interfaces-deno": ["../../../scripts/interfaces/deno/index.ts"],
-	  "@interfaces-deno/*": ["../../../scripts/interfaces/deno/*"],
+	  "@interface-deno": ["../../../scripts/interfaces/deno/index.ts"],
+	  "@interface-deno/*": ["../../../scripts/interfaces/deno/*"],
 	  "@test-utils/*": ["../../_utils/*", "./_utils/*"],
     },
   },

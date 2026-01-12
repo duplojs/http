@@ -1,4 +1,4 @@
-import { makeNodeHook, BodyParseUnknownError, BodyParseWrongChunkReceived, BodySizeExceedsLimitError } from "@interfaces-node";
+import { makeNodeHook, BodyParseUnknownError, BodyParseWrongChunkReceived, BodySizeExceedsLimitError } from "@interface-node";
 import { HookResponse, type HttpServerParams, Response, createHub, exitHookFunction } from "@core";
 import { createFakeRequest } from "@test-utils/request";
 import { testHub } from "@test-utils/hub";
@@ -257,7 +257,7 @@ describe("makeNodeHook", () => {
 
 			expect(currentResponse.headers).toStrictEqual({
 				"content-type": "text/plain; charset=utf-8",
-				[baseServerParams.informationHeaderKey]: "from-hook-info",
+				[baseServerParams.informationHeaderKey]: "info",
 				[baseServerParams.fromHookHeaderKey]: "parseBody",
 			});
 		});

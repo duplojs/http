@@ -17,7 +17,7 @@ export class HookResponse<
 	) {
 	public override code: GenericCode;
 
-	public override information: `from-hook-${GenericInformation}`;
+	public override information: GenericInformation;
 
 	public override body: GenericBody;
 
@@ -32,7 +32,7 @@ export class HookResponse<
 		super(defaultParams, defaultParamsParent);
 
 		this.code = code;
-		this.information = `from-hook-${information}`;
+		this.information = information;
 		this.body = body;
 		this.fromHook = from;
 	}

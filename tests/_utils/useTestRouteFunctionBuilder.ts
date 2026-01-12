@@ -1,4 +1,4 @@
-import { buildRouteFunction, type BuildRouteFunctionParams, defaultCheckerStepFunctionBuilder, defaultCutStepFunctionBuilder, defaultExtractStepFunctionBuilder, defaultHandlerStepFunctionBuilder, defaultProcessStepFunctionBuilder, defaultRouteFunctionBuilder, type Route } from "@core";
+import { buildRouteFunction, type BuildRouteFunctionParams, defaultCheckerStepFunctionBuilder, defaultCutStepFunctionBuilder, defaultExtractStepFunctionBuilder, defaultHandlerStepFunctionBuilder, defaultProcessStepFunctionBuilder, defaultRouteFunctionBuilder, type Route, defaultExtractContract } from "@core";
 import { E, unwrap } from "@duplojs/utils";
 
 export async function useTestRouteFunctionBuilder(
@@ -18,6 +18,7 @@ export async function useTestRouteFunctionBuilder(
 				defaultProcessStepFunctionBuilder,
 			],
 			globalHooksRouteLifeCycle: [],
+			defaultExtractContract,
 			...params,
 		},
 	);

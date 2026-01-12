@@ -1,4 +1,4 @@
-import "@interfaces-deno";
+import "@interface-deno";
 
 it("deno", () => {
 

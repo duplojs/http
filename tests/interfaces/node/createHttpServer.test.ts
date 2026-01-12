@@ -1,4 +1,4 @@
-import { ResponseContract, serverErrorExitHookFunction, serverErrorNextHookFunction, useRouteBuilder } from "@core";
+import { ResponseContract, createHub, serverErrorExitHookFunction, serverErrorNextHookFunction, useRouteBuilder } from "@core";
 import { type AnyFunction } from "@duplojs/utils";
 import { testHub } from "@test-utils/hub";
 import { createFakeRequest } from "@test-utils/request";
@@ -32,7 +32,7 @@ vi.mock("https", () => ({
 	createServer: httpsCreateServer,
 }));
 
-const { createHttpServer } = await import("@interfaces-node");
+const { createHttpServer } = await import("@interface-node");
 
 describe("createHttpServer", () => {
 	beforeEach(() => {
@@ -53,14 +53,14 @@ describe("createHttpServer", () => {
 				},
 			);
 
-		const beforeServerBuildRouteHook = vi.fn();
+		const beforeServerBuildRoutesHook = vi.fn();
 		const afterStartServerHook = vi.fn();
 		const beforeStartServerHook = vi.fn();
 
 		const server = await createHttpServer(
 			testHub
 				.addHubHooks({
-					beforeServerBuildRoute: beforeServerBuildRouteHook,
+					beforeServerBuildRoutes: beforeServerBuildRoutesHook,
 					afterStartServer: afterStartServerHook,
 					beforeStartServer: beforeStartServerHook,
 				})
@@ -74,7 +74,7 @@ describe("createHttpServer", () => {
 		expect(httpCreateServer).toHaveBeenCalledWith({});
 		expect(httpsCreateServer).not.toHaveBeenCalled();
 		expect(server).toBe(mockHttpServer);
-		expect(beforeServerBuildRouteHook).toHaveBeenCalledOnce();
+		expect(beforeServerBuildRoutesHook).toHaveBeenCalledOnce();
 		expect(afterStartServerHook).toHaveBeenCalledOnce();
 		expect(beforeStartServerHook).toHaveBeenCalledOnce();
 
@@ -117,6 +117,27 @@ describe("createHttpServer", () => {
 			"content-type": "text/plain; charset=utf-8",
 			information: "notfound-route",
 		});
+	});
+
+	it("exits process when environment is BUILD", async() => {
+		const exitSpy = vi.spyOn(process, "exit").mockImplementation(((code) => {
+			throw new Error(`process.exit:${code}`);
+		}));
+
+		await expect(
+			createHttpServer(
+				createHub({ environment: "BUILD" }),
+				{
+					host: "localhost",
+					port: 3000,
+				},
+			),
+		).rejects.toThrow("process.exit:0");
+
+		exitSpy.mockRestore();
+
+		expect(httpCreateServer).not.toHaveBeenCalled();
+		expect(httpsCreateServer).not.toHaveBeenCalled();
 	});
 
 	describe("handler error", () => {
@@ -168,6 +189,50 @@ describe("createHttpServer", () => {
 			expect(response._getStatusCode()).toBe(500);
 			expect(response._getHeaders()).toStrictEqual({ information: "critical-server-error" });
 			expect(response._getData()).toBe("unknown-server-error");
+			expect(response._isEndCalled()).toBe(true);
+		});
+
+		it("handles router rejection: calls whenServerError and sends fallback 500", async() => {
+			const route = useRouteBuilder("GET", "/error", {
+				hooks: [
+					{
+						beforeSendResponse: () => {
+							throw "test-server-error" as any;
+						},
+					},
+				],
+			})
+				.handler(
+					ResponseContract.noContent("ok"),
+					(floor, { response }) => response("ok"),
+				);
+
+			const whenServerError = vi.fn();
+			await createHttpServer(
+				testHub
+					.register(route)
+					.addHubHooks({
+						serverError: whenServerError,
+					}),
+				{
+					host: "localhost",
+					port: 3000,
+				},
+			);
+
+			const { raw: { request, response } } = createFakeRequest({
+				raw: {
+					request: {
+						method: "GET",
+						url: "/error",
+					},
+				},
+			});
+
+			await mockHttpServer.handlers.get("request")!(request, response);
+			expect(response._getStatusCode()).toBe(500);
+			expect(response._getHeaders()).toStrictEqual({ information: "critical-server-error" });
+			expect(response._getData()).toBe("test-server-error");
 			expect(response._isEndCalled()).toBe(true);
 		});
 

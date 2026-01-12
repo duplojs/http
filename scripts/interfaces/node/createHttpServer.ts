@@ -1,7 +1,7 @@
 import { type HttpServerParams, launchHookServer, type Hub, launchHookServerError, serverErrorNextHookFunction, serverErrorExitHookFunction } from "@core/hub";
 import { buildRouter } from "@core/router";
 import { type Hosts } from "./types/host";
-import { type O, type BytesInString } from "@duplojs/utils";
+import { type O, type BytesInString, forward } from "@duplojs/utils";
 import http from "http";
 import https from "https";
 import { makeNodeHook } from "./hooks";
@@ -44,7 +44,7 @@ export async function createHttpServer(
 	};
 
 	const newHub1 = await launchHookServer(
-		inputHub.aggregatesHooksHubLifeCycle("beforeServerBuildRoute"),
+		inputHub.aggregatesHooksHubLifeCycle("beforeServerBuildRoutes"),
 		inputHub,
 		httpServerParams,
 	);
@@ -60,6 +60,10 @@ export async function createHttpServer(
 		newHub1,
 		httpServerParams,
 	);
+
+	if (inputHub.config.environment === "BUILD") {
+		process.exit(0);
+	}
 
 	const server = params.https
 		? https.createServer(params.https)
@@ -88,14 +92,20 @@ export async function createHttpServer(
 					next: serverErrorNextHookFunction,
 					serverRequest,
 					serverResponse,
-				});
+				}).catch(forward);
 
 				if (!serverResponse.headersSent && !serverResponse.writableEnded) {
 					serverResponse.writeHead(500, {
 						[httpServerParams.informationHeaderKey]: "critical-server-error",
 					});
 
-					serverResponse.write(error?.toString?.() ?? "unknown-server-error");
+					const maybeError = error?.toString?.();
+
+					serverResponse.write(
+						typeof maybeError === "string"
+							? maybeError
+							: "unknown-server-error",
+					);
 				}
 
 				if (!serverResponse.writableEnded) {

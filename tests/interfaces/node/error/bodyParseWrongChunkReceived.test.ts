@@ -1,4 +1,4 @@
-import { BodyParseWrongChunkReceived } from "@interfaces-node";
+import { BodyParseWrongChunkReceived } from "@interface-node";
 
 describe("BodyParseWrongChunkReceived", () => {
 	it("stores wrong chunk and message", () => {

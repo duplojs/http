@@ -9,7 +9,7 @@ describe("hook response", () => {
 			"@duplojs/utils/kind/@DuplojsHttpCore/hook-response": null,
 			"@duplojs/utils/kind/@DuplojsHttpCore/response": null,
 			code: "200",
-			information: "from-hook-OK",
+			information: "OK",
 			body: { message: "success" },
 			headers: undefined,
 			fromHook: "afterSendResponse",

@@ -14,7 +14,7 @@ export namespace ResponseContract {
 	> extends Kind<typeof contractKind.definition> {
 		code: GenericCode;
 		information: GenericInformation;
-		schema: GenericSchema;
+		body: GenericSchema;
 	}
 
 	export type Convert<
@@ -23,7 +23,7 @@ export namespace ResponseContract {
 		? Response<
 			GenericContract["code"],
 			GenericContract["information"],
-			DP.Input<GenericContract["schema"]>
+			DP.Input<GenericContract["body"]>
 		>
 		: never;
 
@@ -58,7 +58,7 @@ export namespace ResponseContract {
 			{
 				code,
 				information,
-				schema: (schema ?? options?.defaultSchema ?? DP.empty()) as never,
+				body: (schema ?? options?.defaultSchema ?? DP.empty()) as never,
 			},
 			contractKind.setTo,
 		);

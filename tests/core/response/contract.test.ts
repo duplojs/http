@@ -8,7 +8,7 @@ describe("ResponseContract", () => {
 		expect(contract).toStrictEqual({
 			code: "201",
 			information: "resource created",
-			schema: expect.objectContaining({
+			body: expect.objectContaining({
 				[DP.stringKind.runTimeKey]: null,
 			}),
 			[ResponseContract.contractKind.runTimeKey]: null,
@@ -33,7 +33,7 @@ describe("ResponseContract", () => {
 		expect(contractWithEmptySchema).toStrictEqual({
 			code: "201",
 			information: "resource created",
-			schema: expect.objectContaining({
+			body: expect.objectContaining({
 				[DP.emptyKind.runTimeKey]: null,
 			}),
 			[ResponseContract.contractKind.runTimeKey]: null,
@@ -60,7 +60,7 @@ describe("ResponseContract", () => {
 		expect(contract).toStrictEqual({
 			code: "204",
 			information: "my super information",
-			schema: expect.objectContaining({
+			body: expect.objectContaining({
 				[DP.emptyKind.runTimeKey]: null,
 			}),
 			[ResponseContract.contractKind.runTimeKey]: null,
@@ -83,7 +83,7 @@ describe("ResponseContract", () => {
 		expect(contract).toStrictEqual({
 			code: "200",
 			information: "my super information",
-			schema: expect.objectContaining({
+			body: expect.objectContaining({
 				[DP.stringKind.runTimeKey]: null,
 			}),
 			[ResponseContract.contractKind.runTimeKey]: null,
