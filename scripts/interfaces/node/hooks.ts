@@ -111,13 +111,15 @@ export function makeNodeHook(hub: Hub, serverParams: HttpServerParams) {
 			const body = currentResponse.body;
 
 			if (
-				typeof body === "number"
-				|| typeof body === "string"
-				|| body === null
+				typeof body === "string"
 				|| body instanceof Error
 			) {
 				currentResponse.setHeader("content-type", "text/plain; charset=utf-8");
-			} else if (typeof body === "object") {
+			} else if (
+				typeof body === "object"
+				|| typeof body === "number"
+
+			) {
 				currentResponse.setHeader("content-type", "application/json; charset=utf-8");
 			}
 
@@ -143,19 +145,12 @@ export function makeNodeHook(hub: Hub, serverParams: HttpServerParams) {
 				rawResponse.write(
 					body.toString(),
 				);
-			} else if (typeof body === "object") {
+			} else if (typeof body === "object" || typeof body === "number") {
 				rawResponse.write(
 					JSON.stringify(body),
 				);
 			} else if (typeof body === "string") {
 				rawResponse.write(body);
-			} else if (
-				typeof body === "number"
-				|| typeof body === "bigint"
-			) {
-				rawResponse.write(
-					body.toString(),
-				);
 			}
 
 			rawResponse.end();

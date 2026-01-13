@@ -2,15 +2,22 @@ import { DP, type Kind, pipe, type IsEqual, type NeverCoalescing, kindHeritage }
 import { createCoreLibKind } from "../kind";
 import { type ResponseCode, type Response } from ".";
 
-const errorClass = Error;
+const ErrorClass = Error;
 
 export namespace ResponseContract {
+	type SupportedDataParser = (
+		| DP.DataParserObject<any>
+		| DP.DataParserString<any>
+		| DP.DataParserNumber<any>
+		| DP.DataParserNil<any>
+		| DP.DataParserEmpty<any>
+	);
 	export const contractKind = createCoreLibKind("response-contract");
 
 	export interface Contract<
 		GenericCode extends ResponseCode = ResponseCode,
 		GenericInformation extends string = string,
-		GenericSchema extends DP.DataParser = DP.DataParser,
+		GenericSchema extends SupportedDataParser = SupportedDataParser,
 	> extends Kind<typeof contractKind.definition> {
 		code: GenericCode;
 		information: GenericInformation;
@@ -30,7 +37,7 @@ export namespace ResponseContract {
 	function createContractBuilder<
 		GenericCode extends ResponseCode,
 		GenericOptionsNoSchema extends boolean = never,
-		GenericOptionsDefaultSchema extends DP.DataParser = never,
+		GenericOptionsDefaultSchema extends SupportedDataParser = never,
 	>(
 		code: GenericCode,
 		options?: {
@@ -40,7 +47,7 @@ export namespace ResponseContract {
 	) {
 		return <
 			GenericInformation extends string,
-			GenericSchema extends DP.DataParser = GenericOptionsDefaultSchema,
+			GenericSchema extends SupportedDataParser = GenericOptionsDefaultSchema,
 		>(
 			information: GenericInformation,
 			...[schema]: IsEqual<GenericOptionsNoSchema, true> extends true
@@ -137,7 +144,7 @@ export namespace ResponseContract {
 	export class Error extends kindHeritage(
 		"contract-error",
 		createCoreLibKind("contract-error"),
-		errorClass,
+		ErrorClass,
 	) {
 		public constructor(
 			public information: string,

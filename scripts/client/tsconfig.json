@@ -5,6 +5,7 @@
     "paths": {
 	  "@client/*": ["./*"],
     },
+	"types": ["web"],
   },
   "include": ["**/*.ts"],
 }
