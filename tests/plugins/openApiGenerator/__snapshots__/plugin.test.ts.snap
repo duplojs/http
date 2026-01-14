@@ -32,7 +32,9 @@ exports[`plugin implementation > generate OpenApi file 1`] = `
           "required": true,
           "content": {
             "application/json": {
-              "$ref": "#/components/schemas/NotIdentified2"
+              "schema": {
+                "$ref": "#/components/schemas/NotIdentified2"
+              }
             }
           }
         },
@@ -141,7 +143,9 @@ exports[`plugin implementation > generate OpenApi file with type apiKey ok secur
           "required": true,
           "content": {
             "application/json": {
-              "$ref": "#/components/schemas/NotIdentified2"
+              "schema": {
+                "$ref": "#/components/schemas/NotIdentified2"
+              }
             }
           }
         },
@@ -262,7 +266,9 @@ exports[`plugin implementation > generate OpenApi file with type bearer ok secur
           "required": true,
           "content": {
             "application/json": {
-              "$ref": "#/components/schemas/NotIdentified2"
+              "schema": {
+                "$ref": "#/components/schemas/NotIdentified2"
+              }
             }
           }
         },

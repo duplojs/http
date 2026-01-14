@@ -83,7 +83,9 @@ describe("routeToOpenApi", () => {
 					requestBody: {
 						required: true,
 						content: {
-							"application/json": { $ref: "#/components/schemas/NotIdentified4" },
+							"application/json": {
+								schema: { $ref: "#/components/schemas/NotIdentified4" },
+							},
 						},
 					},
 					responses: {

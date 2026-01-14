@@ -158,12 +158,14 @@ export function routeToOpenApi(
 			(schema) => ({
 				required: <const>true,
 				content: {
-					"application/json": factoryJsonSchema({
-						context: params.contextToJsonSchemaFactory,
-						resultSchemaContext: params.resultSchemaContext,
-						mode: "in",
-						schema,
-					}),
+					"application/json": {
+						schema: factoryJsonSchema({
+							context: params.contextToJsonSchemaFactory,
+							resultSchemaContext: params.resultSchemaContext,
+							mode: "in",
+							schema,
+						}),
+					},
 				},
 			}),
 		),

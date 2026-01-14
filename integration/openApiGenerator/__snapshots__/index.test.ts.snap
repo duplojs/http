@@ -37,7 +37,9 @@ exports[`openApiGenerator > correct generate file 1`] = `
           "required": true,
           "content": {
             "application/json": {
-              "$ref": "#/components/schemas/NotIdentified3"
+              "schema": {
+                "$ref": "#/components/schemas/NotIdentified3"
+              }
             }
           }
         },
