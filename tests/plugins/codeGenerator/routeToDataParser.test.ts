@@ -39,7 +39,7 @@ describe("routeToDataParser", () => {
 			(__, { response }) => response("test"),
 		);
 
-	it("", () => {
+	it("expect good result", () => {
 		const result = routeToDataParser(route, { defaultExtractContract });
 
 		expect(omitFunctions(result)).toStrictEqual(

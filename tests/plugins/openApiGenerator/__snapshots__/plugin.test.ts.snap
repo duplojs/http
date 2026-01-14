@@ -1,0 +1,352 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`plugin implementation > generate OpenApi file 1`] = `
+"{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Swagger API",
+    "version": "0.0.0"
+  },
+  "paths": {
+    "/user": {
+      "get": {
+        "parameters": [
+          {
+            "name": "header1",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/NotIdentified0"
+            }
+          },
+          {
+            "name": "header2",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/NotIdentified1"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "$ref": "#/components/schemas/NotIdentified2"
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "headers": {
+              "information": {
+                "schema": {
+                  "const": "success",
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "plain/text": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotIdentified3"
+                }
+              }
+            }
+          },
+          "409": {
+            "headers": {
+              "information": {
+                "schema": {
+                  "const": "the-conflict",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "headers": {
+              "information": {
+                "schema": {
+                  "const": "extract-error",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "NotIdentified0": {
+        "type": "string"
+      },
+      "NotIdentified1": {
+        "type": "string"
+      },
+      "NotIdentified2": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "age": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "name",
+          "age"
+        ]
+      },
+      "NotIdentified3": {
+        "type": "string"
+      }
+    }
+  }
+}"
+`;
+
+exports[`plugin implementation > generate OpenApi file with type apiKey ok security option 1`] = `
+"{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Swagger API",
+    "version": "0.0.0"
+  },
+  "paths": {
+    "/user": {
+      "get": {
+        "parameters": [
+          {
+            "name": "header1",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/NotIdentified0"
+            }
+          },
+          {
+            "name": "header2",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/NotIdentified1"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "$ref": "#/components/schemas/NotIdentified2"
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "headers": {
+              "information": {
+                "schema": {
+                  "const": "success",
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "plain/text": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotIdentified3"
+                }
+              }
+            }
+          },
+          "409": {
+            "headers": {
+              "information": {
+                "schema": {
+                  "const": "the-conflict",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "headers": {
+              "information": {
+                "schema": {
+                  "const": "extract-error",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "NotIdentified0": {
+        "type": "string"
+      },
+      "NotIdentified1": {
+        "type": "string"
+      },
+      "NotIdentified2": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "age": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "name",
+          "age"
+        ]
+      },
+      "NotIdentified3": {
+        "type": "string"
+      }
+    },
+    "securitySchemes": {
+      "auth": {
+        "type": "apiKey",
+        "name": "token",
+        "in": "cookie"
+      }
+    }
+  },
+  "security": [
+    {
+      "auth": []
+    }
+  ]
+}"
+`;
+
+exports[`plugin implementation > generate OpenApi file with type bearer ok security option 1`] = `
+"{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Swagger API",
+    "version": "0.0.0"
+  },
+  "paths": {
+    "/user": {
+      "get": {
+        "parameters": [
+          {
+            "name": "header1",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/NotIdentified0"
+            }
+          },
+          {
+            "name": "header2",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/NotIdentified1"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "$ref": "#/components/schemas/NotIdentified2"
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "headers": {
+              "information": {
+                "schema": {
+                  "const": "success",
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "plain/text": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotIdentified3"
+                }
+              }
+            }
+          },
+          "409": {
+            "headers": {
+              "information": {
+                "schema": {
+                  "const": "the-conflict",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "headers": {
+              "information": {
+                "schema": {
+                  "const": "extract-error",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "NotIdentified0": {
+        "type": "string"
+      },
+      "NotIdentified1": {
+        "type": "string"
+      },
+      "NotIdentified2": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "age": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "name",
+          "age"
+        ]
+      },
+      "NotIdentified3": {
+        "type": "string"
+      }
+    },
+    "securitySchemes": {
+      "auth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "auth": []
+    }
+  ]
+}"
+`;
