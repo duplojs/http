@@ -1,44 +1,12 @@
-import { type Route } from "@core/route";
+import type { Route } from "@core/route";
 import { aggregateStepContract } from "./aggregateStepContract";
 import { A, DP, isType, justReturn, O, P, pipe, S, when, whenNot } from "@duplojs/utils";
-import { type ResponseCode, type ResponseContract } from "@core/response";
-import { type MapContext, type JsonSchema, type JsonSchemaLiteral, render, defaultTransformers, type JsonSchemaString } from "@duplojs/data-parser-tools/toJsonSchema";
-import { type RequestMethods } from "@core/request";
+import type { ResponseCode, ResponseContract } from "@core/response";
+import { type MapContext, type JsonSchema, render, defaultTransformers } from "@duplojs/data-parser-tools/toJsonSchema";
+import type { RequestMethods } from "@core/request";
+import type { EndpointResponse, EntrypointParameter, OpenApiMethod } from "./types";
 
 export type ResultSchemaContext = Map<string, Record<string, JsonSchema>>;
-
-export interface EntrypointParameter {
-	name: string;
-	in: "path" | "query" | "header";
-	required: boolean;
-	schema: JsonSchema;
-}
-
-export interface EntrypointRequestBody {
-	required: true;
-	content: {
-		"application/json": JsonSchema;
-	};
-}
-
-export interface EndpointResponse {
-	headers: {
-		information: {
-			schema: JsonSchemaLiteral;
-			description: string;
-		};
-	};
-	content?: {
-		"application/json"?: {
-			schema: JsonSchema;
-		};
-		"plain/text"?: {
-			schema: JsonSchemaString;
-		};
-	};
-}
-
-export type OpenApiMethod = "get" | "post" | "put" | "delete" | "head" | "options" | "trace" | "connect";
 
 export interface RouteToOpenApiParams {
 	readonly contextToJsonSchemaFactory: MapContext;
@@ -46,33 +14,29 @@ export interface RouteToOpenApiParams {
 	readonly defaultExtractContract: ResponseContract.Contract;
 }
 
-interface FactoryInput {
+interface FactoryParams {
 	context: MapContext;
 	resultSchemaContext: ResultSchemaContext;
 	schema: DP.DataParser;
 	mode: "in" | "out";
 }
 
-function factoryJsonSchema({
-	context,
-	resultSchemaContext,
-	schema,
-	mode,
-}: FactoryInput) {
-	const identifier = schema.definition.identifier ?? `NotIdentified${resultSchemaContext.size}`;
+function factoryJsonSchema(params: FactoryParams) {
+	const identifier = params.schema.definition.identifier
+		?? `NotIdentified${params.resultSchemaContext.size}`;
 
 	const renderResult = render(
-		schema,
+		params.schema,
 		{
 			identifier,
-			mode,
-			context,
+			mode: params.mode,
+			context: params.context,
 			version: "openApi31",
 			transformers: defaultTransformers,
 		},
 	);
 
-	resultSchemaContext.set(identifier, renderResult.components.schemas);
+	params.resultSchemaContext.set(identifier, renderResult.components.schemas);
 
 	return O.pick(renderResult, { $ref: true });
 }
@@ -89,9 +53,9 @@ const methodMapper = {
 	PUT: "put",
 	DELETE: "delete",
 	HEAD: "head",
-	OPTIONS: "options",
 	TRACE: "trace",
 	CONNECT: "connect",
+	OPTIONS: "options",
 } as const satisfies Record<RequestMethods, OpenApiMethod>;
 
 export function routeToOpenApi(

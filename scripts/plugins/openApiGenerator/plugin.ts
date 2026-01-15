@@ -1,29 +1,32 @@
-import { type HubPlugin } from "@core/hub";
+import type { HubPlugin } from "@core/hub";
 import type { JsonSchema, MapContext } from "@duplojs/data-parser-tools/toJsonSchema";
 import { routeToOpenApi, type ResultSchemaContext } from "./routeToOpenApi";
 import { A, justReturn, O, P, pipe } from "@duplojs/utils";
+import { makeOpenApiPage } from "./makeOpenApiPage";
+import { makeOpenApiRoute } from "./makeOpenApiRoute";
 import { writeFile } from "fs/promises";
+import type { RoutePath } from "@core/route";
+import type { OpenApiDocument } from "./types/openApiDocument";
+import type { OpenApiSecuritySchema, SupportedBearerFormat } from "./types";
 
-export type OpenApiSecurityOptions =
-	{
-		type: "bearer";
+interface OpenApiSecurityOptionBearer {
+	type: "bearer";
+	bearerFormat?: SupportedBearerFormat;
+}
 
-		/**
-		 * @default "JWT"
-		 */
-		bearerFormat?: "JWT" | "JWS" | "JWE" | "Opaque";
-	}
-	| {
-		type: "apiKey";
-		paramName: string;
-		in: "header" | "query" | "cookie";
-	}
-	| {
-		type: "basic";
-	};
+interface OpenApiSecurityOptionApiKey {
+	type: "apiKey";
+	paramName: string;
+	in: "header" | "query" | "cookie";
+}
+
+interface OpenApiSecurityOptionBasic {
+	type: "basic";
+}
 
 export interface OpenApiGeneratorPluginParams {
-	outputFile: string;
+	routePath: RoutePath;
+	outputFilePath?: string;
 
 	/**
 	 * @default "Swagger API"
@@ -45,19 +48,19 @@ export interface OpenApiGeneratorPluginParams {
 		url?: string;
 		identifier?: string;
 	};
-	security?: OpenApiSecurityOptions;
+	security?:
+		| OpenApiSecurityOptionBearer
+		| OpenApiSecurityOptionApiKey
+		| OpenApiSecurityOptionBasic;
 	servers?: {
 		url: string;
 		description?: string;
 	}[];
-}
 
-export interface OpenApiSecurityScheme {
-	type: "http" | "apiKey";
-	scheme?: "bearer" | "basic";
-	bearerFormat?: "JWT" | "JWS" | "JWE" | "Opaque";
-	name?: string;
-	in?: "header" | "query" | "cookie";
+	/**
+	 * @default "5.31.0"
+	 */
+	swaggerUiVersion?: string;
 }
 
 export function openApiGeneratorPlugin(pluginParams: OpenApiGeneratorPluginParams) {
@@ -65,18 +68,21 @@ export function openApiGeneratorPlugin(pluginParams: OpenApiGeneratorPluginParam
 		name: "open-api-generator",
 		hooksHubLifeCycle: [
 			{
-				beforeStartServer: async(hub) => {
+				beforeServerBuildRoutes: async(hub) => {
 					const contextToJsonSchemaFactory: MapContext = new Map();
 					const resultSchemaContext: ResultSchemaContext = new Map();
 					const routes = hub.aggregatesRoutes();
 
-					const openApiRoutes = A.flatMap(
+					const openApiRoutes = pipe(
 						routes,
-						(route) => routeToOpenApi(route, {
-							defaultExtractContract: hub.defaultExtractContract,
-							resultSchemaContext,
-							contextToJsonSchemaFactory,
-						}),
+						A.filter((route) => route.definition.method !== "OPTIONS"),
+						A.flatMap(
+							(route) => routeToOpenApi(route, {
+								defaultExtractContract: hub.defaultExtractContract,
+								resultSchemaContext,
+								contextToJsonSchemaFactory,
+							}),
+						),
 					);
 
 					if (!A.minElements(openApiRoutes, 1)) {
@@ -127,7 +133,9 @@ export function openApiGeneratorPlugin(pluginParams: OpenApiGeneratorPluginParam
 						),
 					);
 
-					const securityScheme: OpenApiSecurityScheme | undefined = P.match(pluginParams.security)
+					const securityScheme: OpenApiSecuritySchema | undefined = P.match(
+						pluginParams.security,
+					)
 						.with(
 							{ type: "bearer" },
 							(security) => (<const>{
@@ -161,7 +169,7 @@ export function openApiGeneratorPlugin(pluginParams: OpenApiGeneratorPluginParam
 						}
 						: undefined;
 
-					const openApiDocument = {
+					const openApiDocument: OpenApiDocument = {
 						openapi: "3.1.0",
 						info: {
 							title: pluginParams.title ?? "Swagger API",
@@ -185,10 +193,27 @@ export function openApiGeneratorPlugin(pluginParams: OpenApiGeneratorPluginParam
 							: undefined,
 					};
 
-					await writeFile(
-						pluginParams.outputFile,
-						JSON.stringify(openApiDocument, null, 2),
+					const openApiDocumentString = JSON.stringify(openApiDocument, null, 2);
+
+					if (pluginParams.outputFilePath) {
+						await writeFile(
+							pluginParams.outputFilePath,
+							openApiDocumentString,
+						);
+					}
+
+					const openApiPage = makeOpenApiPage({
+						openApiDocument: openApiDocumentString,
+						pageTitle: pluginParams.title ?? "Swagger API",
+						swaggerUiVersion: pluginParams.swaggerUiVersion ?? "5.31.0",
+					});
+
+					const openApiRoute = makeOpenApiRoute(
+						pluginParams.routePath,
+						openApiPage,
 					);
+
+					return hub.register(openApiRoute);
 				},
 			},
 		],

@@ -1,27 +1,26 @@
 import { checkerStepKind, cutStepKind, extractStepKind, handlerStepKind, presetCheckerStepKind, processStepKind, type Steps } from "@core/steps";
 import { A, DP, hasSomeKinds, O, P, pipe } from "@duplojs/utils";
-import { type ResponseCode, type ResponseContract } from "@core/response";
+import type { ResponseCode, ResponseContract } from "@core/response";
+import type { EntrypointKey } from "./types";
 
-type EntrypointKey = "query" | "body" | "params" | "headers";
-
-type EntrypointReduceResult = Record<
-	EntrypointKey,
-	DP.DataParser | Record<string, DP.DataParser>
->;
-
-export interface AggregateStepsParams {
-	readonly defaultExtractContract: ResponseContract.Contract;
-}
-
-export interface EndpointResult {
+export interface EndpointRouteResult {
 	code: ResponseCode;
 	information: string;
 	body: DP.DataParser;
 }
 
+export type EntrypointReduceResult = Record<
+	EntrypointKey,
+	DP.DataParser | Record<string, DP.DataParser>
+>;
+
 export interface AggregateStepsResult {
 	entrypointContract: EntrypointReduceResult;
-	endpointContract: EndpointResult[];
+	endpointContract: EndpointRouteResult[];
+}
+
+export interface AggregateStepsParams {
+	readonly defaultExtractContract: ResponseContract.Contract;
 }
 
 export function aggregateStepContract(

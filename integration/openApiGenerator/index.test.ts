@@ -13,10 +13,13 @@ describe("openApiGenerator", () => {
 
 	it("correct generate file", async() => {
 		const hubWithPlugins = hub.plug(
-			openApiGeneratorPlugin({ outputFile: fileName }),
+			openApiGeneratorPlugin({
+				outputFilePath: fileName,
+				routePath: "/swagger",
+			}),
 		);
 		await launchHookServer(
-			hubWithPlugins.aggregatesHooksHubLifeCycle("beforeStartServer"),
+			hubWithPlugins.aggregatesHooksHubLifeCycle("beforeServerBuildRoutes"),
 			hubWithPlugins,
 			{},
 		);
