@@ -1,6 +1,6 @@
 import { type Route } from "@core/route";
 import { aggregateStepContract } from "./aggregateStepContract";
-import { A, DP, justReturn, O, P, pipe, when, whenNot } from "@duplojs/utils";
+import { A, DP, isType, justReturn, O, P, pipe, S, when, whenNot } from "@duplojs/utils";
 import { type ResponseCode, type ResponseContract } from "@core/response";
 import { type MapContext, type JsonSchema, type JsonSchemaLiteral, render, defaultTransformers, type JsonSchemaString } from "@duplojs/data-parser-tools/toJsonSchema";
 import { type RequestMethods } from "@core/request";
@@ -25,9 +25,7 @@ export interface EndpointResponse {
 	headers: {
 		information: {
 			schema: JsonSchemaLiteral;
-		};
-		[headerKey: string]: {
-			schema: JsonSchemaLiteral;
+			description: string;
 		};
 	};
 	content?: {
@@ -197,6 +195,26 @@ export function routeToOpenApi(
 					type: "string",
 				};
 
+				const headerDescription = P.match(lastValue[code])
+					.when(
+						isType("object"),
+						(value) => {
+							if (S.includes(value.headers.information.description, information)) {
+								return value.headers.information.description;
+							}
+							return S.concat(
+								value.headers.information.description,
+								" | ",
+								information,
+							);
+						},
+					)
+					.when(
+						isType("undefined"),
+						justReturn(information),
+					)
+					.exhaustive();
+
 				const headers = {
 					information: {
 						schema: lastValue[code]
@@ -207,6 +225,7 @@ export function routeToOpenApi(
 								],
 							}
 							: headerInformation,
+						description: headerDescription,
 					},
 				};
 

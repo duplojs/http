@@ -18,7 +18,8 @@ exports[`openApiGenerator > correct generate file 1`] = `
                 "schema": {
                   "const": "users.findMany",
                   "type": "string"
-                }
+                },
+                "description": "users.findMany"
               }
             },
             "content": {
@@ -50,7 +51,8 @@ exports[`openApiGenerator > correct generate file 1`] = `
                 "schema": {
                   "const": "users.create",
                   "type": "string"
-                }
+                },
+                "description": "users.create"
               }
             },
             "content": {
@@ -67,7 +69,8 @@ exports[`openApiGenerator > correct generate file 1`] = `
                 "schema": {
                   "const": "extract-error",
                   "type": "string"
-                }
+                },
+                "description": "extract-error"
               }
             }
           }
@@ -93,7 +96,8 @@ exports[`openApiGenerator > correct generate file 1`] = `
                 "schema": {
                   "const": "users.find",
                   "type": "string"
-                }
+                },
+                "description": "users.find"
               }
             },
             "content": {
@@ -110,7 +114,8 @@ exports[`openApiGenerator > correct generate file 1`] = `
                 "schema": {
                   "const": "extract-error",
                   "type": "string"
-                }
+                },
+                "description": "extract-error"
               }
             }
           }

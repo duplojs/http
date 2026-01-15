@@ -45,7 +45,8 @@ exports[`plugin implementation > generate OpenApi file 1`] = `
                 "schema": {
                   "const": "success",
                   "type": "string"
-                }
+                },
+                "description": "success"
               }
             },
             "content": {
@@ -62,7 +63,8 @@ exports[`plugin implementation > generate OpenApi file 1`] = `
                 "schema": {
                   "const": "the-conflict",
                   "type": "string"
-                }
+                },
+                "description": "the-conflict"
               }
             }
           },
@@ -72,7 +74,8 @@ exports[`plugin implementation > generate OpenApi file 1`] = `
                 "schema": {
                   "const": "extract-error",
                   "type": "string"
-                }
+                },
+                "description": "extract-error"
               }
             }
           }
@@ -156,7 +159,8 @@ exports[`plugin implementation > generate OpenApi file with type apiKey ok secur
                 "schema": {
                   "const": "success",
                   "type": "string"
-                }
+                },
+                "description": "success"
               }
             },
             "content": {
@@ -173,7 +177,8 @@ exports[`plugin implementation > generate OpenApi file with type apiKey ok secur
                 "schema": {
                   "const": "the-conflict",
                   "type": "string"
-                }
+                },
+                "description": "the-conflict"
               }
             }
           },
@@ -183,7 +188,8 @@ exports[`plugin implementation > generate OpenApi file with type apiKey ok secur
                 "schema": {
                   "const": "extract-error",
                   "type": "string"
-                }
+                },
+                "description": "extract-error"
               }
             }
           }
@@ -279,7 +285,8 @@ exports[`plugin implementation > generate OpenApi file with type bearer ok secur
                 "schema": {
                   "const": "success",
                   "type": "string"
-                }
+                },
+                "description": "success"
               }
             },
             "content": {
@@ -296,7 +303,8 @@ exports[`plugin implementation > generate OpenApi file with type bearer ok secur
                 "schema": {
                   "const": "the-conflict",
                   "type": "string"
-                }
+                },
+                "description": "the-conflict"
               }
             }
           },
@@ -306,7 +314,8 @@ exports[`plugin implementation > generate OpenApi file with type bearer ok secur
                 "schema": {
                   "const": "extract-error",
                   "type": "string"
-                }
+                },
+                "description": "extract-error"
               }
             }
           }

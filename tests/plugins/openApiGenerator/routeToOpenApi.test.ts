@@ -92,6 +92,7 @@ describe("routeToOpenApi", () => {
 						204: {
 							headers: {
 								information: {
+									description: "test",
 									schema: {
 										const: "test",
 										type: "string",
@@ -102,6 +103,7 @@ describe("routeToOpenApi", () => {
 						404: {
 							headers: {
 								information: {
+									description: "notFound",
 									schema: {
 										const: "notFound",
 										type: "string",
@@ -112,6 +114,7 @@ describe("routeToOpenApi", () => {
 						422: {
 							headers: {
 								information: {
+									description: "extract-error",
 									schema: {
 										anyOf: [
 											{
@@ -178,6 +181,7 @@ describe("routeToOpenApi", () => {
 						200: {
 							headers: {
 								information: {
+									description: "cut | handler",
 									schema: {
 										anyOf: [
 											{
@@ -246,6 +250,7 @@ describe("routeToOpenApi", () => {
 						200: {
 							headers: {
 								information: {
+									description: "cut | handler",
 									schema: {
 										anyOf: [
 											{
