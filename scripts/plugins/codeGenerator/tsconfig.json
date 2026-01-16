@@ -4,7 +4,6 @@
     "baseUrl": "./",
     "paths": {
 	  "@core/*": ["../../core/*"],
-	  "@client/*": ["../../client/*"],
 	  "@plugin-codeGenerator/*": ["./*"],
     },
 	"types": ["node"],

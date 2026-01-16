@@ -1,4 +1,4 @@
-import { type NeverCoalescing, type MaybePromise, unwrap } from "@duplojs/utils";
+import { type NeverCoalescing, type MaybePromise, unwrap, forwardLog } from "@duplojs/utils";
 import { getBody } from "./getBody";
 import { insertParamsInPath } from "./insertParamsInPath";
 import { queryToString } from "./queryToString";
@@ -43,7 +43,9 @@ type MaybeWantedResponse<
 	>
 );
 
-export interface PromiseRequestParams extends ClientRequestParams {
+export interface PromiseRequestParams<
+	GenericHookParams extends Record<string, unknown> = Record<string, unknown>,
+> extends ClientRequestParams<GenericHookParams> {
 	baseUrl: string;
 	hooks: Hooks;
 }
@@ -136,22 +138,28 @@ export class PromiseRequest<
 						return EE.right("response", response);
 					},
 				)
-				.catch(
-					async(error) => {
-						await launchErrorHook(
-							params.hooks.error ?? [],
-							this.hooks.error ?? [],
-							error,
-							params,
-						);
+				.then(
+					async(result): Promise<MaybeResponse> => {
+						if (EE.eitherFutureErrorKind.has(result)) {
+							const error = unwrap(result);
 
-						return EE.left(
-							"request-error",
-							{
+							await launchErrorHook(
+								params.hooks.error,
+								this.hooks.error ?? [],
 								error,
-								requestParams: params,
-							},
-						);
+								params,
+							);
+
+							return EE.left(
+								"request-error",
+								{
+									error,
+									requestParams: params,
+								},
+							);
+						}
+
+						return result;
 					},
 				)
 				.then(resolve as never),
@@ -161,7 +169,7 @@ export class PromiseRequest<
 	public addRequestInterceptor(
 		callback: (requestParams: GenericPromiseRequestParams) => MaybePromise<GenericPromiseRequestParams>,
 	) {
-		this.hooks.request ||= [];
+		this.hooks.request ??= [];
 		this.hooks.request.push(callback as never);
 
 		return this;
@@ -170,7 +178,7 @@ export class PromiseRequest<
 	public addResponseInterceptor(
 		callback: (response: GenericClientResponse) => MaybePromise<GenericClientResponse>,
 	) {
-		this.hooks.response ||= [];
+		this.hooks.response ??= [];
 		this.hooks.response.push(callback as never);
 
 		return this;
@@ -199,8 +207,8 @@ export class PromiseRequest<
 
 		formattedInformation.forEach(
 			(information) => {
-				this.hooks.information ||= {};
-				this.hooks.information[information] ||= [];
+				this.hooks.information ??= {};
+				this.hooks.information[information] ??= [];
 				this.hooks.information[information].push(callback as never);
 			},
 		);
@@ -228,8 +236,8 @@ export class PromiseRequest<
 
 		formattedCode.forEach(
 			(code) => {
-				this.hooks.code ||= {};
-				this.hooks.code[code] ||= [];
+				this.hooks.code ??= {};
+				this.hooks.code[code] ??= [];
 				this.hooks.code[code].push(callback as never);
 			},
 		);
@@ -248,7 +256,7 @@ export class PromiseRequest<
 			>,
 		) => MaybePromise<void>,
 	) {
-		this.hooks.informationalResponseType ||= [];
+		this.hooks.informationalResponseType ??= [];
 		this.hooks.informationalResponseType.push(callback as never);
 
 		return this;
@@ -265,7 +273,7 @@ export class PromiseRequest<
 			>,
 		) => MaybePromise<void>,
 	) {
-		this.hooks.successfulResponseType ||= [];
+		this.hooks.successfulResponseType ??= [];
 		this.hooks.successfulResponseType.push(callback as never);
 
 		return this;
@@ -282,7 +290,7 @@ export class PromiseRequest<
 			>,
 		) => MaybePromise<void>,
 	) {
-		this.hooks.redirectionResponseType ||= [];
+		this.hooks.redirectionResponseType ??= [];
 		this.hooks.redirectionResponseType.push(callback as never);
 
 		return this;
@@ -299,7 +307,7 @@ export class PromiseRequest<
 			>,
 		) => MaybePromise<void>,
 	) {
-		this.hooks.clientErrorResponseType ||= [];
+		this.hooks.clientErrorResponseType ??= [];
 		this.hooks.clientErrorResponseType.push(callback as never);
 
 		return this;
@@ -316,7 +324,7 @@ export class PromiseRequest<
 			>,
 		) => MaybePromise<void>,
 	) {
-		this.hooks.serverErrorResponseType ||= [];
+		this.hooks.serverErrorResponseType ??= [];
 		this.hooks.serverErrorResponseType.push(callback as never);
 
 		return this;
@@ -333,14 +341,14 @@ export class PromiseRequest<
 			>,
 		) => MaybePromise<void>,
 	) {
-		this.hooks.expectedResponse ||= [];
+		this.hooks.expectedResponse ??= [];
 		this.hooks.expectedResponse.push(callback as never);
 
 		return this;
 	}
 
 	public whenError(callback: ErrorHook) {
-		this.hooks.error ||= [];
+		this.hooks.error ??= [];
 		this.hooks.error.push(callback as never);
 
 		return this;

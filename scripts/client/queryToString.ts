@@ -1,6 +1,10 @@
 import { type ClientRequestParams } from "./types";
 
 export function queryToString(query: ClientRequestParams["query"]) {
+	if (!query) {
+		return null;
+	}
+
 	return Object.entries(query)
 		.reduce<string[]>(
 			(pv, [key, value]) => {
@@ -20,5 +24,5 @@ export function queryToString(query: ClientRequestParams["query"]) {
 			},
 			[],
 		)
-		.join("&") || undefined;
+		.join("&") || null;
 }

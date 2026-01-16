@@ -42,7 +42,7 @@ describe("routeToDataParser", () => {
 	it("expect good result", () => {
 		const result = routeToDataParser(route, { defaultExtractContract });
 
-		expect(omitFunctions(result)).toStrictEqual(
+		expect(omitFunctions(result)).toStrictEqual([
 			omitFunctions(
 				DP.object({
 					method: DP.literal("GET"),
@@ -99,6 +99,6 @@ describe("routeToDataParser", () => {
 					]),
 				}),
 			),
-		);
+		]);
 	});
 });

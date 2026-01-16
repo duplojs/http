@@ -1,8 +1,7 @@
 import { type ClientRequestParams } from "./clientRequestParams";
 import type * as SS from "@duplojs/utils/string";
-import { type Json } from "./json";
 import { type ServerRouteResponse, type ServerRoute } from "./serverRoute";
-import { type IsEqual, type SimplifyTopLevel } from "@duplojs/utils";
+import { type Json, type IsEqual, type SimplifyTopLevel } from "@duplojs/utils";
 
 export type ClientResponseBody = Json;
 

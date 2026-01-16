@@ -7,7 +7,7 @@
 	  "@client/*": ["../../scripts/client/*"],
 	  "@test-utils/*": ["../_utils/*"],
     },
-	"types": ["web"],
+	"types": ["web", "vitest/globals"],
   },
   "include": [
 	"**/*.ts",

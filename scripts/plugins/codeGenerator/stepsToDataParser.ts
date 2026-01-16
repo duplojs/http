@@ -1,8 +1,7 @@
 import { checkerStepKind, cutStepKind, extractStepKind, handlerStepKind, presetCheckerStepKind, processStepKind, type Steps } from "@core/steps";
-import { A, DP, hasSomeKinds, N, O, P, pipe } from "@duplojs/utils";
+import { A, DP, hasSomeKinds, O, P, pipe } from "@duplojs/utils";
 import { type EntrypointKey } from "./types";
 import { type ResponseContract } from "@core/response";
-import { type ServerRouteResponse } from "@client/index";
 
 type EntrypointReduceResult = Record<
 	EntrypointKey,
@@ -15,7 +14,7 @@ export interface StepsToDataParserParams {
 
 export interface StepsToDataParserResult {
 	entrypointContract: EntrypointReduceResult;
-	endpointContract: DP.Contract<ServerRouteResponse>[];
+	endpointContract: DP.DataParser[];
 }
 
 export function stepsToDataParser(

@@ -2,7 +2,6 @@ import { type Route } from "@core/route";
 import { stepsToDataParser } from "./stepsToDataParser";
 import { A, DP, type DString, type ExpectType, innerPipe, O, pipe } from "@duplojs/utils";
 import { type ResponseCode, type ResponseContract } from "@core/response";
-import { type ServerRoute } from "@client/index";
 
 export interface RouteToDataParserParams {
 	readonly defaultExtractContract: ResponseContract.Contract;
@@ -57,7 +56,7 @@ type _CheckHttpCode = ExpectType<
 export function routeToDataParser(
 	route: Route,
 	params: RouteToDataParserParams,
-): DP.Contract<ServerRoute>[] {
+): DP.DataParser[] {
 	return pipe(
 		[
 			...route.definition.preflightSteps,

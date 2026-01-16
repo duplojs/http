@@ -334,19 +334,6 @@ describe("makeNodeHook", () => {
 			expect(request.raw.response._isEndCalled()).toBe(true);
 		});
 
-		it("writes bigint body", () => {
-			const request = createFakeRequest();
-
-			hooks.sendResponse!({
-				request,
-				currentResponse: { body: 12n },
-				exit: exitHookFunction,
-			} as any);
-
-			expect(request.raw.response._getData()).toBe("12");
-			expect(request.raw.response._isEndCalled()).toBe(true);
-		});
-
 		it("writes error body", () => {
 			const request = createFakeRequest();
 

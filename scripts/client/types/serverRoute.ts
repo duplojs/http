@@ -1,5 +1,4 @@
-import { type MaybeArray } from "@duplojs/utils";
-import { type Json } from "./json";
+import { type Json, type MaybeArray } from "@duplojs/utils";
 
 export type ServerPrimitiveData = string | undefined | number | null | boolean;
 

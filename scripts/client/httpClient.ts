@@ -3,8 +3,8 @@ import * as OO from "@duplojs/utils/object";
 import * as GG from "@duplojs/utils/generator";
 import { createClientKind } from "./kind";
 import { type ClientRequestInitParams, type ServerRoute, type ServerRouteToClientRequestParams, type ServerRouteToClientResponse, type ClientRequestParamsHeaders, type ClientRequestParams } from "./types";
-import { PromiseRequest } from "./promiseRequest";
-import { type Hooks } from "./hooks";
+import { PromiseRequest, type PromiseRequestParams } from "./promiseRequest";
+import { type Hooks, type RequestHook, type ResponseHook, type InformationHook, type CodeHook, type ResponseTypeHook, type ExpectedResponseHook, type ErrorHook } from "./hooks";
 
 export const httpClientKind = createClientKind("http-client");
 
@@ -14,7 +14,48 @@ type MaybeRequestParams<
 	? [params?: GenericRequestParams]
 	: [params: GenericRequestParams];
 
-export interface HttpCLient<
+type HttpClientRequestMethod<
+	GenericServerRoute extends ServerRoute,
+	GenericHookParams extends Record<string, unknown>,
+	GenericMethod extends string,
+> = <
+	GenericClientRequestParams extends NeverCoalescing<
+		ServerRouteToClientRequestParams<
+			Extract<GenericServerRoute, { method: GenericMethod }>,
+			GenericHookParams
+		>,
+		ClientRequestParams<GenericHookParams>
+	>,
+	GenericPath extends GenericClientRequestParams["path"],
+	GenericClientRequestRest extends SimplifyTopLevel<
+		Omit<
+			NeverCoalescing<
+				Extract<
+					GenericClientRequestParams,
+					{ path: GenericPath }
+				>,
+				ClientRequestParams<GenericHookParams>
+			>,
+			"method" | "path"
+		>
+	>,
+>(
+	path: GenericPath,
+	...args: MaybeRequestParams<GenericClientRequestRest>
+) => PromiseRequest<
+	PromiseRequestParams<GenericHookParams>,
+	ServerRouteToClientResponse<
+		Extract<
+			GenericServerRoute,
+			{
+				method: GenericServerRoute["method"];
+				path: GenericServerRoute["path"];
+			}
+		>
+	>
+>;
+
+export interface HttpClient<
 	GenericServerRoute extends ServerRoute = ServerRoute,
 	GenericHookParams extends Record<string, unknown> = Record<string, unknown>,
 > extends Kind<typeof httpClientKind.definition> {
@@ -33,6 +74,18 @@ export interface HttpCLient<
 			MayBeGetter<string | undefined | null>
 		>
 	): void;
+
+	addRequestHook(hook: RequestHook): void;
+	addResponseHook(hook: ResponseHook): void;
+	addInformationHook(information: string, hook: InformationHook): void;
+	addCodeHook(code: string, hook: CodeHook): void;
+	addInformationalResponseTypeHook(hook: ResponseTypeHook): void;
+	addSuccessfulResponseTypeHook(hook: ResponseTypeHook): void;
+	addRedirectionResponseTypeHook(hook: ResponseTypeHook): void;
+	addClientErrorResponseTypeHook(hook: ResponseTypeHook): void;
+	addServerErrorResponseTypeHook(hook: ResponseTypeHook): void;
+	addExpectedResponseHook(hook: ExpectedResponseHook): void;
+	addErrorHook(hook: ErrorHook): void;
 
 	request<
 		GenericClientRequestParams extends ServerRouteToClientRequestParams<
@@ -53,40 +106,28 @@ export interface HttpCLient<
 		>
 	>;
 
-	get<
-		GenericClientRequestParams extends NeverCoalescing<
-			ServerRouteToClientRequestParams<
-				Extract<GenericServerRoute, { method: "GET" }>,
-				GenericHookParams
-			>,
-			ClientRequestParams<GenericHookParams>
-		>,
-		GenericPath extends GenericClientRequestParams["path"],
-		GenericClientRequestRest extends SimplifyTopLevel<
-			Omit<
-				NeverCoalescing<
-					Extract<
-						GenericClientRequestParams,
-						{ path: GenericPath }
-					>,
-					ClientRequestParams<GenericHookParams>
-				>,
-			"method" | "path"
-			>
-		>,
-	>(
-		path: GenericPath,
-		...args: MaybeRequestParams<GenericClientRequestRest>
-	): PromiseRequest<
-		ServerRouteToClientResponse<
-			Extract<
-				GenericServerRoute,
-				{
-					method: GenericServerRoute["method"];
-					path: GenericServerRoute["path"];
-				}
-			>
-		>
+	get: HttpClientRequestMethod<
+		GenericServerRoute,
+		GenericHookParams,
+		"GET"
+	>;
+
+	post: HttpClientRequestMethod<
+		GenericServerRoute,
+		GenericHookParams,
+		"POST"
+	>;
+
+	put: HttpClientRequestMethod<
+		GenericServerRoute,
+		GenericHookParams,
+		"PUT"
+	>;
+
+	delete: HttpClientRequestMethod<
+		GenericServerRoute,
+		GenericHookParams,
+		"DELETE"
 	>;
 }
 
@@ -102,7 +143,7 @@ export function createHttpClient<
 	GenericHookParams extends Record<string, unknown> = Record<string, unknown>,
 >(
 	clientParams: CreateHttpClientParams,
-): HttpCLient<GenericServerRoute, GenericHookParams> {
+): HttpClient<GenericServerRoute, GenericHookParams> {
 	const hooks = OO.override<Hooks>(
 		{
 			request: [],
@@ -120,9 +161,9 @@ export function createHttpClient<
 		clientParams.hooks ?? {},
 	);
 
-	const defaultHeaders: HttpCLient["defaultHeaders"] = new Map();
+	const defaultHeaders: HttpClient["defaultHeaders"] = new Map();
 
-	const self: HttpCLient = httpClientKind.setTo(
+	const self: HttpClient = httpClientKind.setTo(
 		{
 			...clientParams,
 			hooks,
@@ -137,13 +178,43 @@ export function createHttpClient<
 			},
 			addDefaultHeaders(headers) {
 				for (const [header, headerValue] of OO.entries(headers)) {
-					defaultHeaders.set(
-						header,
-						typeof headerValue === "function"
-							? headerValue
-							: () => headerValue,
-					);
+					self.addDefaultHeader(header, headerValue);
 				}
+			},
+			addRequestHook(hook) {
+				hooks.request.push(hook);
+			},
+			addResponseHook(hook) {
+				hooks.response.push(hook);
+			},
+			addInformationHook(information, hook) {
+				hooks.information[information] ??= [];
+				hooks.information[information].push(hook);
+			},
+			addCodeHook(code, hook) {
+				hooks.code[code] ??= [];
+				hooks.code[code].push(hook);
+			},
+			addInformationalResponseTypeHook(hook) {
+				hooks.informationalResponseType.push(hook);
+			},
+			addSuccessfulResponseTypeHook(hook) {
+				hooks.successfulResponseType.push(hook);
+			},
+			addRedirectionResponseTypeHook(hook) {
+				hooks.redirectionResponseType.push(hook);
+			},
+			addClientErrorResponseTypeHook(hook) {
+				hooks.clientErrorResponseType.push(hook);
+			},
+			addServerErrorResponseTypeHook(hook) {
+				hooks.serverErrorResponseType.push(hook);
+			},
+			addExpectedResponseHook(hook) {
+				hooks.expectedResponse.push(hook);
+			},
+			addErrorHook(hook) {
+				hooks.error.push(hook);
 			},
 			request(params) {
 				const headers = GG.reduce(
@@ -176,10 +247,23 @@ export function createHttpClient<
 				path,
 				...params,
 			})) as never,
-		} satisfies RemoveKind<HttpCLient>,
+			post: ((path: string, params?: object) => self.request({
+				method: "POST",
+				path,
+				...params,
+			})) as never,
+			put: ((path: string, params?: object) => self.request({
+				method: "PUT",
+				path,
+				...params,
+			})) as never,
+			delete: ((path: string, params?: object) => self.request({
+				method: "DELETE",
+				path,
+				...params,
+			})) as never,
+		} satisfies RemoveKind<HttpClient>,
 	);
 
-	return self;
+	return self as never;
 }
-
-const tt = createHttpClient({ baseUrl: "" }).get("/test");
