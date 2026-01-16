@@ -193,6 +193,7 @@ export function createHub<
 							A.from,
 						),
 						P.otherwise(O.values),
+						A.filter((route) => !A.includes(this.routes, route)),
 					),
 				),
 			};

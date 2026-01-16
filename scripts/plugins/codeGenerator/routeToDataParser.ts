@@ -2,6 +2,7 @@ import { type Route } from "@core/route";
 import { stepsToDataParser } from "./stepsToDataParser";
 import { A, DP, type DString, type ExpectType, innerPipe, O, pipe } from "@duplojs/utils";
 import { type ResponseCode, type ResponseContract } from "@core/response";
+import { type ServerRoute } from "@client/index";
 
 export interface RouteToDataParserParams {
 	readonly defaultExtractContract: ResponseContract.Contract;
@@ -56,7 +57,7 @@ type _CheckHttpCode = ExpectType<
 export function routeToDataParser(
 	route: Route,
 	params: RouteToDataParserParams,
-): DP.DataParser {
+): DP.Contract<ServerRoute>[] {
 	return pipe(
 		[
 			...route.definition.preflightSteps,
@@ -87,24 +88,27 @@ export function routeToDataParser(
 				O.fromEntries,
 			),
 		),
-		({ endpointContract, entrypointContract }) => DP.object({
-			method: DP.literal(route.definition.method),
-			path: DP.literal(route.definition.paths),
-			...entrypointContract,
-			responses: DP.union([
-				DP.object({
-					code: responseCodeDataParser,
-					information: DP.string(),
-					body: DP.unknown(),
-					fromHook: DP.literal(true),
-				}),
-				DP.object({
-					code: responseCodeDataParsers.serverError,
-					information: DP.string(),
-					body: DP.unknown(),
-				}),
-				...endpointContract,
-			]),
-		}),
+		({ endpointContract, entrypointContract }) => A.map(
+			route.definition.paths,
+			(path) => DP.object({
+				method: DP.literal(route.definition.method),
+				path: DP.literal(path),
+				...entrypointContract,
+				responses: DP.union([
+					DP.object({
+						code: responseCodeDataParser,
+						information: DP.string(),
+						body: DP.unknown(),
+						fromHook: DP.literal(true),
+					}),
+					DP.object({
+						code: responseCodeDataParsers.serverError,
+						information: DP.string(),
+						body: DP.unknown(),
+					}),
+					...endpointContract,
+				]),
+			}),
+		),
 	);
 }

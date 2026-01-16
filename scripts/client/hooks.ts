@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/prefer-for-of */
 import { type MaybePromise } from "@duplojs/utils";
-import { type ClientRequestParams } from "./types/clientRequestParams";
 import { type ClientResponse } from "./types/clientResponse";
+import { type PromiseRequestParams } from "./promiseRequest";
 
-export type RequestHook = (requestParams: ClientRequestParams) => MaybePromise<ClientRequestParams>;
+export type RequestHook = (requestParams: PromiseRequestParams) => MaybePromise<PromiseRequestParams>;
 
 export type ResponseHook = (response: ClientResponse) => MaybePromise<ClientResponse>;
 
@@ -15,7 +15,7 @@ export type ExpectedResponseHook = (response: ClientResponse) => MaybePromise<vo
 
 export type CodeHook = (response: ClientResponse) => MaybePromise<void>;
 
-export type ErrorHook = (error: unknown, requestParams: ClientRequestParams) => MaybePromise<void>;
+export type ErrorHook = (error: unknown, requestParams: PromiseRequestParams) => MaybePromise<void>;
 
 export interface Hooks {
 	request: RequestHook[];
@@ -34,8 +34,8 @@ export interface Hooks {
 export async function launchRequestHook(
 	clientHook: readonly RequestHook[],
 	promiseRequestHook: readonly RequestHook[],
-	requestParams: ClientRequestParams,
-): Promise<ClientRequestParams> {
+	requestParams: PromiseRequestParams,
+): Promise<PromiseRequestParams> {
 	let resultRequestParams = requestParams;
 
 	for (let index = 0; index < promiseRequestHook.length; index++) {
@@ -127,7 +127,7 @@ export async function launchErrorHook(
 	clientHook: readonly ErrorHook[],
 	promiseRequestHook: readonly ErrorHook[],
 	error: unknown,
-	requestParams: ClientRequestParams,
+	requestParams: PromiseRequestParams,
 ) {
 	for (let index = 0; index < promiseRequestHook.length; index++) {
 		await promiseRequestHook[index]!(error, requestParams);

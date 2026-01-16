@@ -4,9 +4,10 @@
     "baseUrl": "./",
     "paths": {
 	  "@core/*": ["../../core/*"],
+	  "@client/*": ["../../client/*"],
 	  "@plugin-codeGenerator/*": ["./*"],
     },
 	"types": ["node"],
   },
-  "include": ["**/*.ts", "../../core/**/*.ts"],
+  "include": ["**/*.ts", "../../core/**/*.ts", "../../client/**/*.ts"],
 }

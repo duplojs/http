@@ -1,34 +1,93 @@
-import { type RemoveKind, type Kind, type MaybeArray, type MayBeGetter } from "@duplojs/utils";
+import { type RemoveKind, type Kind, type MayBeGetter, type NeverCoalescing, type SimplifyTopLevel } from "@duplojs/utils";
 import * as OO from "@duplojs/utils/object";
 import * as GG from "@duplojs/utils/generator";
 import { createClientKind } from "./kind";
-import { type ClientRequestParams, type ClientRequestInitParams, type Hooks } from "./types";
+import { type ClientRequestInitParams, type ServerRoute, type ServerRouteToClientRequestParams, type ServerRouteToClientResponse, type ClientRequestParamsHeaders, type ClientRequestParams } from "./types";
 import { PromiseRequest } from "./promiseRequest";
+import { type Hooks } from "./hooks";
 
 export const httpClientKind = createClientKind("http-client");
 
-export interface HttpCLient extends Kind<typeof httpClientKind.definition> {
+type MaybeRequestParams<
+	GenericRequestParams extends object,
+> = {} extends GenericRequestParams
+	? [params?: GenericRequestParams]
+	: [params: GenericRequestParams];
+
+export interface HttpCLient<
+	GenericServerRoute extends ServerRoute = ServerRoute,
+	GenericHookParams extends Record<string, unknown> = Record<string, unknown>,
+> extends Kind<typeof httpClientKind.definition> {
 	readonly baseUrl: string;
 	readonly hooks: Hooks;
-	readonly defaultHeaders: Map<string, () => (MaybeArray<string> | undefined | null)>;
+	readonly defaultHeaders: Map<string, () => (string | undefined | null)>;
 
 	addDefaultHeader(
 		headerName: string,
-		headerValue: MayBeGetter<MaybeArray<string> | undefined | null>
+		headerValue: MayBeGetter<string | undefined | null>
 	): void;
 
 	addDefaultHeaders(
 		headers: Record<
 			string,
-			MayBeGetter<MaybeArray<string> | undefined | null>
+			MayBeGetter<string | undefined | null>
 		>
 	): void;
 
 	request<
-		GenericClientRequestParams extends ClientRequestParams,
+		GenericClientRequestParams extends ServerRouteToClientRequestParams<
+			GenericServerRoute,
+			GenericHookParams
+		>,
 	>(
 		params: GenericClientRequestParams
-	): PromiseRequest;
+	): PromiseRequest<
+		ServerRouteToClientResponse<
+			Extract<
+				GenericServerRoute,
+				{
+					method: GenericServerRoute["method"];
+					path: GenericServerRoute["path"];
+				}
+			>
+		>
+	>;
+
+	get<
+		GenericClientRequestParams extends NeverCoalescing<
+			ServerRouteToClientRequestParams<
+				Extract<GenericServerRoute, { method: "GET" }>,
+				GenericHookParams
+			>,
+			ClientRequestParams<GenericHookParams>
+		>,
+		GenericPath extends GenericClientRequestParams["path"],
+		GenericClientRequestRest extends SimplifyTopLevel<
+			Omit<
+				NeverCoalescing<
+					Extract<
+						GenericClientRequestParams,
+						{ path: GenericPath }
+					>,
+					ClientRequestParams<GenericHookParams>
+				>,
+			"method" | "path"
+			>
+		>,
+	>(
+		path: GenericPath,
+		...args: MaybeRequestParams<GenericClientRequestRest>
+	): PromiseRequest<
+		ServerRouteToClientResponse<
+			Extract<
+				GenericServerRoute,
+				{
+					method: GenericServerRoute["method"];
+					path: GenericServerRoute["path"];
+				}
+			>
+		>
+	>;
 }
 
 export interface CreateHttpClientParams {
@@ -38,7 +97,12 @@ export interface CreateHttpClientParams {
 	readonly cache?: ClientRequestInitParams["cache"];
 }
 
-export function createHttpClient(clientParams: CreateHttpClientParams): HttpCLient {
+export function createHttpClient<
+	GenericServerRoute extends ServerRoute,
+	GenericHookParams extends Record<string, unknown> = Record<string, unknown>,
+>(
+	clientParams: CreateHttpClientParams,
+): HttpCLient<GenericServerRoute, GenericHookParams> {
 	const hooks = OO.override<Hooks>(
 		{
 			request: [],
@@ -58,7 +122,7 @@ export function createHttpClient(clientParams: CreateHttpClientParams): HttpCLie
 
 	const defaultHeaders: HttpCLient["defaultHeaders"] = new Map();
 
-	return httpClientKind.setTo(
+	const self: HttpCLient = httpClientKind.setTo(
 		{
 			...clientParams,
 			hooks,
@@ -84,15 +148,17 @@ export function createHttpClient(clientParams: CreateHttpClientParams): HttpCLie
 			request(params) {
 				const headers = GG.reduce(
 					defaultHeaders.entries(),
-					GG.reduceFrom<ClientRequestParams["headers"]>({}),
+					GG.reduceFrom<ClientRequestParamsHeaders>({}),
 					({ element, lastValue, next }) => {
-						lastValue[element[0]] = element[1]();
+						lastValue[element[0]] = `${element[1]()}`;
 
 						return next(lastValue);
 					},
 				);
 
 				return new PromiseRequest({
+					hooks,
+					baseUrl: clientParams.baseUrl,
 					...params,
 					headers: {
 						...params.headers,
@@ -100,11 +166,20 @@ export function createHttpClient(clientParams: CreateHttpClientParams): HttpCLie
 					},
 					initParams: {
 						...params.initParams,
-						credentials: params.initParams.credentials ?? clientParams.credentials,
-						cache: params.initParams.cache ?? clientParams.cache,
+						credentials: params.initParams?.credentials ?? clientParams.credentials,
+						cache: params.initParams?.cache ?? clientParams.cache,
 					},
 				});
 			},
+			get: ((path: string, params?: object) => self.request({
+				method: "GET",
+				path,
+				...params,
+			})) as never,
 		} satisfies RemoveKind<HttpCLient>,
 	);
+
+	return self;
 }
+
+const tt = createHttpClient({ baseUrl: "" }).get("/test");

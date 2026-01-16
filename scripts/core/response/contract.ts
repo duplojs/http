@@ -1,17 +1,13 @@
 import { DP, type Kind, pipe, type IsEqual, type NeverCoalescing, kindHeritage } from "@duplojs/utils";
 import { createCoreLibKind } from "../kind";
 import { type ResponseCode, type Response } from ".";
+import { type ForbiddenBigintDataParser } from "@core/types";
 
 const ErrorClass = Error;
 
 export namespace ResponseContract {
-	type SupportedDataParser = (
-		| DP.DataParserObject<any>
-		| DP.DataParserString<any>
-		| DP.DataParserNumber<any>
-		| DP.DataParserNil<any>
-		| DP.DataParserEmpty<any>
-	);
+	type SupportedDataParser = DP.DataParser;
+
 	export const contractKind = createCoreLibKind("response-contract");
 
 	export interface Contract<
@@ -53,8 +49,8 @@ export namespace ResponseContract {
 			...[schema]: IsEqual<GenericOptionsNoSchema, true> extends true
 				? []
 				: IsEqual<GenericOptionsDefaultSchema, never> extends true
-					? [schema: GenericSchema]
-					: [schema?: GenericSchema]
+					? [schema: GenericSchema & ForbiddenBigintDataParser<GenericSchema>]
+					: [schema?: GenericSchema & ForbiddenBigintDataParser<GenericSchema>]
 		): NoInfer<
 			Contract<
 				GenericCode,
@@ -140,7 +136,6 @@ export namespace ResponseContract {
 	export const loopDetected = createContractBuilder("508", { defaultSchema });
 	export const notExtended = createContractBuilder("510", { defaultSchema });
 	export const networkAuthenticationRequired = createContractBuilder("511", { defaultSchema });
-
 	export class Error extends kindHeritage(
 		"contract-error",
 		createCoreLibKind("contract-error"),

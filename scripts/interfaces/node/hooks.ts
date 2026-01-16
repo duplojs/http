@@ -118,6 +118,7 @@ export function makeNodeHook(hub: Hub, serverParams: HttpServerParams) {
 			} else if (
 				typeof body === "object"
 				|| typeof body === "number"
+				|| typeof body === "boolean"
 
 			) {
 				currentResponse.setHeader("content-type", "application/json; charset=utf-8");
@@ -145,7 +146,11 @@ export function makeNodeHook(hub: Hub, serverParams: HttpServerParams) {
 				rawResponse.write(
 					body.toString(),
 				);
-			} else if (typeof body === "object" || typeof body === "number") {
+			} else if (
+				typeof body === "object"
+				|| typeof body === "number"
+				|| typeof body === "boolean"
+			) {
 				rawResponse.write(
 					JSON.stringify(body),
 				);

@@ -2,11 +2,12 @@ import { type NeverCoalescing, type MaybePromise, unwrap } from "@duplojs/utils"
 import { getBody } from "./getBody";
 import { insertParamsInPath } from "./insertParamsInPath";
 import { queryToString } from "./queryToString";
-import { type ClientResponse, type ClientRequestParams, type Hooks, launchRequestHook, launchResponseHook, launchInformationHook, launchCodeHook, launchResponseTypeHook, launchExpectedResponseHook, launchErrorHook, type ErrorHook } from "./types";
+import { type Hooks, launchRequestHook, launchResponseHook, launchInformationHook, launchCodeHook, launchResponseTypeHook, launchExpectedResponseHook, launchErrorHook, type ErrorHook } from "./hooks";
 import * as EE from "@duplojs/utils/either";
 import * as SS from "@duplojs/utils/string";
 import * as AA from "@duplojs/utils/array";
 import { UnexpectedCodeResponseError, UnexpectedInformationResponseError, UnexpectedResponseError, UnexpectedResponseTypeError, type ErrorContent } from "./unexpectedResponseError";
+import { type ClientRequestParams, type ClientResponse } from "./types";
 
 type MaybeResponse<
 	GenericClientResponse extends ClientResponse = ClientResponse,
@@ -42,8 +43,13 @@ type MaybeWantedResponse<
 	>
 );
 
+export interface PromiseRequestParams extends ClientRequestParams {
+	baseUrl: string;
+	hooks: Hooks;
+}
+
 export class PromiseRequest<
-	GenericClientRequestParams extends ClientRequestParams = ClientRequestParams,
+	GenericPromiseRequestParams extends PromiseRequestParams = PromiseRequestParams,
 	GenericClientResponse extends ClientResponse = ClientResponse,
 > extends Promise<
 		MaybeResponse<GenericClientResponse>
@@ -51,7 +57,7 @@ export class PromiseRequest<
 	public readonly hooks: Partial<Hooks> = {};
 
 	public constructor(
-		public params: ClientRequestParams,
+		public params: PromiseRequestParams,
 	) {
 		super(
 			(resolve) => void EE
@@ -153,7 +159,7 @@ export class PromiseRequest<
 	}
 
 	public addRequestInterceptor(
-		callback: (requestParams: GenericClientRequestParams) => MaybePromise<GenericClientRequestParams>,
+		callback: (requestParams: GenericPromiseRequestParams) => MaybePromise<GenericPromiseRequestParams>,
 	) {
 		this.hooks.request ||= [];
 		this.hooks.request.push(callback as never);
@@ -780,10 +786,10 @@ export class PromiseRequest<
 		return Promise;
 	}
 
-	private static fetch<
-		GenericClientRequestParams extends ClientRequestParams,
+	public static fetch<
+		GenericPromiseRequestParams extends PromiseRequestParams,
 	>(
-		requestParams: GenericClientRequestParams,
+		requestParams: GenericPromiseRequestParams,
 	): Promise<MaybeResponse> {
 		const path = insertParamsInPath(requestParams.path, requestParams.params);
 		const query = queryToString(requestParams.query);
@@ -796,13 +802,18 @@ export class PromiseRequest<
 
 		if (body) {
 			if (!headers["content-type"]) {
-				if (typeof body === "string" || typeof body === "number") {
+				if (typeof body === "string") {
 					headers["content-type"] = "text/plain; charset=utf-8";
 					body = body.toString();
 				} else if (
-					body
-					&& typeof body === "object"
-					&& body.constructor.name === "Object"
+					(
+						body
+						&& typeof body === "object"
+						&& body.constructor.name === "Object"
+					)
+					|| body === null
+					|| typeof body === "boolean"
+					|| typeof body === "number"
 				) {
 					headers["content-type"] = "application/json; charset=utf-8";
 					body = JSON.stringify(body);
@@ -849,6 +860,6 @@ export class PromiseRequest<
 						requestParams,
 					},
 				),
-			);
+			) as never;
 	}
 }

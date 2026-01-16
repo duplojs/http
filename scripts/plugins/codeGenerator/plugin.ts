@@ -16,7 +16,7 @@ export function codeGeneratorPlugin(pluginParams: CodeGeneratorPluginParams) {
 				beforeStartServer: async(hub) => {
 					const routes = hub.aggregatesRoutes();
 
-					const dataParserRoutes = A.map(
+					const dataParserRoutes = A.flatMap(
 						routes,
 						(route) => routeToDataParser(route, {
 							defaultExtractContract: hub.defaultExtractContract,

@@ -62,8 +62,8 @@
     "README.md"
   ],
   "peerDependencies": {
-    "@duplojs/data-parser-tools": ">=0.2.2 <1.0.0",
-    "@duplojs/utils": ">=1.4.33 <2.0.0"
+    "@duplojs/data-parser-tools": ">=0.2.4 <1.0.0",
+    "@duplojs/utils": ">=1.4.36 <2.0.0"
   },
   "devDependencies": {
     "@commitlint/cli": "19.8.1",
