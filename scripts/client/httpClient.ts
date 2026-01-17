@@ -4,7 +4,7 @@ import * as GG from "@duplojs/utils/generator";
 import { createClientKind } from "./kind";
 import { type ClientRequestInitParams, type ServerRoute, type ServerRouteToClientRequestParams, type ServerRouteToClientResponse, type ClientRequestParamsHeaders, type ClientRequestParams } from "./types";
 import { PromiseRequest, type PromiseRequestParams } from "./promiseRequest";
-import { type Hooks, type RequestHook, type ResponseHook, type InformationHook, type CodeHook, type ResponseTypeHook, type ExpectedResponseHook, type ErrorHook } from "./hooks";
+import { type Hooks, type RequestHook, type ResponseHook, type InformationHook, type CodeHook, type ResponseTypeHook, type ExpectedResponseHook, type ErrorHook, type NotPredictedResponseHook } from "./hooks";
 
 export const httpClientKind = createClientKind("http-client");
 
@@ -45,21 +45,33 @@ type HttpClientRequestMethod<
 ) => PromiseRequest<
 	PromiseRequestParams<GenericHookParams>,
 	ServerRouteToClientResponse<
-		Extract<
-			GenericServerRoute,
-			{
-				method: GenericServerRoute["method"];
-				path: GenericServerRoute["path"];
-			}
-		>
+		NeverCoalescing<
+			Extract<
+				GenericServerRoute,
+				{
+					method: GenericMethod;
+					path: GenericPath;
+				}
+			>,
+			ServerRoute
+		>,
+		GenericHookParams
 	>
 >;
 
+export interface HttpClientConfig {
+	readonly baseUrl: string;
+	readonly informationHeaderKey: string;
+	readonly predictedHeaderKey: string;
+	readonly disabledPredictedMode: boolean;
+	readonly credentials?: ClientRequestInitParams["credentials"];
+	readonly cache?: ClientRequestInitParams["cache"];
+}
 export interface HttpClient<
 	GenericServerRoute extends ServerRoute = ServerRoute,
 	GenericHookParams extends Record<string, unknown> = Record<string, unknown>,
 > extends Kind<typeof httpClientKind.definition> {
-	readonly baseUrl: string;
+	readonly config: HttpClientConfig;
 	readonly hooks: Hooks;
 	readonly defaultHeaders: Map<string, () => (string | undefined | null)>;
 
@@ -75,17 +87,18 @@ export interface HttpClient<
 		>
 	): void;
 
-	addRequestHook(hook: RequestHook): void;
-	addResponseHook(hook: ResponseHook): void;
-	addInformationHook(information: string, hook: InformationHook): void;
-	addCodeHook(code: string, hook: CodeHook): void;
-	addInformationalResponseTypeHook(hook: ResponseTypeHook): void;
-	addSuccessfulResponseTypeHook(hook: ResponseTypeHook): void;
-	addRedirectionResponseTypeHook(hook: ResponseTypeHook): void;
-	addClientErrorResponseTypeHook(hook: ResponseTypeHook): void;
-	addServerErrorResponseTypeHook(hook: ResponseTypeHook): void;
-	addExpectedResponseHook(hook: ExpectedResponseHook): void;
-	addErrorHook(hook: ErrorHook): void;
+	addRequestHook(hook: RequestHook<PromiseRequestParams<GenericHookParams>>): void;
+	addResponseHook(hook: ResponseHook<PromiseRequestParams<GenericHookParams>>): void;
+	addInformationHook(information: string, hook: InformationHook<PromiseRequestParams<GenericHookParams>>): void;
+	addCodeHook(code: string, hook: CodeHook<PromiseRequestParams<GenericHookParams>>): void;
+	addInformationalResponseTypeHook(hook: ResponseTypeHook<PromiseRequestParams<GenericHookParams>>): void;
+	addSuccessfulResponseTypeHook(hook: ResponseTypeHook<PromiseRequestParams<GenericHookParams>>): void;
+	addRedirectionResponseTypeHook(hook: ResponseTypeHook<PromiseRequestParams<GenericHookParams>>): void;
+	addClientErrorResponseTypeHook(hook: ResponseTypeHook<PromiseRequestParams<GenericHookParams>>): void;
+	addServerErrorResponseTypeHook(hook: ResponseTypeHook<PromiseRequestParams<GenericHookParams>>): void;
+	addExpectedResponseHook(hook: ExpectedResponseHook<PromiseRequestParams<GenericHookParams>>): void;
+	addNotPredictedResponseHook(hook: NotPredictedResponseHook<PromiseRequestParams<GenericHookParams>>): void;
+	addErrorHook(hook: ErrorHook<PromiseRequestParams<GenericHookParams>>): void;
 
 	request<
 		GenericClientRequestParams extends ServerRouteToClientRequestParams<
@@ -95,14 +108,16 @@ export interface HttpClient<
 	>(
 		params: GenericClientRequestParams
 	): PromiseRequest<
+		PromiseRequestParams<GenericHookParams>,
 		ServerRouteToClientResponse<
 			Extract<
 				GenericServerRoute,
 				{
-					method: GenericServerRoute["method"];
-					path: GenericServerRoute["path"];
+					method: GenericClientRequestParams["method"];
+					path: GenericClientRequestParams["path"];
 				}
-			>
+			>,
+			GenericHookParams
 		>
 	>;
 
@@ -136,14 +151,20 @@ export interface CreateHttpClientParams {
 	readonly hooks?: Partial<Hooks>;
 	readonly credentials?: ClientRequestInitParams["credentials"];
 	readonly cache?: ClientRequestInitParams["cache"];
+	readonly informationHeaderKey?: string;
+	readonly predictedHeaderKey?: string;
+	readonly disabledPredictedMode?: boolean;
 }
 
 export function createHttpClient<
-	GenericServerRoute extends ServerRoute,
+	GenericServerRoute extends ServerRoute = never,
 	GenericHookParams extends Record<string, unknown> = Record<string, unknown>,
 >(
 	clientParams: CreateHttpClientParams,
-): HttpClient<GenericServerRoute, GenericHookParams> {
+): HttpClient<
+		NeverCoalescing<GenericServerRoute, ServerRoute>,
+		GenericHookParams
+	> {
 	const hooks = OO.override<Hooks>(
 		{
 			request: [],
@@ -157,15 +178,25 @@ export function createHttpClient<
 			serverErrorResponseType: [],
 			expectedResponse: [],
 			error: [],
+			notPredictedResponse: [],
 		},
 		clientParams.hooks ?? {},
 	);
+
+	const config: HttpClientConfig = {
+		baseUrl: clientParams.baseUrl,
+		disabledPredictedMode: clientParams.disabledPredictedMode ?? false,
+		informationHeaderKey: clientParams.informationHeaderKey ?? "information",
+		predictedHeaderKey: clientParams.predictedHeaderKey ?? "predicted",
+		cache: clientParams.cache,
+		credentials: clientParams.credentials,
+	};
 
 	const defaultHeaders: HttpClient["defaultHeaders"] = new Map();
 
 	const self: HttpClient = httpClientKind.setTo(
 		{
-			...clientParams,
+			config,
 			hooks,
 			defaultHeaders,
 			addDefaultHeader(headerName, headerValue) {
@@ -213,6 +244,9 @@ export function createHttpClient<
 			addExpectedResponseHook(hook) {
 				hooks.expectedResponse.push(hook);
 			},
+			addNotPredictedResponseHook(hook) {
+				hooks.notPredictedResponse.push(hook);
+			},
 			addErrorHook(hook) {
 				hooks.error.push(hook);
 			},
@@ -229,7 +263,7 @@ export function createHttpClient<
 
 				return new PromiseRequest({
 					hooks,
-					baseUrl: clientParams.baseUrl,
+					baseUrl: config.baseUrl,
 					...params,
 					headers: {
 						...params.headers,
@@ -240,6 +274,9 @@ export function createHttpClient<
 						credentials: params.initParams?.credentials ?? clientParams.credentials,
 						cache: params.initParams?.cache ?? clientParams.cache,
 					},
+					predictedHeaderKey: config.predictedHeaderKey,
+					informationHeaderKey: config.informationHeaderKey,
+					disabledPredicateMode: config.disabledPredictedMode,
 				});
 			},
 			get: ((path: string, params?: object) => self.request({

@@ -3,7 +3,7 @@ import { createStepFunctionBuilder } from "../create";
 import { checkerStepKind, presetCheckerStepKind } from "@core/steps";
 import { forward, isType, or, P, pipe } from "@duplojs/utils";
 import { type Floor } from "@core/floor";
-import { Response } from "@core/response";
+import { PredictedResponse } from "@core/response";
 
 export const defaultCheckerStepFunctionBuilder = createStepFunctionBuilder(
 	(element) => checkerStepKind.has(element) || presetCheckerStepKind.has(element),
@@ -77,7 +77,7 @@ export const defaultCheckerStepFunctionBuilder = createStepFunctionBuilder(
 		);
 
 		function getResponse() {
-			return new Response(
+			return new PredictedResponse(
 				responseContract.code,
 				responseContract.information,
 				undefined,

@@ -1,4 +1,4 @@
-import { ResponseContract, useProcessBuilder, useRouteBuilder, Request, Response, defaultHandlerStepFunctionBuilder, defaultProcessStepFunctionBuilder } from "@core";
+import { ResponseContract, useProcessBuilder, useRouteBuilder, Request, defaultHandlerStepFunctionBuilder, defaultProcessStepFunctionBuilder, PredictedResponse } from "@core";
 import { DPE } from "@duplojs/utils";
 import { useTestRouteFunctionBuilder } from "@test-utils/useTestRouteFunctionBuilder";
 
@@ -61,7 +61,7 @@ describe("process function builder", () => {
 
 		expect(spyResponse).toHaveBeenCalledWith(
 			expect.objectContaining({
-				currentResponse: new Response("422", "extract-error", expect.any(Object))
+				currentResponse: new PredictedResponse("422", "extract-error", expect.any(Object))
 					.setHeader("extract-key", "request.origin"),
 			}),
 		);
@@ -97,7 +97,7 @@ describe("process function builder", () => {
 
 		expect(spyResponse).toHaveBeenCalledWith(
 			expect.objectContaining({
-				currentResponse: new Response("200", "good", "myOrigin"),
+				currentResponse: new PredictedResponse("200", "good", "myOrigin"),
 			}),
 		);
 	});
@@ -132,7 +132,7 @@ describe("process function builder", () => {
 
 		expect(spyResponse).toHaveBeenCalledWith(
 			expect.objectContaining({
-				currentResponse: new Response("204", "good", undefined),
+				currentResponse: new PredictedResponse("204", "good", undefined),
 			}),
 		);
 	});

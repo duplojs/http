@@ -1,4 +1,4 @@
-import { ResponseContract, useCheckerBuilder, useRouteBuilder, Request, Response, createPresetChecker } from "@core";
+import { ResponseContract, useCheckerBuilder, useRouteBuilder, Request, Response, createPresetChecker, PredictedResponse } from "@core";
 import { DPE } from "@duplojs/utils";
 import { useTestRouteFunctionBuilder } from "@test-utils/useTestRouteFunctionBuilder";
 
@@ -50,7 +50,7 @@ describe("checker step function builder", () => {
 
 		expect(spyResponse).toHaveBeenCalledWith(
 			expect.objectContaining({
-				currentResponse: new Response("404", "contract.otherwise", undefined),
+				currentResponse: new PredictedResponse("404", "contract.otherwise", undefined),
 			}),
 		);
 	});
@@ -97,7 +97,7 @@ describe("checker step function builder", () => {
 
 		expect(spyResponse).toHaveBeenCalledWith(
 			expect.objectContaining({
-				currentResponse: new Response("200", "good", "TEST"),
+				currentResponse: new PredictedResponse("200", "good", "TEST"),
 			}),
 		);
 	});
@@ -144,7 +144,7 @@ describe("checker step function builder", () => {
 
 		expect(spyResponse).toHaveBeenCalledWith(
 			expect.objectContaining({
-				currentResponse: new Response("200", "good", "defaultOption1"),
+				currentResponse: new PredictedResponse("200", "good", "defaultOption1"),
 			}),
 		);
 	});
@@ -194,7 +194,7 @@ describe("checker step function builder", () => {
 
 		expect(spyResponse).toHaveBeenCalledWith(
 			expect.objectContaining({
-				currentResponse: new Response("200", "good", "overrideOption1"),
+				currentResponse: new PredictedResponse("200", "good", "overrideOption1"),
 			}),
 		);
 	});
@@ -242,7 +242,7 @@ describe("checker step function builder", () => {
 
 		expect(spyResponse).toHaveBeenCalledWith(
 			expect.objectContaining({
-				currentResponse: new Response("200", "good", "test"),
+				currentResponse: new PredictedResponse("200", "good", "test"),
 			}),
 		);
 	});
@@ -290,7 +290,7 @@ describe("checker step function builder", () => {
 
 		expect(spyResponse).toHaveBeenCalledWith(
 			expect.objectContaining({
-				currentResponse: new Response("204", "good", undefined),
+				currentResponse: new PredictedResponse("204", "good", undefined),
 			}),
 		);
 	});
@@ -340,7 +340,7 @@ describe("checker step function builder", () => {
 
 		expect(spyResponse).toHaveBeenCalledWith(
 			expect.objectContaining({
-				currentResponse: new Response("404", "contract.otherwise", undefined),
+				currentResponse: new PredictedResponse("404", "contract.otherwise", undefined),
 			}),
 		);
 	});

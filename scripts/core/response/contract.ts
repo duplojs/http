@@ -1,6 +1,6 @@
 import { DP, type Kind, pipe, type IsEqual, type NeverCoalescing, kindHeritage } from "@duplojs/utils";
 import { createCoreLibKind } from "../kind";
-import { type ResponseCode, type Response } from ".";
+import { type ResponseCode, type PredictedResponse } from ".";
 import { type ForbiddenBigintDataParser } from "@core/types";
 
 const ErrorClass = Error;
@@ -23,7 +23,7 @@ export namespace ResponseContract {
 	export type Convert<
 		GenericContract extends Contract,
 	> = GenericContract extends Contract
-		? Response<
+		? PredictedResponse<
 			GenericContract["code"],
 			GenericContract["information"],
 			DP.Input<GenericContract["body"]>

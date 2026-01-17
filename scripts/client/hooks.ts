@@ -1,21 +1,51 @@
 /* eslint-disable @typescript-eslint/prefer-for-of */
 import { type MaybePromise } from "@duplojs/utils";
-import { type ClientResponse } from "./types/clientResponse";
+import { type NotPredictedClientResponse, type ClientResponse } from "./types/clientResponse";
 import { type PromiseRequestParams } from "./promiseRequest";
 
-export type RequestHook = (requestParams: PromiseRequestParams) => MaybePromise<PromiseRequestParams>;
+export type RequestHook<
+	GenericPromiseRequestParams extends PromiseRequestParams = PromiseRequestParams,
+> = (requestParams: GenericPromiseRequestParams) => MaybePromise<PromiseRequestParams>;
 
-export type ResponseHook = (response: ClientResponse) => MaybePromise<ClientResponse>;
+export type ResponseHook<
+	GenericPromiseRequestParams extends PromiseRequestParams = PromiseRequestParams,
+> = (
+	response: ClientResponse<GenericPromiseRequestParams>
+) => MaybePromise<ClientResponse<GenericPromiseRequestParams>>;
 
-export type InformationHook = (response: ClientResponse) => MaybePromise<void>;
+export type InformationHook<
+	GenericPromiseRequestParams extends PromiseRequestParams = PromiseRequestParams,
+> = (
+	response: ClientResponse<GenericPromiseRequestParams>
+) => MaybePromise<void>;
 
-export type ResponseTypeHook = (response: ClientResponse) => MaybePromise<void>;
+export type ResponseTypeHook<
+	GenericPromiseRequestParams extends PromiseRequestParams = PromiseRequestParams,
+> = (
+	response: ClientResponse<GenericPromiseRequestParams>
+) => MaybePromise<void>;
 
-export type ExpectedResponseHook = (response: ClientResponse) => MaybePromise<void>;
+export type ExpectedResponseHook<
+	GenericPromiseRequestParams extends PromiseRequestParams = PromiseRequestParams,
+> = (
+	response: ClientResponse<GenericPromiseRequestParams>
+) => MaybePromise<void>;
 
-export type CodeHook = (response: ClientResponse) => MaybePromise<void>;
+export type CodeHook<
+	GenericPromiseRequestParams extends PromiseRequestParams = PromiseRequestParams,
+> = (
+	response: ClientResponse<GenericPromiseRequestParams>
+) => MaybePromise<void>;
 
-export type ErrorHook = (error: unknown, requestParams: PromiseRequestParams) => MaybePromise<void>;
+export type NotPredictedResponseHook<
+	GenericPromiseRequestParams extends PromiseRequestParams = PromiseRequestParams,
+> = (
+	response: NotPredictedClientResponse<GenericPromiseRequestParams>
+) => MaybePromise<void>;
+
+export type ErrorHook<
+	GenericPromiseRequestParams extends PromiseRequestParams = PromiseRequestParams,
+> = (error: unknown, requestParams: GenericPromiseRequestParams) => MaybePromise<void>;
 
 export interface Hooks {
 	request: RequestHook[];
@@ -28,6 +58,7 @@ export interface Hooks {
 	clientErrorResponseType: ResponseTypeHook[];
 	serverErrorResponseType: ResponseTypeHook[];
 	expectedResponse: ExpectedResponseHook[];
+	notPredictedResponse: NotPredictedResponseHook[];
 	error: ErrorHook[];
 }
 
@@ -113,6 +144,20 @@ export async function launchExpectedResponseHook(
 	clientHook: readonly ResponseTypeHook[],
 	promiseRequestHook: readonly ResponseTypeHook[],
 	response: ClientResponse,
+) {
+	for (let index = 0; index < promiseRequestHook.length; index++) {
+		await promiseRequestHook[index]!(response);
+	}
+
+	for (let index = 0; index < clientHook.length; index++) {
+		await clientHook[index]!(response);
+	}
+}
+
+export async function launchNotPredictedHook(
+	clientHook: readonly NotPredictedResponseHook[],
+	promiseRequestHook: readonly NotPredictedResponseHook[],
+	response: NotPredictedClientResponse,
 ) {
 	for (let index = 0; index < promiseRequestHook.length; index++) {
 		await promiseRequestHook[index]!(response);

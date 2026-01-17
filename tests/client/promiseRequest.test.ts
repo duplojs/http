@@ -16,6 +16,7 @@ describe("PromiseRequest", () => {
 		clientErrorResponseType: [],
 		serverErrorResponseType: [],
 		expectedResponse: [],
+		notPredictedResponse: [],
 		error: [],
 	});
 
@@ -25,6 +26,9 @@ describe("PromiseRequest", () => {
 		path: "/resource",
 		headers: {},
 		hooks: createHooks(),
+		informationHeaderKey: "information",
+		predictedHeaderKey: "predicted",
+		disabledPredicateMode: false,
 		...overrides,
 	});
 
@@ -42,6 +46,7 @@ describe("PromiseRequest", () => {
 		redirected: false,
 		raw: {} as Response,
 		requestParams: params,
+		predicted: true,
 		...overrides,
 	});
 
@@ -58,6 +63,7 @@ describe("PromiseRequest", () => {
 			headers: new Headers({
 				"content-type": "application/json",
 				information: "info",
+				predicted: "true",
 			}),
 			json: vi.fn().mockResolvedValue({ value: 1 }),
 			text: vi.fn(),
@@ -89,6 +95,7 @@ describe("PromiseRequest", () => {
 			.mockResolvedValueOnce(errorResponse)
 			.mockResolvedValueOnce(jsonResponse)
 			.mockResolvedValueOnce(jsonResponse)
+			.mockResolvedValueOnce(jsonResponse)
 			.mockRejectedValueOnce(new Error("network"));
 
 		vi.stubGlobal("fetch", fetchMock);
@@ -118,7 +125,11 @@ describe("PromiseRequest", () => {
 		});
 
 		const paramsWithFormData = createParams({
-			body: new FormData() as any,
+			body: new FormData(),
+		});
+
+		const paramsWithArray = createParams({
+			body: ["test"],
 		});
 
 		const result = await PromiseRequest.fetch(paramsWithQuery);
@@ -127,6 +138,7 @@ describe("PromiseRequest", () => {
 		const resultNumber = await PromiseRequest.fetch(paramsWithNumber);
 		const resultHeader = await PromiseRequest.fetch(paramsWithHeader);
 		const resultFormData = await PromiseRequest.fetch(paramsWithFormData);
+		const resultArray = await PromiseRequest.fetch(paramsWithArray);
 		const resultError = await PromiseRequest.fetch(createParams());
 
 		expect(fetchMock).toHaveBeenNthCalledWith(
@@ -143,13 +155,16 @@ describe("PromiseRequest", () => {
 		asserts(resultNumber, E.isRight);
 		asserts(resultHeader, E.isRight);
 		asserts(resultFormData, E.isRight);
+		asserts(resultArray, E.isRight);
 		asserts(resultError, E.isLeft);
 
 		expect(unwrap(result).body).toStrictEqual({ value: 1 });
 		expect(unwrap(result).information).toBe("info");
+		expect(unwrap(result).predicted).toBe(true);
 		expect(unwrap(resultObject).ok).toBe(true);
 		expect(unwrap(resultBoolean).ok).toBe(true);
 		expect(unwrap(resultNumber).ok).toBeNull();
+		expect(unwrap(resultNumber).predicted).toBe(false);
 		expect(unwrap(resultHeader).ok).toBe(true);
 	});
 
@@ -193,6 +208,25 @@ describe("PromiseRequest", () => {
 		expect(result).toBe(request);
 		expect(interceptor).toHaveBeenCalledWith(response);
 		expect(unwrap(maybeResponse).code).toBe("201");
+	});
+
+	it("whenNotPredictedResponse", async() => {
+		const params = createParams({ disabledPredicateMode: false });
+		const response = createResponse(params, { predicted: false });
+		vi.spyOn(PromiseRequest, "fetch").mockResolvedValue(E.right("response", response));
+
+		const request = new PromiseRequest(params);
+		const hook = vi.fn();
+		const successHook = vi.fn();
+		const result = request
+			.whenNotPredictedResponse(hook)
+			.whenSuccessfulResponse(successHook);
+		const maybeResponse = await request;
+
+		asserts(maybeResponse, E.isRight);
+		expect(result).toBe(request);
+		expect(hook).toHaveBeenCalledWith(response);
+		expect(successHook).not.toHaveBeenCalled();
 	});
 
 	it("whenInformation", async() => {
@@ -571,7 +605,10 @@ describe("PromiseRequest", () => {
 
 	it("iWantSuccessfulResponseOrThrow", async() => {
 		const params = createParams();
-		const response = createResponse(params, { code: "200" });
+		const response = createResponse(params, {
+			code: "200",
+			predicted: false,
+		});
 		const fetchSpy = vi.spyOn(PromiseRequest, "fetch");
 		fetchSpy.mockResolvedValueOnce(E.right("response", response));
 

@@ -14,24 +14,62 @@ describe("node server", async() => {
 	it("get all users", async() => {
 		await expect(
 			fetch("http://localhost:8948/users", { method: "GET" })
-				.then((response) => response.json()),
-		).resolves.toStrictEqual([
-			{
-				age: 28,
-				id: 23,
-				name: "",
-			},
-		]);
+				.then(async(response) => ({
+					body: await response.json(),
+					headers: [...response.headers.entries()],
+				})),
+		).resolves.toStrictEqual({
+			headers: expect.arrayContaining([
+				[
+					"information",
+					"users.findMany",
+				],
+				[
+					"content-type",
+					"application/json; charset=utf-8",
+				],
+				[
+					"predicted",
+					"1",
+				],
+			]),
+			body: [
+				{
+					age: 28,
+					id: 23,
+					name: "",
+				},
+			],
+		});
 	});
 
 	it("get user", async() => {
 		await expect(
 			fetch("http://localhost:8948/users/15", { method: "GET" })
-				.then((response) => response.json()),
+				.then(async(response) => ({
+					body: await response.json(),
+					headers: [...response.headers.entries()],
+				})),
 		).resolves.toStrictEqual({
-			age: 28,
-			id: 15,
-			name: "",
+			headers: expect.arrayContaining([
+				[
+					"information",
+					"users.find",
+				],
+				[
+					"content-type",
+					"application/json; charset=utf-8",
+				],
+				[
+					"predicted",
+					"1",
+				],
+			]),
+			body: {
+				age: 28,
+				id: 15,
+				name: "",
+			},
 		});
 	});
 
@@ -46,11 +84,30 @@ describe("node server", async() => {
 					age: 23,
 				}),
 			})
-				.then((response) => response.json()),
+				.then(async(response) => ({
+					body: await response.json(),
+					headers: [...response.headers.entries()],
+				})),
 		).resolves.toStrictEqual({
-			age: 23,
-			id: 5,
-			name: "math",
+			headers: expect.arrayContaining([
+				[
+					"information",
+					"users.create",
+				],
+				[
+					"content-type",
+					"application/json; charset=utf-8",
+				],
+				[
+					"predicted",
+					"1",
+				],
+			]),
+			body: {
+				age: 23,
+				id: 5,
+				name: "math",
+			},
 		});
 	});
 });

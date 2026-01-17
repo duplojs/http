@@ -1,4 +1,4 @@
-import { ResponseContract, useRouteBuilder, Request, Response, usePreflightBuilder, useProcessBuilder, defaultExtractStepFunctionBuilder, defaultHandlerStepFunctionBuilder, HookResponse, type HookRouteLifeCycle } from "@core";
+import { ResponseContract, useRouteBuilder, Request, Response, usePreflightBuilder, useProcessBuilder, defaultExtractStepFunctionBuilder, defaultHandlerStepFunctionBuilder, HookResponse, type HookRouteLifeCycle, PredictedResponse } from "@core";
 import { DPE } from "@duplojs/utils";
 import { useTestRouteFunctionBuilder } from "@test-utils/useTestRouteFunctionBuilder";
 
@@ -73,7 +73,7 @@ describe("route function builder", () => {
 
 		expect(spyResponse).toHaveBeenCalledWith(
 			expect.objectContaining({
-				currentResponse: new Response("200", "good", "test"),
+				currentResponse: new PredictedResponse("200", "good", "test"),
 			}),
 		);
 	});
@@ -113,7 +113,7 @@ describe("route function builder", () => {
 
 		expect(spyResponse).toHaveBeenCalledWith(
 			expect.objectContaining({
-				currentResponse: new Response("400", "preflight", undefined),
+				currentResponse: new PredictedResponse("400", "preflight", undefined),
 			}),
 		);
 	});
@@ -184,7 +184,7 @@ describe("route function builder", () => {
 
 			expect(spyResponse).toHaveBeenCalledWith(
 				expect.objectContaining({
-					currentResponse: new Response("200", "good", "superValueAddOnHooks"),
+					currentResponse: new PredictedResponse("200", "good", "superValueAddOnHooks"),
 				}),
 			);
 		});

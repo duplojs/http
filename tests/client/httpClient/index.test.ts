@@ -18,7 +18,14 @@ describe("httpClient", () => {
 
 	it("check http client value", () => {
 		expect(httpClientKind.has(httpClient)).toBe(true);
-		expect(httpClient.baseUrl).toBe("http://test.com");
+		expect(httpClient.config).toStrictEqual({
+			baseUrl: "http://test.com",
+			disabledPredictedMode: false,
+			informationHeaderKey: "information",
+			predictedHeaderKey: "predicted",
+			cache: undefined,
+			credentials: undefined,
+		});
 		expect(httpClient.hooks).toStrictEqual({
 			clientErrorResponseType: [],
 			code: {},
@@ -26,6 +33,7 @@ describe("httpClient", () => {
 			expectedResponse: [],
 			information: {},
 			informationalResponseType: [],
+			notPredictedResponse: [],
 			redirectionResponseType: [],
 			request: [],
 			response: [],
@@ -38,7 +46,7 @@ describe("httpClient", () => {
 		httpClient.addDefaultHeader("test", () => "value");
 		httpClient.addDefaultHeader("toto", "val");
 
-		expect(httpClient.defaultHeaders.entries().toArray()).toStrictEqual([
+		expect([...httpClient.defaultHeaders.entries()]).toStrictEqual([
 			["test", expect.any(Function)],
 			["toto", expect.any(Function)],
 		]);
@@ -50,7 +58,7 @@ describe("httpClient", () => {
 			prop2: "2",
 		});
 
-		expect(httpClient.defaultHeaders.entries().toArray()).toStrictEqual([
+		expect([...httpClient.defaultHeaders.entries()]).toStrictEqual([
 			["prop1", expect.any(Function)],
 			["prop2", expect.any(Function)],
 		]);
@@ -80,6 +88,7 @@ describe("httpClient", () => {
 				expectedResponse: [],
 				information: {},
 				informationalResponseType: [],
+				notPredictedResponse: [],
 				redirectionResponseType: [],
 				request: [],
 				response: [],
@@ -90,6 +99,9 @@ describe("httpClient", () => {
 				cache: undefined,
 				credentials: undefined,
 			},
+			predictedHeaderKey: "predicted",
+			informationHeaderKey: "information",
+			disabledPredicateMode: false,
 			method: "GET",
 			path: "/test/ok",
 		});
@@ -110,6 +122,7 @@ describe("httpClient", () => {
 				expectedResponse: [],
 				information: {},
 				informationalResponseType: [],
+				notPredictedResponse: [],
 				redirectionResponseType: [],
 				request: [],
 				response: [],
@@ -120,6 +133,9 @@ describe("httpClient", () => {
 				cache: "default",
 				credentials: undefined,
 			},
+			predictedHeaderKey: "predicted",
+			informationHeaderKey: "information",
+			disabledPredicateMode: false,
 			method: "GET",
 			path: "/test/ok",
 		});
@@ -140,6 +156,7 @@ describe("httpClient", () => {
 				expectedResponse: [],
 				information: {},
 				informationalResponseType: [],
+				notPredictedResponse: [],
 				redirectionResponseType: [],
 				request: [],
 				response: [],
@@ -150,6 +167,9 @@ describe("httpClient", () => {
 				cache: undefined,
 				credentials: undefined,
 			},
+			predictedHeaderKey: "predicted",
+			informationHeaderKey: "information",
+			disabledPredicateMode: false,
 			method: "POST",
 			path: "/test/ok",
 			body: { prop1: "" },
@@ -171,6 +191,7 @@ describe("httpClient", () => {
 				expectedResponse: [],
 				information: {},
 				informationalResponseType: [],
+				notPredictedResponse: [],
 				redirectionResponseType: [],
 				request: [],
 				response: [],
@@ -181,6 +202,9 @@ describe("httpClient", () => {
 				cache: undefined,
 				credentials: undefined,
 			},
+			predictedHeaderKey: "predicted",
+			informationHeaderKey: "information",
+			disabledPredicateMode: false,
 			method: "PUT",
 			path: "/test/ok",
 			body: { prop1: "" },
@@ -202,6 +226,7 @@ describe("httpClient", () => {
 				expectedResponse: [],
 				information: {},
 				informationalResponseType: [],
+				notPredictedResponse: [],
 				redirectionResponseType: [],
 				request: [],
 				response: [],
@@ -212,6 +237,9 @@ describe("httpClient", () => {
 				cache: undefined,
 				credentials: "include",
 			},
+			predictedHeaderKey: "predicted",
+			informationHeaderKey: "information",
+			disabledPredicateMode: false,
 			method: "DELETE",
 			path: "/test/ok",
 		});
@@ -228,6 +256,7 @@ describe("httpClient", () => {
 		const responseHook: Hooks["response"][number] = vi.fn(forward);
 		const responseTypeHook: Hooks["informationalResponseType"][number] = vi.fn();
 		const expectedHook: Hooks["expectedResponse"][number] = vi.fn();
+		const notPredictedHook: Hooks["notPredictedResponse"][number] = vi.fn();
 		const errorHook: Hooks["error"][number] = vi.fn();
 
 		httpClient.addRequestHook(requestHook);
@@ -240,6 +269,7 @@ describe("httpClient", () => {
 		httpClient.addClientErrorResponseTypeHook(responseTypeHook);
 		httpClient.addServerErrorResponseTypeHook(responseTypeHook);
 		httpClient.addExpectedResponseHook(expectedHook);
+		httpClient.addNotPredictedResponseHook(notPredictedHook);
 		httpClient.addErrorHook(errorHook);
 
 		it("adds hooks to client registry", () => {
@@ -253,6 +283,7 @@ describe("httpClient", () => {
 			expect(httpClient.hooks.clientErrorResponseType).toContain(responseTypeHook);
 			expect(httpClient.hooks.serverErrorResponseType).toContain(responseTypeHook);
 			expect(httpClient.hooks.expectedResponse).toContain(expectedHook);
+			expect(httpClient.hooks.notPredictedResponse).toContain(notPredictedHook);
 			expect(httpClient.hooks.error).toContain(errorHook);
 		});
 
@@ -280,6 +311,7 @@ describe("httpClient", () => {
 					expectedResponse: [expectedHook],
 					information: { info: [infoHook] },
 					informationalResponseType: [responseTypeHook],
+					notPredictedResponse: [notPredictedHook],
 					redirectionResponseType: [responseTypeHook],
 					request: [requestHook],
 					response: [responseHook],
@@ -290,6 +322,9 @@ describe("httpClient", () => {
 					cache: undefined,
 					credentials: undefined,
 				},
+				predictedHeaderKey: "predicted",
+				informationHeaderKey: "information",
+				disabledPredicateMode: false,
 				method: "GET",
 				path: "/test/ok",
 			});

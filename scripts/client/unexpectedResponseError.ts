@@ -1,10 +1,11 @@
 import { kindHeritage } from "@duplojs/utils";
 import { createClientKind } from "./kind";
-import { type ClientResponse, type ClientRequestParams } from "./types";
+import { type ClientResponse } from "./types";
+import { type PromiseRequestParams } from "./promiseRequest";
 
-export interface ErrorContent {
+export interface RequestErrorContent {
 	error: unknown;
-	requestParams: ClientRequestParams;
+	requestParams: PromiseRequestParams;
 }
 
 export class UnexpectedInformationResponseError extends kindHeritage(
@@ -14,7 +15,7 @@ export class UnexpectedInformationResponseError extends kindHeritage(
 ) {
 	public constructor(
 		public information: string | string[],
-		public response: ErrorContent | ClientResponse,
+		public response: RequestErrorContent | ClientResponse,
 	) {
 		super({}, ["Unexpected information response."]);
 	}
@@ -27,7 +28,7 @@ export class UnexpectedCodeResponseError extends kindHeritage(
 ) {
 	public constructor(
 		public code: string | string[],
-		public response: ErrorContent | ClientResponse,
+		public response: RequestErrorContent | ClientResponse,
 	) {
 		super({}, ["Unexpected code response."]);
 	}
@@ -40,7 +41,7 @@ export class UnexpectedResponseTypeError extends kindHeritage(
 ) {
 	public constructor(
 		public expectType: "informational" | "successful" | "redirection" | "clientError" | "serverError",
-		public response: ErrorContent | ClientResponse,
+		public response: RequestErrorContent | ClientResponse,
 	) {
 		super({}, ["Unexpected response type."]);
 	}
@@ -52,7 +53,7 @@ export class UnexpectedResponseError extends kindHeritage(
 	Error,
 ) {
 	public constructor(
-		public response: ErrorContent | ClientResponse,
+		public response: RequestErrorContent | ClientResponse,
 	) {
 		super({}, ["Unexpected response."]);
 	}

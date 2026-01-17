@@ -1,5 +1,7 @@
 import { type SimplifyTopLevel, type IsEqual, type MaybeArray, type AnyTuple, type Json } from "@duplojs/utils";
 import { type ServerRouteHeaders, type ServerRouteParams, type ServerRouteQuery, type ServerRoute, type ServerPrimitiveData } from "./serverRoute";
+import { type ObjectCanBeEmpty } from "./ObjectCanBeEmpty";
+import type * as OO from "@duplojs/utils/object";
 
 export interface ClientRequestInitParams extends Pick<
 	RequestInit,
@@ -22,7 +24,7 @@ export type ClientRequestParamsParams = Record<string, string | undefined>;
 
 export type ClientRequestParamsQuery = Record<string, MaybeArray<string> | undefined>;
 
-export type ClientRequestParamsBody = Json;
+export type ClientRequestParamsBody = unknown;
 
 export interface ClientRequestParams<
 	GenericHookParams extends Record<string, unknown> = Record<string, unknown>,
@@ -100,6 +102,20 @@ export type ServerRouteToClientRequestParamsQuery<
 	}>
 	: GenericQuery;
 
+type MaybeParams<
+	GenericParams extends object,
+> = {
+	[Prop in keyof GenericParams]-?: undefined extends GenericParams[Prop]
+		? Prop
+		: GenericParams[Prop] extends object
+			? ObjectCanBeEmpty<GenericParams[Prop]> extends true
+				? Prop
+				: never
+			: never
+}[keyof GenericParams] extends infer InferredKeys extends keyof GenericParams
+	? OO.PartialKeys<GenericParams, InferredKeys>
+	: never;
+
 export type ServerRouteToClientRequestParams<
 	GenericServerRoute extends ServerRoute = ServerRoute,
 	GenericHookParams extends Record<string, unknown> = Record<string, unknown>,
@@ -111,56 +127,42 @@ export type ServerRouteToClientRequestParams<
 			initParams?: ClientRequestInitParams;
 			hookParams?: GenericHookParams;
 		}
-		& (
-			IsEqual<GenericServerRoute["headers"], unknown> extends true
-				? {}
-				: {
-					headers: ServerRouteToClientRequestParamsHeaders<
-						GenericServerRoute["headers"]
-					>;
-				} extends infer InferredResult extends Record<string, unknown>
-					? {} extends InferredResult["headers"]
-						? Partial<InferredResult>
-						: never
-					: never
-		)
-		& (
-			IsEqual<GenericServerRoute["params"], unknown> extends true
-				? {}
-				: {
-					params: ServerRouteToClientRequestParamsParams<
-						GenericServerRoute["params"]
-					>;
-				} extends infer InferredResult extends Record<string, unknown>
-					? {} extends InferredResult["params"]
-						? Partial<InferredResult>
-						: never
-					: never
-		)
-		& (
-			IsEqual<GenericServerRoute["query"], unknown> extends true
-				? {}
-				: {
-					query: ServerRouteToClientRequestParamsQuery<
-						GenericServerRoute["query"]
-					>;
-				} extends infer InferredResult extends Record<string, unknown>
-					? {} extends InferredResult["query"]
-						? Partial<InferredResult>
-						: never
-					: never
-		)
-		& (
-			IsEqual<GenericServerRoute["body"], unknown> extends true
-				? {}
-				: {
-					body: GenericServerRoute["body"];
-				} extends infer InferredResult extends Record<string, unknown>
-					? {} extends InferredResult["headers"]
-						? Partial<InferredResult>
-						: never
-					: never
-		)
+		& MaybeParams<
+			& (
+				IsEqual<GenericServerRoute["headers"], unknown> extends true
+					? {}
+					: {
+						headers: ServerRouteToClientRequestParamsHeaders<
+							GenericServerRoute["headers"]
+						>;
+					}
+			)
+			& (
+				IsEqual<GenericServerRoute["params"], unknown> extends true
+					? {}
+					: {
+						params: ServerRouteToClientRequestParamsParams<
+							GenericServerRoute["params"]
+						>;
+					}
+			)
+			& (
+				IsEqual<GenericServerRoute["query"], unknown> extends true
+					? {}
+					: {
+						query: ServerRouteToClientRequestParamsQuery<
+							GenericServerRoute["query"]
+						>;
+					}
+			)
+			& (
+				IsEqual<GenericServerRoute["body"], unknown> extends true
+					? {}
+					: {
+						body: GenericServerRoute["body"];
+					}
+			)
+		>
 	)> extends infer InferredResult extends ClientRequestParams
 		? InferredResult
 		: never

@@ -5,7 +5,6 @@ const user = DPE.object({
 	id: DPE.number(),
 	name: DPE.string(),
 	age: DPE.number(),
-
 });
 
 useRouteBuilder("GET", "/users")

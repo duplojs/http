@@ -90,7 +90,10 @@ describe("createHttpServer", () => {
 		await mockHttpServer.handlers.get("request")!(request, response);
 
 		expect(routeHandler).toHaveBeenCalledOnce();
-		expect(response._getHeaders()).toStrictEqual({ information: "ok" });
+		expect(response._getHeaders()).toStrictEqual({
+			information: "ok",
+			predicted: "1",
+		});
 	});
 
 	it("chooses HTTPS server when https options provided", async() => {
@@ -116,6 +119,7 @@ describe("createHttpServer", () => {
 		expect(response._getHeaders()).toStrictEqual({
 			"content-type": "text/plain; charset=utf-8",
 			information: "notfound-route",
+			predicted: "1",
 		});
 	});
 

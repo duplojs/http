@@ -2,7 +2,7 @@ import { defaultExtractContract, ResponseContract, useProcessBuilder, useRouteBu
 import { DP, DPE } from "@duplojs/utils";
 import { testPresetChecker } from "@test-utils/presetChecker";
 import { omitFunctions } from "@test-utils/omitFunction";
-import { responseCodeDataParser, responseCodeDataParsers, routeToDataParser } from "@plugin-codeGenerator";
+import { routeToDataParser } from "@plugin-codeGenerator";
 
 describe("routeToDataParser", () => {
 	const process1 = useProcessBuilder()
@@ -60,17 +60,6 @@ describe("routeToDataParser", () => {
 					}),
 					query: DPE.string(),
 					responses: DP.union([
-						DP.object({
-							code: responseCodeDataParser,
-							information: DP.string(),
-							body: DP.unknown(),
-							fromHook: DP.literal(true),
-						}),
-						DP.object({
-							code: responseCodeDataParsers.serverError,
-							information: DP.string(),
-							body: DP.unknown(),
-						}),
 						DP.object({
 							code: DP.literal(defaultExtractContract.code),
 							information: DP.literal(defaultExtractContract.information),

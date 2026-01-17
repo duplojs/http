@@ -1,10 +1,10 @@
-import { type Request } from "../../request";
-import { createCoreLibKind } from "../../kind";
+import { type Request } from "../request";
+import { createCoreLibKind } from "../kind";
 import { type UnionToIntersection, type AnyFunction, type Kind, type MaybePromise, type SimplifyTopLevel, type IsEqual } from "@duplojs/utils";
-import { type HookResponse } from "./response";
+import { type HookResponse } from "../response";
 import { type ResponseCode, type Response } from "@core/response";
 
-export * from "./response";
+export * from "../response";
 
 export interface HookParamsOnConstructRequest {
 	request: Request;

@@ -5,11 +5,13 @@ import {
 	launchCodeHook,
 	launchResponseTypeHook,
 	launchExpectedResponseHook,
+	launchNotPredictedHook,
 	launchErrorHook,
 	type RequestHook,
 	type ResponseHook,
 	type InformationHook,
 	type CodeHook,
+	type NotPredictedResponseHook,
 	type ResponseTypeHook,
 	type ErrorHook,
 	type ClientResponse,
@@ -170,6 +172,30 @@ describe("client hooks", () => {
 		];
 
 		await launchExpectedResponseHook(clientHooks, promiseHooks, response);
+
+		expect(order).toStrictEqual(["promise", "client"]);
+	});
+
+	it("launchNotPredictedHook runs promise hooks before client hooks", async() => {
+		const order: string[] = [];
+		const response = {
+			code: "200",
+			predicted: false,
+		} as unknown as ClientResponse;
+
+		const promiseHooks: NotPredictedResponseHook[] = [
+			() => {
+				order.push("promise");
+			},
+		];
+
+		const clientHooks: NotPredictedResponseHook[] = [
+			() => {
+				order.push("client");
+			},
+		];
+
+		await launchNotPredictedHook(clientHooks, promiseHooks, response as never);
 
 		expect(order).toStrictEqual(["promise", "client"]);
 	});

@@ -8,5 +8,5 @@
     },
 	"types": ["node"],
   },
-  "include": ["**/*.ts", "../../core/**/*.ts", "../../client/**/*.ts"],
+  "include": ["**/*.ts", "../../core/**/*.ts"],
 }

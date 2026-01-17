@@ -1,4 +1,4 @@
-import { ResponseContract, useRouteBuilder, Request, Response } from "@core";
+import { ResponseContract, useRouteBuilder, Request, Response, PredictedResponse } from "@core";
 import { DP, DPE } from "@duplojs/utils";
 import { useTestRouteFunctionBuilder } from "@test-utils/useTestRouteFunctionBuilder";
 
@@ -39,7 +39,7 @@ describe("cut step function builder", () => {
 
 		expect(spyResponse).toHaveBeenCalledWith(
 			expect.objectContaining({
-				currentResponse: new Response("200", "goodCut", "test"),
+				currentResponse: new PredictedResponse("200", "goodCut", "test"),
 			}),
 		);
 	});
@@ -145,7 +145,7 @@ describe("cut step function builder", () => {
 
 		expect(spyResponse).toHaveBeenCalledWith(
 			expect.objectContaining({
-				currentResponse: new Response("200", "good", "test"),
+				currentResponse: new PredictedResponse("200", "good", "test"),
 			}),
 		);
 	});
@@ -176,7 +176,7 @@ describe("cut step function builder", () => {
 
 		expect(spyResponse).toHaveBeenCalledWith(
 			expect.objectContaining({
-				currentResponse: new Response("204", "good", undefined),
+				currentResponse: new PredictedResponse("204", "good", undefined),
 			}),
 		);
 	});

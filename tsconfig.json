@@ -22,5 +22,6 @@
 	{ "path": "./integration/node/tsconfig.json" },
 	{ "path": "./integration/codeGenerator/tsconfig.json" },
 	{ "path": "./integration/openApiGenerator/tsconfig.json" },
+	{ "path": "./integration/client/tsconfig.json" },
   ],
 }

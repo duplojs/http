@@ -1,10 +1,11 @@
 import { type HttpServerParams, type Hub } from "@core/hub";
-import { createHookRouteLifeCycle, HookResponse } from "@core/route";
+import { createHookRouteLifeCycle, HookResponse, PredictedResponse } from "@core/route";
 import { stringToBytes } from "@duplojs/utils";
 import { BodyParseUnknownError, BodyParseWrongChunkReceived, BodySizeExceedsLimitError } from "./error";
 
 export function makeNodeHook(hub: Hub, serverParams: HttpServerParams) {
 	const informationHeaderKey = serverParams.informationHeaderKey;
+	const predictedHeaderKey = serverParams.predictedHeaderKey;
 	const fromHookHeaderKey = serverParams.fromHookHeaderKey;
 	const isDev = hub.config.environment === "DEV";
 	const maxBodySize = stringToBytes(serverParams.maxBodySize);
@@ -126,7 +127,9 @@ export function makeNodeHook(hub: Hub, serverParams: HttpServerParams) {
 
 			currentResponse.setHeader(informationHeaderKey, currentResponse.information);
 
-			if (currentResponse instanceof HookResponse) {
+			if (currentResponse instanceof PredictedResponse) {
+				currentResponse.setHeader(predictedHeaderKey, "1");
+			} else if (currentResponse instanceof HookResponse) {
 				currentResponse.setHeader(fromHookHeaderKey, currentResponse.fromHook);
 			}
 

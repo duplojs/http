@@ -1,4 +1,4 @@
-import { ResponseContract, useRouteBuilder, Request, Response } from "@core";
+import { ResponseContract, useRouteBuilder, Request, Response, PredictedResponse } from "@core";
 import { DP, DPE } from "@duplojs/utils";
 import { useTestRouteFunctionBuilder } from "@test-utils/useTestRouteFunctionBuilder";
 
@@ -35,7 +35,7 @@ describe("handler step function builder", () => {
 
 		expect(spyResponse).toHaveBeenCalledWith(
 			expect.objectContaining({
-				currentResponse: new Response("200", "good", "test"),
+				currentResponse: new PredictedResponse("200", "good", "test"),
 			}),
 		);
 	});

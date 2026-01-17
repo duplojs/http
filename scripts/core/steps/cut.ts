@@ -3,7 +3,7 @@ import { pipe, type WrappedValue, type Kind, type MaybePromise, type NeverCoales
 import { type StepKind, stepKind } from "./kind";
 import { type Floor } from "@core/floor";
 import { type StepFunctionParams } from "./types";
-import { type Response, type ResponseContract } from "@core/response";
+import { type PredictedResponse, type ResponseContract } from "@core/response";
 import { type Request } from "@core/request";
 
 export const cutStepOutputKind = createCoreLibKind("cut-output");
@@ -16,7 +16,7 @@ export interface CutStepFunctionOutput<
 
 export interface CutStepFunctionParams<
 	GenericRequest extends Request = Request,
-	GenericResponse extends Response = Response,
+	GenericResponse extends PredictedResponse = PredictedResponse,
 > extends StepFunctionParams<GenericRequest, GenericResponse> {
 	output<
 		GenericData extends Record<string, unknown> = never,
@@ -28,7 +28,7 @@ export interface CutStepFunctionParams<
 }
 
 export interface CutStepDefinition {
-	theFunction(floor: Floor, params: CutStepFunctionParams): MaybePromise<CutStepFunctionOutput | Response>;
+	theFunction(floor: Floor, params: CutStepFunctionParams): MaybePromise<CutStepFunctionOutput | PredictedResponse>;
 	readonly responseContract: ResponseContract.Contract | readonly ResponseContract.Contract[];
 }
 

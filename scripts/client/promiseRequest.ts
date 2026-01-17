@@ -1,13 +1,13 @@
-import { type NeverCoalescing, type MaybePromise, unwrap, forwardLog } from "@duplojs/utils";
+import { type NeverCoalescing, type MaybePromise, unwrap } from "@duplojs/utils";
 import { getBody } from "./getBody";
 import { insertParamsInPath } from "./insertParamsInPath";
 import { queryToString } from "./queryToString";
-import { type Hooks, launchRequestHook, launchResponseHook, launchInformationHook, launchCodeHook, launchResponseTypeHook, launchExpectedResponseHook, launchErrorHook, type ErrorHook } from "./hooks";
+import { type Hooks, launchRequestHook, launchResponseHook, launchInformationHook, launchCodeHook, launchResponseTypeHook, launchExpectedResponseHook, launchErrorHook, type ErrorHook, launchNotPredictedHook, type NotPredictedResponseHook } from "./hooks";
 import * as EE from "@duplojs/utils/either";
 import * as SS from "@duplojs/utils/string";
 import * as AA from "@duplojs/utils/array";
-import { UnexpectedCodeResponseError, UnexpectedInformationResponseError, UnexpectedResponseError, UnexpectedResponseTypeError, type ErrorContent } from "./unexpectedResponseError";
-import { type ClientRequestParams, type ClientResponse } from "./types";
+import { UnexpectedCodeResponseError, UnexpectedInformationResponseError, UnexpectedResponseError, UnexpectedResponseTypeError, type RequestErrorContent } from "./unexpectedResponseError";
+import { type NotPredictedClientResponse, type ClientRequestParams, type ClientResponse } from "./types";
 
 type MaybeResponse<
 	GenericClientResponse extends ClientResponse = ClientResponse,
@@ -18,43 +18,46 @@ type MaybeResponse<
 	>
 	| EE.EitherLeft<
 		"request-error",
-		ErrorContent
+		RequestErrorContent
 	>
 );
 
 type MaybeWantedResponse<
 	GenericWantedClientResponse extends ClientResponse = ClientResponse,
-	GenericClientResponse extends ClientResponse = ClientResponse,
+	GenericUnexpectClientResponse extends ClientResponse = ClientResponse,
 > = (
-	| EE.EitherRight<
-		"response",
-		GenericWantedClientResponse
-	>
-	| EE.EitherLeft<
-		"unexpect-response",
-		Exclude<
-			GenericClientResponse,
+		| EE.EitherRight<
+			"response",
 			GenericWantedClientResponse
 		>
-	>
-	| EE.EitherLeft<
-		"request-error",
-		ErrorContent
-	>
-);
+		| EE.EitherLeft<
+			"unexpect-response",
+			GenericUnexpectClientResponse
+		>
+		| EE.EitherLeft<
+			"request-error",
+			RequestErrorContent
+		>
+	);
 
 export interface PromiseRequestParams<
 	GenericHookParams extends Record<string, unknown> = Record<string, unknown>,
 > extends ClientRequestParams<GenericHookParams> {
 	baseUrl: string;
 	hooks: Hooks;
+	informationHeaderKey: string;
+	predictedHeaderKey: string;
+	disabledPredicateMode: boolean;
 }
 
 export class PromiseRequest<
 	GenericPromiseRequestParams extends PromiseRequestParams = PromiseRequestParams,
 	GenericClientResponse extends ClientResponse = ClientResponse,
 > extends Promise<
-		MaybeResponse<GenericClientResponse>
+		MaybeResponse<
+			| GenericClientResponse
+			| NotPredictedClientResponse<GenericPromiseRequestParams>
+		>
 	> {
 	public readonly hooks: Partial<Hooks> = {};
 
@@ -77,6 +80,16 @@ export class PromiseRequest<
 						response,
 					),
 					async(response) => {
+						if (params.disabledPredicateMode === false && response.predicted === false) {
+							await launchNotPredictedHook(
+								params.hooks.notPredictedResponse,
+								this.hooks.notPredictedResponse ?? [],
+								response as never,
+							);
+
+							return EE.right("response", response);
+						}
+
 						if (SS.startsWith(response.code, "1")) {
 							await launchResponseTypeHook(
 								params.hooks.informationalResponseType,
@@ -184,6 +197,15 @@ export class PromiseRequest<
 		return this;
 	}
 
+	public whenNotPredictedResponse(
+		callback: NotPredictedResponseHook<GenericPromiseRequestParams>,
+	) {
+		this.hooks.notPredictedResponse ??= [];
+		this.hooks.notPredictedResponse.push(callback as never);
+
+		return this;
+	}
+
 	public whenInformation<
 		GenericInformation extends Extract<
 			GenericClientResponse["information"],
@@ -199,7 +221,7 @@ export class PromiseRequest<
 						? { information: GenericInformation }
 						: never
 				>,
-				ClientResponse
+				ClientResponse<GenericPromiseRequestParams>
 			>,
 		) => MaybePromise<void>,
 	) {
@@ -228,7 +250,7 @@ export class PromiseRequest<
 						? { code: GenericCode }
 						: never
 				>,
-				ClientResponse
+				ClientResponse<GenericPromiseRequestParams>
 			>,
 		) => MaybePromise<void>,
 	) {
@@ -252,7 +274,7 @@ export class PromiseRequest<
 					GenericClientResponse,
 					{ code: `1${number}` }
 				>,
-				ClientResponse
+				ClientResponse<GenericPromiseRequestParams>
 			>,
 		) => MaybePromise<void>,
 	) {
@@ -269,7 +291,7 @@ export class PromiseRequest<
 					GenericClientResponse,
 					{ code: `2${number}` }
 				>,
-				ClientResponse
+				ClientResponse<GenericPromiseRequestParams>
 			>,
 		) => MaybePromise<void>,
 	) {
@@ -286,7 +308,7 @@ export class PromiseRequest<
 					GenericClientResponse,
 					{ code: `3${number}` }
 				>,
-				ClientResponse
+				ClientResponse<GenericPromiseRequestParams>
 			>,
 		) => MaybePromise<void>,
 	) {
@@ -303,7 +325,7 @@ export class PromiseRequest<
 					GenericClientResponse,
 					{ code: `4${number}` }
 				>,
-				ClientResponse
+				ClientResponse<GenericPromiseRequestParams>
 			>,
 		) => MaybePromise<void>,
 	) {
@@ -320,7 +342,7 @@ export class PromiseRequest<
 					GenericClientResponse,
 					{ code: `5${number}` }
 				>,
-				ClientResponse
+				ClientResponse<GenericPromiseRequestParams>
 			>,
 		) => MaybePromise<void>,
 	) {
@@ -337,7 +359,7 @@ export class PromiseRequest<
 					GenericClientResponse,
 					{ code: `2${number}` | `4${number}` }
 				>,
-				ClientResponse
+				ClientResponse<GenericPromiseRequestParams>
 			>,
 		) => MaybePromise<void>,
 	) {
@@ -347,7 +369,7 @@ export class PromiseRequest<
 		return this;
 	}
 
-	public whenError(callback: ErrorHook) {
+	public whenError(callback: ErrorHook<GenericPromiseRequestParams>) {
 		this.hooks.error ??= [];
 		this.hooks.error.push(callback as never);
 
@@ -359,17 +381,24 @@ export class PromiseRequest<
 			GenericClientResponse["information"],
 			string
 		>,
+		GenericResponse extends NeverCoalescing<
+			Extract<
+				GenericClientResponse,
+				GenericInformation extends any
+					? { information: GenericInformation }
+					: never
+			>,
+			ClientResponse<GenericPromiseRequestParams>
+		>,
 	>(
 		information: GenericInformation | GenericInformation[],
 	): Promise<
 			MaybeWantedResponse<
-				Extract<
-					GenericClientResponse,
-					GenericInformation extends any
-						? { information: GenericInformation }
-						: never
-				>,
-				GenericClientResponse
+				GenericResponse,
+				NeverCoalescing<
+					Exclude<GenericClientResponse, GenericResponse>,
+					ClientResponse<GenericPromiseRequestParams>
+				>
 			>
 		> {
 		const formattedInformation = AA.coalescing(information);
@@ -398,17 +427,24 @@ export class PromiseRequest<
 
 	public iWantCode<
 		GenericCode extends GenericClientResponse["code"],
+		GenericResponse extends NeverCoalescing<
+			Extract<
+				GenericClientResponse,
+				GenericCode extends any
+					? { code: GenericCode }
+					: never
+			>,
+			ClientResponse<GenericPromiseRequestParams>
+		>,
 	>(
 		code: GenericCode | GenericCode[],
 	): Promise<
 			MaybeWantedResponse<
-				Extract<
-					GenericClientResponse,
-					GenericCode extends any
-						? { code: GenericCode }
-						: never
-				>,
-				GenericClientResponse
+				GenericResponse,
+				NeverCoalescing<
+					Exclude<GenericClientResponse, GenericResponse>,
+					ClientResponse<GenericPromiseRequestParams>
+				>
 			>
 		> {
 		const formattedCode = AA.coalescing(code);
@@ -432,13 +468,21 @@ export class PromiseRequest<
 		) as never;
 	}
 
-	public iWantInformationalResponse(): Promise<
-		MaybeWantedResponse<
+	public iWantInformationalResponse<
+		GenericResponse extends NeverCoalescing<
 			Extract<
 				GenericClientResponse,
 				{ code: `1${number}` }
 			>,
-			GenericClientResponse
+			ClientResponse<GenericPromiseRequestParams>
+		>,
+	>(): Promise<
+		MaybeWantedResponse<
+			GenericResponse,
+			NeverCoalescing<
+				Exclude<GenericClientResponse, GenericResponse>,
+				ClientResponse<GenericPromiseRequestParams>
+			>
 		>
 	> {
 		return this.then(
@@ -460,13 +504,21 @@ export class PromiseRequest<
 		) as never;
 	}
 
-	public iWantSuccessfulResponse(): Promise<
-		MaybeWantedResponse<
+	public iWantSuccessfulResponse<
+		GenericResponse extends NeverCoalescing<
 			Extract<
 				GenericClientResponse,
 				{ code: `2${number}` }
 			>,
-			GenericClientResponse
+			ClientResponse<GenericPromiseRequestParams>
+		>,
+	>(): Promise<
+		MaybeWantedResponse<
+			GenericResponse,
+			NeverCoalescing<
+				Exclude<GenericClientResponse, GenericResponse>,
+				ClientResponse<GenericPromiseRequestParams>
+			>
 		>
 	> {
 		return this.then(
@@ -488,13 +540,21 @@ export class PromiseRequest<
 		) as never;
 	}
 
-	public iWantRedirectionResponse(): Promise<
-		MaybeWantedResponse<
+	public iWantRedirectionResponse<
+		GenericResponse extends NeverCoalescing<
 			Extract<
 				GenericClientResponse,
 				{ code: `3${number}` }
 			>,
-			GenericClientResponse
+			ClientResponse<GenericPromiseRequestParams>
+		>,
+	>(): Promise<
+		MaybeWantedResponse<
+			GenericResponse,
+			NeverCoalescing<
+				Exclude<GenericClientResponse, GenericResponse>,
+				ClientResponse<GenericPromiseRequestParams>
+			>
 		>
 	> {
 		return this.then(
@@ -516,13 +576,21 @@ export class PromiseRequest<
 		) as never;
 	}
 
-	public iWantClientErrorResponse(): Promise<
-		MaybeWantedResponse<
+	public iWantClientErrorResponse<
+		GenericResponse extends NeverCoalescing<
 			Extract<
 				GenericClientResponse,
 				{ code: `4${number}` }
 			>,
-			GenericClientResponse
+			ClientResponse<GenericPromiseRequestParams>
+		>,
+	>(): Promise<
+		MaybeWantedResponse<
+			GenericResponse,
+			NeverCoalescing<
+				Exclude<GenericClientResponse, GenericResponse>,
+				ClientResponse<GenericPromiseRequestParams>
+			>
 		>
 	> {
 		return this.then(
@@ -544,13 +612,21 @@ export class PromiseRequest<
 		) as never;
 	}
 
-	public iWantServerErrorResponse(): Promise<
-		MaybeWantedResponse<
+	public iWantServerErrorResponse<
+		GenericResponse extends NeverCoalescing<
 			Extract<
 				GenericClientResponse,
 				{ code: `5${number}` }
 			>,
-			GenericClientResponse
+			ClientResponse<GenericPromiseRequestParams>
+		>,
+	>(): Promise<
+		MaybeWantedResponse<
+			GenericResponse,
+			NeverCoalescing<
+				Exclude<GenericClientResponse, GenericResponse>,
+				ClientResponse<GenericPromiseRequestParams>
+			>
 		>
 	> {
 		return this.then(
@@ -572,13 +648,21 @@ export class PromiseRequest<
 		) as never;
 	}
 
-	public iWantExpectedResponse(): Promise<
-		MaybeWantedResponse<
+	public iWantExpectedResponse<
+		GenericResponse extends NeverCoalescing<
 			Extract<
 				GenericClientResponse,
 				{ code: `2${number}` | `4${number}` }
 			>,
-			GenericClientResponse
+			ClientResponse<GenericPromiseRequestParams>
+		>,
+	>(): Promise<
+		MaybeWantedResponse<
+			GenericResponse,
+			NeverCoalescing<
+				Exclude<GenericClientResponse, GenericResponse>,
+				ClientResponse<GenericPromiseRequestParams>
+			>
 		>
 	> {
 		return this.then(
@@ -608,11 +692,14 @@ export class PromiseRequest<
 	>(
 		information: GenericInformation | GenericInformation[],
 	): Promise<
-			Extract<
-				GenericClientResponse,
-				GenericInformation extends any
-					? { information: GenericInformation }
-					: never
+			NeverCoalescing<
+				Extract<
+					GenericClientResponse,
+					GenericInformation extends any
+						? { information: GenericInformation }
+						: never
+				>,
+				ClientResponse<GenericPromiseRequestParams>
 			>
 		> {
 		return this
@@ -636,11 +723,14 @@ export class PromiseRequest<
 	>(
 		code: GenericCode | GenericCode[],
 	): Promise<
-			Extract<
-				GenericClientResponse,
-				GenericCode extends any
-					? { code: GenericCode }
-					: never
+			NeverCoalescing<
+				Extract<
+					GenericClientResponse,
+					GenericCode extends any
+						? { code: GenericCode }
+						: never
+				>,
+				ClientResponse<GenericPromiseRequestParams>
 			>
 		> {
 		return this
@@ -660,9 +750,12 @@ export class PromiseRequest<
 	}
 
 	public iWantInformationalResponseOrThrow(): Promise<
-		Extract<
-			GenericClientResponse,
-			{ code: `1${number}` }
+		NeverCoalescing<
+			Extract<
+				GenericClientResponse,
+				{ code: `1${number}` }
+			>,
+			ClientResponse<GenericPromiseRequestParams>
 		>
 	> {
 		return this
@@ -682,9 +775,12 @@ export class PromiseRequest<
 	}
 
 	public iWantSuccessfulResponseOrThrow(): Promise<
-		Extract<
-			GenericClientResponse,
-			{ code: `2${number}` }
+		NeverCoalescing<
+			Extract<
+				GenericClientResponse,
+				{ code: `2${number}` }
+			>,
+			ClientResponse<GenericPromiseRequestParams>
 		>
 	> {
 		return this
@@ -704,9 +800,12 @@ export class PromiseRequest<
 	}
 
 	public iWantRedirectionResponseOrThrow(): Promise<
-		Extract<
-			GenericClientResponse,
-			{ code: `3${number}` }
+		NeverCoalescing<
+			Extract<
+				GenericClientResponse,
+				{ code: `3${number}` }
+			>,
+			ClientResponse<GenericPromiseRequestParams>
 		>
 	> {
 		return this
@@ -726,9 +825,12 @@ export class PromiseRequest<
 	}
 
 	public iWantClientErrorResponseOrThrow(): Promise<
-		Extract<
-			GenericClientResponse,
-			{ code: `4${number}` }
+		NeverCoalescing<
+			Extract<
+				GenericClientResponse,
+				{ code: `4${number}` }
+			>,
+			ClientResponse<GenericPromiseRequestParams>
 		>
 	> {
 		return this
@@ -748,9 +850,12 @@ export class PromiseRequest<
 	}
 
 	public iWantServerErrorResponseOrThrow(): Promise<
-		Extract<
-			GenericClientResponse,
-			{ code: `5${number}` }
+		NeverCoalescing<
+			Extract<
+				GenericClientResponse,
+				{ code: `5${number}` }
+			>,
+			ClientResponse<GenericPromiseRequestParams>
 		>
 	> {
 		return this
@@ -770,9 +875,12 @@ export class PromiseRequest<
 	}
 
 	public iWantExpectedResponseOrThrow(): Promise<
-		Extract<
-			GenericClientResponse,
-			{ code: `2${number}` | `4${number}` }
+		NeverCoalescing<
+			Extract<
+				GenericClientResponse,
+				{ code: `2${number}` | `4${number}` }
+			>,
+			ClientResponse<GenericPromiseRequestParams>
 		>
 	> {
 		return this
@@ -817,7 +925,11 @@ export class PromiseRequest<
 					(
 						body
 						&& typeof body === "object"
-						&& body.constructor.name === "Object"
+						&& (body as object)?.constructor?.name === "Object"
+					)
+					|| (
+						body instanceof Array
+						&& body?.constructor?.name === "Array"
 					)
 					|| body === null
 					|| typeof body === "boolean"
@@ -833,9 +945,9 @@ export class PromiseRequest<
 			`${requestParams.baseUrl}${url}`,
 			{
 				...requestParams.initParams,
-				headers: <never>requestParams.headers,
+				headers: <never>headers,
 				method: requestParams.method,
-				body: <never>requestParams.body,
+				body: <never>body,
 			},
 		)
 			.then(
@@ -845,7 +957,7 @@ export class PromiseRequest<
 							"response",
 							{
 								body,
-								information: response.headers.get("information") || undefined,
+								information: response.headers.get(requestParams.informationHeaderKey) || undefined,
 								code: response.status.toString() as SS.Number,
 								ok: (response.status < 500)
 									? response.ok
@@ -856,7 +968,8 @@ export class PromiseRequest<
 								redirected: response.redirected,
 								raw: response,
 								requestParams,
-							},
+								predicted: response.headers.get(requestParams.predictedHeaderKey) !== null,
+							} satisfies ClientResponse,
 						),
 					),
 			)

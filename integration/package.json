@@ -1,6 +1,9 @@
 {
   "name": "integrations",
   "license": "ISC",
+  "scripts": {
+    "test:types": "tsc -p codeGenerator/tsconfig.json && tsc -p core/tsconfig.json && tsc -p node/tsconfig.json && tsc -p client/tsconfig.json"
+  },
   "dependencies": {
     "@duplojs/http": "file:.."
   }

@@ -1,4 +1,4 @@
-import { type ExtractStep, extractStepKind, type HandlerStep, handlerStepKind, ResponseContract, type Route, routeKind, stepKind, useRouteBuilder, type Response, type HandlerStepFunctionParams, type Request, type HookParamsOnConstructRequest, routeStore } from "@core";
+import { type ExtractStep, extractStepKind, type HandlerStep, handlerStepKind, ResponseContract, type Route, routeKind, stepKind, useRouteBuilder, type PredictedResponse, type HandlerStepFunctionParams, type Request, type HookParamsOnConstructRequest, routeStore } from "@core";
 import { type DP, DPE, type ExpectType } from "@duplojs/utils";
 import { type MaybePromise } from "rollup";
 
@@ -80,9 +80,9 @@ describe("route builder handler method", () => {
 								floor: { body: string },
 								param: HandlerStepFunctionParams<
 									Request,
-									Response<"200", "test", string>
+									PredictedResponse<"200", "test", string>
 								>
-							): MaybePromise<Response<"200", "test", string>>;
+							): MaybePromise<PredictedResponse<"200", "test", string>>;
 						}>,
 					];
 				}
@@ -157,12 +157,12 @@ describe("route builder handler method", () => {
 								floor: {},
 								param: HandlerStepFunctionParams<
 									Request,
-									| Response<"200", "test", string>
-									| Response<"204", "toto", undefined>
+									| PredictedResponse<"200", "test", string>
+									| PredictedResponse<"204", "toto", undefined>
 								>
 							): MaybePromise<
-								| Response<"200", "test", string>
-								| Response<"204", "toto", undefined>
+								| PredictedResponse<"200", "test", string>
+								| PredictedResponse<"204", "toto", undefined>
 							>;
 						}>,
 					];
@@ -242,9 +242,9 @@ describe("route builder handler method", () => {
 									Request & {
 										prop: number;
 									},
-									Response<"204", "toto", undefined>
+									PredictedResponse<"204", "toto", undefined>
 								>
-							): MaybePromise<Response<"204", "toto", undefined>>;
+							): MaybePromise<PredictedResponse<"204", "toto", undefined>>;
 						}>,
 					];
 				}

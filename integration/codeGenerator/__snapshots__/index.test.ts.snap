@@ -1,23 +1,10 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`codeGenerator > correct generate file 1`] = `
-"export type Digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
-
-export type ResponseCode = \`1\${Digit}\${Digit}\` | \`2\${Digit}\${Digit}\` | \`3\${Digit}\${Digit}\` | \`4\${Digit}\${Digit}\` | \`5\${Digit}\${Digit}\`;
-
-export type Routes = {
+"export type Routes = {
     method: "GET";
     path: "/users";
     responses: {
-        code: ResponseCode;
-        information: string;
-        body: unknown;
-        fromHook: true;
-    } | {
-        code: \`5\${Digit}\${Digit}\`;
-        information: string;
-        body: unknown;
-    } | {
         code: "200";
         information: "users.findMany";
         body: {
@@ -33,15 +20,6 @@ export type Routes = {
         userId: number;
     };
     responses: {
-        code: ResponseCode;
-        information: string;
-        body: unknown;
-        fromHook: true;
-    } | {
-        code: \`5\${Digit}\${Digit}\`;
-        information: string;
-        body: unknown;
-    } | {
         code: "422";
         information: "extract-error";
         body?: undefined;
@@ -63,15 +41,6 @@ export type Routes = {
         age: number;
     };
     responses: {
-        code: ResponseCode;
-        information: string;
-        body: unknown;
-        fromHook: true;
-    } | {
-        code: \`5\${Digit}\${Digit}\`;
-        information: string;
-        body: unknown;
-    } | {
         code: "422";
         information: "extract-error";
         body?: undefined;

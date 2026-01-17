@@ -1,7 +1,7 @@
 import { createCoreLibKind } from "@core/kind";
 import { type ResponseCode, Response } from "@core/response";
 import { kindHeritage } from "@duplojs/utils";
-import { type HookRouteLifeCycle } from ".";
+import { type HookRouteLifeCycle } from "../route/hooks";
 
 const defaultParamsParent: [undefined, undefined, undefined] = [undefined, undefined, undefined];
 const defaultParams = {};
@@ -37,3 +37,4 @@ export class HookResponse<
 		this.fromHook = from;
 	}
 }
+

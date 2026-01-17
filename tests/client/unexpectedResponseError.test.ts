@@ -3,17 +3,17 @@ import {
 	UnexpectedCodeResponseError,
 	UnexpectedResponseTypeError,
 	UnexpectedResponseError,
-	type ErrorContent,
-	type ClientRequestParams,
+	type RequestErrorContent,
 	type ClientResponse,
+	type PromiseRequestParams,
 } from "@client";
 
 describe("unexpected response errors", () => {
 	const requestParams = {
 		method: "GET",
 		path: "/",
-	} as ClientRequestParams;
-	const errorContent: ErrorContent = {
+	} as PromiseRequestParams;
+	const errorContent: RequestErrorContent = {
 		error: new Error("boom"),
 		requestParams,
 	};
@@ -28,6 +28,7 @@ describe("unexpected response errors", () => {
 		redirected: false,
 		raw: {} as Response,
 		requestParams,
+		predicted: true,
 	} as ClientResponse;
 
 	it("builds UnexpectedInformationResponseError", () => {

@@ -1,4 +1,5 @@
-import { type Json, type MaybeArray } from "@duplojs/utils";
+import { type MaybeArray } from "@duplojs/utils";
+import type * as SS from "@duplojs/utils/string";
 
 export type ServerPrimitiveData = string | undefined | number | null | boolean;
 
@@ -8,15 +9,14 @@ export type ServerRouteParams = Record<string, ServerPrimitiveData>;
 
 export type ServerRouteQuery = Record<string, MaybeArray<ServerPrimitiveData>>;
 
-export type ServerRouteBody = Json;
+export type ServerRouteBody = unknown;
 
-export type ServerRouteResponseBody = Json;
+export type ServerRouteResponseBody = unknown;
 
 export interface ServerRouteResponse {
-	code: string;
+	code: SS.Number;
 	information?: string;
 	body?: ServerRouteResponseBody;
-	fromHook?: true;
 }
 
 export interface ServerRoute {
