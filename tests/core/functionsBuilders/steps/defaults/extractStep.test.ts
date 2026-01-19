@@ -1,4 +1,4 @@
-import { ResponseContract, useRouteBuilder, Request, Response } from "@core";
+import { ResponseContract, useRouteBuilder, Request, Response, PredictedResponse } from "@core";
 import { DP, DPE } from "@duplojs/utils";
 import { useTestRouteFunctionBuilder } from "@test-utils/useTestRouteFunctionBuilder";
 
@@ -35,7 +35,7 @@ describe("extract step function builder", () => {
 
 		expect(spyResponse).toHaveBeenCalledWith(
 			expect.objectContaining({
-				currentResponse: new Response("200", "good", "test"),
+				currentResponse: new PredictedResponse("200", "good", "test"),
 			}),
 		);
 	});
@@ -66,7 +66,7 @@ describe("extract step function builder", () => {
 
 		expect(spyResponse).toHaveBeenCalledWith(
 			expect.objectContaining({
-				currentResponse: new Response("200", "good", "test1"),
+				currentResponse: new PredictedResponse("200", "good", "test1"),
 			}),
 		);
 	});
@@ -97,7 +97,7 @@ describe("extract step function builder", () => {
 
 		expect(spyResponse).toHaveBeenCalledWith(
 			expect.objectContaining({
-				currentResponse: new Response(
+				currentResponse: new PredictedResponse(
 					"422",
 					"extract-error",
 					expect.objectContaining({ [DP.errorKind.runTimeKey]: null }),
@@ -133,7 +133,7 @@ describe("extract step function builder", () => {
 
 		expect(spyResponse).toHaveBeenCalledWith(
 			expect.objectContaining({
-				currentResponse: new Response(
+				currentResponse: new PredictedResponse(
 					"422",
 					"extract-error",
 					expect.objectContaining({ [DP.errorKind.runTimeKey]: null }),
@@ -169,7 +169,7 @@ describe("extract step function builder", () => {
 
 		expect(spyResponse).toHaveBeenCalledWith(
 			expect.objectContaining({
-				currentResponse: new Response(
+				currentResponse: new PredictedResponse(
 					"422",
 					"extract-error",
 					undefined,
@@ -205,7 +205,7 @@ describe("extract step function builder", () => {
 
 		expect(spyResponse).toHaveBeenCalledWith(
 			expect.objectContaining({
-				currentResponse: new Response(
+				currentResponse: new PredictedResponse(
 					"400",
 					"test-custom",
 					undefined,

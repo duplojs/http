@@ -1,6 +1,6 @@
 import { makeOpenApiPage, makeOpenApiRoute } from "@plugin-openApiGenerator";
 import { useTestRouteFunctionBuilder } from "@test-utils/useTestRouteFunctionBuilder";
-import { Request, Response } from "@core";
+import { PredictedResponse, Request, Response } from "@core";
 
 describe("makeOpenApiRoute", () => {
 	const spyResponse = vi.fn();
@@ -52,7 +52,7 @@ describe("makeOpenApiRoute", () => {
 
 		expect(spyResponse).toHaveBeenCalledWith(
 			expect.objectContaining({
-				currentResponse: new Response("200", "swaggerUi", openApiPage)
+				currentResponse: new PredictedResponse("200", "swaggerUi", openApiPage)
 					.setHeader("content-type", "text/html"),
 			}),
 		);

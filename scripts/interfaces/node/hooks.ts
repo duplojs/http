@@ -1,10 +1,11 @@
 import { type HttpServerParams, type Hub } from "@core/hub";
-import { createHookRouteLifeCycle, HookResponse } from "@core/route";
+import { createHookRouteLifeCycle, HookResponse, PredictedResponse } from "@core/route";
 import { stringToBytes } from "@duplojs/utils";
 import { BodyParseUnknownError, BodyParseWrongChunkReceived, BodySizeExceedsLimitError } from "./error";
 
 export function makeNodeHook(hub: Hub, serverParams: HttpServerParams) {
 	const informationHeaderKey = serverParams.informationHeaderKey;
+	const predictedHeaderKey = serverParams.predictedHeaderKey;
 	const fromHookHeaderKey = serverParams.fromHookHeaderKey;
 	const isDev = hub.config.environment === "DEV";
 	const maxBodySize = stringToBytes(serverParams.maxBodySize);
@@ -111,19 +112,24 @@ export function makeNodeHook(hub: Hub, serverParams: HttpServerParams) {
 			const body = currentResponse.body;
 
 			if (
-				typeof body === "number"
-				|| typeof body === "string"
-				|| body === null
+				typeof body === "string"
 				|| body instanceof Error
 			) {
 				currentResponse.setHeader("content-type", "text/plain; charset=utf-8");
-			} else if (typeof body === "object") {
+			} else if (
+				typeof body === "object"
+				|| typeof body === "number"
+				|| typeof body === "boolean"
+
+			) {
 				currentResponse.setHeader("content-type", "application/json; charset=utf-8");
 			}
 
 			currentResponse.setHeader(informationHeaderKey, currentResponse.information);
 
-			if (currentResponse instanceof HookResponse) {
+			if (currentResponse instanceof PredictedResponse) {
+				currentResponse.setHeader(predictedHeaderKey, "1");
+			} else if (currentResponse instanceof HookResponse) {
 				currentResponse.setHeader(fromHookHeaderKey, currentResponse.fromHook);
 			}
 
@@ -143,19 +149,16 @@ export function makeNodeHook(hub: Hub, serverParams: HttpServerParams) {
 				rawResponse.write(
 					body.toString(),
 				);
-			} else if (typeof body === "object") {
+			} else if (
+				typeof body === "object"
+				|| typeof body === "number"
+				|| typeof body === "boolean"
+			) {
 				rawResponse.write(
 					JSON.stringify(body),
 				);
 			} else if (typeof body === "string") {
 				rawResponse.write(body);
-			} else if (
-				typeof body === "number"
-				|| typeof body === "bigint"
-			) {
-				rawResponse.write(
-					body.toString(),
-				);
 			}
 
 			rawResponse.end();

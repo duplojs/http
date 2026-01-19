@@ -14,7 +14,7 @@
     "test:tu:bench": "vitest bench",
     "test:tu:watch": "vitest --coverage --watch",
     "test:tu:update": "vitest --coverage --update",
-    "test:types": "tsc -p tests/core/tsconfig.json && tsc -p tests/interfaces/node/tsconfig.json && tsc -p tests/interfaces/bun/tsconfig.json && tsc -p tests/interfaces/deno/tsconfig.json && tsc -p tests/plugins/codeGenerator/tsconfig.json",
+    "test:types": "tsc -p tests/core/tsconfig.json && tsc -p tests/client/tsconfig.json && tsc -p tests/interfaces/node/tsconfig.json && tsc -p tests/interfaces/bun/tsconfig.json && tsc -p tests/interfaces/deno/tsconfig.json && tsc -p tests/plugins/codeGenerator/tsconfig.json && tsc -p tests/plugins/openApiGenerator/tsconfig.json && npm -w integration run test:types",
     "test:lint": "eslint",
     "test:lint:fix": "eslint --fix",
     "prepare": "husky"
@@ -25,6 +25,11 @@
       "import": "./dist/core/index.mjs",
       "require": "./dist/core/index.cjs",
       "types": "./dist/core/index.d.ts"
+    },
+    "./client": {
+      "import": "./dist/client/index.mjs",
+      "require": "./dist/client/index.cjs",
+      "types": "./dist/client/index.d.ts"
     },
     "./node": {
       "import": "./dist/interfaces/node/index.mjs",
@@ -57,8 +62,8 @@
     "README.md"
   ],
   "peerDependencies": {
-    "@duplojs/data-parser-tools": ">=0.2.3 <1.0.0",
-    "@duplojs/utils": ">=1.3.33 <2.0.0"
+    "@duplojs/data-parser-tools": ">=0.2.4 <1.0.0",
+    "@duplojs/utils": ">=1.4.40 <2.0.0"
   },
   "devDependencies": {
     "@commitlint/cli": "19.8.1",
@@ -89,5 +94,8 @@
   "keywords": [],
   "engines": {
     "node": ">=22.15.1"
+  },
+  "dependencies": {
+    "@types/web": "^0.0.317"
   }
 }

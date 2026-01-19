@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.test.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+	  "@client": ["../../scripts/client/index.ts"],
+	  "@client/*": ["../../scripts/client/*"],
+	  "@test-utils/*": ["../_utils/*"],
+    },
+	"types": ["web", "vitest/globals"],
+  },
+  "include": [
+	"**/*.ts",
+	"../../scripts/client/**/*.ts"
+  ],
+}

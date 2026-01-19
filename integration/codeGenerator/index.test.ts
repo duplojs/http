@@ -1,7 +1,7 @@
 import { hub } from "@core";
 import { existsSync, readFileSync, rmSync } from "fs";
-import { launchHookServer } from "../../dist/core";
 import { codeGeneratorPlugin } from "@duplojs/http/codeGenerator";
+import { launchHookServer } from "@duplojs/http";
 
 describe("codeGenerator", () => {
 	const fileName = `${import.meta.dirname}/generateCode.generate.ts`;

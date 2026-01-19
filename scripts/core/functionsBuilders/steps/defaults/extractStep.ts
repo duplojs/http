@@ -1,11 +1,11 @@
 import { extractStepKind } from "@core/steps";
 import { A, DP, E, innerPipe, isType, justReturn, O, P, pipe, unwrap } from "@duplojs/utils";
 import { type Request } from "@core/request";
-import { Response } from "@core/response";
+import { PredictedResponse } from "@core/response";
 import { type Floor } from "@core/floor";
 import { createStepFunctionBuilder } from "../create";
 
-type Extractor = (request: Request, floor: Floor) => Response | Floor;
+type Extractor = (request: Request, floor: Floor) => PredictedResponse | Floor;
 
 export const defaultExtractStepFunctionBuilder = createStepFunctionBuilder(
 	extractStepKind.has,
@@ -22,7 +22,7 @@ export const defaultExtractStepFunctionBuilder = createStepFunctionBuilder(
 			key: string,
 			subKey?: string,
 		) {
-			const response = new Response(
+			const response = new PredictedResponse(
 				responseContract.code,
 				responseContract.information,
 				environment === "DEV"
@@ -98,7 +98,7 @@ export const defaultExtractStepFunctionBuilder = createStepFunctionBuilder(
 				for (let index = 0; index < extractors.length; index++) {
 					const result = extractors[index]!(request, newFloor);
 
-					if (result instanceof Response) {
+					if (result instanceof PredictedResponse) {
 						return result;
 					}
 

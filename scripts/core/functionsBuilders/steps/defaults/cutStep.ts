@@ -1,7 +1,7 @@
 import { type CutStepDefinition, type CutStepFunctionParams, cutStepKind, cutStepOutputKind } from "@core/steps";
 import { createStepFunctionBuilder } from "../create";
 import { A, E, unwrap, wrapValue } from "@duplojs/utils";
-import { Response, ResponseContract } from "@core/response";
+import { PredictedResponse, Response, ResponseContract } from "@core/response";
 import { type Floor } from "@core/floor";
 
 export const defaultCutStepFunctionBuilder = createStepFunctionBuilder(
@@ -48,7 +48,7 @@ export const defaultCutStepFunctionBuilder = createStepFunctionBuilder(
 				);
 			}
 
-			return new Response(
+			return new PredictedResponse(
 				currentContract.code,
 				currentContract.information,
 				body,

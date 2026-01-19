@@ -1,4 +1,4 @@
-import { cutStepKind, extractStepKind, ResponseContract, type ProcessBuilder, stepKind, useProcessBuilder, type Request, type CutStep, type CutStepFunctionParams, type Response, type CutStepFunctionOutput, type ExtractStep } from "@core";
+import { cutStepKind, extractStepKind, ResponseContract, type ProcessBuilder, stepKind, useProcessBuilder, type Request, type CutStep, type CutStepFunctionParams, type PredictedResponse, type CutStepFunctionOutput, type ExtractStep } from "@core";
 import { builderKind, type DP, DPE, type ExpectType } from "@duplojs/utils";
 import { type MaybePromise } from "rollup";
 
@@ -79,10 +79,10 @@ describe("process builder cut method", () => {
 								floor: { body: string },
 								param: CutStepFunctionParams<
 									Request,
-									Response<"403", "test", undefined>
+									PredictedResponse<"403", "test", undefined>
 								>
 							): MaybePromise<
-								| Response<"403", "test", undefined>
+								| PredictedResponse<"403", "test", undefined>
 								| CutStepFunctionOutput<{}>
 							>;
 						}>,
@@ -170,12 +170,12 @@ describe("process builder cut method", () => {
 								floor: {},
 								param: CutStepFunctionParams<
 									Request,
-									| Response<"403", "test", undefined>
-									| Response<"404", "notF", string>
+									| PredictedResponse<"403", "test", undefined>
+									| PredictedResponse<"404", "notF", string>
 								>
 							): MaybePromise<
-								| Response<"403", "test", undefined>
-								| Response<"404", "notF", string>
+								| PredictedResponse<"403", "test", undefined>
+								| PredictedResponse<"404", "notF", string>
 								| CutStepFunctionOutput<{}>
 							>;
 						}>,
@@ -258,10 +258,10 @@ describe("process builder cut method", () => {
 								floor: { body: string },
 								param: CutStepFunctionParams<
 									Request,
-									| Response<"403", "test", undefined>
+									| PredictedResponse<"403", "test", undefined>
 								>
 							): MaybePromise<
-								| Response<"403", "test", undefined>
+								| PredictedResponse<"403", "test", undefined>
 								| CutStepFunctionOutput<{ test: boolean }>
 							>;
 						}>,
@@ -349,10 +349,10 @@ describe("process builder cut method", () => {
 								floor: { body: string },
 								param: CutStepFunctionParams<
 									Request,
-									| Response<"403", "test", undefined>
+									| PredictedResponse<"403", "test", undefined>
 								>
 							): MaybePromise<
-								| Response<"403", "test", undefined>
+								| PredictedResponse<"403", "test", undefined>
 								| CutStepFunctionOutput<{ test: boolean }>
 								| CutStepFunctionOutput<{ toto: string }>
 
@@ -437,10 +437,10 @@ describe("process builder cut method", () => {
 								floor: { body: string },
 								param: CutStepFunctionParams<
 									Request,
-									| Response<"403", "test", undefined>
+									| PredictedResponse<"403", "test", undefined>
 								>
 							): MaybePromise<
-								| Response<"403", "test", undefined>
+								| PredictedResponse<"403", "test", undefined>
 							>;
 						}>,
 					];

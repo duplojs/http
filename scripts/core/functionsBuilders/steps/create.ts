@@ -3,13 +3,13 @@ import { type Steps } from "../../steps/types";
 import { type Floor } from "@core/floor";
 import { type HookRouteLifeCycle } from "@core/route";
 import { type Request } from "@core/request";
-import { type ResponseContract, type Response } from "@core/response";
+import { type ResponseContract, type PredictedResponse } from "@core/response";
 import { type Environment } from "@core/types";
 
 export type BuildedStepFunction = (
 	request: Request,
 	floor: Floor
-) => MaybePromise<Floor | Response>;
+) => MaybePromise<Floor | PredictedResponse>;
 
 export interface BuildStepResult {
 	readonly buildedFunction: BuildedStepFunction;

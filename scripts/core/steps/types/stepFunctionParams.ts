@@ -1,10 +1,10 @@
 import { type Request } from "@core/request";
-import { type Response } from "@core/response";
+import { type PredictedResponse } from "@core/response";
 import { type IsEqual, type Or } from "@duplojs/utils";
 
 export interface StepFunctionParams<
 	GenericRequest extends Request = Request,
-	GenericResponse extends Response = Response,
+	GenericResponse extends PredictedResponse = PredictedResponse,
 > {
 	request: GenericRequest;
 	response<

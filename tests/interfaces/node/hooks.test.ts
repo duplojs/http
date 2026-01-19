@@ -1,5 +1,5 @@
 import { makeNodeHook, BodyParseUnknownError, BodyParseWrongChunkReceived, BodySizeExceedsLimitError } from "@interface-node";
-import { HookResponse, type HttpServerParams, Response, createHub, exitHookFunction } from "@core";
+import { HookResponse, type HttpServerParams, PredictedResponse, Response, createHub, exitHookFunction } from "@core";
 import { createFakeRequest } from "@test-utils/request";
 import { testHub } from "@test-utils/hub";
 
@@ -11,6 +11,7 @@ describe("makeNodeHook", () => {
 		maxBodySize: 100,
 		informationHeaderKey: "information",
 		fromHookHeaderKey: "from-hook",
+		predictedHeaderKey: "predicted",
 	};
 
 	const hooks = makeNodeHook(testHub, baseServerParams);
@@ -227,7 +228,7 @@ describe("makeNodeHook", () => {
 		it("sets headers and calls writeHead", () => {
 			const request = createFakeRequest();
 			const writeHeadSpy = vi.spyOn(request.raw.response, "writeHead");
-			const currentResponse = new Response("200", "ok", { ok: true });
+			const currentResponse = new PredictedResponse("200", "ok", { ok: true });
 
 			hooks.beforeSendResponse({
 				request,
@@ -238,6 +239,7 @@ describe("makeNodeHook", () => {
 			expect(currentResponse.headers).toStrictEqual({
 				"content-type": "application/json; charset=utf-8",
 				[baseServerParams.informationHeaderKey]: "ok",
+				[baseServerParams.predictedHeaderKey]: "1",
 			});
 			expect(writeHeadSpy).toHaveBeenCalledWith(
 				200,
@@ -331,19 +333,6 @@ describe("makeNodeHook", () => {
 			} as any);
 
 			expect(request.raw.response._getData()).toBe("42");
-			expect(request.raw.response._isEndCalled()).toBe(true);
-		});
-
-		it("writes bigint body", () => {
-			const request = createFakeRequest();
-
-			hooks.sendResponse!({
-				request,
-				currentResponse: { body: 12n },
-				exit: exitHookFunction,
-			} as any);
-
-			expect(request.raw.response._getData()).toBe("12");
 			expect(request.raw.response._isEndCalled()).toBe(true);
 		});
 

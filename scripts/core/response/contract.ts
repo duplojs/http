@@ -1,16 +1,19 @@
 import { DP, type Kind, pipe, type IsEqual, type NeverCoalescing, kindHeritage } from "@duplojs/utils";
 import { createCoreLibKind } from "../kind";
-import { type ResponseCode, type Response } from ".";
+import { type ResponseCode, type PredictedResponse } from ".";
+import { type ForbiddenBigintDataParser } from "@core/types";
 
-const errorClass = Error;
+const ErrorClass = Error;
 
 export namespace ResponseContract {
+	type SupportedDataParser = DP.DataParser;
+
 	export const contractKind = createCoreLibKind("response-contract");
 
 	export interface Contract<
 		GenericCode extends ResponseCode = ResponseCode,
 		GenericInformation extends string = string,
-		GenericSchema extends DP.DataParser = DP.DataParser,
+		GenericSchema extends SupportedDataParser = SupportedDataParser,
 	> extends Kind<typeof contractKind.definition> {
 		code: GenericCode;
 		information: GenericInformation;
@@ -20,7 +23,7 @@ export namespace ResponseContract {
 	export type Convert<
 		GenericContract extends Contract,
 	> = GenericContract extends Contract
-		? Response<
+		? PredictedResponse<
 			GenericContract["code"],
 			GenericContract["information"],
 			DP.Input<GenericContract["body"]>
@@ -30,7 +33,7 @@ export namespace ResponseContract {
 	function createContractBuilder<
 		GenericCode extends ResponseCode,
 		GenericOptionsNoSchema extends boolean = never,
-		GenericOptionsDefaultSchema extends DP.DataParser = never,
+		GenericOptionsDefaultSchema extends SupportedDataParser = never,
 	>(
 		code: GenericCode,
 		options?: {
@@ -40,14 +43,14 @@ export namespace ResponseContract {
 	) {
 		return <
 			GenericInformation extends string,
-			GenericSchema extends DP.DataParser = GenericOptionsDefaultSchema,
+			GenericSchema extends SupportedDataParser = GenericOptionsDefaultSchema,
 		>(
 			information: GenericInformation,
 			...[schema]: IsEqual<GenericOptionsNoSchema, true> extends true
 				? []
 				: IsEqual<GenericOptionsDefaultSchema, never> extends true
-					? [schema: GenericSchema]
-					: [schema?: GenericSchema]
+					? [schema: GenericSchema & ForbiddenBigintDataParser<GenericSchema>]
+					: [schema?: GenericSchema & ForbiddenBigintDataParser<GenericSchema>]
 		): NoInfer<
 			Contract<
 				GenericCode,
@@ -133,11 +136,10 @@ export namespace ResponseContract {
 	export const loopDetected = createContractBuilder("508", { defaultSchema });
 	export const notExtended = createContractBuilder("510", { defaultSchema });
 	export const networkAuthenticationRequired = createContractBuilder("511", { defaultSchema });
-
 	export class Error extends kindHeritage(
 		"contract-error",
 		createCoreLibKind("contract-error"),
-		errorClass,
+		ErrorClass,
 	) {
 		public constructor(
 			public information: string,

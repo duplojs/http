@@ -13,6 +13,7 @@ declare module "@core/hub" {
 		readonly port: number;
 		readonly maxBodySize: BytesInString | number;
 		readonly informationHeaderKey: string;
+		readonly predictedHeaderKey: string;
 		readonly fromHookHeaderKey: string;
 		readonly http?: http.ServerOptions;
 		readonly https?: https.ServerOptions;
@@ -28,6 +29,7 @@ export type CreateHttpServerParams = O.PartialKeys<
 	Omit<HttpServerParams, "interface">,
 	| "maxBodySize"
 	| "informationHeaderKey"
+	| "predictedHeaderKey"
 	| "fromHookHeaderKey"
 >;
 
@@ -39,6 +41,7 @@ export async function createHttpServer(
 		...params,
 		maxBodySize: "50mb",
 		informationHeaderKey: "information",
+		predictedHeaderKey: "predicted",
 		fromHookHeaderKey: "from-hook",
 		interface: "node",
 	};

@@ -2,17 +2,17 @@ import { createCoreLibKind } from "@core/kind";
 import { type MaybePromise, pipe, type Kind } from "@duplojs/utils";
 import { type StepKind, stepKind } from "./kind";
 import { type Floor } from "@core/floor";
-import { type Response, type ResponseContract } from "@core/response";
+import { type PredictedResponse, type ResponseContract } from "@core/response";
 import { type Request } from "@core/request";
 import { type StepFunctionParams } from "./types";
 
 export interface HandlerStepFunctionParams<
 	GenericRequest extends Request = Request,
-	GenericResponse extends Response = Response,
+	GenericResponse extends PredictedResponse = PredictedResponse,
 > extends StepFunctionParams<GenericRequest, GenericResponse> {}
 
 export interface HandlerStepDefinition {
-	theFunction(floor: Floor, params: HandlerStepFunctionParams): MaybePromise<Response>;
+	theFunction(floor: Floor, params: HandlerStepFunctionParams): MaybePromise<PredictedResponse>;
 	readonly responseContract: ResponseContract.Contract | readonly ResponseContract.Contract[];
 }
 
