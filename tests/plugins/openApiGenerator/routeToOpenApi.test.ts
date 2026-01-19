@@ -144,7 +144,7 @@ describe("routeToOpenApi", () => {
 		);
 	});
 
-	it("text/plain", () => {
+	it("response body text/plain", () => {
 		const route = useRouteBuilder("GET", "/test")
 			.cut(
 				ResponseContract.ok("cut", DP.string()),
@@ -206,7 +206,7 @@ describe("routeToOpenApi", () => {
 		);
 	});
 
-	it("application/json", () => {
+	it("response application/json", () => {
 		const cutStepSchema = DP.object({
 			toto: DP.string(),
 		});
@@ -275,6 +275,70 @@ describe("routeToOpenApi", () => {
 									},
 								},
 							},
+						},
+					},
+				},
+			],
+		);
+	});
+
+	it("request body text/plain", () => {
+		const route = useRouteBuilder("GET", "/test")
+			.extract({
+				body: DP.coerce.number(),
+			})
+			.handler(
+				ResponseContract.ok("handler", DP.string()),
+				(__, { response }) => response("handler", "handler"),
+			);
+
+		const result = routeToOpenApi(
+			route,
+			{
+				defaultExtractContract,
+				contextToJsonSchemaFactory: new Map(),
+				resultSchemaContext: new Map(),
+			},
+		);
+
+		expect(result).toStrictEqual(
+			[
+				{
+					path: "/test",
+					method: "get",
+					parameters: [],
+					requestBody: {
+						required: true,
+						content: {
+							"text/plain": { schema: { $ref: "#/components/schemas/NotIdentified0" } },
+						},
+					},
+					responses: {
+						200: {
+							headers: {
+								information: {
+									schema: {
+										const: "handler",
+										type: "string",
+									},
+									description: "handler",
+								},
+							},
+							content: {
+								"plain/text": { schema: { $ref: "#/components/schemas/NotIdentified1" } },
+							},
+						},
+						422: {
+							headers: {
+								information: {
+									schema: {
+										const: "extract-error",
+										type: "string",
+									},
+									description: "extract-error",
+								},
+							},
+							content: undefined,
 						},
 					},
 				},

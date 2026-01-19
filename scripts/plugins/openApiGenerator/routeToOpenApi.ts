@@ -116,8 +116,9 @@ export function routeToOpenApi(
 			DP.identifier(DP.emptyKind),
 			justReturn(undefined),
 		),
-		P.otherwise(
-			(schema) => ({
+		P.when(
+			DP.identifier(DP.objectKind),
+			(objectSchema) => ({
 				required: <const>true,
 				content: {
 					"application/json": {
@@ -125,7 +126,22 @@ export function routeToOpenApi(
 							context: params.contextToJsonSchemaFactory,
 							resultSchemaContext: params.resultSchemaContext,
 							mode: "in",
-							schema,
+							schema: objectSchema,
+						}),
+					},
+				},
+			}),
+		),
+		P.otherwise(
+			(primitiveSchema) => ({
+				required: <const>true,
+				content: {
+					"text/plain": {
+						schema: factoryJsonSchema({
+							context: params.contextToJsonSchemaFactory,
+							resultSchemaContext: params.resultSchemaContext,
+							mode: "in",
+							schema: primitiveSchema,
 						}),
 					},
 				},
@@ -220,7 +236,7 @@ export function routeToOpenApi(
 									"application/json": {
 										schema: {
 											anyOf: [
-												lastValue[code]?.content["application/json"].schema,
+												lastValue[code].content["application/json"].schema,
 												schemaResponse,
 											],
 										},

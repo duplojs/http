@@ -7,9 +7,21 @@ export interface EntrypointParameter {
 	schema: JsonSchema;
 }
 
+export interface EntrypointContentBodyApplicationJson {
+	"application/json": {
+		schema: JsonSchema;
+	};
+}
+
+export interface EntrypointContentBodyTextPlain {
+	"text/plain": {
+		schema: JsonSchema;
+	};
+}
+
+export type EntrypointContentBody = EntrypointContentBodyApplicationJson | EntrypointContentBodyTextPlain;
+
 export interface EntrypointRequestBody {
 	required: true;
-	content: {
-		"application/json": JsonSchema;
-	};
+	content: EntrypointContentBody;
 }

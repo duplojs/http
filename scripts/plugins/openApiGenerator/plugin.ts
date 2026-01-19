@@ -1,7 +1,7 @@
 import type { HubPlugin } from "@core/hub";
 import type { JsonSchema, MapContext } from "@duplojs/data-parser-tools/toJsonSchema";
 import { routeToOpenApi, type ResultSchemaContext } from "./routeToOpenApi";
-import { A, justReturn, O, P, pipe } from "@duplojs/utils";
+import { A, G, justReturn, O, P, pipe } from "@duplojs/utils";
 import { makeOpenApiPage } from "./makeOpenApiPage";
 import { makeOpenApiRoute } from "./makeOpenApiRoute";
 import { writeFile } from "fs/promises";
@@ -121,15 +121,12 @@ export function openApiGeneratorPlugin(pluginParams: OpenApiGeneratorPluginParam
 						O.fromEntries,
 					);
 
-					const schemaComponents = A.reduce(
-						A.from(resultSchemaContext.values()),
-						A.reduceFrom<Record<string, JsonSchema>>({}),
+					const schemaComponents = G.reduce(
+						resultSchemaContext.values(),
+						G.reduceFrom<Record<string, JsonSchema>>({}),
 						({ lastValue, element, nextWithObject }) => nextWithObject(
 							lastValue,
-							{
-								...lastValue,
-								...element,
-							},
+							element,
 						),
 					);
 
