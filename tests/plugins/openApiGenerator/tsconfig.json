@@ -1,0 +1,17 @@
+{
+  "extends": "../../../tsconfig.test.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+	  "@core": ["../../../scripts/core/index.ts"],
+	  "@core/*": ["../../../scripts/core/*"],
+	  "@plugin-openApiGenerator": ["../../../scripts/plugins/openApiGenerator/index.ts"],
+	  "@plugin-openApiGenerator/*": ["../../../scripts/plugins/openApiGenerator/*"],
+	  "@test-utils/*": ["../../_utils/*"],
+    },
+  },
+  "include": [
+	"**/*.ts",
+	"../../../scripts/plugins/openApiGenerator/**/*.ts",
+  ],
+}

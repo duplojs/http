@@ -6,6 +6,7 @@
 	{ "path": "./scripts/interfaces/bun/tsconfig.json" },
 	{ "path": "./scripts/interfaces/deno/tsconfig.json" },
 	{ "path": "./scripts/plugins/codeGenerator/tsconfig.json" },
+	{ "path": "./scripts/plugins/openApiGenerator/tsconfig.json" },
 
 	{ "path": "./tests/_utils/tsconfig.json" },
 	{ "path": "./tests/core/tsconfig.json" },
@@ -13,9 +14,11 @@
 	{ "path": "./tests/interfaces/bun/tsconfig.json" },
 	{ "path": "./tests/interfaces/deno/tsconfig.json" },
 	{ "path": "./tests/plugins/codeGenerator/tsconfig.json" },
+	{ "path": "./tests/plugins/openApiGenerator/tsconfig.json" },
 
 	{ "path": "./integration/core/tsconfig.json" },
 	{ "path": "./integration/node/tsconfig.json" },
 	{ "path": "./integration/codeGenerator/tsconfig.json" },
+	{ "path": "./integration/openApiGenerator/tsconfig.json" },
   ],
 }
