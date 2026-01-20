@@ -2,7 +2,7 @@ import { defaultExtractContract, ResponseContract, useProcessBuilder, useRouteBu
 import { DP, DPE } from "@duplojs/utils";
 import { testPresetChecker } from "@test-utils/presetChecker";
 import { omitFunctions } from "@test-utils/omitFunction";
-import { routeToOpenApi } from "@plugin-openApiGenerator";
+import { IgnoreRouteByOpenApiGeneratorMetadata, routeToOpenApi } from "@plugin-openApiGenerator";
 
 describe("routeToOpenApi", () => {
 	it("empty result", () => {
@@ -344,5 +344,24 @@ describe("routeToOpenApi", () => {
 				},
 			],
 		);
+	});
+
+	it("ignored route", () => {
+		const route = useRouteBuilder("GET", "/test", { metadata: [IgnoreRouteByOpenApiGeneratorMetadata()] })
+			.handler(
+				ResponseContract.noContent("test"),
+				(__, { response }) => response("test"),
+			);
+
+		const result = routeToOpenApi(
+			route,
+			{
+				defaultExtractContract,
+				contextToJsonSchemaFactory: new Map(),
+				resultSchemaContext: new Map(),
+			},
+		);
+
+		expect(result).toStrictEqual([]);
 	});
 });

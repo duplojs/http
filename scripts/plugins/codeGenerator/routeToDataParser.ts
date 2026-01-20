@@ -1,7 +1,8 @@
 import { type Route } from "@core/route";
-import { stepsToDataParser } from "./stepsToDataParser";
+import { aggregateStepContract } from "./aggregateStepContract";
 import { A, DP, innerPipe, O, pipe } from "@duplojs/utils";
 import { type ResponseContract } from "@core/response";
+import { IgnoreRouteByCodeGeneratorMetadata } from "./metadata";
 
 export interface RouteToDataParserParams {
 	readonly defaultExtractContract: ResponseContract.Contract;
@@ -11,12 +12,21 @@ export function routeToDataParser(
 	route: Route,
 	params: RouteToDataParserParams,
 ): DP.DataParser[] {
+	const isIgnore = A.find(
+		route.definition.metadata,
+		IgnoreRouteByCodeGeneratorMetadata.is,
+	);
+
+	if (isIgnore) {
+		return [];
+	}
+
 	return pipe(
 		[
 			...route.definition.preflightSteps,
 			...route.definition.steps,
 		],
-		(steps) => stepsToDataParser(steps, {
+		(steps) => aggregateStepContract(steps, {
 			defaultExtractContract: params.defaultExtractContract,
 		}),
 		O.transformProperty(

@@ -7,3 +7,4 @@ export * from "./routeToOpenApi";
 export * from "./aggregateStepContract";
 export * from "./makeOpenApiRoute";
 export * from "./makeOpenApiPage";
+export * from "./metadata";

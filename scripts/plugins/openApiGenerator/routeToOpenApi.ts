@@ -5,6 +5,7 @@ import type { ResponseCode, ResponseContract } from "@core/response";
 import { type MapContext, type JsonSchema, render, defaultTransformers } from "@duplojs/data-parser-tools/toJsonSchema";
 import type { RequestMethods } from "@core/request";
 import type { EndpointResponse, EntrypointParameter, OpenApiMethod } from "./types";
+import { IgnoreRouteByOpenApiGeneratorMetadata } from "./metadata";
 
 export type ResultSchemaContext = Map<string, Record<string, JsonSchema>>;
 
@@ -62,6 +63,15 @@ export function routeToOpenApi(
 	route: Route,
 	params: RouteToOpenApiParams,
 ) {
+	const isIgnore = A.find(
+		route.definition.metadata,
+		IgnoreRouteByOpenApiGeneratorMetadata.is,
+	);
+
+	if (isIgnore) {
+		return [];
+	}
+
 	const aggregateStepResult = aggregateStepContract(
 		[
 			...route.definition.preflightSteps,

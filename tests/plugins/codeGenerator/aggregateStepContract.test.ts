@@ -1,6 +1,6 @@
 import { defaultExtractContract, ResponseContract, useProcessBuilder, useRouteBuilder } from "@core";
 import { DP, DPE } from "@duplojs/utils";
-import { stepsToDataParser } from "@plugin-codeGenerator";
+import { aggregateStepContract, IgnoreRouteByCodeGeneratorMetadata } from "@plugin-codeGenerator";
 import { testPresetChecker } from "@test-utils/presetChecker";
 import { omitFunctions } from "@test-utils/omitFunction";
 
@@ -19,6 +19,12 @@ describe("stepsToDataParser", () => {
 		.extract({})
 		.exports();
 
+	const ignoredProcess = useProcessBuilder({
+		metadata: [IgnoreRouteByCodeGeneratorMetadata()],
+	})
+		.extract({ query: { ignoredQuery: DPE.string() } })
+		.exports();
+
 	const route = useRouteBuilder("GET", "/test")
 		.extract({
 			headers: DPE.object({
@@ -30,8 +36,18 @@ describe("stepsToDataParser", () => {
 				prop2: DPE.number(),
 			},
 		})
+		.extract(
+			{
+				params: {
+					ignoredParams: DPE.string(),
+				},
+			},
+			undefined,
+			IgnoreRouteByCodeGeneratorMetadata(),
+		)
 		.exec(process1)
 		.exec(process2)
+		.exec(ignoredProcess)
 		.presetCheck(testPresetChecker, () => "")
 		.handler(
 			ResponseContract.noContent("test"),
@@ -39,7 +55,7 @@ describe("stepsToDataParser", () => {
 		);
 
 	it("generate endpoint and entrypoint schema", () => {
-		const result = stepsToDataParser(route.definition.steps, { defaultExtractContract });
+		const result = aggregateStepContract(route.definition.steps, { defaultExtractContract });
 
 		expect(omitFunctions(result)).toStrictEqual(
 			omitFunctions({

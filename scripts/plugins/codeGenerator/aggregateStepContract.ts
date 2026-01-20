@@ -1,7 +1,8 @@
-import { checkerStepKind, cutStepKind, extractStepKind, handlerStepKind, presetCheckerStepKind, processStepKind, type Steps } from "@core/steps";
+import { checkerStepKind, cutStepKind, extractStepKind, handlerStepKind, presetCheckerStepKind, processStepKind, stepIdentifier, type Steps } from "@core/steps";
 import { A, DP, hasSomeKinds, O, P, pipe } from "@duplojs/utils";
 import { type EntrypointKey } from "./types";
 import { type ResponseContract } from "@core/response";
+import { IgnoreRouteByCodeGeneratorMetadata } from "./metadata";
 
 type EntrypointReduceResult = Record<
 	EntrypointKey,
@@ -17,15 +18,29 @@ export interface StepsToDataParserResult {
 	endpointContract: DP.DataParser[];
 }
 
-export function stepsToDataParser(
+export function aggregateStepContract(
 	steps: readonly Steps[],
 	params: StepsToDataParserParams,
 ): StepsToDataParserResult {
-	const processContracts = pipe(
+	const filteredStep = A.filter(
 		steps,
-		A.filter(processStepKind.has),
+		(step) => A.find(
+			step.definition.metadata,
+			IgnoreRouteByCodeGeneratorMetadata.is,
+		) === undefined,
+	);
+
+	const processContracts = pipe(
+		filteredStep,
+		A.filter(stepIdentifier(processStepKind)),
+		A.filter(
+			(step) => A.find(
+				step.definition.process.definition.metadata,
+				IgnoreRouteByCodeGeneratorMetadata.is,
+			) === undefined,
+		),
 		A.map(
-			(element) => stepsToDataParser(
+			(element) => aggregateStepContract(
 				element.definition.process.definition.steps,
 				params,
 			),
@@ -37,7 +52,7 @@ export function stepsToDataParser(
 	);
 
 	const entrypointContract = pipe(
-		steps,
+		filteredStep,
 		A.filter(extractStepKind.has),
 		A.map((extractStep) => extractStep.definition.shape),
 		A.concat(processContracts.entrypointContract),
@@ -98,7 +113,7 @@ export function stepsToDataParser(
 	);
 
 	const endpointContract = pipe(
-		steps,
+		filteredStep,
 		A.flatMap(
 			(step) => P.match(step)
 				.when(
