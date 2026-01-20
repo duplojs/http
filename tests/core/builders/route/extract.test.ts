@@ -1,10 +1,10 @@
-import { type ExtractStep, extractStepKind, type RouteBuilder, stepKind, useRouteBuilder, type Request, ResponseContract } from "@core";
+import { type ExtractStep, extractStepKind, type RouteBuilder, stepKind, useRouteBuilder, type Request, ResponseContract, IgnoreByRouteStoreMetadata, type Metadata } from "@core";
 import { builderKind, DP, DPE, type ExpectType } from "@duplojs/utils";
 
 describe("route builder extract method", () => {
 	it("extract", () => {
 		const routeBuilder = useRouteBuilder("GET", "/test")
-			.extract({ body: DPE.string() });
+			.extract({ body: DPE.string() }, undefined, IgnoreByRouteStoreMetadata());
 
 		expect({ ...routeBuilder })
 			.toStrictEqual(
@@ -14,6 +14,7 @@ describe("route builder extract method", () => {
 						method: "GET",
 						paths: ["/test"],
 						preflightSteps: [],
+						metadata: [],
 						steps: [
 							{
 								[extractStepKind.runTimeKey]: null,
@@ -25,6 +26,7 @@ describe("route builder extract method", () => {
 											[DP.stringKind.runTimeKey]: null,
 										}),
 									},
+									metadata: [IgnoreByRouteStoreMetadata()],
 								},
 							},
 						],
@@ -50,8 +52,10 @@ describe("route builder extract method", () => {
 								}>;
 							};
 							readonly responseContract: undefined;
+							readonly metadata: readonly [Metadata<"ignore-by-route-store", unknown>];
 						}>,
 					];
+					readonly metadata: readonly [];
 				},
 				{ body: string },
 				Request
@@ -75,6 +79,7 @@ describe("route builder extract method", () => {
 						method: "GET",
 						paths: ["/test"],
 						preflightSteps: [],
+						metadata: [],
 						steps: [
 							{
 								[extractStepKind.runTimeKey]: null,
@@ -89,6 +94,7 @@ describe("route builder extract method", () => {
 											[DP.stringKind.runTimeKey]: null,
 										}),
 									},
+									metadata: [],
 								},
 							},
 						],
@@ -122,8 +128,10 @@ describe("route builder extract method", () => {
 									readonly checkers: readonly [];
 								}>
 							>;
+							readonly metadata: readonly [];
 						}>,
 					];
+					readonly metadata: readonly [];
 				},
 				{ body: string },
 				Request
@@ -144,6 +152,7 @@ describe("route builder extract method", () => {
 						method: "GET",
 						paths: ["/test"],
 						preflightSteps: [],
+						metadata: [],
 						steps: [
 							{
 								[extractStepKind.runTimeKey]: null,
@@ -157,6 +166,7 @@ describe("route builder extract method", () => {
 											}),
 										},
 									},
+									metadata: [],
 								},
 							},
 						],
@@ -184,8 +194,10 @@ describe("route builder extract method", () => {
 								};
 							};
 							readonly responseContract: undefined;
+							readonly metadata: readonly [];
 						}>,
 					];
+					readonly metadata: readonly [];
 				},
 				{ test: string },
 				Request
@@ -230,6 +242,7 @@ describe("route builder extract method", () => {
 						method: "GET",
 						paths: ["/test"],
 						preflightSteps: [],
+						metadata: [],
 						steps: [
 							{
 								[extractStepKind.runTimeKey]: null,
@@ -241,6 +254,7 @@ describe("route builder extract method", () => {
 											[DP.objectKind.runTimeKey]: null,
 										}),
 									},
+									metadata: [],
 								},
 							},
 						],

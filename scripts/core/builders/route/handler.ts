@@ -2,10 +2,11 @@ import { type Floor } from "@core/floor";
 import { type ResponseContract } from "@core/response";
 import { createRoute, type Route, type RouteDefinition } from "@core/route";
 import { createHandlerStep, type HandlerStep, type HandlerStepFunctionParams } from "@core/steps";
-import { type MaybePromise, type AnyTuple, type O } from "@duplojs/utils";
+import { type MaybePromise, type AnyTuple, type O, A } from "@duplojs/utils";
 import { routeBuilderHandler } from "./builder";
 import { type Request } from "@core/request";
 import { routeStore } from "./store";
+import { type Metadata, IgnoreByRouteStoreMetadata } from "@core/metadata";
 
 declare module "./builder" {
 	interface RouteBuilder<
@@ -23,6 +24,7 @@ declare module "./builder" {
 					? GenericResponseContract[number]
 					: GenericResponseContract
 			>,
+			const GenericMetadata extends readonly Metadata[] = readonly [],
 		>(
 			responseContract: GenericResponseContract,
 			theFunction: (
@@ -31,7 +33,8 @@ declare module "./builder" {
 					GenericRequest,
 					GenericResponse
 				>
-			) => MaybePromise<GenericResponse>
+			) => MaybePromise<GenericResponse>,
+			...metadata: GenericMetadata,
 		): Route<
 			O.AssignObjects<
 				GenericDefinition,
@@ -48,6 +51,7 @@ declare module "./builder" {
 										GenericResponse
 									>
 								): MaybePromise<GenericResponse>;
+								readonly metadata: GenericMetadata;
 							}
 						>,
 					];
@@ -60,7 +64,11 @@ declare module "./builder" {
 routeBuilderHandler.set(
 	"handler",
 	({
-		args: [responseContract, theFunction],
+		args: [
+			responseContract,
+			theFunction,
+			...metadata
+		],
 		accumulator,
 	}) => {
 		const route = createRoute({
@@ -70,11 +78,21 @@ routeBuilderHandler.set(
 				createHandlerStep({
 					responseContract,
 					theFunction,
+					metadata,
 				}),
 			] as const,
 		});
 
-		routeStore.add(route);
+		const ignoreByRouteStoreMetadata = A.find(
+			accumulator.metadata,
+			IgnoreByRouteStoreMetadata.is,
+		);
+
+		if (
+			ignoreByRouteStoreMetadata === undefined
+		) {
+			routeStore.add(route);
+		}
 
 		return route;
 	},

@@ -5,6 +5,7 @@ import { type CutStepFunctionOutput, type CutStep, type CutStepFunctionParams, c
 import { type Unwrap, type O, type MaybePromise, type IsEqual, type A } from "@duplojs/utils";
 import { routeBuilderHandler } from "./builder";
 import { type Request } from "@core/request";
+import { type Metadata } from "@core/metadata";
 
 declare module "./builder" {
 	interface RouteBuilder<
@@ -21,15 +22,17 @@ declare module "./builder" {
 				A.ArrayCoalescing<GenericResponseContract>[number]
 			>,
 			GenericOutput extends CutStepFunctionOutput | GenericResponse,
+			const GenericMetadata extends readonly Metadata[] = readonly [],
 		>(
 			responseContract: GenericResponseContract,
 			theFunction: (
 				floor: GenericFloor,
-				param: CutStepFunctionParams<
+				params: CutStepFunctionParams<
 					GenericRequest,
 					GenericResponse
-				>
-			) => MaybePromise<GenericOutput>
+				>,
+			) => MaybePromise<GenericOutput>,
+			...metadata: GenericMetadata
 		): RouteBuilder<
 			O.AssignObjects<
 				GenericDefinition,
@@ -46,6 +49,7 @@ declare module "./builder" {
 										GenericResponse
 									>
 								): MaybePromise<GenericOutput>;
+								readonly metadata: GenericMetadata;
 							}
 						>,
 					];
@@ -72,7 +76,11 @@ declare module "./builder" {
 routeBuilderHandler.set(
 	"cut",
 	({
-		args: [responseContract, theFunction],
+		args: [
+			responseContract,
+			theFunction,
+			...metadata
+		],
 		accumulator,
 		next,
 	}) => next({
@@ -82,6 +90,7 @@ routeBuilderHandler.set(
 			createCutStep({
 				responseContract,
 				theFunction,
+				metadata,
 			}),
 		],
 	}),

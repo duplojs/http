@@ -1,4 +1,4 @@
-import { type Process, type ProcessStep, processStepKind, type RouteBuilder, stepKind, useProcessBuilder, useRouteBuilder, type Request, type ExtractStep, extractStepKind } from "@core";
+import { type ProcessStep, processStepKind, type RouteBuilder, stepKind, useProcessBuilder, useRouteBuilder, type Request, type ExtractStep, extractStepKind, IgnoreByRouteStoreMetadata, type Metadata } from "@core";
 import { builderKind, DPE, type ExpectType } from "@duplojs/utils";
 
 describe("route builder process method", () => {
@@ -7,7 +7,7 @@ describe("route builder process method", () => {
 			.exports();
 
 		const routeBuilder = useRouteBuilder("GET", "/test")
-			.exec(process);
+			.exec(process, undefined, IgnoreByRouteStoreMetadata());
 
 		expect({ ...routeBuilder }).toStrictEqual(
 			expect.objectContaining({
@@ -22,9 +22,11 @@ describe("route builder process method", () => {
 							[stepKind.runTimeKey]: null,
 							definition: {
 								process,
+								metadata: [IgnoreByRouteStoreMetadata()],
 							},
 						},
 					],
+					metadata: [],
 				},
 			}),
 		);
@@ -42,8 +44,10 @@ describe("route builder process method", () => {
 							readonly process: typeof process;
 							readonly options: undefined;
 							readonly imports: undefined;
+							readonly metadata: readonly [Metadata<"ignore-by-route-store", unknown>];
 						}>,
 					];
+					readonly metadata: readonly [];
 				},
 				{},
 				Request
@@ -77,9 +81,11 @@ describe("route builder process method", () => {
 							definition: {
 								process,
 								options: { test: false },
+								metadata: [],
 							},
 						},
 					],
+					metadata: [],
 				},
 			}),
 		);
@@ -97,8 +103,10 @@ describe("route builder process method", () => {
 							readonly process: typeof process;
 							readonly options: { test: boolean };
 							readonly imports: undefined;
+							readonly metadata: readonly [];
 						}>,
 					];
+					readonly metadata: readonly [];
 				},
 				{},
 				Request
@@ -153,9 +161,11 @@ describe("route builder process method", () => {
 							definition: {
 								process,
 								options: expect.any(Function),
+								metadata: [],
 							},
 						},
 					],
+					metadata: [],
 				},
 			}),
 		);
@@ -178,14 +188,17 @@ describe("route builder process method", () => {
 								}>;
 							};
 							readonly responseContract: undefined;
+							readonly metadata: readonly [];
 						}>,
 						ProcessStep<{
 							readonly process: typeof process;
 							// eslint-disable-next-line @typescript-eslint/method-signature-style
 							readonly options: (floor: { body: string }) => { test: false };
 							readonly imports: undefined;
+							readonly metadata: readonly [];
 						}>,
 					];
+					readonly metadata: readonly [];
 				},
 				{ body: string },
 				Request
@@ -219,9 +232,11 @@ describe("route builder process method", () => {
 							definition: {
 								process,
 								imports: ["body"],
+								metadata: [],
 							},
 						},
 					],
+					metadata: [],
 				},
 			}),
 		);
@@ -239,8 +254,10 @@ describe("route builder process method", () => {
 							readonly process: typeof process;
 							readonly options: undefined;
 							readonly imports: readonly ["body"];
+							readonly metadata: readonly [];
 						}>,
 					];
+					readonly metadata: readonly [];
 				},
 				{ body: string },
 				Request
@@ -274,9 +291,11 @@ describe("route builder process method", () => {
 							definition: {
 								process,
 								imports: ["body", "query"],
+								metadata: [],
 							},
 						},
 					],
+					metadata: [],
 				},
 			}),
 		);
@@ -294,8 +313,10 @@ describe("route builder process method", () => {
 							readonly process: typeof process;
 							readonly options: undefined;
 							readonly imports: readonly ["body", "query"];
+							readonly metadata: readonly [];
 						}>,
 					];
+					readonly metadata: readonly [];
 				},
 				{
 					body: string;
@@ -329,9 +350,11 @@ describe("route builder process method", () => {
 							[stepKind.runTimeKey]: null,
 							definition: {
 								process,
+								metadata: [],
 							},
 						},
 					],
+					metadata: [],
 				},
 			}),
 		);
@@ -349,8 +372,10 @@ describe("route builder process method", () => {
 							readonly process: typeof process;
 							readonly options: undefined;
 							readonly imports: undefined;
+							readonly metadata: readonly [];
 						}>,
 					];
+					readonly metadata: readonly [];
 				},
 				{},
 				Request & {

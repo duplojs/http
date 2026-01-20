@@ -4,6 +4,7 @@ import { type O, type NeverCoalescing, type FixDeepFunctionInfer, type Adaptor, 
 import { processBuilder } from "./builder";
 import { type ProcessDefinition, type GetProcessExportValue, type Process, type GetProcessRequest } from "@core/process";
 import { type Request } from "@core/request";
+import { type Metadata } from "@core/metadata";
 
 declare module "./builder" {
 	interface ProcessBuilder<
@@ -19,6 +20,7 @@ declare module "./builder" {
 				| GenericProcess["definition"]["options"]
 				| ((floor: GenericFloor) => Exclude<GenericProcess["definition"]["options"], undefined>)
 			) = never,
+			const GenericMetadata extends readonly Metadata[] = readonly [],
 		>(
 			process: GenericProcess,
 			params?: {
@@ -29,6 +31,7 @@ declare module "./builder" {
 					GenericOptions
 				>;
 			},
+			...metadata: GenericMetadata
 		): ProcessBuilder<
 			O.AssignObjects<
 				GenericDefinition,
@@ -43,6 +46,7 @@ declare module "./builder" {
 									undefined
 								>;
 								readonly imports: NeverCoalescing<GenericImportation, undefined>;
+								readonly metadata: GenericMetadata;
 							}
 						>,
 					];
@@ -69,6 +73,7 @@ processBuilder.set(
 		args: [
 			process,
 			params,
+			...metadata
 		],
 		accumulator,
 		next,
@@ -79,6 +84,7 @@ processBuilder.set(
 			createProcessStep({
 				...params,
 				process,
+				metadata,
 			}),
 		],
 	}),

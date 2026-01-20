@@ -1,4 +1,4 @@
-import { cutStepKind, extractStepKind, ResponseContract, type ProcessBuilder, stepKind, useProcessBuilder, type Request, type CutStep, type CutStepFunctionParams, type PredictedResponse, type CutStepFunctionOutput, type ExtractStep } from "@core";
+import { cutStepKind, extractStepKind, ResponseContract, type ProcessBuilder, stepKind, useProcessBuilder, type Request, type CutStep, type CutStepFunctionParams, type PredictedResponse, type CutStepFunctionOutput, type ExtractStep, IgnoreByRouteStoreMetadata, type Metadata } from "@core";
 import { builderKind, type DP, DPE, type ExpectType } from "@duplojs/utils";
 import { type MaybePromise } from "rollup";
 
@@ -21,6 +21,7 @@ describe("process builder cut method", () => {
 
 					return output();
 				},
+				IgnoreByRouteStoreMetadata(),
 			);
 
 		expect({ ...processBuilder }).toStrictEqual(
@@ -41,9 +42,11 @@ describe("process builder cut method", () => {
 									[ResponseContract.contractKind.runTimeKey]: null,
 									code: "403",
 								}),
+								metadata: [IgnoreByRouteStoreMetadata()],
 							},
 						},
 					],
+					metadata: [],
 				},
 			}),
 		);
@@ -64,6 +67,7 @@ describe("process builder cut method", () => {
 								}>;
 							};
 							readonly responseContract: undefined;
+							readonly metadata: readonly [];
 						}>,
 						CutStep<{
 							readonly responseContract: ResponseContract.Contract<
@@ -85,8 +89,10 @@ describe("process builder cut method", () => {
 								| PredictedResponse<"403", "test", undefined>
 								| CutStepFunctionOutput<{}>
 							>;
+							readonly metadata: readonly [Metadata<"ignore-by-route-store", unknown>];
 						}>,
 					];
+					readonly metadata: readonly [];
 				},
 				{ body: string },
 				Request
@@ -131,9 +137,11 @@ describe("process builder cut method", () => {
 										code: "404",
 									}),
 								],
+								metadata: [],
 							},
 						},
 					],
+					metadata: [],
 				},
 			}),
 		);
@@ -178,8 +186,10 @@ describe("process builder cut method", () => {
 								| PredictedResponse<"404", "notF", string>
 								| CutStepFunctionOutput<{}>
 							>;
+							readonly metadata: readonly [];
 						}>,
 					];
+					readonly metadata: readonly [];
 				},
 				{},
 				Request
@@ -220,9 +230,11 @@ describe("process builder cut method", () => {
 									[ResponseContract.contractKind.runTimeKey]: null,
 									code: "403",
 								}),
+								metadata: [],
 							},
 						},
 					],
+					metadata: [],
 				},
 			}),
 		);
@@ -243,6 +255,7 @@ describe("process builder cut method", () => {
 								}>;
 							};
 							readonly responseContract: undefined;
+							readonly metadata: readonly [];
 						}>,
 						CutStep<{
 							readonly responseContract: ResponseContract.Contract<
@@ -264,8 +277,10 @@ describe("process builder cut method", () => {
 								| PredictedResponse<"403", "test", undefined>
 								| CutStepFunctionOutput<{ test: boolean }>
 							>;
+							readonly metadata: readonly [];
 						}>,
 					];
+					readonly metadata: readonly [];
 				},
 				{
 					test: boolean;
@@ -311,9 +326,11 @@ describe("process builder cut method", () => {
 									[ResponseContract.contractKind.runTimeKey]: null,
 									code: "403",
 								}),
+								metadata: [],
 							},
 						},
 					],
+					metadata: [],
 				},
 			}),
 		);
@@ -334,6 +351,7 @@ describe("process builder cut method", () => {
 								}>;
 							};
 							readonly responseContract: undefined;
+							readonly metadata: readonly [];
 						}>,
 						CutStep<{
 							readonly responseContract: ResponseContract.Contract<
@@ -355,10 +373,11 @@ describe("process builder cut method", () => {
 								| PredictedResponse<"403", "test", undefined>
 								| CutStepFunctionOutput<{ test: boolean }>
 								| CutStepFunctionOutput<{ toto: string }>
-
 							>;
+							readonly metadata: readonly [];
 						}>,
 					];
+					readonly metadata: readonly [];
 				},
 				{
 					body: string;
@@ -399,9 +418,11 @@ describe("process builder cut method", () => {
 									[ResponseContract.contractKind.runTimeKey]: null,
 									code: "403",
 								}),
+								metadata: [],
 							},
 						},
 					],
+					metadata: [],
 				},
 			}),
 		);
@@ -422,6 +443,7 @@ describe("process builder cut method", () => {
 								}>;
 							};
 							readonly responseContract: undefined;
+							readonly metadata: readonly [];
 						}>,
 						CutStep<{
 							readonly responseContract: ResponseContract.Contract<
@@ -442,8 +464,10 @@ describe("process builder cut method", () => {
 							): MaybePromise<
 								| PredictedResponse<"403", "test", undefined>
 							>;
+							readonly metadata: readonly [];
 						}>,
 					];
+					readonly metadata: readonly [];
 				},
 				{ body: string },
 				Request

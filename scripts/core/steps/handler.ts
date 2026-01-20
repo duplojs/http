@@ -5,6 +5,7 @@ import { type Floor } from "@core/floor";
 import { type PredictedResponse, type ResponseContract } from "@core/response";
 import { type Request } from "@core/request";
 import { type StepFunctionParams } from "./types";
+import { type Metadata } from "@core/metadata";
 
 export interface HandlerStepFunctionParams<
 	GenericRequest extends Request = Request,
@@ -14,6 +15,7 @@ export interface HandlerStepFunctionParams<
 export interface HandlerStepDefinition {
 	theFunction(floor: Floor, params: HandlerStepFunctionParams): MaybePromise<PredictedResponse>;
 	readonly responseContract: ResponseContract.Contract | readonly ResponseContract.Contract[];
+	readonly metadata: readonly Metadata[];
 }
 
 export const handlerStepKind = createCoreLibKind("handler-step");

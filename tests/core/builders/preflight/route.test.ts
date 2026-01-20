@@ -1,10 +1,10 @@
-import { type RouteBuilder, usePreflightBuilder, type Request, type HookParamsOnConstructRequest, useProcessBuilder, type ProcessStep, processStepKind, stepKind } from "@core";
+import { type RouteBuilder, usePreflightBuilder, type Request, type HookParamsOnConstructRequest, useProcessBuilder, type ProcessStep, processStepKind, stepKind, IgnoreByRouteStoreMetadata, type Metadata } from "@core";
 import { builderKind, DPE, type ExpectType } from "@duplojs/utils";
 
 describe("preflight builder use route builder", () => {
 	it("useRouteBuilder", () => {
-		const routeBuilder = usePreflightBuilder()
-			.useRouteBuilder("GET", "/test");
+		const routeBuilder = usePreflightBuilder({ metadata: [IgnoreByRouteStoreMetadata()] })
+			.useRouteBuilder("GET", "/test", { metadata: [IgnoreByRouteStoreMetadata()] });
 
 		expect({ ...routeBuilder }).toStrictEqual(
 			expect.objectContaining({
@@ -13,6 +13,7 @@ describe("preflight builder use route builder", () => {
 					method: "GET",
 					paths: ["/test"],
 					preflightSteps: [],
+					metadata: [IgnoreByRouteStoreMetadata(), IgnoreByRouteStoreMetadata()],
 					steps: [],
 				},
 			}),
@@ -27,6 +28,10 @@ describe("preflight builder use route builder", () => {
 					readonly preflightSteps: readonly [];
 					readonly steps: readonly [];
 					readonly hooks: readonly [];
+					readonly metadata: readonly [
+						Metadata<"ignore-by-route-store", unknown>,
+						Metadata<"ignore-by-route-store", unknown>,
+					];
 				},
 				{},
 				Request
@@ -46,6 +51,7 @@ describe("preflight builder use route builder", () => {
 					method: "GET",
 					paths: ["/test", "/toto"],
 					preflightSteps: [],
+					metadata: [],
 					steps: [],
 				},
 			}),
@@ -60,6 +66,7 @@ describe("preflight builder use route builder", () => {
 					readonly preflightSteps: readonly [];
 					readonly steps: readonly [];
 					readonly hooks: readonly [];
+					readonly metadata: readonly [];
 				},
 				{},
 				Request
@@ -87,6 +94,7 @@ describe("preflight builder use route builder", () => {
 					method: "GET",
 					paths: ["/test"],
 					preflightSteps: [],
+					metadata: [],
 					steps: [],
 				},
 			}),
@@ -114,6 +122,7 @@ describe("preflight builder use route builder", () => {
 							};
 						},
 					];
+					readonly metadata: readonly [];
 				},
 				{},
 				& Request
@@ -149,9 +158,11 @@ describe("preflight builder use route builder", () => {
 							definition: {
 								process: process,
 								imports: ["body"],
+								metadata: [],
 							},
 						},
 					],
+					metadata: [],
 					steps: [],
 				},
 			}),
@@ -168,8 +179,10 @@ describe("preflight builder use route builder", () => {
 							readonly process: typeof process;
 							readonly options: undefined;
 							readonly imports: readonly ["body"];
+							readonly metadata: readonly [];
 						}>,
 					];
+					readonly metadata: readonly [];
 					readonly steps: readonly [];
 					readonly hooks: readonly [];
 				},
@@ -199,6 +212,7 @@ describe("preflight builder use route builder", () => {
 					method: "GET",
 					paths: ["/toto"],
 					preflightSteps: [],
+					metadata: [],
 					steps: [],
 				},
 			}),
@@ -226,6 +240,7 @@ describe("preflight builder use route builder", () => {
 							};
 						},
 					];
+					readonly metadata: readonly [];
 				},
 				{ },
 				& Request

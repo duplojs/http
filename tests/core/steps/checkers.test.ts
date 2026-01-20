@@ -9,6 +9,7 @@ describe("checkerStep", () => {
 				result: "result",
 				input: () => ({}),
 				responseContract: {} as any,
+				metadata: [],
 			}),
 		).toStrictEqual({
 			[checkerStepKind.runTimeKey]: null,
@@ -18,6 +19,7 @@ describe("checkerStep", () => {
 				result: "result",
 				input: expect.any(Function),
 				responseContract: {} as any,
+				metadata: [],
 			},
 		});
 	});

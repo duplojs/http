@@ -5,4 +5,5 @@ export const testProcess = createProcess({
 	steps: [],
 	options: forward<{ test?: boolean }>({ test: true }),
 	hooks: [],
+	metadata: [],
 });

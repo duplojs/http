@@ -13,6 +13,7 @@ describe("process builder export method", () => {
 					hooks: [],
 					options: undefined,
 					steps: [],
+					metadata: [],
 				},
 			});
 
@@ -23,6 +24,7 @@ describe("process builder export method", () => {
 					readonly steps: readonly [];
 					readonly options: undefined;
 					readonly hooks: readonly [];
+					readonly metadata: readonly [];
 				}
 			>,
 			"strict"
@@ -57,9 +59,11 @@ describe("process builder export method", () => {
 										[DP.stringKind.runTimeKey]: null,
 									}),
 								},
+								metadata: [],
 							},
 						},
 					],
+					metadata: [],
 				},
 			});
 
@@ -85,8 +89,10 @@ describe("process builder export method", () => {
 									}>;
 								};
 								readonly responseContract: undefined;
+								readonly metadata: readonly [];
 							}>,
 						];
+						readonly metadata: readonly [];
 					}
 					& ProcessExportValue<{ body: string }>
 				>
@@ -123,9 +129,11 @@ describe("process builder export method", () => {
 										[DP.stringKind.runTimeKey]: null,
 									}),
 								},
+								metadata: [],
 							},
 						},
 					],
+					metadata: [],
 				},
 			});
 
@@ -151,8 +159,10 @@ describe("process builder export method", () => {
 									}>;
 								};
 								readonly responseContract: undefined;
+								readonly metadata: readonly [];
 							}>,
 						];
+						readonly metadata: readonly [];
 					}
 					& ProcessExportValue<{
 						body: string;
@@ -178,6 +188,7 @@ describe("process builder export method", () => {
 					hooks: [{ onConstructRequest: expect.any(Function) }],
 					options: { test: true },
 					steps: [],
+					metadata: [],
 				},
 			});
 
@@ -198,6 +209,7 @@ describe("process builder export method", () => {
 								};
 							},
 						];
+						readonly metadata: readonly [];
 					}
 					& ProcessRequest<Request & { prop: number }>
 				>

@@ -1,5 +1,5 @@
 import { createCoreLibKind } from "@core/kind";
-import { type WrappedValue, type Kind, wrapValue } from "@duplojs/utils";
+import { type WrappedValue, type Kind, wrapValue, type IsEqual, type Or, type IsExtends } from "@duplojs/utils";
 
 export const metadataKind = createCoreLibKind<
 	"metadata",
@@ -7,39 +7,40 @@ export const metadataKind = createCoreLibKind<
 >("metadata");
 
 export interface Metadata<
-	GenericName extends string,
-	GenericValue extends string,
+	GenericName extends string = string,
+	GenericValue extends unknown = unknown,
 > extends Kind<typeof metadataKind.definition, GenericName>, WrappedValue<GenericValue> {
 
 }
 
 export interface MetadataHandler<
 	GenericName extends string,
-	GenericValue extends string,
+	GenericValue extends unknown,
 > {
-	name: GenericName;
+	dataName: GenericName;
 
 	<
 		GenericMetadataValue extends GenericValue,
 	>(
-		value: GenericMetadataValue
+		...args: Or<[
+			IsEqual<GenericValue, unknown>,
+			IsEqual<GenericValue, never>,
+			IsExtends<undefined, GenericValue>,
+		]> extends true
+			? [value?: GenericMetadataValue]
+			: [value: GenericMetadataValue]
 	): Metadata<GenericName, GenericMetadataValue>;
 
-	is<
-		GenericInput extends unknown,
-	>(
-		input: GenericInput
-	): input is Extract<
-		GenericInput,
-		Metadata<GenericName, any>
-	>;
+	is(
+		input: unknown
+	): input is Metadata<GenericName, any>;
 }
 
 export function createMetadata<
 	GenericName extends string,
-	GenericValue extends string,
+	GenericValue extends unknown = unknown,
 >(
-	name: NoInfer<GenericName>,
+	name: GenericName,
 ): MetadataHandler<
 		GenericName,
 		GenericValue
@@ -51,7 +52,7 @@ export function createMetadata<
 		);
 	}
 
-	metadataHandler.name = name;
+	metadataHandler.dataName = name;
 
 	metadataHandler.is = function(input: unknown) {
 		return metadataKind.has(input)

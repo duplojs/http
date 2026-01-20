@@ -9,6 +9,7 @@ describe("route", () => {
 				preflightSteps: [],
 				steps: [],
 				hooks: [],
+				metadata: [],
 			}),
 		).toStrictEqual({
 			definition: {
@@ -17,6 +18,7 @@ describe("route", () => {
 				preflightSteps: [],
 				steps: [],
 				hooks: [],
+				metadata: [],
 			},
 			[routeKind.runTimeKey]: null,
 		});

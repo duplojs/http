@@ -11,6 +11,7 @@ describe("extractStep", () => {
 				},
 			},
 			responseContract: ResponseContract.unprocessableContent("invalid extract input"),
+			metadata: [],
 		};
 
 		expect(createExtractStep(definition)).toStrictEqual({

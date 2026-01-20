@@ -5,6 +5,7 @@ import { type O, type A } from "@duplojs/utils";
 import { routeBuilderHandler } from "./builder";
 import { type Request } from "@core/request";
 import { type GetPresetCheckerIndex, type GetPresetCheckerInformation, type GetPresetCheckerResult, type GetPresetCheckerInput, type PresetChecker } from "@core/presetChecker";
+import { type Metadata } from "@core/metadata";
 
 declare module "./builder" {
 	interface RouteBuilder<
@@ -15,9 +16,11 @@ declare module "./builder" {
 		presetCheck<
 			GenericPresetChecker extends PresetChecker,
 			GenericInput extends GetPresetCheckerInput<GenericPresetChecker>,
+			const GenericMetadata extends readonly Metadata[] = readonly [],
 		>(
 			presetChecker: GenericPresetChecker,
 			input: (floor: GenericFloor) => GenericInput,
+			...metadata: GenericMetadata,
 		): RouteBuilder<
 			O.AssignObjects<
 				GenericDefinition,
@@ -28,6 +31,7 @@ declare module "./builder" {
 							{
 								readonly presetChecker: GenericPresetChecker;
 								input(floor: GenericFloor): GenericInput;
+								readonly metadata: GenericMetadata;
 							}
 						>,
 					];
@@ -57,6 +61,7 @@ routeBuilderHandler.set(
 		args: [
 			presetChecker,
 			input,
+			...metadata
 		],
 		accumulator,
 		next,
@@ -67,6 +72,7 @@ routeBuilderHandler.set(
 			createPresetCheckerStep({
 				presetChecker,
 				input,
+				metadata,
 			}),
 		],
 	}),

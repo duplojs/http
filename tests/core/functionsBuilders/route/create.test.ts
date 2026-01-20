@@ -46,6 +46,7 @@ describe("createFunctionBuilder", () => {
 				paths: ["/test"],
 				preflightSteps: [],
 				steps: [],
+				metadata: [],
 			}),
 			{
 				success: (element) => E.right("buildSuccess", element),

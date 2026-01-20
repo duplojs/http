@@ -26,7 +26,10 @@ describe("createStepFunctionBuilder", () => {
 
 	it("support element", async() => {
 		const result = await functionBuilder(
-			createExtractStep({ shape: {} }),
+			createExtractStep({
+				shape: {},
+				metadata: [],
+			}),
 			{
 				success: (element) => E.right("buildSuccess", element),
 				buildStep: () => void undefined as never,
@@ -44,6 +47,7 @@ describe("createStepFunctionBuilder", () => {
 			createCutStep({
 				theFunction: () => ({}) as never,
 				responseContract: [],
+				metadata: [],
 			}),
 			{
 				success: (element) => E.right("buildSuccess", element),

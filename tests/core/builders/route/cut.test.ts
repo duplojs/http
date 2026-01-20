@@ -1,4 +1,4 @@
-import { cutStepKind, extractStepKind, ResponseContract, type RouteBuilder, stepKind, useRouteBuilder, type Request, type CutStep, type CutStepFunctionParams, type PredictedResponse, type CutStepFunctionOutput, type ExtractStep } from "@core";
+import { cutStepKind, extractStepKind, ResponseContract, type RouteBuilder, stepKind, useRouteBuilder, type Request, type CutStep, type CutStepFunctionParams, type PredictedResponse, type CutStepFunctionOutput, type ExtractStep, IgnoreByRouteStoreMetadata, type Metadata } from "@core";
 import { builderKind, type DP, DPE, type ExpectType } from "@duplojs/utils";
 import { type MaybePromise } from "rollup";
 
@@ -21,6 +21,7 @@ describe("route builder cut method", () => {
 
 					return output();
 				},
+				IgnoreByRouteStoreMetadata(),
 			);
 
 		expect({ ...routeBuilder }).toStrictEqual(
@@ -30,6 +31,7 @@ describe("route builder cut method", () => {
 					method: "GET",
 					paths: ["/test"],
 					preflightSteps: [],
+					metadata: [],
 					steps: [
 						expect.objectContaining({
 							[extractStepKind.runTimeKey]: null,
@@ -43,6 +45,7 @@ describe("route builder cut method", () => {
 									[ResponseContract.contractKind.runTimeKey]: null,
 									code: "403",
 								}),
+								metadata: [IgnoreByRouteStoreMetadata()],
 							},
 						},
 					],
@@ -68,6 +71,7 @@ describe("route builder cut method", () => {
 								}>;
 							};
 							readonly responseContract: undefined;
+							readonly metadata: readonly [];
 						}>,
 						CutStep<{
 							readonly responseContract: ResponseContract.Contract<
@@ -89,8 +93,10 @@ describe("route builder cut method", () => {
 								| PredictedResponse<"403", "test", undefined>
 								| CutStepFunctionOutput<{}>
 							>;
+							readonly metadata: readonly [Metadata<"ignore-by-route-store", unknown>];
 						}>,
 					];
+					readonly metadata: readonly [];
 				},
 				{ body: string },
 				Request
@@ -121,6 +127,7 @@ describe("route builder cut method", () => {
 					method: "GET",
 					paths: ["/test"],
 					preflightSteps: [],
+					metadata: [],
 					steps: [
 						{
 							[cutStepKind.runTimeKey]: null,
@@ -137,6 +144,7 @@ describe("route builder cut method", () => {
 										code: "404",
 									}),
 								],
+								metadata: [],
 							},
 						},
 					],
@@ -186,8 +194,10 @@ describe("route builder cut method", () => {
 								| PredictedResponse<"404", "notF", string>
 								| CutStepFunctionOutput<{}>
 							>;
+							readonly metadata: readonly [];
 						}>,
 					];
+					readonly metadata: readonly [];
 				},
 				{},
 				Request
@@ -217,6 +227,7 @@ describe("route builder cut method", () => {
 					method: "GET",
 					paths: ["/test"],
 					preflightSteps: [],
+					metadata: [],
 					steps: [
 						expect.objectContaining({
 							[extractStepKind.runTimeKey]: null,
@@ -230,6 +241,7 @@ describe("route builder cut method", () => {
 									[ResponseContract.contractKind.runTimeKey]: null,
 									code: "403",
 								}),
+								metadata: [],
 							},
 						},
 					],
@@ -255,6 +267,7 @@ describe("route builder cut method", () => {
 								}>;
 							};
 							readonly responseContract: undefined;
+							readonly metadata: readonly [];
 						}>,
 						CutStep<{
 							readonly responseContract: ResponseContract.Contract<
@@ -276,8 +289,10 @@ describe("route builder cut method", () => {
 								| PredictedResponse<"403", "test", undefined>
 								| CutStepFunctionOutput<{ test: boolean }>
 							>;
+							readonly metadata: readonly [];
 						}>,
 					];
+					readonly metadata: readonly [];
 				},
 				{
 					test: boolean;
@@ -312,6 +327,7 @@ describe("route builder cut method", () => {
 					method: "GET",
 					paths: ["/test"],
 					preflightSteps: [],
+					metadata: [],
 					steps: [
 						expect.objectContaining({
 							[extractStepKind.runTimeKey]: null,
@@ -325,6 +341,7 @@ describe("route builder cut method", () => {
 									[ResponseContract.contractKind.runTimeKey]: null,
 									code: "403",
 								}),
+								metadata: [],
 							},
 						},
 					],
@@ -350,6 +367,7 @@ describe("route builder cut method", () => {
 								}>;
 							};
 							readonly responseContract: undefined;
+							readonly metadata: readonly [];
 						}>,
 						CutStep<{
 							readonly responseContract: ResponseContract.Contract<
@@ -371,10 +389,11 @@ describe("route builder cut method", () => {
 								| PredictedResponse<"403", "test", undefined>
 								| CutStepFunctionOutput<{ test: boolean }>
 								| CutStepFunctionOutput<{ toto: string }>
-
 							>;
+							readonly metadata: readonly [];
 						}>,
 					];
+					readonly metadata: readonly [];
 				},
 				{
 					body: string;
@@ -404,6 +423,7 @@ describe("route builder cut method", () => {
 					method: "GET",
 					paths: ["/test"],
 					preflightSteps: [],
+					metadata: [],
 					steps: [
 						expect.objectContaining({
 							[extractStepKind.runTimeKey]: null,
@@ -417,6 +437,7 @@ describe("route builder cut method", () => {
 									[ResponseContract.contractKind.runTimeKey]: null,
 									code: "403",
 								}),
+								metadata: [],
 							},
 						},
 					],
@@ -442,6 +463,7 @@ describe("route builder cut method", () => {
 								}>;
 							};
 							readonly responseContract: undefined;
+							readonly metadata: readonly [];
 						}>,
 						CutStep<{
 							readonly responseContract: ResponseContract.Contract<
@@ -462,8 +484,10 @@ describe("route builder cut method", () => {
 							): MaybePromise<
 								| PredictedResponse<"403", "test", undefined>
 							>;
+							readonly metadata: readonly [];
 						}>,
 					];
+					readonly metadata: readonly [];
 				},
 				{ body: string },
 				Request

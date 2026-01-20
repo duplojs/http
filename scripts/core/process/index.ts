@@ -4,6 +4,7 @@ import { type ProcessStep, type CheckerStep, type CutStep, type ExtractStep, typ
 import { type Floor } from "../floor";
 import { type HookRouteLifeCycle } from "../route";
 import { type Request } from "../request";
+import { type Metadata } from "@core/metadata";
 
 export * from "./types";
 
@@ -32,6 +33,7 @@ export interface ProcessDefinition {
 	steps: readonly ProcessSteps[];
 	options?: Record<string, unknown>;
 	readonly hooks: readonly HookRouteLifeCycle[];
+	readonly metadata: readonly Metadata[];
 	[SymbolProcessExportValue]?: Floor;
 	[SymbolProcessRequest]?: Request;
 }
@@ -77,7 +79,7 @@ export interface Process<
 export function createProcess<
 	GenericDefinition extends Pick<
 		ProcessDefinition,
-		"steps" | "options" | "hooks"
+		"steps" | "options" | "hooks" | "metadata"
 	>,
 >(
 	definition: GenericDefinition,

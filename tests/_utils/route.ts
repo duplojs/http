@@ -6,4 +6,5 @@ export const testRoute = createRoute({
 	paths: ["/test"],
 	preflightSteps: [],
 	steps: [],
+	metadata: [],
 });

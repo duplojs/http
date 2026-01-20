@@ -1,4 +1,4 @@
-import { checkerStepKind, extractStepKind, ResponseContract, type ProcessBuilder, stepKind, useCheckerBuilder, useProcessBuilder, type Request, type CheckerStep, type ExtractStep } from "@core";
+import { checkerStepKind, extractStepKind, ResponseContract, type ProcessBuilder, stepKind, useCheckerBuilder, useProcessBuilder, type Request, type CheckerStep, type ExtractStep, IgnoreByRouteStoreMetadata, type Metadata } from "@core";
 import { builderKind, type DP, DPE, type ExpectType, O } from "@duplojs/utils";
 
 describe("process builder checker method", () => {
@@ -47,9 +47,11 @@ describe("process builder checker method", () => {
 									[ResponseContract.contractKind.runTimeKey]: null,
 									code: "400",
 								}),
+								metadata: [],
 							},
 						},
 					],
+					metadata: [],
 				},
 			}),
 		);
@@ -70,6 +72,7 @@ describe("process builder checker method", () => {
 								}>;
 							};
 							readonly responseContract: undefined;
+							readonly metadata: readonly [];
 						}>,
 						CheckerStep<{
 							readonly checker: typeof checker;
@@ -86,8 +89,10 @@ describe("process builder checker method", () => {
 									readonly checkers: readonly [];
 								}>
 							>;
+							readonly metadata: readonly [];
 						}>,
 					];
+					readonly metadata: readonly [];
 				},
 				{ body: string },
 				Request
@@ -139,9 +144,11 @@ describe("process builder checker method", () => {
 									[ResponseContract.contractKind.runTimeKey]: null,
 									code: "400",
 								}),
+								metadata: [],
 							},
 						},
 					],
+					metadata: [],
 				},
 			}),
 		);
@@ -162,6 +169,7 @@ describe("process builder checker method", () => {
 								}>;
 							};
 							readonly responseContract: undefined;
+							readonly metadata: readonly [];
 						}>,
 						CheckerStep<{
 							readonly checker: typeof checker;
@@ -180,8 +188,10 @@ describe("process builder checker method", () => {
 									readonly checkers: readonly [];
 								}>
 							>;
+							readonly metadata: readonly [];
 						}>,
 					];
+					readonly metadata: readonly [];
 				},
 				{ body: string },
 				Request
@@ -239,9 +249,11 @@ describe("process builder checker method", () => {
 									[ResponseContract.contractKind.runTimeKey]: null,
 									code: "400",
 								}),
+								metadata: [],
 							},
 						},
 					],
+					metadata: [],
 				},
 			}),
 		);
@@ -262,6 +274,7 @@ describe("process builder checker method", () => {
 								}>;
 							};
 							readonly responseContract: undefined;
+							readonly metadata: readonly [];
 						}>,
 						CheckerStep<{
 							readonly checker: typeof checker;
@@ -279,8 +292,10 @@ describe("process builder checker method", () => {
 									readonly checkers: readonly [];
 								}>
 							>;
+							readonly metadata: readonly [];
 						}>,
 					];
+					readonly metadata: readonly [];
 				},
 				{ body: string },
 				Request
@@ -328,9 +343,11 @@ describe("process builder checker method", () => {
 									[ResponseContract.contractKind.runTimeKey]: null,
 									code: "400",
 								}),
+								metadata: [],
 							},
 						},
 					],
+					metadata: [],
 				},
 			}),
 		);
@@ -351,6 +368,7 @@ describe("process builder checker method", () => {
 								}>;
 							};
 							readonly responseContract: undefined;
+							readonly metadata: readonly [];
 						}>,
 						CheckerStep<{
 							readonly checker: typeof checker;
@@ -367,12 +385,108 @@ describe("process builder checker method", () => {
 									readonly checkers: readonly [];
 								}>
 							>;
+							readonly metadata: readonly [];
 						}>,
 					];
+					readonly metadata: readonly [];
 				},
 				{
 					body: string;
 					myValueCheck: boolean;
+				},
+				Request
+			>,
+			"strict"
+		>;
+	});
+
+	it("with metadata", () => {
+		const checker = useCheckerBuilder()
+			.handler(
+				(input: string, { output }) => input ? output("ok", true) : output("error", null),
+			);
+
+		const processBuilder = useProcessBuilder()
+			.extract({ body: DPE.string() })
+			.check(
+				checker,
+				{
+					input: O.getProperty("body"),
+					result: "ok",
+					otherwise: ResponseContract.badRequest("test"),
+				},
+				IgnoreByRouteStoreMetadata(),
+			);
+
+		expect({ ...processBuilder }).toStrictEqual(
+			expect.objectContaining({
+				[builderKind.runTimeKey]: {
+					hooks: [],
+					options: undefined,
+					steps: [
+						expect.objectContaining({
+							[extractStepKind.runTimeKey]: null,
+						}),
+						{
+							[checkerStepKind.runTimeKey]: null,
+							[stepKind.runTimeKey]: null,
+							definition: {
+								checker,
+								input: expect.any(Function),
+								result: "ok",
+								responseContract: expect.objectContaining({
+									[ResponseContract.contractKind.runTimeKey]: null,
+									code: "400",
+								}),
+								metadata: [IgnoreByRouteStoreMetadata()],
+							},
+						},
+					],
+					metadata: [],
+				},
+			}),
+		);
+
+		type Check = ExpectType<
+			typeof processBuilder,
+			ProcessBuilder<
+				{
+					readonly options: undefined;
+					readonly hooks: readonly [];
+					readonly steps: readonly [
+						ExtractStep<{
+							readonly shape: {
+								body: DPE.DataParserStringExtended<{
+									readonly errorMessage?: string | undefined;
+									readonly coerce: boolean;
+									readonly checkers: readonly [];
+								}>;
+							};
+							readonly responseContract: undefined;
+							readonly metadata: readonly [];
+						}>,
+						CheckerStep<{
+							readonly checker: typeof checker;
+							input(floor: { body: string }): string;
+							readonly options: undefined;
+							readonly result: "ok";
+							readonly indexing: undefined;
+							readonly responseContract: ResponseContract.Contract<
+								"400",
+								"test",
+								DP.DataParserEmpty<{
+									readonly errorMessage?: string | undefined;
+									readonly coerce: boolean;
+									readonly checkers: readonly [];
+								}>
+							>;
+							readonly metadata: readonly [Metadata<"ignore-by-route-store", unknown>];
+						}>,
+					];
+					readonly metadata: readonly [];
+				},
+				{
+					body: string;
 				},
 				Request
 			>,

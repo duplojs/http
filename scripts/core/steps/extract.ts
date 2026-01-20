@@ -3,6 +3,7 @@ import { type DP, pipe, type Kind, type O, type AnyFunction } from "@duplojs/uti
 import { type StepKind, stepKind } from "./kind";
 import { type Request } from "@core/request";
 import { type ClientErrorResponseCode, type ResponseContract } from "@core/response";
+import { type Metadata } from "@core/metadata";
 
 export interface DisabledExtractKeysCustom {
 
@@ -34,6 +35,7 @@ export type ExtractShape<
 export interface ExtractStepDefinition {
 	readonly shape: ExtractShape;
 	readonly responseContract?: ResponseContract.Contract<ClientErrorResponseCode, string, DP.DataParserEmpty>;
+	readonly metadata: readonly Metadata[];
 }
 
 export const extractStepKind = createCoreLibKind("extract-step");

@@ -3,6 +3,7 @@ import { type Floor } from "@core/floor";
 import { type RequestMethods, type Request } from "@core/request";
 import { A, type Builder, createBuilder, type NeverCoalescing } from "@duplojs/utils";
 import { createCoreLibStringIdentifier } from "@core/stringIdentifier";
+import { type Metadata } from "@core/metadata";
 
 export interface RouteBuilder<
 	GenericDefinition extends RouteDefinition = RouteDefinition,
@@ -18,11 +19,13 @@ export function useRouteBuilder<
 	GenericMethod extends RequestMethods,
 	const GenericPaths extends RoutePath | readonly [RoutePath, ...RoutePath[]],
 	const GenericHooks extends readonly HookRouteLifeCycle[] = readonly [],
+	const GenericMetadata extends readonly Metadata[] = readonly [],
 >(
 	method: GenericMethod,
 	path: GenericPaths,
 	options?: {
 		hooks?: GenericHooks | readonly HookRouteLifeCycle[];
+		metadata?: GenericMetadata;
 	},
 ): RouteBuilder<
 		{
@@ -33,6 +36,7 @@ export function useRouteBuilder<
 			readonly preflightSteps: readonly [];
 			readonly steps: readonly [];
 			readonly hooks: GenericHooks;
+			readonly metadata: GenericMetadata;
 		},
 		{},
 		NeverCoalescing<
@@ -46,5 +50,6 @@ export function useRouteBuilder<
 		preflightSteps: [],
 		steps: [],
 		hooks: options?.hooks ?? [],
+		metadata: options?.metadata ?? [],
 	});
 }
