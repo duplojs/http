@@ -5,6 +5,7 @@ import { type Unwrap, type O, type MaybePromise, type IsEqual, type A } from "@d
 import { processBuilder } from "./builder";
 import { type ProcessDefinition } from "@core/process";
 import { type Request } from "@core/request";
+import { type Metadata } from "@core/metadata";
 
 declare module "./builder" {
 	interface ProcessBuilder<
@@ -21,6 +22,7 @@ declare module "./builder" {
 				A.ArrayCoalescing<GenericResponseContract>[number]
 			>,
 			GenericOutput extends CutStepFunctionOutput | GenericResponse,
+			const GenericMetadata extends readonly Metadata[] = readonly [],
 		>(
 			responseContract: GenericResponseContract,
 			theFunction: (
@@ -29,7 +31,8 @@ declare module "./builder" {
 					GenericRequest,
 					GenericResponse
 				>
-			) => MaybePromise<GenericOutput>
+			) => MaybePromise<GenericOutput>,
+			...metadata: GenericMetadata
 		): ProcessBuilder<
 			O.AssignObjects<
 				GenericDefinition,
@@ -46,6 +49,7 @@ declare module "./builder" {
 										GenericResponse
 									>
 								): MaybePromise<GenericOutput>;
+								readonly metadata: GenericMetadata;
 							}
 						>,
 					];
@@ -72,7 +76,11 @@ declare module "./builder" {
 processBuilder.set(
 	"cut",
 	({
-		args: [responseContract, theFunction],
+		args: [
+			responseContract,
+			theFunction,
+			...metadata
+		],
 		accumulator,
 		next,
 	}) => next({
@@ -82,6 +90,7 @@ processBuilder.set(
 			createCutStep({
 				responseContract,
 				theFunction,
+				metadata,
 			}),
 		],
 	}),

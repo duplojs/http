@@ -6,6 +6,7 @@ describe("cutStep", () => {
 		const definition: CutStepDefinition = {
 			theFunction: (_floor, params) => params.output({ foo: "bar" }),
 			responseContract: ResponseContract.ok("cut ok", DP.empty()),
+			metadata: [],
 		};
 
 		expect(createCutStep(definition)).toStrictEqual({

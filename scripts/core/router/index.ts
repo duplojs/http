@@ -110,6 +110,7 @@ export async function buildRouter(inputHub: Hub): Promise<BuildedRouter> {
 			hooks: [],
 			preflightSteps: [],
 			steps: [hub.notfoundHandler],
+			metadata: [],
 		}),
 		async(route) => {
 			const result = await buildRouteFunction(

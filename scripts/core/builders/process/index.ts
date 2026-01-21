@@ -3,5 +3,5 @@ export * from "./cut";
 export * from "./extract";
 export * from "./checker";
 export * from "./process";
-export * from "./export";
+export * from "./exports";
 export * from "./presetChecker";

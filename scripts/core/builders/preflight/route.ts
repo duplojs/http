@@ -4,6 +4,7 @@ import { preflightBuilder } from "./builder";
 import { type MakeRequestFromHooks, type HookRouteLifeCycle, type RoutePath } from "@core/route";
 import { routeBuilderHandler, type RouteBuilder } from "../route";
 import { A, type NeverCoalescing } from "@duplojs/utils";
+import { type Metadata } from "@core/metadata";
 
 declare module "./builder" {
 	interface PreflightBuilder<
@@ -15,11 +16,13 @@ declare module "./builder" {
 			GenericMethod extends RequestMethods,
 			const GenericPaths extends RoutePath | readonly [RoutePath, ...RoutePath[]],
 			const GenericHooks extends readonly HookRouteLifeCycle[] = readonly [],
+			const GenericMetadata extends readonly Metadata[] = readonly [],
 		>(
 			method: GenericMethod,
 			path: GenericPaths,
 			options?: {
 				hooks?: GenericHooks | readonly HookRouteLifeCycle[];
+				metadata?: GenericMetadata;
 			},
 		): RouteBuilder<
 			{
@@ -30,8 +33,12 @@ declare module "./builder" {
 				readonly preflightSteps: GenericDefinition["preflightSteps"];
 				readonly steps: readonly [];
 				readonly hooks: readonly [
-					...GenericHooks,
 					...GenericDefinition["hooks"],
+					...GenericHooks,
+				];
+				readonly metadata: readonly [
+					...GenericDefinition["metadata"],
+					...GenericMetadata,
 				];
 			},
 			GenericFloor,
@@ -63,6 +70,10 @@ preflightBuilder.set(
 		hooks: [
 			...(options?.hooks ?? []),
 			...accumulator.hooks,
+		],
+		metadata: [
+			...(options?.metadata ?? []),
+			...accumulator.metadata,
 		],
 	}),
 );

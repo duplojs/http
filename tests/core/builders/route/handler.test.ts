@@ -1,10 +1,10 @@
-import { type ExtractStep, extractStepKind, type HandlerStep, handlerStepKind, ResponseContract, type Route, routeKind, stepKind, useRouteBuilder, type PredictedResponse, type HandlerStepFunctionParams, type Request, type HookParamsOnConstructRequest, routeStore } from "@core";
+import { type ExtractStep, extractStepKind, type HandlerStep, handlerStepKind, ResponseContract, type Route, routeKind, stepKind, useRouteBuilder, type PredictedResponse, type HandlerStepFunctionParams, type Request, type HookParamsOnConstructRequest, routeStore, IgnoreByRouteStoreMetadata, type Metadata } from "@core";
 import { type DP, DPE, type ExpectType } from "@duplojs/utils";
 import { type MaybePromise } from "rollup";
 
 describe("route builder handler method", () => {
 	it("handler", () => {
-		const routeBuilder = useRouteBuilder("GET", "/test")
+		const routeBuilder = useRouteBuilder("GET", "/test", { metadata: [IgnoreByRouteStoreMetadata()] })
 			.extract({ body: DPE.string() })
 			.handler(
 				ResponseContract.ok("test", DPE.string()),
@@ -17,6 +17,7 @@ describe("route builder handler method", () => {
 
 					return response("test", "toto");
 				},
+				IgnoreByRouteStoreMetadata(),
 			);
 
 		expect({ ...routeBuilder }).toStrictEqual({
@@ -26,6 +27,7 @@ describe("route builder handler method", () => {
 				method: "GET",
 				paths: ["/test"],
 				preflightSteps: [],
+				metadata: [IgnoreByRouteStoreMetadata()],
 				steps: [
 					expect.objectContaining({
 						[extractStepKind.runTimeKey]: null,
@@ -39,13 +41,14 @@ describe("route builder handler method", () => {
 								[ResponseContract.contractKind.runTimeKey]: null,
 								code: "200",
 							}),
+							metadata: [IgnoreByRouteStoreMetadata()],
 						},
 					},
 				],
 			},
 		});
 
-		expect([...routeStore.getAll()]).toStrictEqual([routeBuilder]);
+		expect([...routeStore.getAll()]).toStrictEqual([]);
 
 		type Check = ExpectType<
 			typeof routeBuilder,
@@ -65,6 +68,7 @@ describe("route builder handler method", () => {
 								}>;
 							};
 							readonly responseContract: undefined;
+							readonly metadata: readonly [];
 						}>,
 						HandlerStep<{
 							readonly responseContract: ResponseContract.Contract<
@@ -83,8 +87,10 @@ describe("route builder handler method", () => {
 									PredictedResponse<"200", "test", string>
 								>
 							): MaybePromise<PredictedResponse<"200", "test", string>>;
+							readonly metadata: readonly [Metadata<"ignore-by-route-store", unknown>];
 						}>,
 					];
+					readonly metadata: readonly [Metadata<"ignore-by-route-store", unknown>];
 				}
 			>,
 			"strict"
@@ -98,6 +104,8 @@ describe("route builder handler method", () => {
 				(floor, { response }) => true.valueOf() ? response("test", "toto") : response("toto"),
 			);
 
+		expect([...routeStore.getAll()]).toContain(routeBuilder);
+
 		expect({ ...routeBuilder }).toStrictEqual({
 			[routeKind.runTimeKey]: null,
 			definition: {
@@ -105,6 +113,7 @@ describe("route builder handler method", () => {
 				method: "GET",
 				paths: ["/test"],
 				preflightSteps: [],
+				metadata: [],
 				steps: [
 					{
 						[handlerStepKind.runTimeKey]: null,
@@ -121,6 +130,7 @@ describe("route builder handler method", () => {
 									code: "204",
 								}),
 							],
+							metadata: [],
 						},
 					},
 				],
@@ -164,8 +174,10 @@ describe("route builder handler method", () => {
 								| PredictedResponse<"200", "test", string>
 								| PredictedResponse<"204", "toto", undefined>
 							>;
+							readonly metadata: readonly [];
 						}>,
 					];
+					readonly metadata: readonly [];
 				}
 			>,
 			"strict"
@@ -198,6 +210,7 @@ describe("route builder handler method", () => {
 				method: "GET",
 				paths: ["/test"],
 				preflightSteps: [],
+				metadata: [],
 				steps: [
 					{
 						[handlerStepKind.runTimeKey]: null,
@@ -208,6 +221,7 @@ describe("route builder handler method", () => {
 								[ResponseContract.contractKind.runTimeKey]: null,
 								code: "204",
 							}),
+							metadata: [],
 						},
 					},
 				],
@@ -245,8 +259,10 @@ describe("route builder handler method", () => {
 									PredictedResponse<"204", "toto", undefined>
 								>
 							): MaybePromise<PredictedResponse<"204", "toto", undefined>>;
+							readonly metadata: readonly [];
 						}>,
 					];
+					readonly metadata: readonly [];
 				}
 			>,
 			"strict"

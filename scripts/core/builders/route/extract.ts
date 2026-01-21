@@ -5,6 +5,7 @@ import { type DP, type ObjectEntry, type O, type SimplifyTopLevel, type NeverCoa
 import { routeBuilderHandler } from "./builder";
 import { type ClientErrorResponseCode, type ResponseContract } from "@core/response";
 import { type Request } from "@core/request";
+import { type Metadata } from "@core/metadata";
 
 declare module "./builder" {
 	interface RouteBuilder<
@@ -16,10 +17,13 @@ declare module "./builder" {
 			GenericShape extends ExtractShape<GenericRequest>,
 			GenericResponseContract extends (
 				| ResponseContract.Contract<ClientErrorResponseCode, string, DP.DataParserEmpty>
+				| undefined
 			) = never,
+			const GenericMetadata extends readonly Metadata[] = readonly [],
 		>(
 			shape: GenericShape,
-			responseContract?: GenericResponseContract
+			responseContract?: GenericResponseContract,
+			...metadata: GenericMetadata,
 		): RouteBuilder<
 			O.AssignObjects<
 				GenericDefinition,
@@ -30,6 +34,7 @@ declare module "./builder" {
 							{
 								readonly shape: GenericShape;
 								readonly responseContract: NeverCoalescing<GenericResponseContract, undefined>;
+								readonly metadata: GenericMetadata;
 							}
 						>,
 					];
@@ -59,7 +64,11 @@ declare module "./builder" {
 routeBuilderHandler.set(
 	"extract",
 	({
-		args: [shape, responseContract],
+		args: [
+			shape,
+			responseContract,
+			...metadata
+		],
 		accumulator,
 		next,
 	}) => next({
@@ -69,6 +78,7 @@ routeBuilderHandler.set(
 			createExtractStep({
 				shape,
 				responseContract,
+				metadata,
 			}),
 		],
 	}),

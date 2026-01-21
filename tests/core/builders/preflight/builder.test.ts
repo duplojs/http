@@ -1,4 +1,4 @@
-import { type PreflightBuilder, usePreflightBuilder, type Request, type HookParamsOnConstructRequest } from "@core";
+import { type PreflightBuilder, usePreflightBuilder, type Request, type HookParamsOnConstructRequest, IgnoreByRouteStoreMetadata, type Metadata } from "@core";
 import { builderKind, type ExpectType } from "@duplojs/utils";
 
 describe("preflight builder", () => {
@@ -10,6 +10,7 @@ describe("preflight builder", () => {
 				[builderKind.runTimeKey]: {
 					hooks: [],
 					preflightSteps: [],
+					metadata: [],
 				},
 			}),
 		);
@@ -20,6 +21,7 @@ describe("preflight builder", () => {
 				{
 					readonly preflightSteps: readonly [];
 					readonly hooks: readonly [];
+					readonly metadata: readonly [];
 				},
 				{},
 				Request
@@ -44,6 +46,7 @@ describe("preflight builder", () => {
 						{ onConstructRequest: expect.any(Function) },
 					],
 					preflightSteps: [],
+					metadata: [],
 				},
 			}),
 		);
@@ -67,11 +70,42 @@ describe("preflight builder", () => {
 							};
 						},
 					];
+					readonly metadata: readonly [];
 				},
 				{},
 				& Request
 				& { aa: number }
 				& { bb: number }
+			>,
+			"strict"
+		>;
+	});
+
+	it("usePreflightBuilder with metadata", () => {
+		const preflightBuilder = usePreflightBuilder({
+			metadata: [IgnoreByRouteStoreMetadata()],
+		});
+
+		expect({ ...preflightBuilder }).toStrictEqual(
+			expect.objectContaining({
+				[builderKind.runTimeKey]: {
+					hooks: [],
+					preflightSteps: [],
+					metadata: [IgnoreByRouteStoreMetadata()],
+				},
+			}),
+		);
+
+		type Check = ExpectType<
+			typeof preflightBuilder,
+			PreflightBuilder<
+				{
+					readonly preflightSteps: readonly [];
+					readonly hooks: readonly [];
+					readonly metadata: readonly [Metadata<"ignore-by-route-store", unknown>];
+				},
+				{},
+				Request
 			>,
 			"strict"
 		>;

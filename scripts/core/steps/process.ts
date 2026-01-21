@@ -2,11 +2,13 @@ import { createCoreLibKind } from "@core/kind";
 import { pipe, type Kind } from "@duplojs/utils";
 import { type StepKind, stepKind } from "./kind";
 import { type Process } from "@core/process";
+import { type Metadata } from "@core/metadata";
 
 export interface ProcessStepDefinition {
 	readonly process: Process;
 	readonly options?: Record<string, unknown> | ((input: any) => Record<string, unknown>);
 	readonly imports?: readonly string[];
+	readonly metadata: readonly Metadata[];
 }
 
 export const processStepKind = createCoreLibKind("process-step");

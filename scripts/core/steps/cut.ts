@@ -5,6 +5,7 @@ import { type Floor } from "@core/floor";
 import { type StepFunctionParams } from "./types";
 import { type PredictedResponse, type ResponseContract } from "@core/response";
 import { type Request } from "@core/request";
+import { type Metadata } from "@core/metadata";
 
 export const cutStepOutputKind = createCoreLibKind("cut-output");
 
@@ -30,6 +31,7 @@ export interface CutStepFunctionParams<
 export interface CutStepDefinition {
 	theFunction(floor: Floor, params: CutStepFunctionParams): MaybePromise<CutStepFunctionOutput | PredictedResponse>;
 	readonly responseContract: ResponseContract.Contract | readonly ResponseContract.Contract[];
+	readonly metadata: readonly Metadata[];
 }
 
 export const cutStepKind = createCoreLibKind("cut-step");

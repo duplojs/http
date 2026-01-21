@@ -6,6 +6,7 @@ import { type GetCheckerResult, type Checker, type GetCheckerInput, type GetChec
 import { type ClientErrorResponseCode, type ResponseContract } from "@core/response";
 import { type ProcessDefinition } from "@core/process";
 import { type Request } from "@core/request";
+import { type Metadata } from "@core/metadata";
 
 declare module "./builder" {
 	interface ProcessBuilder<
@@ -27,6 +28,7 @@ declare module "./builder" {
 				| GetCheckerOptions<GenericChecker>
 				| ((floor: GenericFloor) => Exclude<GetCheckerOptions<GenericChecker>, undefined>)
 			) = never,
+			const GenericMetadata extends readonly Metadata[] = readonly [],
 		>(
 			checker: GenericChecker,
 			params: {
@@ -40,6 +42,7 @@ declare module "./builder" {
 				>;
 				readonly otherwise: GenericResponseContract;
 			},
+			...metadata: GenericMetadata
 		): ProcessBuilder<
 			O.AssignObjects<
 				GenericDefinition,
@@ -57,6 +60,7 @@ declare module "./builder" {
 									undefined
 								>;
 								readonly responseContract: GenericResponseContract;
+								readonly metadata: GenericMetadata;
 							}
 						>,
 					];
@@ -89,6 +93,7 @@ processBuilder.set(
 				otherwise: responseContract,
 				...params
 			},
+			...metadata
 		],
 		accumulator,
 		next,
@@ -100,6 +105,7 @@ processBuilder.set(
 				...params,
 				responseContract,
 				checker,
+				metadata,
 			}),
 		],
 	}),

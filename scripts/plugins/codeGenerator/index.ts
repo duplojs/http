@@ -4,4 +4,5 @@ export * from "./types";
 
 export * from "./plugin";
 export * from "./routeToDataParser";
-export * from "./stepsToDataParser";
+export * from "./aggregateStepContract";
+export * from "./metadata";

@@ -1,10 +1,14 @@
-import { type ExtractStep, extractStepKind, type ProcessBuilder, stepKind, useProcessBuilder, type Request, ResponseContract } from "@core";
+import { type ExtractStep, extractStepKind, type ProcessBuilder, stepKind, useProcessBuilder, type Request, ResponseContract, IgnoreByRouteStoreMetadata, type Metadata } from "@core";
 import { builderKind, DP, DPE, type ExpectType } from "@duplojs/utils";
 
 describe("process builder extract method", () => {
 	it("extract", () => {
 		const processBuilder = useProcessBuilder()
-			.extract({ body: DPE.string() });
+			.extract(
+				{ body: DPE.string() },
+				undefined,
+				IgnoreByRouteStoreMetadata(),
+			);
 
 		expect({ ...processBuilder })
 			.toStrictEqual(
@@ -23,9 +27,11 @@ describe("process builder extract method", () => {
 											[DP.stringKind.runTimeKey]: null,
 										}),
 									},
+									metadata: [IgnoreByRouteStoreMetadata()],
 								},
 							},
 						],
+						metadata: [],
 					},
 				}),
 			);
@@ -46,8 +52,10 @@ describe("process builder extract method", () => {
 								}>;
 							};
 							readonly responseContract: undefined;
+							readonly metadata: readonly [Metadata<"ignore-by-route-store", unknown>];
 						}>,
 					];
+					readonly metadata: readonly [];
 				},
 				{ body: string },
 				Request
@@ -83,9 +91,11 @@ describe("process builder extract method", () => {
 											[DP.stringKind.runTimeKey]: null,
 										}),
 									},
+									metadata: [],
 								},
 							},
 						],
+						metadata: [],
 					},
 				}),
 			);
@@ -114,8 +124,10 @@ describe("process builder extract method", () => {
 									readonly checkers: readonly [];
 								}>
 							>;
+							readonly metadata: readonly [];
 						}>,
 					];
+					readonly metadata: readonly [];
 				},
 				{ body: string },
 				Request
@@ -147,9 +159,11 @@ describe("process builder extract method", () => {
 											}),
 										},
 									},
+									metadata: [],
 								},
 							},
 						],
+						metadata: [],
 					},
 				}),
 			);
@@ -172,8 +186,10 @@ describe("process builder extract method", () => {
 								};
 							};
 							readonly responseContract: undefined;
+							readonly metadata: readonly [];
 						}>,
 					];
+					readonly metadata: readonly [];
 				},
 				{ test: string },
 				Request
@@ -227,9 +243,11 @@ describe("process builder extract method", () => {
 											[DP.objectKind.runTimeKey]: null,
 										}),
 									},
+									metadata: [],
 								},
 							},
 						],
+						metadata: [],
 					},
 				}),
 			);

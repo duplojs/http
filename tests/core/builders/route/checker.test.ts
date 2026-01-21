@@ -1,4 +1,4 @@
-import { checkerStepKind, extractStepKind, ResponseContract, type RouteBuilder, stepKind, useCheckerBuilder, useRouteBuilder, type Request, type CheckerStep, type ExtractStep, type Floor } from "@core";
+import { checkerStepKind, extractStepKind, ResponseContract, type RouteBuilder, stepKind, useCheckerBuilder, useRouteBuilder, type Request, type CheckerStep, type ExtractStep, type Floor, IgnoreByRouteStoreMetadata, type Metadata } from "@core";
 import { builderKind, type DP, DPE, type ExpectType, O } from "@duplojs/utils";
 
 describe("route builder checker method", () => {
@@ -25,6 +25,7 @@ describe("route builder checker method", () => {
 					result: "ok",
 					otherwise: ResponseContract.badRequest("test"),
 				},
+				IgnoreByRouteStoreMetadata(),
 			);
 
 		expect({ ...routeBuilder }).toStrictEqual(
@@ -34,6 +35,7 @@ describe("route builder checker method", () => {
 					method: "GET",
 					paths: ["/test"],
 					preflightSteps: [],
+					metadata: [],
 					steps: [
 						expect.objectContaining({
 							[extractStepKind.runTimeKey]: null,
@@ -49,6 +51,7 @@ describe("route builder checker method", () => {
 									[ResponseContract.contractKind.runTimeKey]: null,
 									code: "400",
 								}),
+								metadata: [IgnoreByRouteStoreMetadata()],
 							},
 						},
 					],
@@ -74,6 +77,7 @@ describe("route builder checker method", () => {
 								}>;
 							};
 							readonly responseContract: undefined;
+							readonly metadata: readonly [];
 						}>,
 						CheckerStep<{
 							readonly checker: typeof checker;
@@ -90,8 +94,10 @@ describe("route builder checker method", () => {
 									readonly checkers: readonly [];
 								}>
 							>;
+							readonly metadata: readonly [Metadata<"ignore-by-route-store", unknown>];
 						}>,
 					];
+					readonly metadata: readonly [];
 				},
 				{ body: string },
 				Request
@@ -127,6 +133,7 @@ describe("route builder checker method", () => {
 					method: "GET",
 					paths: ["/test"],
 					preflightSteps: [],
+					metadata: [],
 					steps: [
 						expect.objectContaining({
 							[extractStepKind.runTimeKey]: null,
@@ -145,6 +152,7 @@ describe("route builder checker method", () => {
 									[ResponseContract.contractKind.runTimeKey]: null,
 									code: "400",
 								}),
+								metadata: [],
 							},
 						},
 					],
@@ -170,6 +178,7 @@ describe("route builder checker method", () => {
 								}>;
 							};
 							readonly responseContract: undefined;
+							readonly metadata: readonly [];
 						}>,
 						CheckerStep<{
 							readonly checker: typeof checker;
@@ -188,8 +197,10 @@ describe("route builder checker method", () => {
 									readonly checkers: readonly [];
 								}>
 							>;
+							readonly metadata: readonly [];
 						}>,
 					];
+					readonly metadata: readonly [];
 				},
 				{ body: string },
 				Request
@@ -233,6 +244,7 @@ describe("route builder checker method", () => {
 					method: "GET",
 					paths: ["/test"],
 					preflightSteps: [],
+					metadata: [],
 					steps: [
 						expect.objectContaining({
 							[extractStepKind.runTimeKey]: null,
@@ -249,6 +261,7 @@ describe("route builder checker method", () => {
 									[ResponseContract.contractKind.runTimeKey]: null,
 									code: "400",
 								}),
+								metadata: [],
 							},
 						},
 					],
@@ -274,6 +287,7 @@ describe("route builder checker method", () => {
 								}>;
 							};
 							readonly responseContract: undefined;
+							readonly metadata: readonly [];
 						}>,
 						CheckerStep<{
 							readonly checker: typeof checker;
@@ -291,8 +305,10 @@ describe("route builder checker method", () => {
 									readonly checkers: readonly [];
 								}>
 							>;
+							readonly metadata: readonly [];
 						}>,
 					];
+					readonly metadata: readonly [];
 				},
 				{ body: string },
 				Request
@@ -326,6 +342,7 @@ describe("route builder checker method", () => {
 					method: "GET",
 					paths: ["/test"],
 					preflightSteps: [],
+					metadata: [],
 					steps: [
 						expect.objectContaining({
 							[extractStepKind.runTimeKey]: null,
@@ -342,6 +359,7 @@ describe("route builder checker method", () => {
 									[ResponseContract.contractKind.runTimeKey]: null,
 									code: "400",
 								}),
+								metadata: [],
 							},
 						},
 					],
@@ -367,6 +385,7 @@ describe("route builder checker method", () => {
 								}>;
 							};
 							readonly responseContract: undefined;
+							readonly metadata: readonly [];
 						}>,
 						CheckerStep<{
 							readonly checker: typeof checker;
@@ -383,8 +402,10 @@ describe("route builder checker method", () => {
 									readonly checkers: readonly [];
 								}>
 							>;
+							readonly metadata: readonly [];
 						}>,
 					];
+					readonly metadata: readonly [];
 				},
 				{
 					body: string;

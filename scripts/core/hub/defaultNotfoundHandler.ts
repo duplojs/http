@@ -8,4 +8,5 @@ export const defaultNotfoundHandler = createHandlerStep({
 		"notfound-route",
 		`${request.method}:${request.path}` as never,
 	),
+	metadata: [],
 });

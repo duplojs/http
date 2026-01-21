@@ -1,4 +1,4 @@
-import { type Process, type ProcessStep, processStepKind, type ProcessBuilder, stepKind, useProcessBuilder, type Request, type ExtractStep, extractStepKind } from "@core";
+import { type Process, type ProcessStep, processStepKind, type ProcessBuilder, stepKind, useProcessBuilder, type Request, type ExtractStep, extractStepKind, IgnoreByRouteStoreMetadata, type Metadata } from "@core";
 import { builderKind, DPE, type ExpectType } from "@duplojs/utils";
 
 describe("process builder process method", () => {
@@ -7,7 +7,7 @@ describe("process builder process method", () => {
 			.exports();
 
 		const processBuilder = useProcessBuilder()
-			.exec(process);
+			.exec(process, undefined, IgnoreByRouteStoreMetadata());
 
 		expect({ ...processBuilder }).toStrictEqual(
 			expect.objectContaining({
@@ -20,9 +20,11 @@ describe("process builder process method", () => {
 							[stepKind.runTimeKey]: null,
 							definition: {
 								process,
+								metadata: [IgnoreByRouteStoreMetadata()],
 							},
 						},
 					],
+					metadata: [],
 				},
 			}),
 		);
@@ -38,8 +40,10 @@ describe("process builder process method", () => {
 							readonly process: typeof process;
 							readonly options: undefined;
 							readonly imports: undefined;
+							readonly metadata: readonly [Metadata<"ignore-by-route-store", unknown>];
 						}>,
 					];
+					readonly metadata: readonly [];
 				},
 				{},
 				Request
@@ -71,9 +75,11 @@ describe("process builder process method", () => {
 							definition: {
 								process,
 								options: { test: false },
+								metadata: [],
 							},
 						},
 					],
+					metadata: [],
 				},
 			}),
 		);
@@ -89,8 +95,10 @@ describe("process builder process method", () => {
 							readonly process: typeof process;
 							readonly options: { test: boolean };
 							readonly imports: undefined;
+							readonly metadata: readonly [];
 						}>,
 					];
+					readonly metadata: readonly [];
 				},
 				{},
 				Request
@@ -143,9 +151,11 @@ describe("process builder process method", () => {
 							definition: {
 								process,
 								options: expect.any(Function),
+								metadata: [],
 							},
 						},
 					],
+					metadata: [],
 				},
 			}),
 		);
@@ -166,14 +176,17 @@ describe("process builder process method", () => {
 								}>;
 							};
 							readonly responseContract: undefined;
+							readonly metadata: readonly [];
 						}>,
 						ProcessStep<{
 							readonly process: typeof process;
 							// eslint-disable-next-line @typescript-eslint/method-signature-style
 							readonly options: (floor: { body: string }) => { test: false };
 							readonly imports: undefined;
+							readonly metadata: readonly [];
 						}>,
 					];
+					readonly metadata: readonly [];
 				},
 				{ body: string },
 				Request
@@ -205,9 +218,11 @@ describe("process builder process method", () => {
 							definition: {
 								process,
 								imports: ["body"],
+								metadata: [],
 							},
 						},
 					],
+					metadata: [],
 				},
 			}),
 		);
@@ -223,8 +238,10 @@ describe("process builder process method", () => {
 							readonly process: typeof process;
 							readonly options: undefined;
 							readonly imports: readonly ["body"];
+							readonly metadata: readonly [];
 						}>,
 					];
+					readonly metadata: readonly [];
 				},
 				{ body: string },
 				Request
@@ -256,9 +273,11 @@ describe("process builder process method", () => {
 							definition: {
 								process,
 								imports: ["body", "query"],
+								metadata: [],
 							},
 						},
 					],
+					metadata: [],
 				},
 			}),
 		);
@@ -274,8 +293,10 @@ describe("process builder process method", () => {
 							readonly process: typeof process;
 							readonly options: undefined;
 							readonly imports: readonly ["body", "query"];
+							readonly metadata: readonly [];
 						}>,
 					];
+					readonly metadata: readonly [];
 				},
 				{
 					body: string;
@@ -307,9 +328,11 @@ describe("process builder process method", () => {
 							[stepKind.runTimeKey]: null,
 							definition: {
 								process,
+								metadata: [],
 							},
 						},
 					],
+					metadata: [],
 				},
 			}),
 		);
@@ -325,8 +348,10 @@ describe("process builder process method", () => {
 							readonly process: typeof process;
 							readonly options: undefined;
 							readonly imports: undefined;
+							readonly metadata: readonly [];
 						}>,
 					];
+					readonly metadata: readonly [];
 				},
 				{},
 				Request & {

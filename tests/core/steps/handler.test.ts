@@ -6,6 +6,7 @@ describe("handlerStep", () => {
 		const definition: HandlerStepDefinition = {
 			theFunction: (_floor, params) => params.response("handler ok", undefined as never),
 			responseContract: [ResponseContract.ok("handler ok", DP.empty())],
+			metadata: [],
 		};
 
 		expect(createHandlerStep(definition)).toStrictEqual({

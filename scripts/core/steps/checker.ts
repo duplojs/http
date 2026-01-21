@@ -4,6 +4,7 @@ import { type StepKind, stepKind } from "./kind";
 import { type Checker } from "@core/checker";
 import { type Floor } from "@core/floor";
 import { type ClientErrorResponseCode, type ResponseContract } from "@core/response";
+import { type Metadata } from "@core/metadata";
 
 export interface CheckerStepDefinition {
 	readonly checker: Checker;
@@ -12,6 +13,7 @@ export interface CheckerStepDefinition {
 	input(input: Floor): unknown;
 	readonly options?: Record<string, unknown> | ((input: any) => Record<string, unknown>);
 	readonly responseContract: ResponseContract.Contract<ClientErrorResponseCode>;
+	readonly metadata: readonly Metadata[];
 }
 
 export const checkerStepKind = createCoreLibKind("checker-step");

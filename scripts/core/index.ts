@@ -14,3 +14,4 @@ export * from "./hub";
 export * from "./functionsBuilders";
 export * from "./router";
 export * from "./stringIdentifier";
+export * from "./metadata";

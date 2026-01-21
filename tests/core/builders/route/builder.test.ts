@@ -1,9 +1,9 @@
-import { type RouteBuilder, useRouteBuilder, type Request, type HookParamsOnConstructRequest } from "@core";
+import { type RouteBuilder, useRouteBuilder, type Request, type HookParamsOnConstructRequest, type Metadata, IgnoreByRouteStoreMetadata } from "@core";
 import { builderKind, type ExpectType } from "@duplojs/utils";
 
 describe("route builder", () => {
 	it("useRouteBuilder", () => {
-		const routeBuilder = useRouteBuilder("GET", "/test");
+		const routeBuilder = useRouteBuilder("GET", "/test", { metadata: [IgnoreByRouteStoreMetadata()] });
 
 		expect({ ...routeBuilder }).toStrictEqual(
 			expect.objectContaining({
@@ -13,6 +13,7 @@ describe("route builder", () => {
 					paths: ["/test"],
 					preflightSteps: [],
 					steps: [],
+					metadata: [IgnoreByRouteStoreMetadata()],
 				},
 			}),
 		);
@@ -26,6 +27,7 @@ describe("route builder", () => {
 					readonly preflightSteps: readonly [];
 					readonly steps: readonly [];
 					readonly hooks: readonly [];
+					readonly metadata: readonly [Metadata<"ignore-by-route-store", unknown>];
 				},
 				{},
 				Request
@@ -45,6 +47,7 @@ describe("route builder", () => {
 					paths: ["/test", "/toto"],
 					preflightSteps: [],
 					steps: [],
+					metadata: [],
 				},
 			}),
 		);
@@ -58,6 +61,7 @@ describe("route builder", () => {
 					readonly preflightSteps: readonly [];
 					readonly steps: readonly [];
 					readonly hooks: readonly [];
+					readonly metadata: readonly [];
 				},
 				{},
 				Request
@@ -85,6 +89,7 @@ describe("route builder", () => {
 					paths: ["/test"],
 					preflightSteps: [],
 					steps: [],
+					metadata: [],
 				},
 			}),
 		);
@@ -111,6 +116,7 @@ describe("route builder", () => {
 							};
 						},
 					];
+					readonly metadata: readonly [];
 				},
 				{},
 				& Request

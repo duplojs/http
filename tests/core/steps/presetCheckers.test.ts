@@ -7,6 +7,7 @@ describe("presetCheckerStep", () => {
 			createPresetCheckerStep({
 				presetChecker: testPresetChecker,
 				input: () => "",
+				metadata: [],
 			}),
 		).toStrictEqual({
 			[presetCheckerStepKind.runTimeKey]: null,
@@ -14,6 +15,7 @@ describe("presetCheckerStep", () => {
 			definition: {
 				presetChecker: testPresetChecker,
 				input: expect.any(Function),
+				metadata: [],
 			},
 		});
 	});

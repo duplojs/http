@@ -5,6 +5,7 @@ import { type O, type NeverCoalescing, type FixDeepFunctionInfer, type Adaptor, 
 import { routeBuilderHandler } from "./builder";
 import { type GetProcessRequest, type GetProcessExportValue, type Process } from "@core/process";
 import { type Request } from "@core/request";
+import { type Metadata } from "@core/metadata";
 
 declare module "./builder" {
 	interface RouteBuilder<
@@ -20,6 +21,7 @@ declare module "./builder" {
 				| GenericProcess["definition"]["options"]
 				| ((floor: GenericFloor) => Exclude<GenericProcess["definition"]["options"], undefined>)
 			) = never,
+			const GenericMetadata extends readonly Metadata[] = readonly [],
 		>(
 			process: GenericProcess,
 			params?: {
@@ -30,6 +32,7 @@ declare module "./builder" {
 					GenericOptions
 				>;
 			},
+			...metadata: GenericMetadata,
 		): RouteBuilder<
 			O.AssignObjects<
 				GenericDefinition,
@@ -44,6 +47,7 @@ declare module "./builder" {
 									undefined
 								>;
 								readonly imports: NeverCoalescing<GenericImportation, undefined>;
+								readonly metadata: GenericMetadata;
 							}
 						>,
 					];
@@ -70,6 +74,7 @@ routeBuilderHandler.set(
 		args: [
 			process,
 			params,
+			...metadata
 		],
 		accumulator,
 		next,
@@ -80,6 +85,7 @@ routeBuilderHandler.set(
 			createProcessStep({
 				...params,
 				process,
+				metadata,
 			}),
 		],
 	}),

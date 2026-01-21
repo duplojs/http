@@ -7,12 +7,14 @@ describe("process", () => {
 				steps: [],
 				hooks: [],
 				options: {},
+				metadata: [],
 			}),
 		).toStrictEqual({
 			definition: {
 				steps: [],
 				hooks: [],
 				options: {},
+				metadata: [],
 			},
 			[processKind.runTimeKey]: null,
 		});

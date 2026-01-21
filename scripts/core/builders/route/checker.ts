@@ -6,6 +6,7 @@ import { routeBuilderHandler } from "./builder";
 import { type GetCheckerInput, type Checker, type GetCheckerResult, type GetCheckerOptions } from "@core/checker";
 import { type ClientErrorResponseCode, type ResponseContract } from "@core/response";
 import { type Request } from "@core/request";
+import { type Metadata } from "@core/metadata";
 
 declare module "./builder" {
 	interface RouteBuilder<
@@ -27,6 +28,7 @@ declare module "./builder" {
 				| GetCheckerOptions<GenericChecker>
 				| ((floor: GenericFloor) => Exclude<GetCheckerOptions<GenericChecker>, undefined>)
 			) = never,
+			const GenericMetadata extends readonly Metadata[] = readonly [],
 		>(
 			checker: GenericChecker,
 			params: {
@@ -40,6 +42,7 @@ declare module "./builder" {
 				>;
 				readonly otherwise: GenericResponseContract;
 			},
+			...metadata: GenericMetadata
 		): RouteBuilder<
 			O.AssignObjects<
 				GenericDefinition,
@@ -57,6 +60,7 @@ declare module "./builder" {
 									undefined
 								>;
 								readonly responseContract: GenericResponseContract;
+								readonly metadata: GenericMetadata;
 							}
 						>,
 					];
@@ -89,6 +93,7 @@ routeBuilderHandler.set(
 				otherwise: responseContract,
 				...params
 			},
+			...metadata
 		],
 		accumulator,
 		next,
@@ -100,6 +105,7 @@ routeBuilderHandler.set(
 				...params,
 				responseContract,
 				checker,
+				metadata,
 			}),
 		],
 	}),

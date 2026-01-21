@@ -4,6 +4,7 @@ import { type Builder, createBuilder, type IsEqual, type NeverCoalescing } from 
 import { type MakeRequestFromHooks, type HookRouteLifeCycle } from "@core/route";
 import { type Request } from "@core/request";
 import { createCoreLibStringIdentifier } from "@core/stringIdentifier";
+import { type Metadata } from "@core/metadata";
 
 export interface ProcessBuilder<
 	GenericDefinition extends ProcessDefinition = ProcessDefinition,
@@ -20,16 +21,19 @@ export const processBuilder = createBuilder<ProcessBuilder>(
 export function useProcessBuilder<
 	GenericOptions extends ProcessDefinition["options"] = never,
 	const GenericHooks extends readonly HookRouteLifeCycle[] = readonly [],
+	const GenericMetadata extends readonly Metadata[] = readonly [],
 >(
 	params?: {
 		options?: GenericOptions;
 		hooks?: GenericHooks | readonly HookRouteLifeCycle[];
+		metadata?: GenericMetadata;
 	},
 ): ProcessBuilder<
 		{
 			readonly steps: readonly [];
 			readonly options: NeverCoalescing<GenericOptions, undefined>;
 			readonly hooks: GenericHooks;
+			readonly metadata: GenericMetadata;
 		},
 		IsEqual<GenericOptions, never> extends true
 			? {}
@@ -44,5 +48,6 @@ export function useProcessBuilder<
 		...params,
 		steps: [],
 		hooks: params?.hooks ?? [],
+		metadata: params?.metadata ?? [],
 	});
 }

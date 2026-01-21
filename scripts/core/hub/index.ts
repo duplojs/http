@@ -210,6 +210,7 @@ export function createHub<
 				notfoundHandler: createHandlerStep({
 					responseContract,
 					theFunction: (floor, params) => theFunction(params),
+					metadata: [],
 				}),
 			};
 		},

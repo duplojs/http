@@ -1,6 +1,6 @@
 import { defaultExtractContract, ResponseContract, useProcessBuilder, useRouteBuilder } from "@core";
 import { DP, DPE } from "@duplojs/utils";
-import { aggregateStepContract } from "@plugin-openApiGenerator";
+import { aggregateStepContract, IgnoreByOpenApiGeneratorMetadata } from "@plugin-openApiGenerator";
 import { testPresetChecker } from "@test-utils/presetChecker";
 import { omitFunctions } from "@test-utils/omitFunction";
 
@@ -19,6 +19,12 @@ describe("aggregateStepContract", () => {
 		.extract({})
 		.exports();
 
+	const ignoredProcess = useProcessBuilder({
+		metadata: [IgnoreByOpenApiGeneratorMetadata()],
+	})
+		.extract({ query: { ignoredQuery: DPE.string() } })
+		.exports();
+
 	const route = useRouteBuilder("GET", "/test")
 		.extract({
 			headers: DPE.object({
@@ -30,8 +36,18 @@ describe("aggregateStepContract", () => {
 				prop2: DPE.number(),
 			},
 		})
+		.extract(
+			{
+				params: {
+					ignoredParams: DPE.string(),
+				},
+			},
+			undefined,
+			IgnoreByOpenApiGeneratorMetadata(),
+		)
 		.exec(process1)
 		.exec(process2)
+		.exec(ignoredProcess)
 		.presetCheck(testPresetChecker, () => "")
 		.handler(
 			ResponseContract.noContent("test"),

@@ -29,7 +29,10 @@ describe("buildStepFunction", () => {
 			.mockImplementationOnce(() => false);
 
 		const result = await buildStepFunction(
-			createExtractStep({ shape: {} }),
+			createExtractStep({
+				shape: {},
+				metadata: [],
+			}),
 			{
 				environment: "DEV",
 				stepFunctionBuilders: [stepFunctionBuilders],
@@ -45,7 +48,10 @@ describe("buildStepFunction", () => {
 		spySupport.mockImplementation(() => false);
 
 		const result = await buildStepFunction(
-			createExtractStep({ shape: {} }),
+			createExtractStep({
+				shape: {},
+				metadata: [],
+			}),
 			{
 				environment: "DEV",
 				stepFunctionBuilders: [stepFunctionBuilders],

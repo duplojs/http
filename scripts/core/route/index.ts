@@ -3,6 +3,7 @@ import { createCoreLibKind } from "../kind";
 import { type RequestMethods } from "../request";
 import { type ExtractStep, type CheckerStep, type CutStep, type HandlerStep, type ProcessStep, type stepKind, type PresetCheckerStep } from "../steps";
 import { type HookRouteLifeCycle } from "./hooks";
+import { type Metadata } from "@core/metadata";
 
 export * from "./types";
 export * from "./hooks";
@@ -46,6 +47,7 @@ export interface RouteDefinition {
 	readonly preflightSteps: readonly RoutePreFlightSteps[];
 	readonly steps: readonly RouteSteps[];
 	readonly hooks: readonly HookRouteLifeCycle[];
+	readonly metadata: readonly Metadata[];
 }
 
 export const routeKind = createCoreLibKind("route");

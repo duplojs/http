@@ -1,9 +1,9 @@
-import { type Request, type HookParamsOnConstructRequest, useProcessBuilder, type ProcessBuilder } from "@core";
+import { type Request, type HookParamsOnConstructRequest, useProcessBuilder, type ProcessBuilder, IgnoreByRouteStoreMetadata, type Metadata } from "@core";
 import { builderKind, type ExpectType } from "@duplojs/utils";
 
 describe("process builder", () => {
 	it("useProcessBuilder", () => {
-		const processBuilder = useProcessBuilder();
+		const processBuilder = useProcessBuilder({ metadata: [IgnoreByRouteStoreMetadata()] });
 
 		expect({ ...processBuilder }).toStrictEqual(
 			expect.objectContaining({
@@ -11,6 +11,7 @@ describe("process builder", () => {
 					hooks: [],
 					options: undefined,
 					steps: [],
+					metadata: [IgnoreByRouteStoreMetadata()],
 				},
 			}),
 		);
@@ -22,6 +23,7 @@ describe("process builder", () => {
 					readonly steps: readonly [];
 					readonly options: undefined;
 					readonly hooks: readonly [];
+					readonly metadata: readonly [Metadata<"ignore-by-route-store", unknown>];
 				},
 				{},
 				Request
@@ -41,6 +43,7 @@ describe("process builder", () => {
 					hooks: [],
 					options: { test: true },
 					steps: [],
+					metadata: [],
 				},
 			}),
 		);
@@ -54,6 +57,7 @@ describe("process builder", () => {
 						test: boolean;
 					};
 					readonly hooks: readonly [];
+					readonly metadata: readonly [];
 				},
 				{ options: { test: boolean } },
 				Request
@@ -79,6 +83,7 @@ describe("process builder", () => {
 					],
 					options: undefined,
 					steps: [],
+					metadata: [],
 				},
 			}),
 		);
@@ -103,6 +108,7 @@ describe("process builder", () => {
 							};
 						},
 					];
+					readonly metadata: readonly [];
 				},
 				{},
 				& Request

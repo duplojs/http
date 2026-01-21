@@ -1,4 +1,4 @@
-import { type ProcessStep, processStepKind, type RouteBuilder, stepKind, useProcessBuilder, useRouteBuilder, type Request, type ExtractStep, extractStepKind, usePreflightBuilder, type PreflightBuilder } from "@core";
+import { type ProcessStep, processStepKind, stepKind, useProcessBuilder, type Request, usePreflightBuilder, type PreflightBuilder, IgnoreByRouteStoreMetadata, type Metadata } from "@core";
 import { builderKind, DPE, type ExpectType } from "@duplojs/utils";
 
 describe("preflight builder process method", () => {
@@ -7,7 +7,7 @@ describe("preflight builder process method", () => {
 			.exports();
 
 		const preflightBuilder = usePreflightBuilder()
-			.exec(process);
+			.exec(process, undefined, IgnoreByRouteStoreMetadata());
 
 		expect({ ...preflightBuilder }).toStrictEqual(
 			expect.objectContaining({
@@ -19,9 +19,11 @@ describe("preflight builder process method", () => {
 							[stepKind.runTimeKey]: null,
 							definition: {
 								process,
+								metadata: [IgnoreByRouteStoreMetadata()],
 							},
 						},
 					],
+					metadata: [],
 				},
 			}),
 		);
@@ -35,9 +37,11 @@ describe("preflight builder process method", () => {
 							readonly process: typeof process;
 							readonly options: undefined;
 							readonly imports: undefined;
+							readonly metadata: readonly [Metadata<"ignore-by-route-store", unknown>];
 						}>,
 					];
 					readonly hooks: readonly [];
+					readonly metadata: readonly [];
 				},
 				{},
 				Request
@@ -68,9 +72,11 @@ describe("preflight builder process method", () => {
 							definition: {
 								process,
 								options: { test: false },
+								metadata: [],
 							},
 						},
 					],
+					metadata: [],
 				},
 			}),
 		);
@@ -84,9 +90,11 @@ describe("preflight builder process method", () => {
 							readonly process: typeof process;
 							readonly options: { test: boolean };
 							readonly imports: undefined;
+							readonly metadata: readonly [];
 						}>,
 					];
 					readonly hooks: readonly [];
+					readonly metadata: readonly [];
 				},
 				{},
 				Request
@@ -117,9 +125,11 @@ describe("preflight builder process method", () => {
 							definition: {
 								process,
 								imports: ["body"],
+								metadata: [],
 							},
 						},
 					],
+					metadata: [],
 				},
 			}),
 		);
@@ -133,9 +143,11 @@ describe("preflight builder process method", () => {
 							readonly process: typeof process;
 							readonly options: undefined;
 							readonly imports: readonly ["body"];
+							readonly metadata: readonly [];
 						}>,
 					];
 					readonly hooks: readonly [];
+					readonly metadata: readonly [];
 				},
 				{ body: string },
 				Request
@@ -196,6 +208,7 @@ describe("preflight builder process method", () => {
 							definition: {
 								process: processWithExport,
 								imports: ["body"],
+								metadata: [],
 							},
 						},
 						{
@@ -204,9 +217,11 @@ describe("preflight builder process method", () => {
 							definition: {
 								process,
 								options: expect.any(Function),
+								metadata: [],
 							},
 						},
 					],
+					metadata: [],
 				},
 			}),
 		);
@@ -220,15 +235,18 @@ describe("preflight builder process method", () => {
 							readonly process: typeof processWithExport;
 							readonly options: undefined;
 							readonly imports: readonly ["body"];
+							readonly metadata: readonly [];
 						}>,
 						ProcessStep<{
 							readonly process: typeof process;
 							// eslint-disable-next-line @typescript-eslint/method-signature-style
 							readonly options: (floor: { body: string }) => { test: false };
 							readonly imports: undefined;
+							readonly metadata: readonly [];
 						}>,
 					];
 					readonly hooks: readonly [];
+					readonly metadata: readonly [];
 				},
 				{ body: string },
 				Request
@@ -259,9 +277,11 @@ describe("preflight builder process method", () => {
 							definition: {
 								process: process,
 								imports: ["body", "query"],
+								metadata: [],
 							},
 						},
 					],
+					metadata: [],
 				},
 			}),
 		);
@@ -275,9 +295,11 @@ describe("preflight builder process method", () => {
 							readonly process: typeof process;
 							readonly options: undefined;
 							readonly imports: readonly ["body", "query"];
+							readonly metadata: readonly [];
 						}>,
 					];
 					readonly hooks: readonly [];
+					readonly metadata: readonly [];
 				},
 				{
 					body: string;
@@ -308,9 +330,11 @@ describe("preflight builder process method", () => {
 							[stepKind.runTimeKey]: null,
 							definition: {
 								process,
+								metadata: [],
 							},
 						},
 					],
+					metadata: [],
 				},
 			}),
 		);
@@ -324,9 +348,11 @@ describe("preflight builder process method", () => {
 							readonly process: typeof process;
 							readonly options: undefined;
 							readonly imports: undefined;
+							readonly metadata: readonly [];
 						}>,
 					];
 					readonly hooks: readonly [];
+					readonly metadata: readonly [];
 				},
 				{},
 				Request & {
