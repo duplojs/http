@@ -1,6 +1,6 @@
 import { defaultExtractContract, ResponseContract, useProcessBuilder, useRouteBuilder } from "@core";
 import { DP, DPE } from "@duplojs/utils";
-import { aggregateStepContract, IgnoreRouteByOpenApiGeneratorMetadata } from "@plugin-openApiGenerator";
+import { aggregateStepContract, IgnoreByOpenApiGeneratorMetadata } from "@plugin-openApiGenerator";
 import { testPresetChecker } from "@test-utils/presetChecker";
 import { omitFunctions } from "@test-utils/omitFunction";
 
@@ -20,7 +20,7 @@ describe("aggregateStepContract", () => {
 		.exports();
 
 	const ignoredProcess = useProcessBuilder({
-		metadata: [IgnoreRouteByOpenApiGeneratorMetadata()],
+		metadata: [IgnoreByOpenApiGeneratorMetadata()],
 	})
 		.extract({ query: { ignoredQuery: DPE.string() } })
 		.exports();
@@ -43,7 +43,7 @@ describe("aggregateStepContract", () => {
 				},
 			},
 			undefined,
-			IgnoreRouteByOpenApiGeneratorMetadata(),
+			IgnoreByOpenApiGeneratorMetadata(),
 		)
 		.exec(process1)
 		.exec(process2)

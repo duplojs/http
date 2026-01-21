@@ -1,6 +1,6 @@
 import { defaultExtractContract, ResponseContract, useProcessBuilder, useRouteBuilder } from "@core";
 import { DP, DPE } from "@duplojs/utils";
-import { aggregateStepContract, IgnoreRouteByCodeGeneratorMetadata } from "@plugin-codeGenerator";
+import { aggregateStepContract, IgnoreByCodeGeneratorMetadata } from "@plugin-codeGenerator";
 import { testPresetChecker } from "@test-utils/presetChecker";
 import { omitFunctions } from "@test-utils/omitFunction";
 
@@ -20,7 +20,7 @@ describe("stepsToDataParser", () => {
 		.exports();
 
 	const ignoredProcess = useProcessBuilder({
-		metadata: [IgnoreRouteByCodeGeneratorMetadata()],
+		metadata: [IgnoreByCodeGeneratorMetadata()],
 	})
 		.extract({ query: { ignoredQuery: DPE.string() } })
 		.exports();
@@ -43,7 +43,7 @@ describe("stepsToDataParser", () => {
 				},
 			},
 			undefined,
-			IgnoreRouteByCodeGeneratorMetadata(),
+			IgnoreByCodeGeneratorMetadata(),
 		)
 		.exec(process1)
 		.exec(process2)

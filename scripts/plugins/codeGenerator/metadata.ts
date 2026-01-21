@@ -1,3 +1,3 @@
 import { createMetadata } from "@core/metadata";
 
-export const IgnoreRouteByCodeGeneratorMetadata = createMetadata("ignore-route-by-code-generator");
+export const IgnoreByCodeGeneratorMetadata = createMetadata("ignore-by-code-generator");

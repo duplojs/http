@@ -2,7 +2,7 @@ import { defaultExtractContract, ResponseContract, useProcessBuilder, useRouteBu
 import { DP, DPE } from "@duplojs/utils";
 import { testPresetChecker } from "@test-utils/presetChecker";
 import { omitFunctions } from "@test-utils/omitFunction";
-import { IgnoreRouteByCodeGeneratorMetadata, routeToDataParser } from "@plugin-codeGenerator";
+import { IgnoreByCodeGeneratorMetadata, routeToDataParser } from "@plugin-codeGenerator";
 
 describe("routeToDataParser", () => {
 	const process1 = useProcessBuilder()
@@ -92,7 +92,7 @@ describe("routeToDataParser", () => {
 	});
 
 	it("ignored route", () => {
-		const route = useRouteBuilder("GET", "/test", { metadata: [IgnoreRouteByCodeGeneratorMetadata()] })
+		const route = useRouteBuilder("GET", "/test", { metadata: [IgnoreByCodeGeneratorMetadata()] })
 			.handler(
 				ResponseContract.noContent("test"),
 				(__, { response }) => response("test"),

@@ -2,7 +2,7 @@ import { checkerStepKind, cutStepKind, extractStepKind, handlerStepKind, presetC
 import { A, DP, hasSomeKinds, O, P, pipe } from "@duplojs/utils";
 import type { ResponseCode, ResponseContract } from "@core/response";
 import type { EntrypointKey } from "./types";
-import { IgnoreRouteByOpenApiGeneratorMetadata } from "./metadata";
+import { IgnoreByOpenApiGeneratorMetadata } from "./metadata";
 
 export interface EndpointRouteResult {
 	code: ResponseCode;
@@ -32,7 +32,7 @@ export function aggregateStepContract(
 		steps,
 		(step) => A.find(
 			step.definition.metadata,
-			IgnoreRouteByOpenApiGeneratorMetadata.is,
+			IgnoreByOpenApiGeneratorMetadata.is,
 		) === undefined,
 	);
 
@@ -42,7 +42,7 @@ export function aggregateStepContract(
 		A.filter(
 			(step) => A.find(
 				step.definition.process.definition.metadata,
-				IgnoreRouteByOpenApiGeneratorMetadata.is,
+				IgnoreByOpenApiGeneratorMetadata.is,
 			) === undefined,
 		),
 		A.map(

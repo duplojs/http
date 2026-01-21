@@ -2,7 +2,7 @@ import { defaultExtractContract, ResponseContract, useProcessBuilder, useRouteBu
 import { DP, DPE } from "@duplojs/utils";
 import { testPresetChecker } from "@test-utils/presetChecker";
 import { omitFunctions } from "@test-utils/omitFunction";
-import { IgnoreRouteByOpenApiGeneratorMetadata, routeToOpenApi } from "@plugin-openApiGenerator";
+import { IgnoreByOpenApiGeneratorMetadata, routeToOpenApi } from "@plugin-openApiGenerator";
 
 describe("routeToOpenApi", () => {
 	it("empty result", () => {
@@ -347,7 +347,7 @@ describe("routeToOpenApi", () => {
 	});
 
 	it("ignored route", () => {
-		const route = useRouteBuilder("GET", "/test", { metadata: [IgnoreRouteByOpenApiGeneratorMetadata()] })
+		const route = useRouteBuilder("GET", "/test", { metadata: [IgnoreByOpenApiGeneratorMetadata()] })
 			.handler(
 				ResponseContract.noContent("test"),
 				(__, { response }) => response("test"),
