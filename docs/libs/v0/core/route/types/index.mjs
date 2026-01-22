@@ -1,0 +1,1 @@
+import './buildedRoute.mjs';

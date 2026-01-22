@@ -1,0 +1,1 @@
+export declare const defaultExtractStepFunctionBuilder: (step: import("../../../steps").Steps, params: import("..").StepFunctionBuilderParams) => import("@duplojs/utils").MaybePromise<import("..").BuildStepSuccessEither | import("..").BuildStepNotSupportEither>;

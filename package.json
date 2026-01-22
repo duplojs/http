@@ -10,6 +10,9 @@
   },
   "scripts": {
     "build": "rollup --config",
+    "docs:dev": "npm -w docs run docs:dev",
+    "docs:build": "npm -w docs run docs:build",
+    "docs:preview": "npm -w docs run docs:preview",
     "test:tu": "vitest --coverage",
     "test:tu:bench": "vitest bench",
     "test:tu:watch": "vitest --coverage --watch",
@@ -19,7 +22,7 @@
     "test:lint:fix": "eslint --fix",
     "prepare": "husky"
   },
-  "types": "./dist/index.d.ts",
+  "types": "./dist/core/index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/core/index.mjs",
@@ -89,7 +92,8 @@
     "vitest": "3.2.4"
   },
   "workspaces": [
-    "integration"
+    "integration",
+    "docs"
   ],
   "keywords": [],
   "engines": {
