@@ -181,10 +181,3 @@
 .toc-hidden {
   display: none;
 }
-
-.home-gif {
-	padding: 15px;
-	background-color: white;
-	border-radius: 5px;
-	box-shadow: 0 0 20px var(--vp-c-brand-1);
-}

@@ -133,6 +133,65 @@ export default defineConfig({
 									text: "Démarrage rapide",
 									link: "/fr/v0/guide/quickStart",
 								},
+								{
+									text: "Serveur",
+									items: [
+										{
+											text: "Démarrer un serveur",
+											link: "/fr/v0/guide/server/startServer",
+										},
+										{
+											text: "Créer sa première route",
+											link: "/fr/v0/guide/server/firstRoute",
+										},
+										{
+											text: "Récupérer des données",
+											link: "/fr/v0/guide/server/getData",
+										},
+										{
+											text: "Faire une vérification",
+											link: "/fr/v0/guide/server/doCheck",
+										},
+										{
+											text: "Aborder une nouvelle route",
+											link: "/fr/v0/guide/server/newRoute",
+										},
+										{
+											text: "Faire une routine de vérification",
+											link: "/fr/v0/guide/server/doCheckRoutine",
+										},
+									],
+								},
+								{
+									text: "Client",
+									items: [
+										{
+											text: "Initialiser un client",
+											link: "/fr/v0/guide/client/initClient",
+										},
+										{
+											text: "Faire une requête",
+											link: "/fr/v0/guide/client/doRequest",
+										},
+										{
+											text: "Traiter une réponse",
+											link: "/fr/v0/guide/client/handleResponse",
+										},
+									],
+								},
+								{
+									text: "Plugins",
+									items: [
+										{
+											text: "Generation de code",
+											link: "/fr/v0/guide/plugins/codeGenerator",
+										},
+										{
+											text: "Generation open API",
+											link: "/fr/v0/guide/plugins/openApiGenerator",
+										},
+									],
+								},
 							],
 						},
 					],
