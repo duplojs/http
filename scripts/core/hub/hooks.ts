@@ -2,6 +2,7 @@ import { type Route } from "@core/route";
 import { type EscapeVoid, G, type Kind, type MaybePromise } from "@duplojs/utils";
 import { type Hub } from ".";
 import { createCoreLibKind } from "@core/kind";
+import { type RouterInitializationData } from "@core/router";
 
 export const hookServerExitKind = createCoreLibKind("server-hook-exit");
 
@@ -75,6 +76,7 @@ export interface HttpServerErrorParams {
 	readonly error: unknown;
 	next(): ServerHookNext;
 	exit(): ServerHookExit;
+	routerInitializationData: RouterInitializationData;
 }
 
 export type HookServerError = (
@@ -112,4 +114,10 @@ export interface HookHubLifeCycle {
 	afterStartServer?: HookAfterStartServer;
 	beforeServerBuildRoutes?: HookBeforeServerBuildRoutes;
 	serverError?: HookServerError;
+}
+
+export function createHookHubLifeCycle(
+	hookHubLifeCycle: HookHubLifeCycle,
+) {
+	return hookHubLifeCycle;
 }

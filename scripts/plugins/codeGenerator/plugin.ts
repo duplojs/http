@@ -1,6 +1,6 @@
 import * as DataParserToTypescript from "@duplojs/data-parser-tools/toTypescript";
 import { type HubPlugin } from "@core/hub";
-import { A, DP } from "@duplojs/utils";
+import { A, DP, equal, S } from "@duplojs/utils";
 import { routeToDataParser } from "./routeToDataParser";
 import { writeFile } from "node:fs/promises";
 
@@ -14,6 +14,10 @@ export function codeGeneratorPlugin(pluginParams: CodeGeneratorPluginParams) {
 		hooksHubLifeCycle: [
 			{
 				beforeStartServer: async(hub) => {
+					if (!equal(hub.config.environment, ["DEV", "BUILD"])) {
+						return;
+					}
+
 					const routes = hub.aggregatesRoutes();
 
 					const dataParserRoutes = A.flatMap(

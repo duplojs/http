@@ -1,4 +1,4 @@
-import { createCoreLibKind, createHub, launchHookBeforeBuildRoute, launchHookServer, launchHookServerError, serverErrorExitHookFunction, serverErrorNextHookFunction } from "@core";
+import { createCoreLibKind, createHookHubLifeCycle, createHub, launchHookBeforeBuildRoute, launchHookServer, launchHookServerError, serverErrorExitHookFunction, serverErrorNextHookFunction } from "@core";
 import { testRoute } from "@test-utils/route";
 
 describe("hub hooks", () => {
@@ -47,6 +47,13 @@ describe("hub hooks", () => {
 				error: new Error("test"),
 				next: serverErrorNextHookFunction,
 				exit: serverErrorExitHookFunction,
+				routerInitializationData: {
+					method: "",
+					headers: {},
+					host: "",
+					origin: "",
+					url: "",
+				},
 			},
 		);
 
@@ -67,10 +74,28 @@ describe("hub hooks", () => {
 				error: new Error("test"),
 				next: serverErrorNextHookFunction,
 				exit: serverErrorExitHookFunction,
+				routerInitializationData: {
+					method: "",
+					headers: {},
+					host: "",
+					origin: "",
+					url: "",
+				},
 			},
 		);
 
 		expect(firstHook).toHaveBeenCalled();
 		expect(secondHook).not.toHaveBeenCalled();
+	});
+
+	it("createHookHubLifeCycle returns provided hooks", () => {
+		const hook = {
+			beforeStartServer: vi.fn(),
+			serverError: vi.fn(),
+		};
+
+		const result = createHookHubLifeCycle(hook);
+
+		expect(result).toBe(hook);
 	});
 });

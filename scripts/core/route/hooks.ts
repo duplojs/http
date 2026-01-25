@@ -4,8 +4,6 @@ import { type UnionToIntersection, type AnyFunction, type Kind, type MaybePromis
 import { type HookResponse } from "../response";
 import { type ResponseCode, type Response } from "@core/response";
 
-export * from "../response";
-
 export interface HookParamsOnConstructRequest {
 	request: Request;
 	addRequestProperties<

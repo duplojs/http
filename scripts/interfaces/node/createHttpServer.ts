@@ -1,10 +1,11 @@
-import { type HttpServerParams, launchHookServer, type Hub, launchHookServerError, serverErrorNextHookFunction, serverErrorExitHookFunction } from "@core/hub";
-import { buildRouter } from "@core/router";
+import { type HttpServerParams, type Hub } from "@core/hub";
+import { type RouterInitializationData } from "@core/router";
 import { type Hosts } from "./types/host";
-import { type O, type BytesInString, forward } from "@duplojs/utils";
+import { type BytesInString, O } from "@duplojs/utils";
 import http from "http";
 import https from "https";
 import { makeNodeHook } from "./hooks";
+import { implementHttpServer } from "@core/implementHttpServer";
 
 declare module "@core/hub" {
 	interface HttpServerParams {
@@ -18,11 +19,6 @@ declare module "@core/hub" {
 		readonly http?: http.ServerOptions;
 		readonly https?: https.ServerOptions;
 	}
-
-	interface HttpServerErrorParams {
-		readonly serverRequest: http.IncomingMessage;
-		readonly serverResponse: http.ServerResponse;
-	}
 }
 
 export type CreateHttpServerParams = O.PartialKeys<
@@ -33,105 +29,89 @@ export type CreateHttpServerParams = O.PartialKeys<
 	| "fromHookHeaderKey"
 >;
 
-export async function createHttpServer(
+export function createHttpServer(
 	inputHub: Hub,
 	params: CreateHttpServerParams,
 ) {
-	const httpServerParams: HttpServerParams = {
-		...params,
-		maxBodySize: "50mb",
-		informationHeaderKey: "information",
-		predictedHeaderKey: "predicted",
-		fromHookHeaderKey: "from-hook",
-		interface: "node",
-	};
-
-	const newHub1 = await launchHookServer(
-		inputHub.aggregatesHooksHubLifeCycle("beforeServerBuildRoutes"),
-		inputHub,
-		httpServerParams,
+	const httpServerParams: HttpServerParams = O.override<HttpServerParams>(
+		{
+			host: "localhost",
+			port: 80,
+			maxBodySize: "50mb",
+			informationHeaderKey: "information",
+			predictedHeaderKey: "predicted",
+			fromHookHeaderKey: "from-hook",
+			interface: "node",
+		},
+		params,
 	);
 
-	const router = await buildRouter(
-		newHub1.addRouteHooks(
-			makeNodeHook(newHub1, httpServerParams),
-		),
-	);
+	const hooks = makeNodeHook(inputHub, httpServerParams);
 
-	const newHub2 = await launchHookServer(
-		newHub1.aggregatesHooksHubLifeCycle("beforeStartServer"),
-		newHub1,
-		httpServerParams,
-	);
+	const hub = inputHub.addRouteHooks(hooks);
 
-	if (inputHub.config.environment === "BUILD") {
-		process.exit(0);
+	function whenUncaughtError(
+		error: unknown,
+		routerInitializationData: RouterInitializationData,
+	) {
+		const serverResponse = routerInitializationData.raw.response;
+
+		if (!serverResponse.headersSent && !serverResponse.writableEnded) {
+			serverResponse.writeHead(500, {
+				[httpServerParams.informationHeaderKey]: "critical-server-error",
+			});
+
+			const maybeError = error?.toString?.();
+
+			serverResponse.write(
+				typeof maybeError === "string"
+					? maybeError
+					: "unknown-server-error",
+			);
+		}
+
+		if (!serverResponse.writableEnded) {
+			serverResponse.end();
+		}
 	}
 
-	const server = params.https
-		? https.createServer(params.https)
-		: http.createServer(params.http ?? {});
+	return implementHttpServer(
+		{
+			hub,
+			httpServerParams,
+		},
+		({ httpServerParams, execRouteSystem }) => {
+			const server = httpServerParams.https
+				? https.createServer(httpServerParams.https)
+				: http.createServer(httpServerParams.http ?? {});
 
-	const serverErrorHooks = newHub1.aggregatesHooksHubLifeCycle("serverError");
+			server.addListener(
+				"request",
+				(serverRequest, serverResponse) => execRouteSystem(
+					{
+						method: serverRequest.method ?? "",
+						headers: serverRequest.headers,
+						host: serverRequest.headers.host ?? "",
+						origin: serverRequest.headers.origin ?? "",
+						url: serverRequest.url ?? "",
+						raw: {
+							request: serverRequest,
+							response: serverResponse,
+						},
+					},
+					whenUncaughtError,
+				),
+			);
 
-	server.addListener(
-		"request",
-		(serverRequest, serverResponse) => router
-			.exec({
-				method: serverRequest.method ?? "",
-				headers: serverRequest.headers,
-				host: serverRequest.headers.host ?? "",
-				origin: serverRequest.headers.origin ?? "",
-				url: serverRequest.url ?? "",
-				raw: {
-					request: serverRequest,
-					response: serverResponse,
-				},
-			})
-			.catch(async(error: unknown) => {
-				await launchHookServerError(serverErrorHooks, {
-					error,
-					exit: serverErrorExitHookFunction,
-					next: serverErrorNextHookFunction,
-					serverRequest,
-					serverResponse,
-				}).catch(forward);
-
-				if (!serverResponse.headersSent && !serverResponse.writableEnded) {
-					serverResponse.writeHead(500, {
-						[httpServerParams.informationHeaderKey]: "critical-server-error",
-					});
-
-					const maybeError = error?.toString?.();
-
-					serverResponse.write(
-						typeof maybeError === "string"
-							? maybeError
-							: "unknown-server-error",
-					);
-				}
-
-				if (!serverResponse.writableEnded) {
-					serverResponse.end();
-				}
-			}),
+			return new Promise<typeof server>((resolve) => {
+				server.listen(
+					{
+						port: httpServerParams.port,
+						host: httpServerParams.host,
+					},
+					() => void resolve(server),
+				);
+			});
+		},
 	);
-
-	await new Promise<void>((resolve) => {
-		server.listen(
-			{
-				port: httpServerParams.port,
-				host: httpServerParams.host,
-			},
-			() => void resolve(),
-		);
-	});
-
-	await launchHookServer(
-		newHub2.aggregatesHooksHubLifeCycle("afterStartServer"),
-		newHub2,
-		httpServerParams,
-	);
-
-	return server;
 }

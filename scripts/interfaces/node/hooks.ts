@@ -1,7 +1,8 @@
 import { type HttpServerParams, type Hub } from "@core/hub";
-import { createHookRouteLifeCycle, HookResponse, PredictedResponse } from "@core/route";
+import { createHookRouteLifeCycle } from "@core/route";
 import { stringToBytes } from "@duplojs/utils";
 import { BodyParseUnknownError, BodyParseWrongChunkReceived, BodySizeExceedsLimitError } from "./error";
+import { HookResponse, PredictedResponse } from "@core/response";
 
 export function makeNodeHook(hub: Hub, serverParams: HttpServerParams) {
 	const informationHeaderKey = serverParams.informationHeaderKey;
@@ -109,20 +110,22 @@ export function makeNodeHook(hub: Hub, serverParams: HttpServerParams) {
 			return exit();
 		},
 		beforeSendResponse({ request, currentResponse, exit }) {
-			const body = currentResponse.body;
+			if (!currentResponse.headers?.["content-type"]) {
+				const body = currentResponse.body;
 
-			if (
-				typeof body === "string"
-				|| body instanceof Error
-			) {
-				currentResponse.setHeader("content-type", "text/plain; charset=utf-8");
-			} else if (
-				typeof body === "object"
-				|| typeof body === "number"
-				|| typeof body === "boolean"
+				if (
+					typeof body === "string"
+					|| body instanceof Error
+				) {
+					currentResponse.setHeader("content-type", "text/plain; charset=utf-8");
+				} else if (
+					typeof body === "object"
+					|| typeof body === "number"
+					|| typeof body === "boolean"
 
-			) {
-				currentResponse.setHeader("content-type", "application/json; charset=utf-8");
+				) {
+					currentResponse.setHeader("content-type", "application/json; charset=utf-8");
+				}
 			}
 
 			currentResponse.setHeader(informationHeaderKey, currentResponse.information);

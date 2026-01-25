@@ -280,6 +280,23 @@ describe("makeNodeHook", () => {
 			});
 		});
 
+		it("not sets text/plain for string body", () => {
+			const request = createFakeRequest();
+			const currentResponse = new Response("200", "str", "value")
+				.setHeader("content-type", "text/html");
+
+			hooks.beforeSendResponse!({
+				request,
+				currentResponse,
+				exit: exitHookFunction,
+			} as any);
+
+			expect(currentResponse.headers).toStrictEqual({
+				"content-type": "text/html",
+				[baseServerParams.informationHeaderKey]: "str",
+			});
+		});
+
 		it("un support body value", () => {
 			const request = createFakeRequest();
 			const currentResponse = new Response("200", "fnc", (() => {}));

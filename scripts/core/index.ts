@@ -15,3 +15,5 @@ export * from "./functionsBuilders";
 export * from "./router";
 export * from "./stringIdentifier";
 export * from "./metadata";
+export * from "./implementHttpServer";
+export * from "./narrowingInput";

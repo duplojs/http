@@ -1,4 +1,4 @@
-import { launchHookServer, ResponseContract, useRouteBuilder } from "@core";
+import { createHub, launchHookServer, ResponseContract, useRouteBuilder } from "@core";
 import { DPE } from "@duplojs/utils";
 import { openApiGeneratorPlugin } from "@plugin-openApiGenerator";
 import { testHub } from "@test-utils/hub";
@@ -38,8 +38,7 @@ describe("plugin implementation", () => {
 	it("generate OpenApi file", async() => {
 		const hub = testHub
 			.plug(openApiGeneratorPlugin({
-				outputFilePath: "swagger.json",
-				routePath: "/swagger",
+				outputFile: "swagger.json",
 			}))
 			.register(route);
 
@@ -57,7 +56,7 @@ describe("plugin implementation", () => {
 		const hub = testHub
 			.plug(
 				openApiGeneratorPlugin({
-					outputFilePath: "swagger.json",
+					outputFile: "swagger.json",
 					routePath: "/swagger",
 					security: { type: "bearer" },
 				}),
@@ -77,7 +76,7 @@ describe("plugin implementation", () => {
 	it("generate OpenApi file with type apiKey ok security option", async() => {
 		const hub = testHub
 			.plug(openApiGeneratorPlugin({
-				outputFilePath: "swagger.json",
+				outputFile: "swagger.json",
 				routePath: "/swagger",
 				security: {
 					type: "apiKey",
@@ -116,8 +115,47 @@ describe("plugin implementation", () => {
 	it("empty route", async() => {
 		const hub = testHub
 			.plug(openApiGeneratorPlugin({
-				routePath: "/swagger",
+				outputFile: "./swagger.json",
 			}));
+
+		await launchHookServer(
+			hub.aggregatesHooksHubLifeCycle("beforeServerBuildRoutes"),
+			hub,
+			{},
+		);
+
+		expect(writeFile).not.toHaveBeenCalled();
+	});
+
+	it("empty params", async() => {
+		const hub = testHub
+			.plug(openApiGeneratorPlugin({}));
+
+		await launchHookServer(
+			hub.aggregatesHooksHubLifeCycle("beforeServerBuildRoutes"),
+			hub,
+			{},
+		);
+
+		expect(writeFile).not.toHaveBeenCalled();
+	});
+
+	it("empty params", async() => {
+		const hub = testHub
+			.plug(openApiGeneratorPlugin({}));
+
+		await launchHookServer(
+			hub.aggregatesHooksHubLifeCycle("beforeServerBuildRoutes"),
+			hub,
+			{},
+		);
+
+		expect(writeFile).not.toHaveBeenCalled();
+	});
+
+	it("not generate in PROD env", async() => {
+		const hub = createHub({ environment: "PROD" })
+			.plug(openApiGeneratorPlugin({ outputFile: "swagger.json" }));
 
 		await launchHookServer(
 			hub.aggregatesHooksHubLifeCycle("beforeServerBuildRoutes"),

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/prefer-for-of */
-import { type HookAfterSendResponse, type HookBeforeRouteExecution, type HookBeforeSendResponse, type HookError, type HookParseBody, HookResponse, hookRouteExitKind, type HookRouteLifeCycle, hookRouteNextKind, type HookSendResponse, type RouteHookErrorParams, type RouteHookParams, type RouteHookParamsAfter } from "@core/route";
+import { HookResponse } from "@core/response";
+import { type HookAfterSendResponse, type HookBeforeRouteExecution, type HookBeforeSendResponse, type HookError, type HookParseBody, hookRouteExitKind, type HookRouteLifeCycle, hookRouteNextKind, type HookSendResponse, type RouteHookErrorParams, type RouteHookParams, type RouteHookParamsAfter } from "@core/route";
 
 const hookExit = hookRouteExitKind.setTo({});
 const hookNext = hookRouteNextKind.setTo({});

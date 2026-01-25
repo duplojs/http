@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/prefer-for-of */
-import { type HookAfterSendResponse, type HookBeforeRouteExecution, type HookBeforeSendResponse, type HookError, type HookOnConstructRequest, type HookParseBody, HookResponse, type HookRouteLifeCycle, type HookSendResponse, routeKind } from "@core/route";
+import { type HookAfterSendResponse, type HookBeforeRouteExecution, type HookBeforeSendResponse, type HookError, type HookOnConstructRequest, type HookParseBody, type HookRouteLifeCycle, type HookSendResponse, routeKind } from "@core/route";
 import { A, E, forward, isType, pipe } from "@duplojs/utils";
-import { Response } from "@core/response";
+import { HookResponse, Response } from "@core/response";
 import { type Request } from "@core/request";
 import { buildHookAfter, buildHookBefore, buildHookErrorBefore, createHookResponse, exitHookFunction, nextHookFunction } from "./hook";
 import { createRouteFunctionBuilder } from "./create";

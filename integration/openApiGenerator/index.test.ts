@@ -14,7 +14,7 @@ describe("openApiGenerator", () => {
 	it("correct generate file", async() => {
 		const hubWithPlugins = hub.plug(
 			openApiGeneratorPlugin({
-				outputFilePath: fileName,
+				outputFile: fileName,
 				routePath: "/swagger",
 			}),
 		);
