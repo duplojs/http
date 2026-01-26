@@ -3,7 +3,7 @@ import type { RoutePath } from "../../core/route";
 import { DP } from "@duplojs/utils";
 export declare function makeOpenApiRoute(routePath: RoutePath, openApiPage: string): import("../../core/route").Route<{
     readonly method: "GET";
-    readonly metadata: readonly [];
+    readonly metadata: readonly [import("../../core/metadata").Metadata<"ignore-by-route-store", unknown>];
     readonly hooks: readonly [];
     readonly preflightSteps: readonly [];
     readonly paths: readonly [`/${string}`];

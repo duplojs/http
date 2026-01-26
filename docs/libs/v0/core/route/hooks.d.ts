@@ -2,7 +2,6 @@ import { type Request } from "../request";
 import { type UnionToIntersection, type AnyFunction, type Kind, type MaybePromise, type SimplifyTopLevel, type IsEqual } from "@duplojs/utils";
 import { type HookResponse } from "../response";
 import { type ResponseCode, type Response } from "../response";
-export * from "../response";
 export interface HookParamsOnConstructRequest {
     request: Request;
     addRequestProperties<GenericNewProperties extends Record<string, unknown>>(newProperties: GenericNewProperties): Request & GenericNewProperties;

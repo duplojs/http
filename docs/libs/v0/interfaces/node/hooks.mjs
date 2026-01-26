@@ -1,6 +1,7 @@
 import '../../core/route/index.mjs';
 import { stringToBytes } from '@duplojs/utils';
 import './error/index.mjs';
+import '../../core/response/index.mjs';
 import { createHookRouteLifeCycle } from '../../core/route/hooks.mjs';
 import { PredictedResponse } from '../../core/response/predicted.mjs';
 import { HookResponse } from '../../core/response/hook.mjs';
@@ -78,15 +79,17 @@ function makeNodeHook(hub, serverParams) {
             return exit();
         },
         beforeSendResponse({ request, currentResponse, exit }) {
-            const body = currentResponse.body;
-            if (typeof body === "string"
-                || body instanceof Error) {
-                currentResponse.setHeader("content-type", "text/plain; charset=utf-8");
-            }
-            else if (typeof body === "object"
-                || typeof body === "number"
-                || typeof body === "boolean") {
-                currentResponse.setHeader("content-type", "application/json; charset=utf-8");
+            if (!currentResponse.headers?.["content-type"]) {
+                const body = currentResponse.body;
+                if (typeof body === "string"
+                    || body instanceof Error) {
+                    currentResponse.setHeader("content-type", "text/plain; charset=utf-8");
+                }
+                else if (typeof body === "object"
+                    || typeof body === "number"
+                    || typeof body === "boolean") {
+                    currentResponse.setHeader("content-type", "application/json; charset=utf-8");
+                }
             }
             currentResponse.setHeader(informationHeaderKey, currentResponse.information);
             if (currentResponse instanceof PredictedResponse) {

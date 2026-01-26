@@ -5,7 +5,7 @@ import '../steps/index.mjs';
 import { Request } from '../request.mjs';
 import { defaultNotfoundHandler } from './defaultNotfoundHandler.mjs';
 import { defaultExtractContract } from './defaultExtractContract.mjs';
-export { hookServerExitKind, hookServerNextKind, launchHookBeforeBuildRoute, launchHookServer, launchHookServerError, serverErrorExitHookFunction, serverErrorNextHookFunction } from './hooks.mjs';
+export { createHookHubLifeCycle, hookServerExitKind, hookServerNextKind, launchHookBeforeBuildRoute, launchHookServer, launchHookServerError, serverErrorExitHookFunction, serverErrorNextHookFunction } from './hooks.mjs';
 import { createHandlerStep } from '../steps/handler.mjs';
 
 const hubKind = createCoreLibKind("hub");

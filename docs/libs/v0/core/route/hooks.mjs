@@ -1,5 +1,4 @@
 import { createCoreLibKind } from '../kind.mjs';
-import '../response/index.mjs';
 
 const hookRouteExitKind = createCoreLibKind("route-hook-exit");
 const hookRouteNextKind = createCoreLibKind("route-hook-next");

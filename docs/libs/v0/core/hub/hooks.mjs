@@ -26,5 +26,8 @@ async function launchHookServerError(hooks, params) {
         }
     }
 }
+function createHookHubLifeCycle(hookHubLifeCycle) {
+    return hookHubLifeCycle;
+}
 
-export { hookServerExitKind, hookServerNextKind, launchHookBeforeBuildRoute, launchHookServer, launchHookServerError, serverErrorExitHookFunction, serverErrorNextHookFunction };
+export { createHookHubLifeCycle, hookServerExitKind, hookServerNextKind, launchHookBeforeBuildRoute, launchHookServer, launchHookServerError, serverErrorExitHookFunction, serverErrorNextHookFunction };

@@ -7,4 +7,4 @@ export interface BuildStepFunctionParams {
     readonly environment: Environment;
     readonly defaultExtractContract: ResponseContract.Contract;
 }
-export declare function buildStepFunction(step: Steps, params: BuildStepFunctionParams): Promise<BuildStepNotSupportEither | import("./create").BuildStepSuccessEither>;
+export declare function buildStepFunction(step: Steps, params: BuildStepFunctionParams): Promise<import("./create").BuildStepSuccessEither | BuildStepNotSupportEither>;

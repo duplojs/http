@@ -14,8 +14,8 @@ interface OpenApiSecurityOptionBasic {
     type: "basic";
 }
 export interface OpenApiGeneratorPluginParams {
-    routePath: RoutePath;
-    outputFilePath?: string;
+    routePath?: RoutePath;
+    outputFile?: string;
     /**
      * @default "Swagger API"
      */

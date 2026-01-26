@@ -28,7 +28,11 @@ async function launchHookServerError(hooks, params) {
         }
     }
 }
+function createHookHubLifeCycle(hookHubLifeCycle) {
+    return hookHubLifeCycle;
+}
 
+exports.createHookHubLifeCycle = createHookHubLifeCycle;
 exports.hookServerExitKind = hookServerExitKind;
 exports.hookServerNextKind = hookServerNextKind;
 exports.launchHookBeforeBuildRoute = launchHookBeforeBuildRoute;

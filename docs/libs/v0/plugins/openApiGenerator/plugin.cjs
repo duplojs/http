@@ -12,6 +12,11 @@ function openApiGeneratorPlugin(pluginParams) {
         hooksHubLifeCycle: [
             {
                 beforeServerBuildRoutes: async (hub) => {
+                    if (!utils.equal(hub.config.environment, ["DEV", "BUILD"])
+                        || (!pluginParams.routePath
+                            && !pluginParams.outputFile)) {
+                        return;
+                    }
                     const contextToJsonSchemaFactory = new Map();
                     const resultSchemaContext = new Map();
                     const routes = hub.aggregatesRoutes();
@@ -71,16 +76,19 @@ function openApiGeneratorPlugin(pluginParams) {
                             : undefined,
                     };
                     const openApiDocumentString = JSON.stringify(openApiDocument, null, 2);
-                    if (pluginParams.outputFilePath) {
-                        await promises.writeFile(pluginParams.outputFilePath, openApiDocumentString);
+                    if (pluginParams.outputFile) {
+                        await promises.writeFile(pluginParams.outputFile, openApiDocumentString);
                     }
-                    const openApiPage = makeOpenApiPage.makeOpenApiPage({
-                        openApiDocument: openApiDocumentString,
-                        pageTitle: pluginParams.title ?? "Swagger API",
-                        swaggerUiVersion: pluginParams.swaggerUiVersion ?? "5.31.0",
-                    });
-                    const openApiRoute = makeOpenApiRoute.makeOpenApiRoute(pluginParams.routePath, openApiPage);
-                    return hub.register(openApiRoute);
+                    if (pluginParams.routePath) {
+                        const openApiPage = makeOpenApiPage.makeOpenApiPage({
+                            openApiDocument: openApiDocumentString,
+                            pageTitle: pluginParams.title ?? "Swagger API",
+                            swaggerUiVersion: pluginParams.swaggerUiVersion ?? "5.31.0",
+                        });
+                        const openApiRoute = makeOpenApiRoute.makeOpenApiRoute(pluginParams.routePath, openApiPage);
+                        return hub.register(openApiRoute);
+                    }
+                    return;
                 },
             },
         ],

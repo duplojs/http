@@ -30,6 +30,9 @@ function codeGeneratorPlugin(pluginParams) {
         hooksHubLifeCycle: [
             {
                 beforeStartServer: async (hub) => {
+                    if (!utils.equal(hub.config.environment, ["DEV", "BUILD"])) {
+                        return;
+                    }
                     const routes = hub.aggregatesRoutes();
                     const dataParserRoutes = utils.A.flatMap(routes, (route) => routeToDataParser.routeToDataParser(route, {
                         defaultExtractContract: hub.defaultExtractContract,

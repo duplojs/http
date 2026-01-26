@@ -1,52 +1,25 @@
 'use strict';
 
-require('../../core/hub/index.cjs');
-var index = require('../../core/router/index.cjs');
 var utils = require('@duplojs/utils');
 var http = require('http');
 var https = require('https');
-var hooks$1 = require('./hooks.cjs');
-var hooks = require('../../core/hub/hooks.cjs');
+var hooks = require('./hooks.cjs');
+var implementHttpServer = require('../../core/implementHttpServer.cjs');
 
-async function createHttpServer(inputHub, params) {
-    const httpServerParams = {
-        ...params,
+function createHttpServer(inputHub, params) {
+    const httpServerParams = utils.O.override({
+        host: "localhost",
+        port: 80,
         maxBodySize: "50mb",
         informationHeaderKey: "information",
         predictedHeaderKey: "predicted",
         fromHookHeaderKey: "from-hook",
         interface: "node",
-    };
-    const newHub1 = await hooks.launchHookServer(inputHub.aggregatesHooksHubLifeCycle("beforeServerBuildRoutes"), inputHub, httpServerParams);
-    const router = await index.buildRouter(newHub1.addRouteHooks(hooks$1.makeNodeHook(newHub1, httpServerParams)));
-    const newHub2 = await hooks.launchHookServer(newHub1.aggregatesHooksHubLifeCycle("beforeStartServer"), newHub1, httpServerParams);
-    if (inputHub.config.environment === "BUILD") {
-        process.exit(0);
-    }
-    const server = params.https
-        ? https.createServer(params.https)
-        : http.createServer(params.http ?? {});
-    const serverErrorHooks = newHub1.aggregatesHooksHubLifeCycle("serverError");
-    server.addListener("request", (serverRequest, serverResponse) => router
-        .exec({
-        method: serverRequest.method ?? "",
-        headers: serverRequest.headers,
-        host: serverRequest.headers.host ?? "",
-        origin: serverRequest.headers.origin ?? "",
-        url: serverRequest.url ?? "",
-        raw: {
-            request: serverRequest,
-            response: serverResponse,
-        },
-    })
-        .catch(async (error) => {
-        await hooks.launchHookServerError(serverErrorHooks, {
-            error,
-            exit: hooks.serverErrorExitHookFunction,
-            next: hooks.serverErrorNextHookFunction,
-            serverRequest,
-            serverResponse,
-        }).catch(utils.forward);
+    }, params);
+    const hooks$1 = hooks.makeNodeHook(inputHub, httpServerParams);
+    const hub = inputHub.addRouteHooks(hooks$1);
+    function whenUncaughtError(error, routerInitializationData) {
+        const serverResponse = routerInitializationData.raw.response;
         if (!serverResponse.headersSent && !serverResponse.writableEnded) {
             serverResponse.writeHead(500, {
                 [httpServerParams.informationHeaderKey]: "critical-server-error",
@@ -59,15 +32,32 @@ async function createHttpServer(inputHub, params) {
         if (!serverResponse.writableEnded) {
             serverResponse.end();
         }
-    }));
-    await new Promise((resolve) => {
-        server.listen({
-            port: httpServerParams.port,
-            host: httpServerParams.host,
-        }, () => void resolve());
+    }
+    return implementHttpServer.implementHttpServer({
+        hub,
+        httpServerParams,
+    }, ({ httpServerParams, execRouteSystem }) => {
+        const server = httpServerParams.https
+            ? https.createServer(httpServerParams.https)
+            : http.createServer(httpServerParams.http ?? {});
+        server.addListener("request", (serverRequest, serverResponse) => execRouteSystem({
+            method: serverRequest.method ?? "",
+            headers: serverRequest.headers,
+            host: serverRequest.headers.host ?? "",
+            origin: serverRequest.headers.origin ?? "",
+            url: serverRequest.url ?? "",
+            raw: {
+                request: serverRequest,
+                response: serverResponse,
+            },
+        }, whenUncaughtError));
+        return new Promise((resolve) => {
+            server.listen({
+                port: httpServerParams.port,
+                host: httpServerParams.host,
+            }, () => void resolve(server));
+        });
     });
-    await hooks.launchHookServer(newHub2.aggregatesHooksHubLifeCycle("afterStartServer"), newHub2, httpServerParams);
-    return server;
 }
 
 exports.createHttpServer = createHttpServer;

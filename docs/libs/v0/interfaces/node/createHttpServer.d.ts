@@ -1,6 +1,6 @@
 import { type HttpServerParams, type Hub } from "../../core/hub";
 import { type Hosts } from "./types/host";
-import { type O, type BytesInString } from "@duplojs/utils";
+import { type BytesInString, O } from "@duplojs/utils";
 import http from "http";
 import https from "https";
 declare module "../../core/hub" {
@@ -14,10 +14,6 @@ declare module "../../core/hub" {
         readonly fromHookHeaderKey: string;
         readonly http?: http.ServerOptions;
         readonly https?: https.ServerOptions;
-    }
-    interface HttpServerErrorParams {
-        readonly serverRequest: http.IncomingMessage;
-        readonly serverResponse: http.ServerResponse;
     }
 }
 export type CreateHttpServerParams = O.PartialKeys<Omit<HttpServerParams, "interface">, "maxBodySize" | "informationHeaderKey" | "predictedHeaderKey" | "fromHookHeaderKey">;

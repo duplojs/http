@@ -141,6 +141,7 @@ function createHub(config) {
 
 exports.defaultNotfoundHandler = defaultNotfoundHandler.defaultNotfoundHandler;
 exports.defaultExtractContract = defaultExtractContract.defaultExtractContract;
+exports.createHookHubLifeCycle = hooks.createHookHubLifeCycle;
 exports.hookServerExitKind = hooks.hookServerExitKind;
 exports.hookServerNextKind = hooks.hookServerNextKind;
 exports.launchHookBeforeBuildRoute = hooks.launchHookBeforeBuildRoute;

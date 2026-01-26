@@ -1,3 +1,4 @@
+import '../../response/index.mjs';
 import '../../route/index.mjs';
 import { hookRouteExitKind, hookRouteNextKind } from '../../route/hooks.mjs';
 import { HookResponse } from '../../response/hook.mjs';

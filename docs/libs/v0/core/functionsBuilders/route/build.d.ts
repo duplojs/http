@@ -7,4 +7,4 @@ export interface BuildRouteFunctionParams extends BuildStepFunctionParams {
     readonly globalHooksRouteLifeCycle: readonly HookRouteLifeCycle[];
     readonly defaultExtractContract: ResponseContract.Contract;
 }
-export declare function buildRouteFunction(route: Route, params: BuildRouteFunctionParams): Promise<BuildRouteNotSupportEither | import("./create").BuildRouteSuccessEither | import("..").BuildStepNotSupportEither>;
+export declare function buildRouteFunction(route: Route, params: BuildRouteFunctionParams): Promise<import("..").BuildStepNotSupportEither | import("./create").BuildRouteSuccessEither | BuildRouteNotSupportEither>;

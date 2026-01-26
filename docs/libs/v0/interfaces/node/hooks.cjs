@@ -3,6 +3,7 @@
 require('../../core/route/index.cjs');
 var utils = require('@duplojs/utils');
 require('./error/index.cjs');
+require('../../core/response/index.cjs');
 var hooks = require('../../core/route/hooks.cjs');
 var predicted = require('../../core/response/predicted.cjs');
 var hook = require('../../core/response/hook.cjs');
@@ -80,15 +81,17 @@ function makeNodeHook(hub, serverParams) {
             return exit();
         },
         beforeSendResponse({ request, currentResponse, exit }) {
-            const body = currentResponse.body;
-            if (typeof body === "string"
-                || body instanceof Error) {
-                currentResponse.setHeader("content-type", "text/plain; charset=utf-8");
-            }
-            else if (typeof body === "object"
-                || typeof body === "number"
-                || typeof body === "boolean") {
-                currentResponse.setHeader("content-type", "application/json; charset=utf-8");
+            if (!currentResponse.headers?.["content-type"]) {
+                const body = currentResponse.body;
+                if (typeof body === "string"
+                    || body instanceof Error) {
+                    currentResponse.setHeader("content-type", "text/plain; charset=utf-8");
+                }
+                else if (typeof body === "object"
+                    || typeof body === "number"
+                    || typeof body === "boolean") {
+                    currentResponse.setHeader("content-type", "application/json; charset=utf-8");
+                }
             }
             currentResponse.setHeader(informationHeaderKey, currentResponse.information);
             if (currentResponse instanceof predicted.PredictedResponse) {
