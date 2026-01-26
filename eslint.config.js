@@ -26,6 +26,15 @@ export default [
 		ignores: ["**/*.test.ts", "test/**/*.ts", "**/*.d.ts"],
 	},
 	{
+		rules: {
+			"@stylistic/js/no-multiple-empty-lines": "off",
+			"@typescript-eslint/no-confusing-void-expression": "off",
+			"no-nested-ternary": "off",
+			"@stylistic/js/line-comment-position": "off",
+		},
+		files: ["docs/examples/**/*.ts"],
+	},
+	{
 		ignores: ["coverage", "dist", "**/*.generate.*", "docs/libs/*", "docs/.vitepress/cache/*", "docs/.vitepress/dist/*"]
 	}
 ];

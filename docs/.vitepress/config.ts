@@ -107,6 +107,27 @@ export default defineConfig({
 						link: "/fr/v0/guide/",
 					},
 					{
+						text: "API",
+						items: [
+							{
+								text: "Core",
+								link: "/fr/v0/api/core/",
+							},
+							{
+								text: "Client",
+								link: "/fr/v0/api/client/",
+							},
+							{
+								text: "Interfaces",
+								link: "/fr/v0/api/interfaces/",
+							},
+							{
+								text: "Plugins",
+								link: "/fr/v0/api/plugins/",
+							},
+						],
+					},
+					{
 						text: "v0.x (LTS)",
 						items: [
 							{

@@ -9,3 +9,89 @@ next:
 ---
 
 # Démarrage rapide
+
+## Installation des dépendences
+::: code-group
+```bash [npm]
+npm install @duplojs/http@0 @duplojs/utils@1
+```
+```bash [yarn]
+yarn add @duplojs/http@0 @duplojs/utils@1
+```
+```bash [pnpm]
+pnpm add @duplojs/http@0 @duplojs/utils@1
+```
+:::
+
+### Dépendences de devlopement
+::: code-group
+```bash [npm]
+npm install typescript@>=5.9 tsx@>=4.21 --save-dev
+```
+```bash [yarn]
+yarn add typescript@>=5.9 tsx@>=4.21 --dev
+```
+```bash [pnpm]
+pnpm add typescript@>=5.9 tsx@>=4.21 --dev
+```
+:::
+
+## Configuration du package.json
+```json
+{
+	...,
+	"type": "module", // Fortement conseiller
+	...,
+}
+```
+
+## Configuration typescript
+```json
+{
+	"compilerOptions": {
+		"target": "ESNext",
+		"lib": ["ESNext"],
+		"moduleDetection": "force",
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
+		"noEmit": true,
+		"isolatedModules": true,
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"strict": true,
+		"noImplicitAny": true,
+		"strictNullChecks": true,
+		"strictFunctionTypes": true,
+		"strictBindCallApply": true,
+		"strictPropertyInitialization": true,
+		"noImplicitThis": true,
+		"useUnknownInCatchVariables": true,
+		"alwaysStrict": true,
+		"noImplicitReturns": true,
+		"noUncheckedIndexedAccess": true,
+		"noImplicitOverride": true,
+		"skipLibCheck": true,
+	},
+	"include": ["src/**/*.ts"],
+}
+```
+
+## Créer le fichier `src/routes/helloWorld.ts`
+
+```ts twoslash
+// @version: 0
+<!--@include: @/examples/v0/guide/quickStart/routes/helloWorld.ts-->
+```
+
+## Créer le fichier `src/main.ts`
+
+```ts twoslash
+// @version: 0
+<!--@include: @/examples/v0/guide/quickStart/main.ts-->
+```
+
+## Lancer le serveur http
+
+```bash
+npx tsx --watch src/main.ts
+```
