@@ -1,7 +1,7 @@
 ---
 description: ""
 prev:
-  text: "Récupéré de la données"
+  text: "Récupérer des données"
   link: "/fr/v0/guide/server/getData"
 next:
   text: "Aborder une nouvelle route"

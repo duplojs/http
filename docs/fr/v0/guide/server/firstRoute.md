@@ -1,14 +1,14 @@
 ---
 description: ""
 prev:
-  text: "Démarée un server"
+  text: "Démarrer un serveur"
   link: "/fr/v0/guide/server/startServer"
 next:
-  text: "Récupéré de la données"
+  text: "Récupérer des données"
   link: "/fr/v0/guide/server/getData"
 ---
 
-# Créer ça premier route
+# Créer sa première route
 
 ```ts twoslash
 // @version: 0
@@ -34,13 +34,13 @@ N'oubliez pas d'importer les fichiers contenant vos routes, sinon ceux-ci ne ser
 :::
 
 ## C'est quoi un `ResponseContract` ?
-Les `ResponseContract` permettent de définir de manier explicite les réponses possibles d'une step. **ILS SONT OBLIGATOIRES !** 
+Les `ResponseContract` permettent de définir de manière explicite les réponses possibles d'une step. **ILS SONT OBLIGATOIRES !** 
 
 Ils permettent :
 - d'associer une information à la structure d'un body et à un statut HTTP.
 - de visualiser concrètement ce que renvoie la route et d'éviter donc d'envoyer des champs supplémentaires (coucou le mot de passe en front 👋).
 - d'assister pendant les tests pour être sûr des structures que vous renvoyez.
-- d'être interprété au runtime pour générer des swagger ou des contrats de type pour des client http.
+- d'être interprétés au runtime pour générer des Swagger ou des contrats de type pour des clients HTTP.
 
 ```ts twoslash
 // @version: 0

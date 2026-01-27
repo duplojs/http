@@ -4,7 +4,7 @@ prev:
   text: "Aborder une nouvelle route"
   link: "/fr/v0/guide/server/newRoute"
 next:
-  text: "Initialisée un client"
+  text: "Initialiser un client"
   link: "/fr/v0/guide/client/initClient"
 ---
 

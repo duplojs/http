@@ -1,10 +1,10 @@
 ---
 description: ""
 prev:
-  text: "Faire une request"
+  text: "Faire une requête"
   link: "/fr/v0/guide/client/doRequest"
 next:
-  text: "Generation de code"
+  text: "Génération de code"
   link: "/fr/v0/guide/plugins/codeGenerator"
 ---
 

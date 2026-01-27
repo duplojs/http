@@ -1,11 +1,11 @@
 ---
 description: ""
 prev:
-  text: "Créer ça premier route"
+  text: "Créer sa première route"
   link: "/fr/v0/guide/server/firstRoute"
 next:
   text: "Faire une vérification"
   link: "/fr/v0/guide/server/doCheck"
 ---
 
-# Récupéré de la données
+# Récupérer des données

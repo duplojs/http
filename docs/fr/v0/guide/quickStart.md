@@ -10,7 +10,7 @@ next:
 
 # Démarrage rapide
 
-## Installation des dépendences
+## Installation des dépendances
 ::: code-group
 ```bash [npm]
 npm install @duplojs/http@0 @duplojs/utils@1
@@ -23,7 +23,7 @@ pnpm add @duplojs/http@0 @duplojs/utils@1
 ```
 :::
 
-### Dépendences de devlopement
+### Dépendances de développement
 ::: code-group
 ```bash [npm]
 npm install typescript@>=5.9 tsx@>=4.21 --save-dev
@@ -40,7 +40,7 @@ pnpm add typescript@>=5.9 tsx@>=4.21 --dev
 ```json
 {
 	...,
-	"type": "module", // Fortement conseiller
+	"type": "module", // Fortement conseillé
 	...,
 }
 ```
@@ -90,7 +90,7 @@ pnpm add typescript@>=5.9 tsx@>=4.21 --dev
 <!--@include: @/examples/v0/guide/quickStart/main.ts-->
 ```
 
-## Lancer le serveur http
+## Lancer le serveur HTTP
 
 ```bash
 npx tsx --watch src/main.ts

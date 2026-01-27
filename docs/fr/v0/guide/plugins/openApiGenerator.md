@@ -1,11 +1,11 @@
 ---
 description: ""
 prev:
-  text: "Generation de code"
+  text: "Génération de code"
   link: "/fr/v0/guide/plugins/codeGenerator"
 next:
   text: ""
   link: ""
 ---
 
-# Generation open API
+# Génération OpenAPI
