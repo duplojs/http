@@ -3,7 +3,8 @@
   "scripts": {
     "docs:dev": "vitepress dev",
     "docs:build": "vitepress build",
-    "docs:preview": "vitepress preview"
+    "docs:preview": "vitepress preview",
+    "test:types": "tsc -p tsconfig.app.json && tsc -p tsconfig.v0.json"
   },
   "devDependencies": {
     "@shikijs/vitepress-twoslash": "^3.21.0",

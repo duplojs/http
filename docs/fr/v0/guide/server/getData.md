@@ -9,7 +9,7 @@ next:
 ---
 
 # Récupérer des données
-```ts twoslash
+```ts twoslash {5-22,27-34}
 // @version: 0
 <!--@include: @/examples/v0/guide/server/getData/route.ts-->
 ```
@@ -20,7 +20,7 @@ Les données sont ensuite disponibles dans le `Floor`, qui est un objet qui cont
 
 
 ## Profondeur d'extraction
-```ts twoslash
+```ts twoslash {5-13}
 // @version: 0
 <!--@include: @/examples/v0/guide/server/getData/extractDepth.ts-->
 ```

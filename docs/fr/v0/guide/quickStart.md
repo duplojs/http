@@ -95,3 +95,14 @@ pnpm add typescript@>=5.9 tsx@>=4.21 --dev
 ```bash
 npx tsx --watch src/main.ts
 ```
+
+## Utiliser le client
+
+```ts twoslash
+// @version: 0
+// @filename: types.d.ts
+<!--@include: @/examples/v0/guide/quickStart/types.d.ts-->
+// @filename: main.ts
+// ---cut---
+<!--@include: @/examples/v0/guide/quickStart/client.ts-->
+```

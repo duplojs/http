@@ -34,7 +34,7 @@ N'oubliez pas d'importer les fichiers contenant vos routes, sinon ceux-ci ne ser
 :::
 
 ## C'est quoi un `ResponseContract` ?
-Les `ResponseContract` permettent de définir de manière explicite les réponses possibles d'une step. **ILS SONT OBLIGATOIRES !** 
+Les `ResponseContract` permettent de définir de manière explicite les réponses possibles d'une step. **ILS SONT OBLIGATOIRES !** La structure du body se définit via un `dataParser` de `@duplojs/utils`.
 
 Ils permettent :
 - d'associer une information à la structure d'un body et à un statut HTTP.

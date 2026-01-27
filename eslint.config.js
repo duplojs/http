@@ -35,6 +35,6 @@ export default [
 		files: ["docs/examples/**/*.ts"],
 	},
 	{
-		ignores: ["coverage", "dist", "**/*.generate.*", "docs/libs/*", "docs/.vitepress/cache/*", "docs/.vitepress/dist/*"]
+		ignores: ["coverage", "dist", "**/*.generate.*", "docs/libs/*", "docs/.vitepress/cache/*", "docs/.vitepress/dist/*", "**/*.d.ts"]
 	}
 ];
