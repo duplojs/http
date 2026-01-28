@@ -229,12 +229,134 @@ export default pipe(
 				},
 			},
 			root: {
-				description: "",
+				description: "Build and consume HTTP servers robustly with an excellent developer experience.",
 				label: "English",
 				lang: "en",
 				link: "/en/",
 				themeConfig: {
-
+					nav: [
+						{
+							text: "Guide",
+							link: "/en/v0/guide/",
+						},
+						{
+							text: "API",
+							items: [
+								{
+									text: "Core",
+									link: "/en/v0/api/core/",
+								},
+								{
+									text: "Client",
+									link: "/en/v0/api/client/",
+								},
+								{
+									text: "Interfaces",
+									link: "/en/v0/api/interfaces/",
+								},
+								{
+									text: "Plugins",
+									link: "/en/v0/api/plugins/",
+								},
+							],
+						},
+						{
+							text: "v0.x (LTS)",
+							items: [
+								{
+									text: "v0.x (LTS)",
+									link: "/en/v0/guide/",
+								},
+							],
+						},
+					],
+					docFooter: {
+						prev: "Previous page",
+						next: "Next page",
+					},
+					sidebar: {
+						"/en/v0/guide/": [
+							{
+								text: "Get started",
+								items: [
+									{
+										text: "Introduction",
+										link: "/en/v0/guide/",
+									},
+									{
+										text: "Quick start",
+										link: "/en/v0/guide/quickStart",
+									},
+									{
+										text: "Server",
+										items: [
+											{
+												text: "Create a hub",
+												link: "/en/v0/guide/server/createHub",
+											},
+											{
+												text: "Start a server",
+												link: "/en/v0/guide/server/startServer",
+											},
+											{
+												text: "Create your first route",
+												link: "/en/v0/guide/server/firstRoute",
+											},
+											{
+												text: "Get data",
+												link: "/en/v0/guide/server/getData",
+											},
+											{
+												text: "Run a check",
+												link: "/en/v0/guide/server/doCheck",
+											},
+											{
+												text: "Build a check routine",
+												link: "/en/v0/guide/server/doCheckRoutine",
+											},
+										],
+									},
+									{
+										text: "Client",
+										items: [
+											{
+												text: "Initialize a client",
+												link: "/en/v0/guide/client/initClient",
+											},
+											{
+												text: "Make a request",
+												link: "/en/v0/guide/client/doRequest",
+											},
+											{
+												text: "Handle a response",
+												link: "/en/v0/guide/client/handleResponse",
+											},
+										],
+									},
+									{
+										text: "Plugins",
+										items: [
+											{
+												text: "Code generation",
+												link: "/en/v0/guide/plugins/codeGenerator",
+											},
+											{
+												text: "OpenAPI generation",
+												link: "/en/v0/guide/plugins/openApiGenerator",
+											},
+										],
+									},
+								],
+							},
+						],
+					},
+					outline: { label: "On this page" },
+					returnToTopLabel: "Return to top",
+					darkModeSwitchLabel: "Dark mode",
+					footer: {
+						copyright: "Copyright © 2025-present DuploJS contributors",
+						message: "Released under the MIT License.",
+					},
 				},
 			},
 		},

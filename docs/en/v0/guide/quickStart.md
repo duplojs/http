@@ -2,15 +2,15 @@
 description: ""
 prev:
   text: "Introduction"
-  link: "/fr/v0/guide/"
+  link: "/en/v0/guide/"
 next:
-  text: "Créer un hub"
-  link: "/fr/v0/guide/server/createHub"
+  text: "Create a hub"
+  link: "/en/v0/guide/server/createHub"
 ---
 
-# Démarrage rapide
+# Quick start
 
-## Installation des dépendances
+## Install dependencies
 ::: code-group
 ```bash [npm]
 npm install @duplojs/http@0 @duplojs/utils@1
@@ -23,7 +23,7 @@ pnpm add @duplojs/http@0 @duplojs/utils@1
 ```
 :::
 
-### Dépendances de développement
+### Development dependencies
 ::: code-group
 ```bash [npm]
 npm install typescript@>=5.9 tsx@>=4.21 --save-dev
@@ -36,16 +36,16 @@ pnpm add typescript@>=5.9 tsx@>=4.21 --dev
 ```
 :::
 
-## Configuration du package.json
+## Configure package.json
 ```json
 {
 	...,
-	"type": "module", // Fortement conseillé
+	"type": "module", // Strongly recommended
 	...,
 }
 ```
 
-## Configuration typescript
+## TypeScript configuration
 ```json
 {
 	"compilerOptions": {
@@ -76,27 +76,27 @@ pnpm add typescript@>=5.9 tsx@>=4.21 --dev
 }
 ```
 
-## Créer le fichier `src/routes/helloWorld.ts`
+## Create `src/routes/helloWorld.ts`
 
 ```ts twoslash
 // @version: 0
 <!--@include: @/examples/v0/guide/quickStart/routes/helloWorld.ts-->
 ```
 
-## Créer le fichier `src/main.ts`
+## Create `src/main.ts`
 
 ```ts twoslash
 // @version: 0
 <!--@include: @/examples/v0/guide/quickStart/main.ts-->
 ```
 
-## Lancer le serveur HTTP
+## Start the HTTP server
 
 ```bash
 npx tsx --watch src/main.ts
 ```
 
-## Utiliser le client
+## Use the client
 
 ```ts twoslash
 // @version: 0
