@@ -33,12 +33,12 @@ declare module "./builder" {
 				readonly preflightSteps: GenericDefinition["preflightSteps"];
 				readonly steps: readonly [];
 				readonly hooks: readonly [
-					...GenericDefinition["hooks"],
 					...GenericHooks,
+					...GenericDefinition["hooks"],
 				];
 				readonly metadata: readonly [
-					...GenericDefinition["metadata"],
 					...GenericMetadata,
+					...GenericDefinition["metadata"],
 				];
 			},
 			GenericFloor,

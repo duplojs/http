@@ -12,7 +12,7 @@ export function queryToString(query: ClientRequestParams["query"]) {
 					return pv;
 				}
 
-				if (Array.isArray(value)) {
+				if (value instanceof Array) {
 					value.forEach((subValue) => {
 						pv.push(`${key}=${subValue}`);
 					});

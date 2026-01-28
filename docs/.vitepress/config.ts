@@ -180,10 +180,6 @@ export default pipe(
 												link: "/fr/v0/guide/server/doCheck",
 											},
 											{
-												text: "Aborder une nouvelle route",
-												link: "/fr/v0/guide/server/newRoute",
-											},
-											{
 												text: "Faire une routine de vérification",
 												link: "/fr/v0/guide/server/doCheckRoutine",
 											},

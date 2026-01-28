@@ -4,13 +4,13 @@ prev:
   text: "Récupérer des données"
   link: "/fr/v0/guide/server/getData"
 next:
-  text: "Aborder une nouvelle route"
-  link: "/fr/v0/guide/server/newRoute"
+  text: "Faire une routine de vérification"
+  link: "/fr/v0/guide/server/doCheckRoutine"
 ---
 
 # Faire une vérification
 
-Vous pouvez normaliser vos vérifications au sein d'une route, très simplement avec les checkers. 
+Vous pouvez normaliser vos vérifications au sein d'une route, très simplement avec un `checker`. 
 
 ```ts twoslash
 // @version: 0
@@ -49,7 +49,7 @@ Pour utiliser un checker, il suffit d'utiliser la méthode `check` du builder de
 - `indexing`: définit la clé où va être indexée la donnée associée au `result` défini.
 
 ## Aller plus vite
-Vous pouvez aller beaucoup plus vite en créant des presets de checker.
+Vous pouvez aller beaucoup plus vite en créant un `presetChecker`.
 
 ```ts twoslash
 // @version: 0
