@@ -103,6 +103,10 @@ export function createHttpServer(
 				),
 			);
 
+			if (hub.config.environment === "BUILD") {
+				return server;
+			}
+
 			return new Promise<typeof server>((resolve) => {
 				server.listen(
 					{

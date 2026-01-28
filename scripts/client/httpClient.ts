@@ -139,6 +139,12 @@ export interface HttpClient<
 		"PUT"
 	>;
 
+	patch: HttpClientRequestMethod<
+		GenericServerRoute,
+		GenericHookParams,
+		"PATCH"
+	>;
+
 	delete: HttpClientRequestMethod<
 		GenericServerRoute,
 		GenericHookParams,
@@ -291,6 +297,11 @@ export function createHttpClient<
 			})) as never,
 			put: ((path: string, params?: object) => self.request({
 				method: "PUT",
+				path,
+				...params,
+			})) as never,
+			patch: ((path: string, params?: object) => self.request({
+				method: "PATCH",
 				path,
 				...params,
 			})) as never,

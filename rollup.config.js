@@ -6,31 +6,6 @@ import { defineConfig } from "rollup";
 export default defineConfig([
 	// plugins
 	{
-		input: "scripts/plugins/codeGenerator/index.ts",
-		output: [
-			{
-				dir: "dist",
-				format: "esm",
-				preserveModules: true,
-				preserveModulesRoot: "scripts",
-				entryFileNames: "[name].mjs"
-			},
-			{
-				dir: "dist",
-				format: "cjs",
-				preserveModules: true,
-				preserveModulesRoot: "scripts",
-				entryFileNames: "[name].cjs"
-			},
-		],
-		treeshake: false,
-		plugins: [
-			del({ targets: "dist/plugins/codeGenerator" }),
-			typescript({ tsconfig: "scripts/plugins/codeGenerator/tsconfig.build.json" }),
-			tscAlias({ configFile: "scripts/plugins/codeGenerator/tsconfig.build.json" }),
-		],
-	},
-	{
 		input: "scripts/plugins/openApiGenerator/index.ts",
 		output: [
 			{
@@ -53,6 +28,31 @@ export default defineConfig([
 			del({ targets: "dist/plugins/openApiGenerator" }),
 			typescript({ tsconfig: "scripts/plugins/openApiGenerator/tsconfig.build.json" }),
 			tscAlias({ configFile: "scripts/plugins/openApiGenerator/tsconfig.build.json" }),
+		],
+	},
+	{
+		input: "scripts/plugins/codeGenerator/index.ts",
+		output: [
+			{
+				dir: "dist",
+				format: "esm",
+				preserveModules: true,
+				preserveModulesRoot: "scripts",
+				entryFileNames: "[name].mjs"
+			},
+			{
+				dir: "dist",
+				format: "cjs",
+				preserveModules: true,
+				preserveModulesRoot: "scripts",
+				entryFileNames: "[name].cjs"
+			},
+		],
+		treeshake: false,
+		plugins: [
+			del({ targets: "dist/plugins/codeGenerator" }),
+			typescript({ tsconfig: "scripts/plugins/codeGenerator/tsconfig.build.json" }),
+			tscAlias({ configFile: "scripts/plugins/codeGenerator/tsconfig.build.json" }),
 		],
 	},
 

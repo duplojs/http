@@ -100,7 +100,7 @@ describe("implementHttpServer", () => {
 			throw new Error();
 		});
 		let execRouteSystem: AnyFunction | null = null;
-		const spyConsole = vi.spyOn(console, "error");
+		const spyConsole = vi.spyOn(console, "error").mockImplementation(() => void undefined);
 
 		await implementHttpServer(
 			{

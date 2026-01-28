@@ -46,6 +46,7 @@ describe("createHttpServer", () => {
 		httpsCreateServer.mockClear();
 		mockHttpServer.handlers.clear();
 		mockHttpsServer.handlers.clear();
+		mockHttpServer.listen.mockClear();
 	});
 
 	it("wires HTTP server request handler and passes params to implementHttpServer", async() => {
@@ -137,6 +138,28 @@ describe("createHttpServer", () => {
 		expect(httpsCreateServer).toHaveBeenCalledWith({ key: "k" });
 		expect(httpCreateServer).not.toHaveBeenCalled();
 		expect(server).toBe(mockHttpsServer);
+	});
+
+	it("skips listen when hub environment is BUILD", async() => {
+		vi.mocked(implementHttpServer).mockImplementation(
+			async({ httpServerParams }, initHttpServer) => await initHttpServer({
+				execRouteSystem: vi.fn(),
+				httpServerParams,
+			}),
+		);
+
+		const server = await createHttpServer(
+			createHub({ environment: "BUILD" }),
+			{
+				host: "localhost",
+				port: 3000,
+			},
+		);
+
+		expect(httpCreateServer).toHaveBeenCalledWith({});
+		expect(httpsCreateServer).not.toHaveBeenCalled();
+		expect(server).toBe(mockHttpServer);
+		expect(mockHttpServer.listen).not.toHaveBeenCalled();
 	});
 
 	it("uses whenUncaughtError to send fallback response", async() => {

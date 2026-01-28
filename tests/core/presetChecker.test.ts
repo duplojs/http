@@ -79,7 +79,7 @@ describe("presetChecker", () => {
 				readonly options: {
 					readonly test: "test";
 				};
-				readonly result: ["test"];
+				readonly result: readonly ["test"];
 				readonly checker: typeof checker;
 				readonly responseContract: ReturnType<typeof ResponseContract.notFound<"notfound">>;
 			}>,
@@ -109,7 +109,7 @@ describe("presetChecker", () => {
 				readonly options: {
 					readonly test: null;
 				};
-				readonly result: ["test"];
+				readonly result: readonly ["test"];
 				readonly checker: typeof checker;
 				readonly responseContract: ReturnType<typeof ResponseContract.notFound<"notfound">>;
 			}>,
@@ -151,7 +151,7 @@ describe("presetChecker", () => {
 			typeof presetChecker,
 			PresetChecker<{
 				readonly indexing: "key1";
-				readonly result: ["test", "toto"];
+				readonly result: readonly ["test", "toto"];
 				readonly checker: typeof checker;
 				readonly responseContract: ReturnType<typeof ResponseContract.notFound<"notfound">>;
 			}>,
@@ -177,7 +177,7 @@ describe("presetChecker", () => {
 			typeof newPresetChecker,
 			PresetChecker<{
 				readonly indexing: "key2";
-				readonly result: ["test", "toto"];
+				readonly result: readonly ["test", "toto"];
 				readonly checker: typeof checker;
 				readonly responseContract: ReturnType<typeof ResponseContract.notFound<"notfound">>;
 			}>,

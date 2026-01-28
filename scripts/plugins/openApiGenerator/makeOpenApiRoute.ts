@@ -3,6 +3,8 @@ import { IgnoreByRouteStoreMetadata } from "@core/metadata";
 import { ResponseContract } from "@core/response";
 import type { RoutePath } from "@core/route";
 import { DP } from "@duplojs/utils";
+import { IgnoreByCodeGeneratorMetadata } from "@plugin-codeGenerator/metadata";
+import { IgnoreByOpenApiGeneratorMetadata } from "./metadata";
 
 export function makeOpenApiRoute(
 	routePath: RoutePath,
@@ -11,7 +13,13 @@ export function makeOpenApiRoute(
 	return useRouteBuilder(
 		"GET",
 		routePath,
-		{ metadata: [IgnoreByRouteStoreMetadata()] },
+		{
+			metadata: [
+				IgnoreByRouteStoreMetadata(),
+				IgnoreByOpenApiGeneratorMetadata(),
+				IgnoreByCodeGeneratorMetadata(),
+			],
+		},
 	)
 		.handler(
 			ResponseContract.ok("swaggerUi", DP.string()),

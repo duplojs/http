@@ -211,6 +211,41 @@ describe("httpClient", () => {
 		});
 	});
 
+	it("patch", () => {
+		void httpClient.patch("/test/ok", {
+			body: { prop1: "" },
+		});
+
+		expect(PromiseRequest).toHaveBeenCalledWith({
+			baseUrl: "http://test.com",
+			headers: {},
+			hooks: {
+				clientErrorResponseType: [],
+				code: {},
+				error: [],
+				expectedResponse: [],
+				information: {},
+				informationalResponseType: [],
+				notPredictedResponse: [],
+				redirectionResponseType: [],
+				request: [],
+				response: [],
+				serverErrorResponseType: [],
+				successfulResponseType: [],
+			},
+			initParams: {
+				cache: undefined,
+				credentials: undefined,
+			},
+			predictedHeaderKey: "predicted",
+			informationHeaderKey: "information",
+			disabledPredicateMode: false,
+			method: "PATCH",
+			path: "/test/ok",
+			body: { prop1: "" },
+		});
+	});
+
 	it("delete", () => {
 		void httpClient.delete("/test/ok", {
 			initParams: { credentials: "include" },

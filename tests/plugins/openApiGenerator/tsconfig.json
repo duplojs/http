@@ -7,11 +7,14 @@
 	  "@core/*": ["../../../scripts/core/*"],
 	  "@plugin-openApiGenerator": ["../../../scripts/plugins/openApiGenerator/index.ts"],
 	  "@plugin-openApiGenerator/*": ["../../../scripts/plugins/openApiGenerator/*"],
+	  "@plugin-codeGenerator": ["../../../scripts/plugins/codeGenerator/index.ts"],
+	  "@plugin-codeGenerator/*": ["../../../scripts/plugins/codeGenerator/*"],
 	  "@test-utils/*": ["../../_utils/*"],
     },
   },
   "include": [
 	"**/*.ts",
 	"../../../scripts/plugins/openApiGenerator/**/*.ts",
+	"../../../scripts/plugins/codeGenerator/**/*.ts",
   ],
 }

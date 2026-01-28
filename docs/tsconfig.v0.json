@@ -1,0 +1,14 @@
+{
+  "extends": "../tsconfig.app.json",
+  "compilerOptions": {
+	"baseUrl": "./",
+	"paths": {
+		"@duplojs/http": ["libs/v0/core/index"],
+		"@duplojs/http/client": ["libs/v0/client/index"],
+		"@duplojs/http/node": ["libs/v0/interfaces/node/index"],
+		"@duplojs/http/codeGenerator": ["libs/v0/plugins/codeGenerator/index"],
+		"@duplojs/http/openApiGenerator": ["libs/v0/plugins/openApiGenerator/index"],
+	}
+  },
+  "include": ["examples/v0/**/*.ts", "libs/v0/**/*.d.ts"],
+}
