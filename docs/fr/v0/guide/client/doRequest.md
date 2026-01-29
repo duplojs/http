@@ -1,5 +1,5 @@
 ---
-description: ""
+description: "Envoyer des requêtes avec le client HTTP et ses méthodes."
 prev:
   text: "Initialiser un client"
   link: "/fr/v0/guide/client/initClient"

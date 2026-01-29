@@ -1,5 +1,5 @@
 ---
-description: ""
+description: "Générer le typage des routes avec codeGenerator."
 prev:
   text: "Traiter une réponse"
   link: "/fr/v0/guide/client/handleResponse"

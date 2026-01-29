@@ -1,5 +1,5 @@
 ---
-description: ""
+description: "Generate route typings with codeGenerator plugin."
 prev:
   text: "Handle a response"
   link: "/en/v0/guide/client/handleResponse"

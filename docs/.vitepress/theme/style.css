@@ -181,3 +181,24 @@
 .toc-hidden {
   display: none;
 }
+
+.VPNavBarSearch button {
+  position: relative;
+  isolation: isolate;
+  border: 1px solid transparent;
+  transition: border-color 160ms ease;
+}
+
+.VPNavBarSearch button {
+  color: #67676C;
+}
+
+.dark .VPNavBarSearch button {
+  background-color: #161618;
+  color: #98989F;
+}
+
+.VPNavBarSearch button:hover,
+.VPNavBarSearch button:focus-visible {
+  border-color: var(--vp-c-brand-1) !important;
+}

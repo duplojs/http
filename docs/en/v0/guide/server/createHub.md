@@ -1,5 +1,5 @@
 ---
-description: ""
+description: "Create a Hub and register routes and plugins."
 prev:
   text: "Quick start"
   link: "/en/v0/guide/quickStart"

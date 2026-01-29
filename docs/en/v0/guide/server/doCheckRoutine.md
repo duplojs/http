@@ -1,5 +1,5 @@
 ---
-description: ""
+description: "Compose check routines with process and reuse them."
 prev:
   text: "Run a check"
   link: "/en/v0/guide/server/doCheck"

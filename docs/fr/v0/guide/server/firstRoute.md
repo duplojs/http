@@ -1,5 +1,5 @@
 ---
-description: ""
+description: "Créer une première route et comprendre ResponseContract."
 prev:
   text: "Démarrer un serveur"
   link: "/fr/v0/guide/server/startServer"

@@ -2,16 +2,63 @@ import { defineConfig, type DefaultTheme, type UserConfig } from "vitepress";
 import { transformerTwoslash } from "@shikijs/vitepress-twoslash";
 import { ModuleDetectionKind, ModuleKind, ModuleResolutionKind } from "typescript";
 import { groupIconMdPlugin, groupIconVitePlugin } from "vitepress-plugin-group-icons";
-import { A, innerPipe, pipe, pipeCall, S, type AnyFunction } from "@duplojs/utils";
+import { A, innerPipe, pipe, S, type AnyFunction } from "@duplojs/utils";
 import { withMermaid } from "vitepress-plugin-mermaid";
+
+const hostname = "https://http.duplojs.dev";
+const ogImage = new URL("/images/ogImage.png", hostname).toString();
 
 export default pipe(
 	{
 		title: "@duplojs/http",
-		description: "A VitePress Site",
+		base: "/",
+		cleanUrls: true,
+		sitemap: {
+			hostname,
+		},
+		head: [
+			[
+				"link",
+				{
+					rel: "icon",
+					href: "/images/logo.ico",
+				},
+			],
+			[
+				"meta",
+				{
+					property: "og:type",
+					content: "website",
+				},
+			],
+			[
+				"meta",
+				{
+					property: "og:image",
+					content: ogImage,
+				},
+			],
+			[
+				"meta",
+				{
+					name: "twitter:card",
+					content: "summary_large_image",
+				},
+			],
+			[
+				"meta",
+				{
+					name: "twitter:image",
+					content: ogImage,
+				},
+			],
+		],
 		themeConfig: {
 			logo: "/images/logo.png",
-
+			wip: {
+				title: "WIP",
+				button: "Request this page",
+			},
 			socialLinks: [
 				{
 					icon: "github",
@@ -30,7 +77,6 @@ export default pipe(
 					link: "https://discord.gg/5d6Ze5Wuqm",
 				},
 			],
-
 			search: {
 				provider: "local",
 			},
@@ -103,6 +149,10 @@ export default pipe(
 				lang: "fr",
 				link: "/fr/",
 				themeConfig: {
+					wip: {
+						title: "WIP",
+						button: "Demander la création de cette page",
+					},
 					nav: [
 						{
 							text: "Guide",

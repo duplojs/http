@@ -1,5 +1,5 @@
 ---
-description: ""
+description: "Générer la config Swagger/OpenAPI avec openApiGenerator."
 prev:
   text: "Génération de code"
   link: "/fr/v0/guide/plugins/codeGenerator"

@@ -1,5 +1,5 @@
 ---
-description: ""
+description: "Extract and validate request data with extract."
 prev:
   text: "Create your first route"
   link: "/en/v0/guide/server/firstRoute"

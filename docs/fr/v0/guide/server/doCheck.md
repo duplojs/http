@@ -1,5 +1,5 @@
 ---
-description: ""
+description: "Créer des checkers et les utiliser dans une route."
 prev:
   text: "Récupérer des données"
   link: "/fr/v0/guide/server/getData"

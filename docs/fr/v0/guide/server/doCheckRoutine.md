@@ -1,5 +1,5 @@
 ---
-description: ""
+description: "Composer des routines de vérification avec process."
 prev:
   text: "Faire une vérification"
   link: "/fr/v0/guide/server/doCheck"

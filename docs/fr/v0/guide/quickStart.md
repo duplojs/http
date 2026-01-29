@@ -1,5 +1,5 @@
 ---
-description: ""
+description: "Installer les dépendances et créer un premier serveur @duplojs/http."
 prev:
   text: "Introduction"
   link: "/fr/v0/guide/"

@@ -1,5 +1,5 @@
 ---
-description: ""
+description: "Send requests with the HTTP client and available methods."
 prev:
   text: "Initialize a client"
   link: "/en/v0/guide/client/initClient"

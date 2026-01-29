@@ -1,5 +1,5 @@
 ---
-description: ""
+description: "Create and type an HTTP client with createHttpClient."
 prev:
   text: "Build a check routine"
   link: "/en/v0/guide/server/doCheckRoutine"

@@ -1,5 +1,5 @@
 ---
-description: ""
+description: "Traiter les réponses PromiseRequest et leurs helpers."
 prev:
   text: "Faire une requête"
   link: "/fr/v0/guide/client/doRequest"

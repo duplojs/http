@@ -1,5 +1,5 @@
 ---
-description: ""
+description: "Extraire et valider les données de la requête."
 prev:
   text: "Créer sa première route"
   link: "/fr/v0/guide/server/firstRoute"

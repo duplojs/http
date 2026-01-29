@@ -1,5 +1,5 @@
 ---
-description: ""
+description: "Handle PromiseRequest responses and helper methods."
 prev:
   text: "Make a request"
   link: "/en/v0/guide/client/doRequest"

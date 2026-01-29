@@ -1,5 +1,5 @@
 ---
-description: ""
+description: "Overview of @duplojs/http and its role in the DuploJS ecosystem."
 next:
   text: "Quick start"
   link: "/en/v0/guide/quickStart"
