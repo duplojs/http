@@ -57,6 +57,7 @@ const methodMapper = {
 	TRACE: "trace",
 	CONNECT: "connect",
 	OPTIONS: "options",
+	PATCH: "patch",
 } as const satisfies Record<RequestMethods, OpenApiMethod>;
 
 export function routeToOpenApi(

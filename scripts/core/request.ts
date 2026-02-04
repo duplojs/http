@@ -6,6 +6,7 @@ export interface RequestMethodsWrapper {
 	GET: true;
 	POST: true;
 	PUT: true;
+	PATCH: true;
 	DELETE: true;
 	HEAD: true;
 	OPTIONS: true;
