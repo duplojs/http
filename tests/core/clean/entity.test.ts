@@ -203,8 +203,12 @@ describe("entity", () => {
 	});
 
 	it("toEndpointSchema addEntityName", () => {
+		const name = C.createNewType("name", DP.string());
 		const id = C.createNewType("id", DP.number(), C.NumberMin(1));
-		const user = C.createEntity("User", () => ({ id }));
+		const user = C.createEntity("User", () => ({
+			id,
+			name,
+		}));
 
 		const parserWithBoolean = user.toEndpointSchema(["id"], { addEntityName: true });
 		asserts(parserWithBoolean.parse({
