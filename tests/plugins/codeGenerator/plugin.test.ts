@@ -1,18 +1,16 @@
 import { createHub, launchHookServer, ResponseContract, useRouteBuilder } from "@core";
-import { DPE } from "@duplojs/utils";
+import { DPE, E } from "@duplojs/utils";
+import { TESTImplementation, setEnvironment } from "@duplojs/server-utils";
 import { codeGeneratorPlugin } from "@plugin-codeGenerator";
 import { testHub } from "@test-utils/hub";
-import { type Mock } from "vitest";
-
-vi.mock("node:fs/promises", () => ({
-	writeFile: vi.fn(),
-}));
-
-const { writeFile } = await import("node:fs/promises");
 
 describe("plugin implementation", () => {
+	setEnvironment("TEST");
+	const spy = vi.fn((path: string, content: string) => Promise.resolve(E.ok()));
+	TESTImplementation.set("writeTextFile", spy);
+
 	beforeEach(() => {
-		(writeFile as Mock).mockClear();
+		spy.mockClear();
 	});
 
 	const route = useRouteBuilder("GET", "/user")
@@ -46,8 +44,8 @@ describe("plugin implementation", () => {
 			{},
 		);
 
-		expect((writeFile as Mock).mock.lastCall?.at(0)).toBe("test.d.ts");
-		expect((writeFile as Mock).mock.lastCall?.at(1)).toMatchSnapshot();
+		expect(spy.mock.lastCall?.at(0)).toBe("test.d.ts");
+		expect(spy.mock.lastCall?.at(1)).toMatchSnapshot();
 	});
 
 	it("not generate API type", async() => {
@@ -60,7 +58,7 @@ describe("plugin implementation", () => {
 			{},
 		);
 
-		expect(writeFile).not.toHaveBeenCalled();
+		expect(spy).not.toHaveBeenCalled();
 	});
 
 	it("not generate in PROD env", async() => {
@@ -74,6 +72,6 @@ describe("plugin implementation", () => {
 			{},
 		);
 
-		expect(writeFile).not.toHaveBeenCalled();
+		expect(spy).not.toHaveBeenCalled();
 	});
 });

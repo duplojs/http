@@ -1,8 +1,8 @@
 import * as DataParserToTypescript from "@duplojs/data-parser-tools/toTypescript";
 import { type HubPlugin } from "@core/hub";
-import { A, DP, equal, S } from "@duplojs/utils";
+import { A, asserts, DP, E, equal } from "@duplojs/utils";
 import { routeToDataParser } from "./routeToDataParser";
-import { writeFile } from "node:fs/promises";
+import { SF } from "@duplojs/server-utils";
 
 export interface CodeGeneratorPluginParams {
 	outputFile: string;
@@ -40,7 +40,10 @@ export function codeGeneratorPlugin(pluginParams: CodeGeneratorPluginParams) {
 						},
 					);
 
-					await writeFile(pluginParams.outputFile, output);
+					asserts(
+						await SF.writeTextFile(pluginParams.outputFile, output),
+						E.isRight,
+					);
 				},
 			},
 		],

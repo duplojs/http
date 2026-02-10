@@ -1,11 +1,12 @@
-import { extractStepKind } from "@core/steps";
-import { A, DP, E, innerPipe, isType, justReturn, O, P, pipe, unwrap } from "@duplojs/utils";
+import { asText, type BodyExtractor, type ExtractShape, extractStepKind, isBodyExtractor } from "@core/steps";
+import { A, DP, E, innerPipe, isType, justReturn, type MaybePromise, O, P, pipe, unwrap } from "@duplojs/utils";
 import { type Request } from "@core/request";
 import { PredictedResponse } from "@core/response";
 import { type Floor } from "@core/floor";
 import { createStepFunctionBuilder } from "../create";
+import { type DataParser } from "@duplojs/utils/dataParser";
 
-type Extractor = (request: Request, floor: Floor) => PredictedResponse | Floor;
+type Extractor = (request: Request, floor: Floor) => MaybePromise<PredictedResponse | Floor>;
 
 export const defaultExtractStepFunctionBuilder = createStepFunctionBuilder(
 	extractStepKind.has,
@@ -17,54 +18,91 @@ export const defaultExtractStepFunctionBuilder = createStepFunctionBuilder(
 
 		const responseContract = stepResponseContract ?? defaultExtractContract;
 
-		function getResponse(
-			result: E.EitherError<DP.DataParserError>,
-			key: string,
-			subKey?: string,
-		) {
-			const response = new PredictedResponse(
-				responseContract.code,
-				responseContract.information,
-				environment === "DEV"
-					? unwrap(result)
-					: undefined,
-			);
+		function createExtractor(
+			parser: DataParser | BodyExtractor,
+			key: keyof ExtractShape,
+			subKey: string | undefined,
+		): Extractor {
+			const createResponse = environment === "DEV"
+				? (result: unknown) => new PredictedResponse(
+					responseContract.code,
+					responseContract.information,
+					result,
+				)
+				: () => new PredictedResponse(responseContract.code, responseContract.information, undefined);
+			const setHeader = subKey === undefined
+				? (response: PredictedResponse) => response.setHeader("extract-key", `request.${key}`)
+				: (response: PredictedResponse) => response.setHeader("extract-key", `request.${key}.${subKey}`);
+			const getResponse = (result: unknown) => setHeader(createResponse(result));
+			const treatResult = (result: E.Left | E.Right, floor: Floor) => E.isLeft(result)
+				? getResponse(unwrap(result))
+				: {
+					...floor,
+					[key]: unwrap(result),
+				};
+			const getValue = typeof subKey === "string"
+				? (request: Request) => request[key]?.[subKey as never]
+				: (request: Request) => request[key];
 
-			return subKey === undefined
-				? response.setHeader("extract-key", `request.${key}`)
-				: response.setHeader("extract-key", `request.${key}.${subKey}`);
-		}
+			if (isBodyExtractor(parser) || key === "body") {
+				const bodyExtractor = DP.dataParserKind.has(parser)
+					? asText(parser)
+					: parser;
 
-		function treatResult(
-			result: E.EitherError<DP.DataParserError> | E.EitherSuccess<unknown>,
-			floor: Floor,
-			key: string,
-			subKey?: string,
-		) {
-			if (E.isLeft(result)) {
-				return getResponse(result, key, subKey);
+				return async(request: Request, floor: Floor) => {
+					const result = await bodyExtractor.extract(request);
+					return treatResult(result, floor);
+				};
 			}
 
-			return {
-				...floor,
-				[subKey ?? key]: unwrap(result),
+			if (parser.isAsynchronous()) {
+				const asyncParse = parser.asyncParse;
+				return async(request: Request, floor: Floor) => {
+					const result = await asyncParse(getValue(request));
+					return treatResult(result, floor);
+				};
+			}
+
+			const parse = parser.parse;
+			return (request: Request, floor: Floor) => {
+				const result = parse(getValue(request));
+				return treatResult(result, floor);
 			};
 		}
 
 		const extractors = A.reduce(
 			O.entries(shape),
 			A.reduceFrom<Extractor[]>([]),
-			({ lastValue, element: [key, value], next }) => next(
-				DP.dataParserKind.has(value)
-					? A.push(
+			({
+				lastValue,
+				element: [key, value],
+				next,
+			}) => pipe(
+				value,
+				P.when(
+					DP.dataParserKind.has,
+					(value) => A.push(
 						lastValue,
-						(request, floor) => treatResult(
-							value.parse(request[key]),
-							floor,
+						createExtractor(
+							value,
 							key,
+							undefined,
 						),
-					)
-					: pipe(
+					),
+				),
+				P.when(
+					isBodyExtractor,
+					(value) => A.push(
+						lastValue,
+						createExtractor(
+							value,
+							key,
+							undefined,
+						),
+					),
+				),
+				P.otherwise(
+					(value) => pipe(
 						value,
 						P.when(
 							isType("undefined"),
@@ -74,29 +112,28 @@ export const defaultExtractStepFunctionBuilder = createStepFunctionBuilder(
 							innerPipe(
 								O.entries,
 								A.map(
-									([subKey, subValue]): Extractor => (
-										(request, floor) => treatResult(
-											subValue.parse(request[key]?.[subKey as never]),
-											floor,
-											key,
-											subKey,
-										)
+									([subKey, subValue]) => createExtractor(
+										subValue,
+										key,
+										subKey,
 									),
 								),
 								(subExtractor) => A.concat(lastValue, subExtractor),
 							),
 						),
 					),
+				),
+				next,
 			),
 		);
 
 		return success({
-			buildedFunction: (request, floor) => {
+			buildedFunction: async(request, floor) => {
 				let newFloor = floor;
 
 				// eslint-disable-next-line @typescript-eslint/prefer-for-of
 				for (let index = 0; index < extractors.length; index++) {
-					const result = extractors[index]!(request, newFloor);
+					const result = await extractors[index]!(request, newFloor);
 
 					if (result instanceof PredictedResponse) {
 						return result;

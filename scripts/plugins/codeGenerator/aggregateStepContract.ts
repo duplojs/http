@@ -1,4 +1,4 @@
-import { checkerStepKind, cutStepKind, extractStepKind, handlerStepKind, presetCheckerStepKind, processStepKind, stepIdentifier, type Steps } from "@core/steps";
+import { checkerStepKind, cutStepKind, extractStepKind, handlerStepKind, isFormDataExtractor, presetCheckerStepKind, processStepKind, stepIdentifier, type Steps } from "@core/steps";
 import { A, DP, hasSomeKinds, O, P, pipe } from "@duplojs/utils";
 import { type EntrypointKey } from "./types";
 import { type ResponseContract } from "@core/response";
@@ -81,6 +81,16 @@ export function aggregateStepContract(
 							)
 						) {
 							return O.entry(key, accumulatorValue);
+						}
+
+						if (isFormDataExtractor(currentExtractDataParser)) {
+							return O.entry(
+								key,
+								{
+									...accumulatorValue,
+									...currentExtractDataParser.dataParser.definition.shape,
+								},
+							);
 						}
 
 						if (!DP.dataParserKind.has(currentExtractDataParser)) {

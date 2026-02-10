@@ -1,7 +1,9 @@
 
-import { type Hub, type HttpServerParams, launchHookServer, launchHookServerError, serverErrorExitHookFunction, serverErrorNextHookFunction } from "./hub";
+import { type Hub, launchHookServer, launchHookServerError, serverErrorExitHookFunction, serverErrorNextHookFunction } from "./hub";
 import { buildRouter, type RouterInitializationData } from "./router";
 import { forward, type MaybePromise } from "@duplojs/utils";
+import { type HttpServerParams } from "./types";
+import { initDefaultHook } from "./defaultHooks";
 
 export interface ImplementHttpServerParams {
 	readonly hub: Hub;
@@ -28,7 +30,10 @@ export async function implementHttpServer<
 	initHttpServer: (params: InitHttpServerParams) => MaybePromise<GenericServer>,
 ): Promise<GenericServer> {
 	const newHub1 = await launchHookServer(
-		params.hub.aggregatesHooksHubLifeCycle("beforeServerBuildRoutes"),
+		params
+			.hub
+			.addRouteHooks(initDefaultHook(params.hub, params.httpServerParams))
+			.aggregatesHooksHubLifeCycle("beforeServerBuildRoutes"),
 		params.hub,
 		params.httpServerParams,
 	);

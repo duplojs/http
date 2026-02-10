@@ -18,3 +18,4 @@ export * from "./metadata";
 export * from "./implementHttpServer";
 export * from "./narrowingInput";
 export * from "./clean";
+export * from "./defaultHooks";

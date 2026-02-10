@@ -1,9 +1,15 @@
 import { createCoreLibKind } from "@core/kind";
 import { type DP, pipe, type Kind, type O, type AnyFunction } from "@duplojs/utils";
-import { type StepKind, stepKind } from "./kind";
+import { type StepKind, stepKind } from "../kind";
 import { type Request } from "@core/request";
 import { type ClientErrorResponseCode, type ResponseContract } from "@core/response";
 import { type Metadata } from "@core/metadata";
+import { type BodyExtractor } from "./bodyExtractor";
+
+export * from "./bodyExtractor";
+export * from "./receivedBody";
+export * from "./text";
+export * from "./formData";
 
 export interface DisabledExtractKeysCustom {
 
@@ -17,7 +23,7 @@ export type DisabledExtractKeys = O.GetPropsWithValue<
 export type ExtractShape<
 	GenericRequest extends Request = Request,
 > = Partial<
-	Record<
+	& Record<
 		Exclude<
 			keyof GenericRequest,
 			| O.GetPropsWithValueExtends<
@@ -26,10 +32,18 @@ export type ExtractShape<
 			>
 			// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
 			| DisabledExtractKeys
+			| "body"
+			| symbol
 		>,
 		| DP.DataParser
 		| Record<string, DP.DataParser>
 	>
+	& {
+		body: (
+			| DP.DataParser
+			| BodyExtractor
+		);
+	}
 >;
 
 export interface ExtractStepDefinition {

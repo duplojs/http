@@ -131,7 +131,7 @@ describe("node server", async() => {
 		);
 	});
 
-	it("port user", async() => {
+	it("post user", async() => {
 		const result = await httpClient.post("/users", {
 			body: {
 				id: 5,

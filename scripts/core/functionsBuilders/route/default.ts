@@ -137,6 +137,17 @@ export const defaultRouteFunctionBuilder = createRouteFunctionBuilder(
 					return beforeRouteExecutionResult;
 				}
 
+				const parseBodyResult = await hooks.parseBody({
+					request,
+					exit: exitHookFunction,
+					next: nextHookFunction,
+					response: createHookResponse("parseBody"),
+				});
+
+				if (parseBodyResult instanceof Response) {
+					return parseBodyResult;
+				}
+
 				let floor = {};
 
 				for (let index = 0; index < buildedPreFlightSteps.length; index++) {
@@ -147,17 +158,6 @@ export const defaultRouteFunctionBuilder = createRouteFunctionBuilder(
 					}
 
 					floor = result;
-				}
-
-				const parseBodyResult = await hooks.parseBody({
-					request,
-					exit: exitHookFunction,
-					next: nextHookFunction,
-					response: createHookResponse("parseBody"),
-				});
-
-				if (parseBodyResult instanceof Response) {
-					return parseBodyResult;
 				}
 
 				for (let index = 0; index < buildedSteps.length; index++) {

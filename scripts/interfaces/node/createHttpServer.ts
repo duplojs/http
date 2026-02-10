@@ -1,23 +1,25 @@
-import { type HttpServerParams, type Hub } from "@core/hub";
+import { type Hub } from "@core/hub";
 import { type RouterInitializationData } from "@core/router";
-import { type Hosts } from "./types/host";
-import { type BytesInString, O } from "@duplojs/utils";
 import http from "http";
 import https from "https";
 import { makeNodeHook } from "./hooks";
 import { implementHttpServer } from "@core/implementHttpServer";
+import { O } from "@duplojs/utils";
+import { type HttpServerParams } from "@core/types";
 
-declare module "@core/hub" {
+declare module "@core/types" {
 	interface HttpServerParams {
 		readonly interface: "node";
-		readonly host: Hosts;
-		readonly port: number;
-		readonly maxBodySize: BytesInString | number;
-		readonly informationHeaderKey: string;
-		readonly predictedHeaderKey: string;
-		readonly fromHookHeaderKey: string;
 		readonly http?: http.ServerOptions;
 		readonly https?: https.ServerOptions;
+	}
+
+	interface HostCustom {
+		"::": true;
+		"0.0.0.0": true;
+		localhost: true;
+		"127.0.0.1": true;
+		"::1": true;
 	}
 }
 
@@ -27,6 +29,7 @@ export type CreateHttpServerParams = O.PartialKeys<
 	| "informationHeaderKey"
 	| "predictedHeaderKey"
 	| "fromHookHeaderKey"
+	| "uploadFolder"
 >;
 
 export function createHttpServer(
@@ -42,6 +45,7 @@ export function createHttpServer(
 			predictedHeaderKey: "predicted",
 			fromHookHeaderKey: "from-hook",
 			interface: "node",
+			uploadFolder: "./upload",
 		},
 		params,
 	);
