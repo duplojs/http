@@ -18,7 +18,7 @@ export function codeGeneratorPlugin(pluginParams: CodeGeneratorPluginParams) {
 						return;
 					}
 
-					const routes = hub.aggregatesRoutes();
+					const routes = A.from(hub.routes);
 
 					const dataParserRoutes = A.flatMap(
 						routes,

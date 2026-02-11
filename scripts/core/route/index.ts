@@ -1,6 +1,6 @@
 import { type O, pipe, type Kind } from "@duplojs/utils";
 import { createCoreLibKind } from "../kind";
-import { type RequestMethods } from "../request";
+import { type BodyController, type RequestMethods } from "../request";
 import { type ExtractStep, type CheckerStep, type CutStep, type HandlerStep, type ProcessStep, type stepKind, type PresetCheckerStep } from "../steps";
 import { type HookRouteLifeCycle } from "./hooks";
 import { type Metadata } from "@core/metadata";
@@ -48,6 +48,7 @@ export interface RouteDefinition {
 	readonly steps: readonly RouteSteps[];
 	readonly hooks: readonly HookRouteLifeCycle[];
 	readonly metadata: readonly Metadata[];
+	readonly bodyController: BodyController | null;
 }
 
 export const routeKind = createCoreLibKind("route");

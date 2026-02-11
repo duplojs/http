@@ -1,25 +1,23 @@
-import { type Hub, type HttpServerParams } from "@core/hub";
-import { receiveFormData } from "@core/steps";
+import { FormDataController } from "@core/request";
+import { type HttpServerParams } from "@core/types";
+import { SF } from "@duplojs/server-utils";
 import { A, E, type MaybeArray, Path, stringToBytes, unwrap } from "@duplojs/utils";
-import type http from "http";
 import { readRequestFormData } from "./readRequestFormData";
 import { createWriteStream } from "node:fs";
-import { createFileInterface, type FileInterface } from "@duplojs/server-utils/file";
+import { WrongContentTypeError } from "@core/errors";
+import { setAtPath } from "./setAtPath";
 
 export * from "./error";
 export * from "./readRequestFormData";
+export * from "./setAtPath";
 
-export function createProcessingFormData(
-	hub: Hub,
-	serverParams: HttpServerParams,
-) {
-	const isDev = hub.config.environment === "DEV";
+export function createFormDataBodyReaderImplementation(serverParams: HttpServerParams) {
 	const serverMaxBodySize = stringToBytes(serverParams.maxBodySize);
 
 	function addValue(
-		mapResult: Map<string, MaybeArray<FileInterface | string>>,
+		mapResult: Map<string, MaybeArray<SF.FileInterface | string>>,
 		fieldName: string,
-		newValue: FileInterface | string,
+		newValue: SF.FileInterface | string,
 	) {
 		const value = mapResult.get(fieldName);
 
@@ -33,11 +31,23 @@ export function createProcessingFormData(
 		}
 	}
 
-	return (request: http.IncomingMessage) => receiveFormData(
-		async(params) => {
+	return FormDataController.createReaderImplementation(
+		async(request, params) => {
+			if (!request.headers["content-type"]?.includes("multipart/form-data")) {
+				return E.error(
+					new WrongContentTypeError(
+						"multipart/form-data",
+						A.join(A.coalescing(request.headers["content-type"] ?? ""), " "),
+					),
+				);
+			}
+
+			const filesAttache: string[] = [];
+			request.filesAttache = filesAttache;
+
 			const result = await readRequestFormData(
-				request,
-				new Map<string, MaybeArray<FileInterface | string>>(),
+				request.raw.request,
+				new Map<string, MaybeArray<SF.FileInterface | string>>(),
 				{
 					maxBodySize: params.bodyMaxSize ?? serverMaxBodySize,
 					fileMaxSize: params.fileMaxSize ?? Infinity,
@@ -49,14 +59,16 @@ export function createProcessingFormData(
 					if (header.filename) {
 						const extension = Path.getExtensionName(header.filename);
 						const displayExtension = extension ? `.${extension}` : "";
+						const filePath = Path.resolveRelative([
+							serverParams.uploadFolder,
+							`${Date.now().toString()}${displayExtension}`,
+						]);
+						filesAttache.push(filePath);
 
 						const currentFile = createWriteStream(
-							Path.resolveRelative([
-								serverParams.uploadFolder,
-								`${Date.now().toString()}${displayExtension}`,
-							]),
+							filePath,
 							{
-								highWaterMark: request.readableHighWaterMark,
+								highWaterMark: request.raw.request.readableHighWaterMark,
 							},
 						);
 
@@ -79,7 +91,7 @@ export function createProcessingFormData(
 								addValue(
 									valueAccumulator,
 									fieldName,
-									createFileInterface(currentFile.path.toString()),
+									SF.createFileInterface(currentFile.path.toString()),
 								);
 
 								return valueAccumulator;
@@ -97,7 +109,7 @@ export function createProcessingFormData(
 							addValue(
 								valueAccumulator,
 								fieldName,
-								createFileInterface(currentValue),
+								SF.createFileInterface(currentValue),
 							);
 
 							return valueAccumulator;
@@ -108,10 +120,24 @@ export function createProcessingFormData(
 			);
 
 			if (E.isLeft(result)) {
-				throw unwrap(result);
+				if (E.hasInformation(result, "server-error")) {
+					throw unwrap(result);
+				}
+
+				return result;
 			}
 
-			return E.left("");
+			if (request.headers["content-type-options"]?.includes("advanced")) {
+				const resultObject = {};
+
+				for (const entry of result.entries()) {
+					setAtPath(resultObject, entry[0], entry[1]);
+				}
+
+				return E.success(resultObject);
+			}
+
+			return E.success(Object.fromEntries(result.entries()));
 		},
 	);
 }

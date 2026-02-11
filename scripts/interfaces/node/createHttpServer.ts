@@ -2,10 +2,12 @@ import { type Hub } from "@core/hub";
 import { type RouterInitializationData } from "@core/router";
 import http from "http";
 import https from "https";
-import { makeNodeHook } from "./hooks";
+import { nodeHook } from "./hooks";
 import { implementHttpServer } from "@core/implementHttpServer";
 import { O } from "@duplojs/utils";
 import { type HttpServerParams } from "@core/types";
+import { initDefaultHook } from "@core/defaultHooks";
+import { createFormDataBodyReaderImplementation, createTextBodyReaderImplementation } from "./bodyReaders";
 
 declare module "@core/types" {
 	interface HttpServerParams {
@@ -33,7 +35,7 @@ export type CreateHttpServerParams = O.PartialKeys<
 >;
 
 export function createHttpServer(
-	inputHub: Hub,
+	hub: Hub,
 	params: CreateHttpServerParams,
 ) {
 	const httpServerParams: HttpServerParams = O.override<HttpServerParams>(
@@ -50,9 +52,11 @@ export function createHttpServer(
 		params,
 	);
 
-	const hooks = makeNodeHook(inputHub, httpServerParams);
-
-	const hub = inputHub.addRouteHooks(hooks);
+	hub.addBodyReaderImplementation([
+		createTextBodyReaderImplementation(httpServerParams),
+		createFormDataBodyReaderImplementation(httpServerParams),
+	]);
+	hub.addRouteHooks([initDefaultHook(hub, httpServerParams), nodeHook]);
 
 	function whenUncaughtError(
 		error: unknown,

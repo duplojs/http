@@ -1,5 +1,5 @@
 import { type Floor } from "@core/floor";
-import { type RequestMethods, type Request } from "@core/request";
+import { type RequestMethods, type Request, type BodyController } from "@core/request";
 import { preflightBuilder } from "./builder";
 import { type MakeRequestFromHooks, type HookRouteLifeCycle, type RoutePath } from "@core/route";
 import { routeBuilderHandler, type RouteBuilder } from "../route";
@@ -17,12 +17,14 @@ declare module "./builder" {
 			const GenericPaths extends RoutePath | readonly [RoutePath, ...RoutePath[]],
 			const GenericHooks extends readonly HookRouteLifeCycle[] = readonly [],
 			const GenericMetadata extends readonly Metadata[] = readonly [],
+			const GenericBodyController extends BodyController | null = null,
 		>(
 			method: GenericMethod,
 			path: GenericPaths,
 			options?: {
 				hooks?: GenericHooks | readonly HookRouteLifeCycle[];
 				metadata?: GenericMetadata;
+				bodyController?: GenericBodyController;
 			},
 		): RouteBuilder<
 			{
@@ -40,6 +42,7 @@ declare module "./builder" {
 					...GenericMetadata,
 					...GenericDefinition["metadata"],
 				];
+				readonly bodyController: GenericBodyController;
 			},
 			GenericFloor,
 			(
@@ -75,5 +78,6 @@ preflightBuilder.set(
 			...(options?.metadata ?? []),
 			...accumulator.metadata,
 		],
+		bodyController: options?.bodyController ?? null,
 	}),
 );

@@ -29,26 +29,23 @@ export async function implementHttpServer<
 	params: ImplementHttpServerParams,
 	initHttpServer: (params: InitHttpServerParams) => MaybePromise<GenericServer>,
 ): Promise<GenericServer> {
-	const newHub1 = await launchHookServer(
-		params
-			.hub
-			.addRouteHooks(initDefaultHook(params.hub, params.httpServerParams))
-			.aggregatesHooksHubLifeCycle("beforeServerBuildRoutes"),
+	await launchHookServer(
+		params.hub.aggregatesHooksHubLifeCycle("beforeServerBuildRoutes"),
 		params.hub,
 		params.httpServerParams,
 	);
 
 	const router = await buildRouter(
-		newHub1,
+		params.hub,
 	);
 
-	const newHub2 = await launchHookServer(
-		newHub1.aggregatesHooksHubLifeCycle("beforeStartServer"),
-		newHub1,
+	await launchHookServer(
+		params.hub.aggregatesHooksHubLifeCycle("beforeStartServer"),
+		params.hub,
 		params.httpServerParams,
 	);
 
-	const serverErrorHooks = newHub1.aggregatesHooksHubLifeCycle("serverError");
+	const serverErrorHooks = params.hub.aggregatesHooksHubLifeCycle("serverError");
 
 	function catchCriticalError(error: unknown) {
 		console.error("Critical Error :", error);
@@ -77,8 +74,8 @@ export async function implementHttpServer<
 	});
 
 	await launchHookServer(
-		newHub2.aggregatesHooksHubLifeCycle("afterStartServer"),
-		newHub2,
+		params.hub.aggregatesHooksHubLifeCycle("afterStartServer"),
+		params.hub,
 		params.httpServerParams,
 	);
 

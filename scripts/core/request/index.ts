@@ -1,6 +1,10 @@
-import { kindHeritage } from "@duplojs/utils";
+import { createExternalPromise, type E, kindHeritage } from "@duplojs/utils";
 import { type GetPropsWithValue } from "@duplojs/utils/object";
-import { createCoreLibKind } from "./kind";
+import { createCoreLibKind } from "../kind";
+import { type MaybePromise } from "bun";
+import { type BodyReader } from "./bodyController";
+
+export * from "./bodyController";
 
 export interface RequestMethodsWrapper {
 	GET: true;
@@ -26,6 +30,7 @@ export interface RequestInitializationData {
 	readonly path: string;
 	readonly query: Record<string, string | string[]>;
 	readonly url: string;
+	readonly bodyReader: BodyReader;
 }
 
 export class Request extends kindHeritage(
@@ -50,7 +55,11 @@ export class Request extends kindHeritage(
 
 	public matchedPath: string | null;
 
-	public body: unknown = undefined;
+	public bodyReader: BodyReader;
+
+	private bodyResult?: MaybePromise<E.Success | E.Error> = undefined;
+
+	public filesAttache: string[] | undefined = undefined;
 
 	public constructor(
 		{
@@ -63,6 +72,7 @@ export class Request extends kindHeritage(
 			params,
 			query,
 			matchedPath,
+			bodyReader,
 			...rest
 		}: RequestInitializationData,
 	) {
@@ -77,9 +87,33 @@ export class Request extends kindHeritage(
 		this.params = params;
 		this.query = query;
 		this.matchedPath = matchedPath;
+		this.bodyReader = bodyReader;
 
 		for (const key in rest) {
 			this[key as never] = rest[key as never];
 		}
+	}
+
+	public getBody(): MaybePromise<
+		| E.Success
+		| E.Error
+	> {
+		if (this.bodyResult !== undefined) {
+			return this.bodyResult;
+		}
+		const externalPromise = createExternalPromise<
+			| E.Success
+			| E.Error
+		>();
+
+		this.bodyResult = externalPromise.promise;
+
+		return this.bodyReader
+			.read(this)
+			.then((result) => {
+				externalPromise.resolve(result);
+				this.bodyResult = result;
+				return result;
+			});
 	}
 }

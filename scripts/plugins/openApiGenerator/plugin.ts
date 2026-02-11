@@ -82,7 +82,7 @@ export function openApiGeneratorPlugin(pluginParams: OpenApiGeneratorPluginParam
 
 					const contextToJsonSchemaFactory: MapContext = new Map();
 					const resultSchemaContext: ResultSchemaContext = new Map();
-					const routes = hub.aggregatesRoutes();
+					const routes = A.from(hub.routes);
 
 					const openApiRoutes = pipe(
 						routes,

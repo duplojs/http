@@ -1,22 +1,26 @@
 import { type Hub, launchHookBeforeBuildRoute } from "@core/hub";
 import { type BuildedRouter } from "./types";
-import { A, asyncPipe, E, forward, G, isType, justReturn, O, pipe, unwrap } from "@duplojs/utils";
+import { A, asserts, asyncPipe, E, forward, G, isType, justReturn, O, pipe, unwrap } from "@duplojs/utils";
 import { type BuildedRoute } from "@core/route/types";
 import { pathToRegExp } from "./pathToRegExp";
 import { createRoute } from "@core/route";
 import { RouterBuildError } from "./buildError";
-import { buildRouteFunction, type BuildRouteFunctionParams, defaultRouteFunctionBuilder } from "@core/functionsBuilders/route";
-import { defaultCheckerStepFunctionBuilder, defaultCutStepFunctionBuilder, defaultExtractStepFunctionBuilder, defaultHandlerStepFunctionBuilder, defaultProcessStepFunctionBuilder } from "@core/functionsBuilders/steps";
+import { buildRouteFunction, type BuildRouteFunctionParams } from "@core/functionsBuilders/route";
 import { decodeUrl } from "./decodeUrl";
+import { type BodyReader } from "@core/request";
+import { controlBodyAsText, TextController } from "@core/request/bodyController/text";
+import { NotFoundBodyReaderImplementationError } from "./notFoundBodyReaderImplementationError";
 
 export * from "./types";
 export * from "./pathToRegExp";
 export * from "./buildError";
 export * from "./decodeUrl";
+export * from "./notFoundBodyReaderImplementationError";
 
 interface RouterElement {
 	pattern: RegExp;
 	matchedPath: string;
+	bodyReader: BodyReader;
 	buildedRoute: BuildedRoute;
 }
 
@@ -25,17 +29,7 @@ type GroupedRoute = Record<
 	RouterElement[]
 >;
 
-export async function buildRouter(inputHub: Hub): Promise<BuildedRouter> {
-	const hub = inputHub
-		.addRouteFunctionBuilder(defaultRouteFunctionBuilder)
-		.addStepFunctionBuilder([
-			defaultCheckerStepFunctionBuilder,
-			defaultCutStepFunctionBuilder,
-			defaultHandlerStepFunctionBuilder,
-			defaultExtractStepFunctionBuilder,
-			defaultProcessStepFunctionBuilder,
-		]);
-
+export async function buildRouter(hub: Hub): Promise<BuildedRouter> {
 	const { environment } = hub.config;
 	const {
 		hooksRouteLifeCycle,
@@ -43,7 +37,8 @@ export async function buildRouter(inputHub: Hub): Promise<BuildedRouter> {
 		routes,
 		stepFunctionBuilders,
 		hooksHubLifeCycle,
-	} = hub.aggregates();
+		bodyReaderImplementations,
+	} = hub;
 
 	const hooksBeforeBuildRoute = pipe(
 		hooksHubLifeCycle,
@@ -84,6 +79,28 @@ export async function buildRouter(inputHub: Hub): Promise<BuildedRouter> {
 				);
 			}
 
+			const routeBodyController = route.definition.bodyController ?? hub.defaultBodyController;
+
+			const bodyReader = pipe(
+				bodyReaderImplementations,
+				A.reduce(
+					A.reduceFrom<null>(null),
+					({ element, next, exit }) => pipe(
+						element,
+						routeBodyController.tryToCreateReader,
+						E.whenIsRight(exit),
+						E.whenIsLeft(justReturn(next(null))),
+					),
+				),
+			);
+
+			if (!bodyReader) {
+				throw new NotFoundBodyReaderImplementationError(
+					route,
+					routeBodyController,
+				);
+			}
+
 			return nextWithObject(
 				lastValue,
 				{
@@ -95,6 +112,7 @@ export async function buildRouter(inputHub: Hub): Promise<BuildedRouter> {
 								pattern: pathToRegExp,
 								buildedRoute: justReturn(unwrap(buildedRoute)),
 								matchedPath: forward,
+								bodyReader: justReturn(bodyReader),
 							}),
 						),
 					),
@@ -102,6 +120,18 @@ export async function buildRouter(inputHub: Hub): Promise<BuildedRouter> {
 			);
 		},
 	);
+
+	const bodyControllerNotfoundRoute = controlBodyAsText();
+	const bodyReaderNotFoundRoute = unwrap(
+		bodyControllerNotfoundRoute.tryToCreateReader(
+			TextController.createReaderImplementation(
+				() => Promise.resolve(
+					E.error(new Error("Inaccessible body in not found route.")),
+				),
+			),
+		),
+	);
+	asserts(bodyReaderNotFoundRoute, isType("object"));
 
 	const buildedNotfoundRoute = await asyncPipe(
 		createRoute({
@@ -111,6 +141,7 @@ export async function buildRouter(inputHub: Hub): Promise<BuildedRouter> {
 			preflightSteps: [],
 			steps: [hub.notfoundHandler],
 			metadata: [],
+			bodyController: bodyControllerNotfoundRoute,
 		}),
 		async(route) => {
 			const result = await buildRouteFunction(
@@ -142,6 +173,7 @@ export async function buildRouter(inputHub: Hub): Promise<BuildedRouter> {
 						...decodedUrl,
 						params: {},
 						matchedPath: null,
+						bodyReader: bodyReaderNotFoundRoute,
 					}),
 				);
 			}
@@ -161,6 +193,7 @@ export async function buildRouter(inputHub: Hub): Promise<BuildedRouter> {
 						...decodedUrl,
 						params: result.groups ?? {},
 						matchedPath: routerElement.matchedPath,
+						bodyReader: routerElement.bodyReader,
 					}),
 				);
 			}
@@ -171,6 +204,7 @@ export async function buildRouter(inputHub: Hub): Promise<BuildedRouter> {
 					...decodedUrl,
 					params: {},
 					matchedPath: null,
+					bodyReader: bodyReaderNotFoundRoute,
 				}),
 			);
 		},

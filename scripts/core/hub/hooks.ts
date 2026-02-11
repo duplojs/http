@@ -56,17 +56,9 @@ export async function launchHookServer(
 	hub: Hub,
 	httpServerParams: HttpServerParams,
 ) {
-	return G.asyncReduce(
-		hooks,
-		G.reduceFrom(hub),
-		async({
-			element: hook,
-			lastValue,
-			next,
-		}) => next(
-			(await hook(lastValue, httpServerParams)) ?? lastValue,
-		),
-	);
+	for (const hook of hooks) {
+		await hook(hub, httpServerParams);
+	}
 }
 
 export interface HttpServerErrorParams {

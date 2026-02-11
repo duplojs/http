@@ -1,8 +1,8 @@
 
 import { E, Path, S, type MaybePromise } from "@duplojs/utils";
-import { BodyParseUnknownError, BodyParseWrongChunkReceived, BodySizeExceedsLimitError } from "@core/defaultHooks/errors";
 import type http from "http";
 import { BodyParseFormDataError } from "./error";
+import { BodyParseWrongChunkReceived, BodySizeExceedsLimitError } from "@core/errors";
 
 const endHeaderPart = Buffer.from("\r\n\r\n");
 const bufferStart = Buffer.from("\r\n");
@@ -38,7 +38,11 @@ export async function readRequestFormData<
 	onReceiveHeader: (header: HeaderPartInformation) => MaybePromise<
 		ReadRequestFormDataStreamChunkEvent<GenericValueAccumulator>
 	>,
-): Promise<E.Error<Error> | GenericValueAccumulator> {
+): Promise<
+	| E.Left<"server-error", unknown>
+	| E.Error<Error>
+	| GenericValueAccumulator
+	> {
 	const boundary = S.extract(
 		request.headers["content-type"] ?? "",
 		regexBoundary,
@@ -216,12 +220,8 @@ export async function readRequestFormData<
 
 		return valueAccumulator;
 	} catch (error) {
-		return await treatError(
-			new BodyParseUnknownError(
-				request.headers["content-type"] ?? "",
-				error,
-			),
-		);
+		await currentStream?.onError(error, valueAccumulator);
+		return E.left("server-error", error);
 	} finally {
 		request.destroy();
 	}

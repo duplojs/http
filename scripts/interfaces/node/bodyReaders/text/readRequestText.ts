@@ -1,5 +1,5 @@
+import { BodyParseWrongChunkReceived, BodySizeExceedsLimitError } from "@core/errors";
 import { E } from "@duplojs/utils";
-import { BodyParseUnknownError, BodyParseWrongChunkReceived, BodySizeExceedsLimitError } from "@core/defaultHooks/errors";
 import type http from "http";
 
 export interface ReadRequestTextParams {
@@ -12,7 +12,11 @@ export async function readRequestText<
 	request: http.IncomingMessage,
 	params: ReadRequestTextParams,
 	onEnd?: (result: string) => GenericOutputValue,
-): Promise<E.Error<Error> | GenericOutputValue> {
+): Promise<
+	| E.Left<"server-error", unknown>
+	| E.Error<Error>
+	| GenericOutputValue
+	> {
 	let result = "";
 	let size = 0;
 
@@ -39,12 +43,7 @@ export async function readRequestText<
 
 		return result as GenericOutputValue;
 	} catch (error) {
-		return E.error(
-			new BodyParseUnknownError(
-				request.headers["content-type"] ?? "",
-				error,
-			),
-		);
+		return E.left("server-error", error);
 	} finally {
 		request.destroy();
 	}

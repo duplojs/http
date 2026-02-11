@@ -1,5 +1,5 @@
-import { asText, type BodyExtractor, type ExtractShape, extractStepKind, isBodyExtractor } from "@core/steps";
-import { A, DP, E, innerPipe, isType, justReturn, type MaybePromise, O, P, pipe, unwrap } from "@duplojs/utils";
+import { type ExtractShape, extractStepKind } from "@core/steps";
+import { A, DP, E, forward, innerPipe, isType, justReturn, type MaybePromise, O, P, pipe, unwrap } from "@duplojs/utils";
 import { type Request } from "@core/request";
 import { PredictedResponse } from "@core/response";
 import { type Floor } from "@core/floor";
@@ -19,7 +19,7 @@ export const defaultExtractStepFunctionBuilder = createStepFunctionBuilder(
 		const responseContract = stepResponseContract ?? defaultExtractContract;
 
 		function createExtractor(
-			parser: DataParser | BodyExtractor,
+			parser: DataParser,
 			key: keyof ExtractShape,
 			subKey: string | undefined,
 		): Extractor {
@@ -41,31 +41,34 @@ export const defaultExtractStepFunctionBuilder = createStepFunctionBuilder(
 					[key]: unwrap(result),
 				};
 			const getValue = typeof subKey === "string"
-				? (request: Request) => request[key]?.[subKey as never]
-				: (request: Request) => request[key];
+				? (value: unknown) => value?.[subKey as never]
+				: forward;
 
-			if (isBodyExtractor(parser) || key === "body") {
-				const bodyExtractor = DP.dataParserKind.has(parser)
-					? asText(parser)
-					: parser;
-
+			if (key === "body") {
+				const parseFunction = parser.isAsynchronous()
+					? parser.asyncParse
+					: parser.parse;
 				return async(request: Request, floor: Floor) => {
-					const result = await bodyExtractor.extract(request);
+					const bodyResult = await request.getBody();
+					if (E.isLeft(bodyResult)) {
+						return treatResult(bodyResult, floor);
+					}
+					const result = await parseFunction(getValue(unwrap(bodyResult)));
 					return treatResult(result, floor);
 				};
 			}
 
 			if (parser.isAsynchronous()) {
-				const asyncParse = parser.asyncParse;
+				const parseFunction = parser.asyncParse;
 				return async(request: Request, floor: Floor) => {
-					const result = await asyncParse(getValue(request));
+					const result = await parseFunction(getValue(request[key]));
 					return treatResult(result, floor);
 				};
 			}
 
-			const parse = parser.parse;
+			const parseFunction = parser.parse;
 			return (request: Request, floor: Floor) => {
-				const result = parse(getValue(request));
+				const result = parseFunction(getValue(request[key]));
 				return treatResult(result, floor);
 			};
 		}
@@ -81,17 +84,6 @@ export const defaultExtractStepFunctionBuilder = createStepFunctionBuilder(
 				value,
 				P.when(
 					DP.dataParserKind.has,
-					(value) => A.push(
-						lastValue,
-						createExtractor(
-							value,
-							key,
-							undefined,
-						),
-					),
-				),
-				P.when(
-					isBodyExtractor,
 					(value) => A.push(
 						lastValue,
 						createExtractor(
