@@ -1,7 +1,7 @@
 import { type HandlerStepFunctionParams, handlerStepKind } from "@core/steps";
 import { createStepFunctionBuilder } from "../create";
 import { A, E, unwrap } from "@duplojs/utils";
-import { PredictedResponse, Response, ResponseContract } from "@core/response";
+import { PredictedResponse, ResponseContract } from "@core/response";
 
 export const defaultHandlerStepFunctionBuilder = createStepFunctionBuilder(
 	handlerStepKind.has,

@@ -1,5 +1,5 @@
 
-import { E, Path, S, type MaybePromise } from "@duplojs/utils";
+import { E, forwardLog, Path, S, type MaybePromise } from "@duplojs/utils";
 import type http from "http";
 import { BodyParseFormDataError } from "./error";
 import { BodyParseWrongChunkReceived, BodySizeExceedsLimitError } from "@core/errors";
@@ -7,7 +7,15 @@ import { BodyParseWrongChunkReceived, BodySizeExceedsLimitError } from "@core/er
 const endHeaderPart = Buffer.from("\r\n\r\n");
 const bufferStart = Buffer.from("\r\n");
 const regexBoundary = /boundary=(?<boundary>[^; ]+)/i;
-const regexHeaderPart = /name="(?<name>(?:\\"|[^"])+)"(?:; filename="(?<filename>(?:\\"|[^"])+)")?/i;
+const regexHeaderPart = /name="(?<name>(?:\\"|[^"])+)"(?:; filename="(?<filename>(?:\\"|[^"])+)")?(?:;\s+filename\*=[^']+'[^']*'(?<encodedFilename>[^;\r\n\s]+))?/i;
+
+function safeDecode(value: string) {
+	try {
+		return decodeURIComponent(value);
+	} catch {
+		return value;
+	}
+}
 
 interface HeaderPartInformation {
 	name: string;
@@ -81,23 +89,32 @@ export async function readRequestFormData<
 			return sizeResult;
 		}
 
-		const result = S.extract(
-			headerPart.toString("utf-8"),
+		const extract = S.extract(
+			headerPart.toString("latin1"),
 			regexHeaderPart,
-		)?.namedGroups as HeaderPartInformation | undefined;
+		)?.namedGroups;
 
-		if (!result?.name) {
+		const header = extract?.name
+			? {
+				name: extract.name,
+				filename: extract.encodedFilename !== undefined
+					? safeDecode(extract.encodedFilename)
+					: extract.filename,
+			}
+			: null;
+
+		if (!header?.name) {
 			return new BodyParseFormDataError("Bad content header part.");
 		}
 
-		if (result.filename !== undefined) {
+		if (header.filename !== undefined) {
 			currentFileSize = 0;
 			fileQuantity++;
 			if (fileQuantity > params.maxFileQuantity) {
 				return new BodyParseFormDataError("File quantity exceeds limit.");
 			} else if (
 				params.mimeType !== undefined
-				&& !params.mimeType.test(Path.getExtensionName(result.filename) ?? "")
+				&& !params.mimeType.test(Path.getExtensionName(header.filename) ?? "")
 			) {
 				return new BodyParseFormDataError("File have wrong mimeType.");
 			}
@@ -105,7 +122,7 @@ export async function readRequestFormData<
 			currentFileSize = undefined;
 		}
 
-		const newStream = await onReceiveHeader(result);
+		const newStream = await onReceiveHeader(header);
 
 		if (E.isLeft(newStream)) {
 			return newStream;

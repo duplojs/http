@@ -14,6 +14,7 @@ describe("route builder extract method", () => {
 						method: "GET",
 						paths: ["/test"],
 						preflightSteps: [],
+						bodyController: null,
 						metadata: [],
 						steps: [
 							{
@@ -42,6 +43,7 @@ describe("route builder extract method", () => {
 					readonly paths: readonly ["/test"];
 					readonly preflightSteps: readonly [];
 					readonly hooks: readonly [];
+					readonly bodyController: null;
 					readonly steps: readonly [
 						ExtractStep<{
 							readonly shape: {
@@ -78,6 +80,7 @@ describe("route builder extract method", () => {
 						hooks: [],
 						method: "GET",
 						paths: ["/test"],
+						bodyController: null,
 						preflightSteps: [],
 						metadata: [],
 						steps: [
@@ -110,6 +113,7 @@ describe("route builder extract method", () => {
 					readonly paths: readonly ["/test"];
 					readonly preflightSteps: readonly [];
 					readonly hooks: readonly [];
+					readonly bodyController: null;
 					readonly steps: readonly [
 						ExtractStep<{
 							readonly shape: {
@@ -151,6 +155,7 @@ describe("route builder extract method", () => {
 						hooks: [],
 						method: "GET",
 						paths: ["/test"],
+						bodyController: null,
 						preflightSteps: [],
 						metadata: [],
 						steps: [
@@ -181,6 +186,7 @@ describe("route builder extract method", () => {
 					readonly method: "GET";
 					readonly paths: readonly ["/test"];
 					readonly preflightSteps: readonly [];
+					readonly bodyController: null;
 					readonly hooks: readonly [];
 					readonly steps: readonly [
 						ExtractStep<{
@@ -241,6 +247,7 @@ describe("route builder extract method", () => {
 						hooks: [],
 						method: "GET",
 						paths: ["/test"],
+						bodyController: null,
 						preflightSteps: [],
 						metadata: [],
 						steps: [

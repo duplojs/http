@@ -13,6 +13,7 @@ describe("preflight builder use route builder", () => {
 					method: "GET",
 					paths: ["/test"],
 					preflightSteps: [],
+					bodyController: null,
 					metadata: [IgnoreByRouteStoreMetadata(), IgnoreByRouteStoreMetadata()],
 					steps: [],
 				},
@@ -26,6 +27,7 @@ describe("preflight builder use route builder", () => {
 					readonly method: "GET";
 					readonly paths: readonly ["/test"];
 					readonly preflightSteps: readonly [];
+					readonly bodyController: null;
 					readonly steps: readonly [];
 					readonly hooks: readonly [];
 					readonly metadata: readonly [
@@ -52,6 +54,7 @@ describe("preflight builder use route builder", () => {
 					paths: ["/test", "/toto"],
 					preflightSteps: [],
 					metadata: [],
+					bodyController: null,
 					steps: [],
 				},
 			}),
@@ -65,6 +68,7 @@ describe("preflight builder use route builder", () => {
 					readonly paths: readonly ["/test", "/toto"];
 					readonly preflightSteps: readonly [];
 					readonly steps: readonly [];
+					readonly bodyController: null;
 					readonly hooks: readonly [];
 					readonly metadata: readonly [];
 				},
@@ -94,6 +98,7 @@ describe("preflight builder use route builder", () => {
 					method: "GET",
 					paths: ["/test"],
 					preflightSteps: [],
+					bodyController: null,
 					metadata: [],
 					steps: [],
 				},
@@ -107,6 +112,7 @@ describe("preflight builder use route builder", () => {
 					readonly method: "GET";
 					readonly paths: readonly ["/test"];
 					readonly preflightSteps: readonly [];
+					readonly bodyController: null;
 					readonly steps: readonly [];
 					readonly hooks: readonly [
 						{
@@ -150,6 +156,7 @@ describe("preflight builder use route builder", () => {
 				[builderKind.runTimeKey]: {
 					hooks: [],
 					method: "GET",
+					bodyController: null,
 					paths: ["/toto"],
 					preflightSteps: [
 						{
@@ -174,6 +181,7 @@ describe("preflight builder use route builder", () => {
 				{
 					readonly method: "GET";
 					readonly paths: readonly ["/toto"];
+					readonly bodyController: null;
 					readonly preflightSteps: readonly [
 						ProcessStep<{
 							readonly process: typeof process;
@@ -210,6 +218,7 @@ describe("preflight builder use route builder", () => {
 						{ onConstructRequest: expect.any(Function) },
 					],
 					method: "GET",
+					bodyController: null,
 					paths: ["/toto"],
 					preflightSteps: [],
 					metadata: [],
@@ -224,6 +233,7 @@ describe("preflight builder use route builder", () => {
 				{
 					readonly method: "GET";
 					readonly paths: readonly ["/toto"];
+					readonly bodyController: null;
 					readonly preflightSteps: readonly [];
 					readonly steps: readonly [];
 					readonly hooks: readonly [

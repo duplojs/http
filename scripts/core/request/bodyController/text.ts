@@ -5,11 +5,11 @@ export interface TextBodyReaderParams extends BodyControllerParams {
 
 }
 
-export const TextController = createBodyController<
+export const TextBodyController = createBodyController<
 	"text",
 	TextBodyReaderParams
 >("text");
-export type TextController = typeof TextController;
+export type TextBodyController = typeof TextBodyController;
 
 export interface ControlBodyAsTextParams {
 	bodyMaxSize?: number | BytesInString;
@@ -18,7 +18,7 @@ export interface ControlBodyAsTextParams {
 export function controlBodyAsText(
 	params?: ControlBodyAsTextParams,
 ) {
-	return TextController.create({
+	return TextBodyController.create({
 		bodyMaxSize: params?.bodyMaxSize && stringToBytes(params.bodyMaxSize),
 	});
 }

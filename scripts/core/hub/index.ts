@@ -8,13 +8,14 @@ import { type ClientErrorResponseCode, type ResponseContract } from "@core/respo
 import { defaultNotfoundHandler } from "./defaultNotfoundHandler";
 import { type Environment } from "@core/types";
 import { defaultExtractContract } from "./defaultExtractContract";
-import { defaultCheckerStepFunctionBuilder, defaultCutStepFunctionBuilder, defaultExtractStepFunctionBuilder, defaultHandlerStepFunctionBuilder, defaultProcessStepFunctionBuilder, type createStepFunctionBuilder } from "@core/functionsBuilders/steps";
-import { defaultRouteFunctionBuilder, type createRouteFunctionBuilder } from "@core/functionsBuilders/route";
-import { controlBodyAsText } from "@core/request/bodyController/text";
+import { type createStepFunctionBuilder } from "@core/functionsBuilders/steps";
+import { type createRouteFunctionBuilder } from "@core/functionsBuilders/route";
+import { defaultBodyController } from "./defaultBodyController";
 
 export * from "./hooks";
 export * from "./defaultNotfoundHandler";
 export * from "./defaultExtractContract";
+export * from "./defaultBodyController";
 
 export const hubKind = createCoreLibKind("hub");
 
@@ -46,15 +47,9 @@ export class Hub<
 
 	public routes = new Set<Route>();
 
-	public routeFunctionBuilders: ReturnType<typeof createRouteFunctionBuilder>[] = [defaultRouteFunctionBuilder];
+	public routeFunctionBuilders: ReturnType<typeof createRouteFunctionBuilder>[] = [];
 
-	public stepFunctionBuilders: ReturnType<typeof createStepFunctionBuilder>[] = [
-		defaultCheckerStepFunctionBuilder,
-		defaultCutStepFunctionBuilder,
-		defaultHandlerStepFunctionBuilder,
-		defaultExtractStepFunctionBuilder,
-		defaultProcessStepFunctionBuilder,
-	];
+	public stepFunctionBuilders: ReturnType<typeof createStepFunctionBuilder>[] = [];
 
 	public bodyReaderImplementations: BodyReaderImplementation[] = [];
 
@@ -68,7 +63,7 @@ export class Hub<
 		DP.DataParserEmpty
 	> = defaultExtractContract;
 
-	public defaultBodyController: BodyController = controlBodyAsText();
+	public defaultBodyController: BodyController = defaultBodyController;
 
 	private constructor(
 		public config: GenericConfig,

@@ -1,4 +1,4 @@
-import { TextController } from "@core/request";
+import { TextBodyController } from "@core/request";
 import { readRequestText } from "./readRequestText";
 import { A, E, type Json, stringToBytes, unwrap } from "@duplojs/utils";
 import { type HttpServerParams } from "@core/types";
@@ -11,7 +11,7 @@ export * from "./readRequestText";
 export function createTextBodyReaderImplementation(serverParams: HttpServerParams) {
 	const serverMaxBodySize = stringToBytes(serverParams.maxBodySize);
 
-	return TextController.createReaderImplementation(
+	return TextBodyController.createReaderImplementation(
 		async(request, params) => {
 			if (
 				!request.headers["content-type"]?.includes("application/json")

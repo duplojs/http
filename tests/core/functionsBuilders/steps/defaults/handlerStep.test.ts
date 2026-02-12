@@ -1,6 +1,7 @@
 import { ResponseContract, useRouteBuilder, Request, Response, PredictedResponse } from "@core";
 import { DP, DPE } from "@duplojs/utils";
 import { useTestRouteFunctionBuilder } from "@test-utils/useTestRouteFunctionBuilder";
+import { createBodyReader } from "@test-utils/bodyReader";
 
 describe("handler step function builder", () => {
 	const spyResponse = vi.fn();
@@ -30,6 +31,7 @@ describe("handler step function builder", () => {
 				params: { value: "test" },
 				query: {},
 				url: "",
+				bodyReader: createBodyReader(),
 			}),
 		);
 
@@ -60,6 +62,7 @@ describe("handler step function builder", () => {
 				params: {},
 				query: {},
 				url: "",
+				bodyReader: createBodyReader(),
 			}),
 		);
 
@@ -90,6 +93,7 @@ describe("handler step function builder", () => {
 				params: {},
 				query: {},
 				url: "",
+				bodyReader: createBodyReader(),
 			}),
 		);
 

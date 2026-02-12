@@ -5,11 +5,12 @@ import { type BuildedRoute } from "@core/route/types";
 import { pathToRegExp } from "./pathToRegExp";
 import { createRoute } from "@core/route";
 import { RouterBuildError } from "./buildError";
-import { buildRouteFunction, type BuildRouteFunctionParams } from "@core/functionsBuilders/route";
+import { buildRouteFunction, type createRouteFunctionBuilder, defaultRouteFunctionBuilder, type BuildRouteFunctionParams } from "@core/functionsBuilders/route";
 import { decodeUrl } from "./decodeUrl";
 import { type BodyReader } from "@core/request";
-import { controlBodyAsText, TextController } from "@core/request/bodyController/text";
+import { controlBodyAsText, TextBodyController } from "@core/request/bodyController/text";
 import { NotFoundBodyReaderImplementationError } from "./notFoundBodyReaderImplementationError";
+import { type createStepFunctionBuilder, defaultCheckerStepFunctionBuilder, defaultCutStepFunctionBuilder, defaultExtractStepFunctionBuilder, defaultHandlerStepFunctionBuilder, defaultProcessStepFunctionBuilder } from "@core/functionsBuilders";
 
 export * from "./types";
 export * from "./pathToRegExp";
@@ -33,12 +34,23 @@ export async function buildRouter(hub: Hub): Promise<BuildedRouter> {
 	const { environment } = hub.config;
 	const {
 		hooksRouteLifeCycle,
-		routeFunctionBuilders,
 		routes,
-		stepFunctionBuilders,
 		hooksHubLifeCycle,
 		bodyReaderImplementations,
 	} = hub;
+
+	const routeFunctionBuilders: readonly ReturnType<typeof createRouteFunctionBuilder>[] = [
+		...hub.routeFunctionBuilders,
+		defaultRouteFunctionBuilder,
+	];
+	const stepFunctionBuilders: readonly ReturnType<typeof createStepFunctionBuilder>[] = [
+		...hub.stepFunctionBuilders,
+		defaultCheckerStepFunctionBuilder,
+		defaultCutStepFunctionBuilder,
+		defaultHandlerStepFunctionBuilder,
+		defaultExtractStepFunctionBuilder,
+		defaultProcessStepFunctionBuilder,
+	];
 
 	const hooksBeforeBuildRoute = pipe(
 		hooksHubLifeCycle,
@@ -124,7 +136,7 @@ export async function buildRouter(hub: Hub): Promise<BuildedRouter> {
 	const bodyControllerNotfoundRoute = controlBodyAsText();
 	const bodyReaderNotFoundRoute = unwrap(
 		bodyControllerNotfoundRoute.tryToCreateReader(
-			TextController.createReaderImplementation(
+			TextBodyController.createReaderImplementation(
 				() => Promise.resolve(
 					E.error(new Error("Inaccessible body in not found route.")),
 				),

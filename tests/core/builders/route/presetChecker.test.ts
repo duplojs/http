@@ -40,6 +40,7 @@ describe("route builder preset checker method", () => {
 					paths: ["/test"],
 					preflightSteps: [],
 					metadata: [],
+					bodyController: null,
 					steps: [
 						expect.objectContaining({
 							[extractStepKind.runTimeKey]: null,
@@ -85,6 +86,7 @@ describe("route builder preset checker method", () => {
 						}>,
 					];
 					readonly metadata: readonly [];
+					readonly bodyController: null;
 				},
 				{ body: string },
 				Request
@@ -123,6 +125,7 @@ describe("route builder preset checker method", () => {
 					paths: ["/test"],
 					preflightSteps: [],
 					metadata: [],
+					bodyController: null,
 					steps: [
 						expect.objectContaining({
 							[extractStepKind.runTimeKey]: null,
@@ -168,6 +171,7 @@ describe("route builder preset checker method", () => {
 						}>,
 					];
 					readonly metadata: readonly [];
+					readonly bodyController: null;
 				},
 				{
 					body: string;

@@ -1,4 +1,4 @@
-import { type RouteBuilder, useRouteBuilder, type Request, type HookParamsOnConstructRequest, type Metadata, IgnoreByRouteStoreMetadata } from "@core";
+import { type RouteBuilder, useRouteBuilder, type Request, type HookParamsOnConstructRequest, type Metadata, IgnoreByRouteStoreMetadata, controlBodyAsFormData, type BodyController, type FormDataBodyReaderParams } from "@core";
 import { builderKind, type ExpectType } from "@duplojs/utils";
 
 describe("route builder", () => {
@@ -14,6 +14,7 @@ describe("route builder", () => {
 					preflightSteps: [],
 					steps: [],
 					metadata: [IgnoreByRouteStoreMetadata()],
+					bodyController: null,
 				},
 			}),
 		);
@@ -28,6 +29,7 @@ describe("route builder", () => {
 					readonly steps: readonly [];
 					readonly hooks: readonly [];
 					readonly metadata: readonly [Metadata<"ignore-by-route-store", unknown>];
+					readonly bodyController: null;
 				},
 				{},
 				Request
@@ -48,6 +50,7 @@ describe("route builder", () => {
 					preflightSteps: [],
 					steps: [],
 					metadata: [],
+					bodyController: null,
 				},
 			}),
 		);
@@ -62,6 +65,7 @@ describe("route builder", () => {
 					readonly steps: readonly [];
 					readonly hooks: readonly [];
 					readonly metadata: readonly [];
+					readonly bodyController: null;
 				},
 				{},
 				Request
@@ -90,6 +94,7 @@ describe("route builder", () => {
 					preflightSteps: [],
 					steps: [],
 					metadata: [],
+					bodyController: null,
 				},
 			}),
 		);
@@ -117,11 +122,49 @@ describe("route builder", () => {
 						},
 					];
 					readonly metadata: readonly [];
+					readonly bodyController: null;
 				},
 				{},
 				& Request
 				& { aa: number }
 				& { bb: number }
+			>,
+			"strict"
+		>;
+	});
+
+	it("useRouteBuilder with Custom bodyController", () => {
+		const bodyController = controlBodyAsFormData({ maxFileQuantity: 10 });
+		const routeBuilder = useRouteBuilder("GET", "/test", { bodyController });
+
+		expect({ ...routeBuilder }).toStrictEqual(
+			expect.objectContaining({
+				[builderKind.runTimeKey]: {
+					hooks: [],
+					method: "GET",
+					paths: ["/test"],
+					preflightSteps: [],
+					steps: [],
+					metadata: [],
+					bodyController: bodyController,
+				},
+			}),
+		);
+
+		type Check = ExpectType<
+			typeof routeBuilder,
+			RouteBuilder<
+				{
+					readonly method: "GET";
+					readonly paths: readonly ["/test"];
+					readonly preflightSteps: readonly [];
+					readonly steps: readonly [];
+					readonly hooks: readonly [];
+					readonly metadata: readonly [];
+					readonly bodyController: BodyController<"formData", FormDataBodyReaderParams>;
+				},
+				{},
+				Request
 			>,
 			"strict"
 		>;

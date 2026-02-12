@@ -1,12 +1,15 @@
-import { ResponseContract, createHub, implementHttpServer, serverErrorExitHookFunction, serverErrorNextHookFunction, useRouteBuilder } from "@core";
+import { type HttpServerParams, ResponseContract, TextBodyController, createHub, implementHttpServer, serverErrorExitHookFunction, serverErrorNextHookFunction, useRouteBuilder } from "@core";
 import { type RouterInitializationData } from "@core/router";
-import { type AnyFunction } from "@duplojs/utils";
+import { E, type AnyFunction } from "@duplojs/utils";
 
 describe("implementHttpServer", () => {
+	const bodyReaderImplementation = TextBodyController.createReaderImplementation(
+		() => Promise.resolve(E.success(undefined)),
+	);
 	it("runs lifecycle hooks in order and executes route", async() => {
 		const calls: string[] = [];
 		const routeHandler = vi.fn();
-		const httpServerParams = { marker: "http-server-params" };
+		const httpServerParams = {} as HttpServerParams;
 
 		const route = useRouteBuilder("GET", "/")
 			.handler(
@@ -42,7 +45,8 @@ describe("implementHttpServer", () => {
 						beforeServerBuildRoutes: beforeServerBuildRoutesHook,
 						beforeStartServer: beforeStartServerHook,
 						afterStartServer: afterStartServerHook,
-					}),
+					})
+					.addBodyReaderImplementation(bodyReaderImplementation),
 				httpServerParams,
 			},
 			async({ execRouteSystem, httpServerParams: receivedParams }) => {
@@ -108,8 +112,9 @@ describe("implementHttpServer", () => {
 					.register(route)
 					.addHubHooks({
 						serverError: serverErrorHook,
-					}),
-				httpServerParams: {},
+					})
+					.addBodyReaderImplementation(bodyReaderImplementation),
+				httpServerParams: {} as HttpServerParams,
 			},
 			({ execRouteSystem: receivedExecRouteSystem }) => {
 				execRouteSystem = receivedExecRouteSystem;

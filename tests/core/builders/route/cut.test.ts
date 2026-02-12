@@ -31,6 +31,7 @@ describe("route builder cut method", () => {
 					method: "GET",
 					paths: ["/test"],
 					preflightSteps: [],
+					bodyController: null,
 					metadata: [],
 					steps: [
 						expect.objectContaining({
@@ -61,6 +62,7 @@ describe("route builder cut method", () => {
 					readonly paths: readonly ["/test"];
 					readonly preflightSteps: readonly [];
 					readonly hooks: readonly [];
+					readonly bodyController: null;
 					readonly steps: readonly [
 						ExtractStep<{
 							readonly shape: {
@@ -127,6 +129,7 @@ describe("route builder cut method", () => {
 					method: "GET",
 					paths: ["/test"],
 					preflightSteps: [],
+					bodyController: null,
 					metadata: [],
 					steps: [
 						{
@@ -160,6 +163,7 @@ describe("route builder cut method", () => {
 					readonly method: "GET";
 					readonly preflightSteps: readonly [];
 					readonly hooks: readonly [];
+					readonly bodyController: null;
 					readonly steps: readonly [
 						CutStep<{
 							readonly responseContract: readonly [
@@ -227,6 +231,7 @@ describe("route builder cut method", () => {
 					method: "GET",
 					paths: ["/test"],
 					preflightSteps: [],
+					bodyController: null,
 					metadata: [],
 					steps: [
 						expect.objectContaining({
@@ -257,6 +262,7 @@ describe("route builder cut method", () => {
 					readonly method: "GET";
 					readonly preflightSteps: readonly [];
 					readonly hooks: readonly [];
+					readonly bodyController: null;
 					readonly steps: readonly [
 						ExtractStep<{
 							readonly shape: {
@@ -327,6 +333,7 @@ describe("route builder cut method", () => {
 					method: "GET",
 					paths: ["/test"],
 					preflightSteps: [],
+					bodyController: null,
 					metadata: [],
 					steps: [
 						expect.objectContaining({
@@ -357,6 +364,7 @@ describe("route builder cut method", () => {
 					readonly method: "GET";
 					readonly preflightSteps: readonly [];
 					readonly hooks: readonly [];
+					readonly bodyController: null;
 					readonly steps: readonly [
 						ExtractStep<{
 							readonly shape: {
@@ -423,6 +431,7 @@ describe("route builder cut method", () => {
 					method: "GET",
 					paths: ["/test"],
 					preflightSteps: [],
+					bodyController: null,
 					metadata: [],
 					steps: [
 						expect.objectContaining({
@@ -453,6 +462,7 @@ describe("route builder cut method", () => {
 					readonly method: "GET";
 					readonly preflightSteps: readonly [];
 					readonly hooks: readonly [];
+					readonly bodyController: null;
 					readonly steps: readonly [
 						ExtractStep<{
 							readonly shape: {

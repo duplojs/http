@@ -18,10 +18,10 @@ describe("receive file", async() => {
 
 	it("sendFile", async() => {
 		const formData = new FormData();
-		formData.append("accepte", "true");
+		formData.append("accepéééééé", "true");
 		formData.append(
-			"myFile",
-			await createFileToSend("files/fakeFiles/1mb.jpg"),
+			"ééééééé",
+			await createFileToSend("files/fakeFiles/1mb.jpg", "//😄.jpg"),
 		);
 
 		await expect(

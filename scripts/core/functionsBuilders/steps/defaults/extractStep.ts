@@ -38,7 +38,7 @@ export const defaultExtractStepFunctionBuilder = createStepFunctionBuilder(
 				? getResponse(unwrap(result))
 				: {
 					...floor,
-					[key]: unwrap(result),
+					[subKey ?? key]: unwrap(result),
 				};
 			const getValue = typeof subKey === "string"
 				? (value: unknown) => value?.[subKey as never]

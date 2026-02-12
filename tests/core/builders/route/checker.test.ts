@@ -36,6 +36,7 @@ describe("route builder checker method", () => {
 					paths: ["/test"],
 					preflightSteps: [],
 					metadata: [],
+					bodyController: null,
 					steps: [
 						expect.objectContaining({
 							[extractStepKind.runTimeKey]: null,
@@ -67,6 +68,7 @@ describe("route builder checker method", () => {
 					readonly paths: readonly ["/test"];
 					readonly preflightSteps: readonly [];
 					readonly hooks: readonly [];
+					readonly bodyController: null;
 					readonly steps: readonly [
 						ExtractStep<{
 							readonly shape: {
@@ -133,6 +135,7 @@ describe("route builder checker method", () => {
 					method: "GET",
 					paths: ["/test"],
 					preflightSteps: [],
+					bodyController: null,
 					metadata: [],
 					steps: [
 						expect.objectContaining({
@@ -168,6 +171,7 @@ describe("route builder checker method", () => {
 					readonly paths: readonly ["/test"];
 					readonly preflightSteps: readonly [];
 					readonly hooks: readonly [];
+					readonly bodyController: null;
 					readonly steps: readonly [
 						ExtractStep<{
 							readonly shape: {
@@ -244,6 +248,7 @@ describe("route builder checker method", () => {
 					method: "GET",
 					paths: ["/test"],
 					preflightSteps: [],
+					bodyController: null,
 					metadata: [],
 					steps: [
 						expect.objectContaining({
@@ -277,6 +282,7 @@ describe("route builder checker method", () => {
 					readonly paths: readonly ["/test"];
 					readonly preflightSteps: readonly [];
 					readonly hooks: readonly [];
+					readonly bodyController: null;
 					readonly steps: readonly [
 						ExtractStep<{
 							readonly shape: {
@@ -342,6 +348,7 @@ describe("route builder checker method", () => {
 					method: "GET",
 					paths: ["/test"],
 					preflightSteps: [],
+					bodyController: null,
 					metadata: [],
 					steps: [
 						expect.objectContaining({
@@ -375,6 +382,7 @@ describe("route builder checker method", () => {
 					readonly paths: readonly ["/test"];
 					readonly preflightSteps: readonly [];
 					readonly hooks: readonly [];
+					readonly bodyController: null;
 					readonly steps: readonly [
 						ExtractStep<{
 							readonly shape: {

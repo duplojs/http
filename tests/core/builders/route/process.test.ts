@@ -16,6 +16,7 @@ describe("route builder process method", () => {
 					method: "GET",
 					paths: ["/test"],
 					preflightSteps: [],
+					bodyController: null,
 					steps: [
 						{
 							[processStepKind.runTimeKey]: null,
@@ -39,6 +40,7 @@ describe("route builder process method", () => {
 					readonly paths: readonly ["/test"];
 					readonly method: "GET";
 					readonly preflightSteps: readonly [];
+					readonly bodyController: null;
 					readonly steps: readonly [
 						ProcessStep<{
 							readonly process: typeof process;
@@ -73,6 +75,7 @@ describe("route builder process method", () => {
 					hooks: [],
 					method: "GET",
 					paths: ["/test"],
+					bodyController: null,
 					preflightSteps: [],
 					steps: [
 						{
@@ -98,6 +101,7 @@ describe("route builder process method", () => {
 					readonly paths: readonly ["/test"];
 					readonly method: "GET";
 					readonly preflightSteps: readonly [];
+					readonly bodyController: null;
 					readonly steps: readonly [
 						ProcessStep<{
 							readonly process: typeof process;
@@ -150,6 +154,7 @@ describe("route builder process method", () => {
 					hooks: [],
 					method: "GET",
 					paths: ["/test"],
+					bodyController: null,
 					preflightSteps: [],
 					steps: [
 						expect.objectContaining({
@@ -178,6 +183,7 @@ describe("route builder process method", () => {
 					readonly paths: readonly ["/test"];
 					readonly method: "GET";
 					readonly preflightSteps: readonly [];
+					readonly bodyController: null;
 					readonly steps: readonly [
 						ExtractStep<{
 							readonly shape: {
@@ -224,6 +230,7 @@ describe("route builder process method", () => {
 					hooks: [],
 					method: "GET",
 					paths: ["/test"],
+					bodyController: null,
 					preflightSteps: [],
 					steps: [
 						{
@@ -249,6 +256,7 @@ describe("route builder process method", () => {
 					readonly paths: readonly ["/test"];
 					readonly method: "GET";
 					readonly preflightSteps: readonly [];
+					readonly bodyController: null;
 					readonly steps: readonly [
 						ProcessStep<{
 							readonly process: typeof process;
@@ -283,6 +291,7 @@ describe("route builder process method", () => {
 					hooks: [],
 					method: "GET",
 					paths: ["/test"],
+					bodyController: null,
 					preflightSteps: [],
 					steps: [
 						{
@@ -308,6 +317,7 @@ describe("route builder process method", () => {
 					readonly paths: readonly ["/test"];
 					readonly method: "GET";
 					readonly preflightSteps: readonly [];
+					readonly bodyController: null;
 					readonly steps: readonly [
 						ProcessStep<{
 							readonly process: typeof process;
@@ -343,6 +353,7 @@ describe("route builder process method", () => {
 					hooks: [],
 					method: "GET",
 					paths: ["/test"],
+					bodyController: null,
 					preflightSteps: [],
 					steps: [
 						{
@@ -365,6 +376,7 @@ describe("route builder process method", () => {
 				{
 					readonly hooks: readonly [];
 					readonly paths: readonly ["/test"];
+					readonly bodyController: null;
 					readonly method: "GET";
 					readonly preflightSteps: readonly [];
 					readonly steps: readonly [

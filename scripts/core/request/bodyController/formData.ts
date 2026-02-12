@@ -7,11 +7,11 @@ export interface FormDataBodyReaderParams extends BodyControllerParams {
 	fileMaxSize?: number;
 }
 
-export const FormDataController = createBodyController<
+export const FormDataBodyController = createBodyController<
 	"formData",
 	FormDataBodyReaderParams
 >("formData");
-export type FormDataController = typeof FormDataController;
+export type FormDataBodyController = typeof FormDataBodyController;
 
 export interface ControlBodyAsFormDataParams {
 	maxFileQuantity: number;
@@ -23,7 +23,7 @@ export interface ControlBodyAsFormDataParams {
 export function controlBodyAsFormData(
 	params: ControlBodyAsFormDataParams,
 ) {
-	return FormDataController.create({
+	return FormDataBodyController.create({
 		maxFileQuantity: params.maxFileQuantity,
 		bodyMaxSize: params.bodyMaxSize && stringToBytes(params.bodyMaxSize),
 		fileMaxSize: params.fileMaxSize && stringToBytes(params.fileMaxSize),

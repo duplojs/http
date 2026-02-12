@@ -1,5 +1,6 @@
-import { ResponseContract, useRouteBuilder, Request, Response, PredictedResponse } from "@core";
+import { ResponseContract, useRouteBuilder, Request, PredictedResponse } from "@core";
 import { DP, DPE } from "@duplojs/utils";
+import { createBodyReader } from "@test-utils/bodyReader";
 import { useTestRouteFunctionBuilder } from "@test-utils/useTestRouteFunctionBuilder";
 
 describe("extract step function builder", () => {
@@ -30,6 +31,7 @@ describe("extract step function builder", () => {
 				params: { value: "test" },
 				query: {},
 				url: "",
+				bodyReader: createBodyReader(),
 			}),
 		);
 
@@ -61,6 +63,7 @@ describe("extract step function builder", () => {
 				params: {},
 				query: {},
 				url: "",
+				bodyReader: createBodyReader(),
 			}),
 		);
 
@@ -92,6 +95,7 @@ describe("extract step function builder", () => {
 				params: {},
 				query: {},
 				url: "",
+				bodyReader: createBodyReader(),
 			}),
 		);
 
@@ -128,6 +132,7 @@ describe("extract step function builder", () => {
 				params: {},
 				query: {},
 				url: "",
+				bodyReader: createBodyReader(),
 			}),
 		);
 
@@ -164,6 +169,7 @@ describe("extract step function builder", () => {
 				params: {},
 				query: {},
 				url: "",
+				bodyReader: createBodyReader(),
 			}),
 		);
 
@@ -200,6 +206,7 @@ describe("extract step function builder", () => {
 				params: {},
 				query: {},
 				url: "",
+				bodyReader: createBodyReader(),
 			}),
 		);
 
@@ -211,6 +218,147 @@ describe("extract step function builder", () => {
 					undefined,
 				)
 					.setHeader("extract-key", "request.origin"),
+			}),
+		);
+	});
+
+	it("extract body", async() => {
+		const route = useRouteBuilder("GET", "/test", { hooks: [{ afterSendResponse: spyResponse }] })
+			.extract({ body: DPE.number() })
+			.handler(
+				ResponseContract.ok("good", DPE.number()),
+				(floor, { response }) => response("good", floor.body),
+			);
+
+		const buildedRoute = await useTestRouteFunctionBuilder(route, { environment: "PROD" });
+
+		await buildedRoute(
+			new Request({
+				headers: {},
+				host: "",
+				matchedPath: "",
+				method: "",
+				origin: "test1",
+				path: "",
+				params: {},
+				query: {},
+				url: "",
+				bodyReader: createBodyReader(() => 12),
+			}),
+		);
+
+		expect(spyResponse).toHaveBeenCalledWith(
+			expect.objectContaining({
+				currentResponse: new PredictedResponse(
+					"200",
+					"good",
+					12,
+				),
+			}),
+		);
+	});
+
+	it("extract body whit async schema", async() => {
+		const route = useRouteBuilder("GET", "/test", { hooks: [{ afterSendResponse: spyResponse }] })
+			.extract({ body: DPE.number().transform(async(value) => Promise.resolve(value + 1)) })
+			.handler(
+				ResponseContract.ok("good", DPE.number()),
+				(floor, { response }) => response("good", floor.body),
+			);
+
+		const buildedRoute = await useTestRouteFunctionBuilder(route, { environment: "DEV" });
+
+		await buildedRoute(
+			new Request({
+				headers: {},
+				host: "",
+				matchedPath: "",
+				method: "",
+				origin: "test1",
+				path: "",
+				params: {},
+				query: {},
+				url: "",
+				bodyReader: createBodyReader(() => 1),
+			}),
+		);
+
+		expect(spyResponse).toHaveBeenCalledWith(
+			expect.objectContaining({
+				currentResponse: new PredictedResponse(
+					"200",
+					"good",
+					2,
+				),
+			}),
+		);
+	});
+
+	it("fail extract body", async() => {
+		const route = useRouteBuilder("GET", "/test", { hooks: [{ afterSendResponse: spyResponse }] })
+			.extract({ body: DPE.number() })
+			.handler(
+				ResponseContract.ok("good", DPE.number()),
+				(floor, { response }) => response("good", floor.body),
+			);
+
+		const buildedRoute = await useTestRouteFunctionBuilder(route, { environment: "DEV" });
+
+		await buildedRoute(
+			new Request({
+				headers: {},
+				host: "",
+				matchedPath: "",
+				method: "",
+				origin: "test1",
+				path: "",
+				params: {},
+				query: {},
+				url: "",
+				bodyReader: createBodyReader(() => new Error("fail")),
+			}),
+		);
+
+		expect(spyResponse).toHaveBeenCalledWith(
+			expect.objectContaining({
+				currentResponse: new PredictedResponse(
+					"422",
+					"extract-error",
+					new Error("fail"),
+				)
+					.setHeader("extract-key", "request.body"),
+			}),
+		);
+	});
+
+	it("extract with async dataParser", async() => {
+		const route = useRouteBuilder("GET", "/test", { hooks: [{ afterSendResponse: spyResponse }] })
+			.extract({ origin: DPE.string().transform(async(value) => Promise.resolve(`${value}tt`)) })
+			.handler(
+				ResponseContract.ok("good", DPE.string()),
+				(floor, { response }) => response("good", floor.origin),
+			);
+
+		const buildedRoute = await useTestRouteFunctionBuilder(route);
+
+		await buildedRoute(
+			new Request({
+				headers: {},
+				host: "",
+				matchedPath: "",
+				method: "",
+				origin: "test1",
+				path: "",
+				params: {},
+				query: {},
+				url: "",
+				bodyReader: createBodyReader(),
+			}),
+		);
+
+		expect(spyResponse).toHaveBeenCalledWith(
+			expect.objectContaining({
+				currentResponse: new PredictedResponse("200", "good", "test1tt"),
 			}),
 		);
 	});

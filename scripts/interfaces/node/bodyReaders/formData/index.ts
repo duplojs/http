@@ -1,4 +1,4 @@
-import { FormDataController } from "@core/request";
+import { FormDataBodyController } from "@core/request";
 import { type HttpServerParams } from "@core/types";
 import { SF } from "@duplojs/server-utils";
 import { A, E, type MaybeArray, Path, stringToBytes, unwrap } from "@duplojs/utils";
@@ -31,7 +31,7 @@ export function createFormDataBodyReaderImplementation(serverParams: HttpServerP
 		}
 	}
 
-	return FormDataController.createReaderImplementation(
+	return FormDataBodyController.createReaderImplementation(
 		async(request, params) => {
 			if (!request.headers["content-type"]?.includes("multipart/form-data")) {
 				return E.error(
