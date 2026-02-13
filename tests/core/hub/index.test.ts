@@ -1,4 +1,4 @@
-import { type HookRouteLifeCycle, defaultBodyController, createHub, defaultCheckerStepFunctionBuilder, defaultExtractContract, defaultNotfoundHandler, defaultRouteFunctionBuilder, hubKind, Request, ResponseContract, type HookHubLifeCycle } from "@core";
+import { type HookRouteLifeCycle, defaultBodyController, createHub, defaultCheckerStepFunctionBuilder, defaultExtractContract, defaultNotfoundHandler, defaultRouteFunctionBuilder, hubKind, Request, ResponseContract, type HookHubLifeCycle, TextBodyController, controlBodyAsText } from "@core";
 import { testRoute } from "@test-utils/route";
 
 describe("hub", () => {
@@ -18,7 +18,7 @@ describe("hub", () => {
 		bodyReaderImplementations: [],
 	};
 
-	it.only("hub shape", () => {
+	it("hub shape", () => {
 		const hub = createHub({
 			environment: "DEV",
 		});
@@ -46,9 +46,9 @@ describe("hub", () => {
 		});
 
 		const otherOtherRoute = { ...testRoute };
-		hub.register([otherOtherRoute]);
+		hub.register({ otherOtherRoute });
 
-		expect(hub.register({ otherOtherRoute })).toStrictEqual({
+		expect({ ...hub }).toStrictEqual({
 			...baseHub,
 			routes: new Set([testRoute, otherRoute, otherOtherRoute]),
 		});
@@ -80,6 +80,50 @@ describe("hub", () => {
 				},
 			],
 		});
+
+		const bodyReaderImplementation = TextBodyController.createReaderImplementation(() => void 0 as never);
+
+		hub.plug({
+			name: "1",
+			bodyReaderImplementations: [bodyReaderImplementation],
+		});
+
+		expect(hub.bodyReaderImplementations).toStrictEqual([bodyReaderImplementation]);
+
+		hub.plug({
+			name: "1",
+			hooksHubLifeCycle: [{}],
+		});
+
+		expect(hub.hooksHubLifeCycle).toStrictEqual([{}]);
+
+		hub.plug({
+			name: "1",
+			hooksRouteLifeCycle: [{}],
+		});
+
+		expect(hub.hooksRouteLifeCycle).toStrictEqual([{}]);
+
+		hub.plug({
+			name: "1",
+			routeFunctionBuilders: [defaultRouteFunctionBuilder],
+		});
+
+		expect(hub.routeFunctionBuilders).toStrictEqual([defaultRouteFunctionBuilder]);
+
+		hub.plug({
+			name: "1",
+			routes: [testRoute],
+		});
+
+		expect(hub.routes).toStrictEqual(new Set([testRoute]));
+
+		hub.plug({
+			name: "1",
+			stepFunctionBuilders: [defaultCheckerStepFunctionBuilder],
+		});
+
+		expect(hub.stepFunctionBuilders).toStrictEqual([defaultCheckerStepFunctionBuilder]);
 	});
 
 	it("hub add route function builder", () => {
@@ -145,16 +189,10 @@ describe("hub", () => {
 		})
 			.addRouteHooks([routeHook, {}])
 			.addHubHooks([hubHook, {}])
-			.addRouteFunctionBuilder(defaultRouteFunctionBuilder)
-			.addStepFunctionBuilder(defaultCheckerStepFunctionBuilder)
-			.register(testRoute)
 			.plug({
 				name: "test",
 				hooksRouteLifeCycle: [routeHook, {}],
 				hooksHubLifeCycle: [hubHook, {}],
-				routes: [testRoute],
-				routeFunctionBuilders: [defaultRouteFunctionBuilder],
-				stepFunctionBuilders: [defaultCheckerStepFunctionBuilder],
 			})
 			.plug({ name: "empty" });
 
@@ -171,7 +209,7 @@ describe("hub", () => {
 	it("hub set not found handler", () => {
 		const contract = ResponseContract.notFound("test");
 
-		const newHub = createHub({
+		const hub = createHub({
 			environment: "DEV",
 		})
 			.setNotfoundHandler(
@@ -179,7 +217,7 @@ describe("hub", () => {
 				({ response }) => response("test"),
 			);
 
-		expect(newHub).toStrictEqual({
+		expect({ ...hub }).toStrictEqual({
 			...baseHub,
 			notfoundHandler: expect.objectContaining({
 				definition: expect.objectContaining({
@@ -192,14 +230,28 @@ describe("hub", () => {
 	it("hub set default extract contract", () => {
 		const contract = ResponseContract.notFound("test");
 
-		const newHub = createHub({
+		const hub = createHub({
 			environment: "DEV",
 		})
 			.setDefaultExtractContract(contract);
 
-		expect(newHub).toStrictEqual({
+		expect({ ...hub }).toStrictEqual({
 			...baseHub,
 			defaultExtractContract: contract,
+		});
+	});
+
+	it("add body reader", () => {
+		const bodyController = controlBodyAsText();
+
+		const hub = createHub({
+			environment: "DEV",
+		})
+			.setDefaultBodyController(bodyController);
+
+		expect({ ...hub }).toStrictEqual({
+			...baseHub,
+			defaultBodyController: bodyController,
 		});
 	});
 });

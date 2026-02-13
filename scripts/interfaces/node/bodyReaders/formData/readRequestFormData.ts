@@ -1,5 +1,5 @@
 
-import { E, forwardLog, Path, S, type MaybePromise } from "@duplojs/utils";
+import { E, Path, S, type MaybePromise } from "@duplojs/utils";
 import type http from "http";
 import { BodyParseFormDataError } from "./error";
 import { BodyParseWrongChunkReceived, BodySizeExceedsLimitError } from "@core/errors";
@@ -90,7 +90,7 @@ export async function readRequestFormData<
 		}
 
 		const extract = S.extract(
-			headerPart.toString("latin1"),
+			headerPart.toString("utf-8"),
 			regexHeaderPart,
 		)?.namedGroups;
 
@@ -103,7 +103,7 @@ export async function readRequestFormData<
 			}
 			: null;
 
-		if (!header?.name) {
+		if (!header) {
 			return new BodyParseFormDataError("Bad content header part.");
 		}
 

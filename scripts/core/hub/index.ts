@@ -30,7 +30,7 @@ export interface HubPlugin {
 	readonly routes?: readonly Route[];
 	readonly routeFunctionBuilders?: readonly ReturnType<typeof createRouteFunctionBuilder>[];
 	readonly stepFunctionBuilders?: readonly ReturnType<typeof createStepFunctionBuilder>[];
-	readonly bodyReaderImplementation?: readonly BodyReaderImplementation[];
+	readonly bodyReaderImplementations?: readonly BodyReaderImplementation[];
 }
 
 export class Hub<
@@ -133,8 +133,8 @@ export class Hub<
 			? plugin(this)
 			: plugin;
 
-		if (pluginResult.bodyReaderImplementation) {
-			this.addBodyReaderImplementation(pluginResult.bodyReaderImplementation);
+		if (pluginResult.bodyReaderImplementations) {
+			this.addBodyReaderImplementation(pluginResult.bodyReaderImplementations);
 		}
 
 		if (pluginResult.hooksHubLifeCycle) {

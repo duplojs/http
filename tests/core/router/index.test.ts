@@ -1,4 +1,4 @@
-import { buildRouter, createHub, defaultCheckerStepFunctionBuilder, defaultCutStepFunctionBuilder, defaultExtractStepFunctionBuilder, defaultHandlerStepFunctionBuilder, defaultProcessStepFunctionBuilder, defaultRouteFunctionBuilder, ResponseContract, RouterBuildError, stepKind, TextBodyController, useRouteBuilder } from "@core";
+import { buildRouter, createHub, defaultCheckerStepFunctionBuilder, defaultCutStepFunctionBuilder, defaultExtractStepFunctionBuilder, defaultHandlerStepFunctionBuilder, defaultProcessStepFunctionBuilder, defaultRouteFunctionBuilder, NotFoundBodyReaderImplementationError, ResponseContract, RouterBuildError, stepKind, TextBodyController, useRouteBuilder } from "@core";
 import { DP, E } from "@duplojs/utils";
 import { testRoute } from "@test-utils/route";
 
@@ -61,6 +61,17 @@ describe("buildRouter", () => {
 		).rejects.instanceof(RouterBuildError);
 	});
 
+	it("throw error when not found body reader implementation", async() => {
+		await expect(
+			buildRouter(
+				createHub({
+					environment: "DEV",
+				})
+					.register(testRoute),
+			),
+		).rejects.instanceof(NotFoundBodyReaderImplementationError);
+	});
+
 	it("throw error when build notfound route", async() => {
 		const hub = createHub({ environment: "DEV" })
 			.addBodyReaderImplementation(textBodyReaderImplementation);
@@ -80,8 +91,8 @@ describe("buildRouter", () => {
 			createHub({ environment: "DEV" })
 				.setNotfoundHandler(
 					ResponseContract.notFound("notfound"),
-					({ response }) => {
-						spy();
+					async({ response, request }) => {
+						spy(await request.getBody());
 						return response("notfound");
 					},
 				)
@@ -96,7 +107,7 @@ describe("buildRouter", () => {
 			url: "/test",
 		});
 
-		expect(spy).toHaveBeenCalled();
+		expect(spy).toHaveBeenCalledWith(E.error(new Error("Inaccessible body in not found route.")));
 	});
 
 	it("buildedRouter use notfound route after search route", async() => {

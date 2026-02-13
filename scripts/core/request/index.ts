@@ -1,7 +1,6 @@
-import { createExternalPromise, type E, kindHeritage } from "@duplojs/utils";
+import { createExternalPromise, type E, kindHeritage, type MaybePromise } from "@duplojs/utils";
 import { type GetPropsWithValue } from "@duplojs/utils/object";
 import { createCoreLibKind } from "../kind";
-import { type MaybePromise } from "bun";
 import { type BodyReader } from "./bodyController";
 
 export * from "./bodyController";
