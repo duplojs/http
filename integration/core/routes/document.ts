@@ -1,12 +1,13 @@
 import { controlBodyAsFormData, ResponseContract, useRouteBuilder } from "@duplojs/http";
 import { SDPE } from "@duplojs/server-utils";
-import { asserts, E } from "@duplojs/utils";
+import { asserts, DPE, E } from "@duplojs/utils";
 
 useRouteBuilder("POST", "/documents", {
 	bodyController: controlBodyAsFormData({ maxFileQuantity: 10 }),
 })
 	.extract({
 		body: {
+			bool: DPE.coerce.boolean(),
 			myFile: SDPE.file(),
 		},
 	})
@@ -14,7 +15,7 @@ useRouteBuilder("POST", "/documents", {
 		ResponseContract.noContent("file.receive"),
 		async({ myFile }, { response }) => {
 			asserts(
-				await myFile.move("files/store"),
+				await myFile.move("files/store/picture.jpg"),
 				E.isRight,
 			);
 

@@ -2,7 +2,6 @@ import { createHub, launchHookServer, ResponseContract, useRouteBuilder } from "
 import { DPE, E } from "@duplojs/utils";
 import { TESTImplementation, setEnvironment } from "@duplojs/server-utils";
 import { codeGeneratorPlugin } from "@plugin-codeGenerator";
-import { testHub } from "@test-utils/hub";
 
 describe("plugin implementation", () => {
 	setEnvironment("TEST");
@@ -34,14 +33,14 @@ describe("plugin implementation", () => {
 		);
 
 	it("generate API type", async() => {
-		const hub = testHub
+		const hub = createHub({ environment: "DEV" })
 			.plug(codeGeneratorPlugin({ outputFile: "test.d.ts" }))
 			.register(route);
 
 		await launchHookServer(
 			hub.aggregatesHooksHubLifeCycle("beforeStartServer"),
 			hub,
-			{},
+			{} as any,
 		);
 
 		expect(spy.mock.lastCall?.at(0)).toBe("test.d.ts");
@@ -49,13 +48,13 @@ describe("plugin implementation", () => {
 	});
 
 	it("not generate API type", async() => {
-		const hub = testHub
+		const hub = createHub({ environment: "DEV" })
 			.plug(codeGeneratorPlugin({ outputFile: "test.d.ts" }));
 
 		await launchHookServer(
 			hub.aggregatesHooksHubLifeCycle("beforeStartServer"),
 			hub,
-			{},
+			{} as any,
 		);
 
 		expect(spy).not.toHaveBeenCalled();
@@ -69,7 +68,7 @@ describe("plugin implementation", () => {
 		await launchHookServer(
 			hub.aggregatesHooksHubLifeCycle("beforeStartServer"),
 			hub,
-			{},
+			{} as any,
 		);
 
 		expect(spy).not.toHaveBeenCalled();

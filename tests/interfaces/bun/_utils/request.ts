@@ -1,5 +1,6 @@
 import { type RequestInitializationData, Request } from "@core";
 import { type SimplifyTopLevel } from "@duplojs/utils";
+import { createBodyReader } from "@test-utils/bodyReader";
 
 type InitializationData = SimplifyTopLevel<
 	& Omit<Partial<RequestInitializationData>, "raw">
@@ -19,6 +20,7 @@ export function createFakeRequest({ raw, ...initializationData }: Initialization
 		origin: "",
 		url: "",
 		raw: {} as any,
+		bodyReader: createBodyReader(),
 		...initializationData,
 	});
 }

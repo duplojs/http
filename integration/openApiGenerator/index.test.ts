@@ -21,7 +21,7 @@ describe("openApiGenerator", () => {
 		await launchHookServer(
 			hubWithPlugins.aggregatesHooksHubLifeCycle("beforeServerBuildRoutes"),
 			hubWithPlugins,
-			{},
+			{} as any,
 		);
 
 		expect(readFileSync(fileName, "utf-8")).toMatchSnapshot();

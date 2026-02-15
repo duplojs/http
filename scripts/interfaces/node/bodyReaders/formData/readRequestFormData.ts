@@ -27,27 +27,32 @@ export interface ReadRequestFormDataStreamChunkEvent<
 > {
 	onReceiveChunk(chunk: Buffer): MaybePromise<void>;
 	onEndPart(valueAccumulator: GenericValueAccumulator): MaybePromise<GenericValueAccumulator>;
-	onError(error: unknown, valueAccumulator: GenericValueAccumulator): MaybePromise<void>;
+	onError: ((error: unknown, valueAccumulator: GenericValueAccumulator) => MaybePromise<void>) | null ;
 }
 
 export interface ReadRequestFormDataParams {
 	maxBodySize: number;
 	maxFileQuantity: number;
+	maxBufferSize: number;
+	maxKeyLength: number;
 	fileMaxSize?: number;
 	mimeType?: RegExp;
 }
 
 export async function readRequestFormData<
 	GenericValueAccumulator extends unknown,
+	GenericOutputHeader extends E.Left = never,
 >(
 	request: http.IncomingMessage,
 	firstValueAccumulator: GenericValueAccumulator,
 	params: ReadRequestFormDataParams,
 	onReceiveHeader: (header: HeaderPartInformation) => MaybePromise<
-		ReadRequestFormDataStreamChunkEvent<GenericValueAccumulator>
+		| ReadRequestFormDataStreamChunkEvent<GenericValueAccumulator>
+		| Error
 	>,
 ): Promise<
 	| E.Left<"server-error", unknown>
+	| GenericOutputHeader
 	| E.Error<Error>
 	| GenericValueAccumulator
 	> {
@@ -96,15 +101,21 @@ export async function readRequestFormData<
 
 		const header = extract?.name
 			? {
-				name: extract.name,
-				filename: extract.encodedFilename !== undefined
-					? safeDecode(extract.encodedFilename)
-					: extract.filename,
+				name: extract.name.trim(),
+				filename: (
+					extract.encodedFilename !== undefined
+						? safeDecode(extract.encodedFilename)
+						: extract.filename
+				)?.trim(),
 			}
 			: null;
 
 		if (!header) {
 			return new BodyParseFormDataError("Bad content header part.");
+		}
+
+		if (header.name.length > params.maxKeyLength) {
+			return new BodyParseFormDataError("key length exceeds limit.");
 		}
 
 		if (header.filename !== undefined) {
@@ -124,7 +135,7 @@ export async function readRequestFormData<
 
 		const newStream = await onReceiveHeader(header);
 
-		if (E.isLeft(newStream)) {
+		if (newStream instanceof Error) {
 			return newStream;
 		}
 
@@ -160,7 +171,7 @@ export async function readRequestFormData<
 	};
 
 	const treatError = async(error: Error): Promise<E.Error<Error>> => {
-		await currentStream?.onError(error, valueAccumulator);
+		await currentStream?.onError?.(error, valueAccumulator);
 		return E.error(error);
 	};
 
@@ -171,6 +182,10 @@ export async function readRequestFormData<
 			}
 
 			currentBuffer = Buffer.concat([currentBuffer, chunk]);
+
+			if (currentBuffer.length > params.maxBufferSize) {
+				return await treatError(new BodyParseFormDataError("Buffer size exceeds limit."));
+			}
 
 			while (true) {
 				const endMultiPartIndex = currentBuffer.indexOf(endMultiPart);
@@ -220,7 +235,7 @@ export async function readRequestFormData<
 				} else if (startPartIndex !== -1 && endHeaderPartIndex === -1) {
 					// check if buffer contain start of header but not contain end
 					break;
-				} else if (startPartIndex === -1 && endHeaderPartIndex !== -1) {
+				} else {
 					// check if buffer contain only end of header part
 					return await treatError(new BodyParseFormDataError("Wrong content."));
 				}
@@ -237,7 +252,7 @@ export async function readRequestFormData<
 
 		return valueAccumulator;
 	} catch (error) {
-		await currentStream?.onError(error, valueAccumulator);
+		await currentStream?.onError?.(error, valueAccumulator);
 		return E.left("server-error", error);
 	} finally {
 		request.destroy();

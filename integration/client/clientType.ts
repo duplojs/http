@@ -1,3 +1,5 @@
+import type { FileInterface } from "@duplojs/server-utils/file";
+
 export type Routes = {
 	method: "GET";
 	path: "/users";
@@ -49,5 +51,21 @@ export type Routes = {
 			name: string;
 			age: number;
 		};
+	};
+} | {
+	method: "POST";
+	path: "/documents";
+	body: {
+		bool: boolean;
+		myFile: FileInterface;
+	};
+	responses: {
+		code: "422";
+		information: "extract-error";
+		body?: undefined;
+	} | {
+		code: "204";
+		information: "file.receive";
+		body?: undefined;
 	};
 };

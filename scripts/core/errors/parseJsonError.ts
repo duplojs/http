@@ -1,9 +1,9 @@
+import { createCoreLibKind } from "@core/kind";
 import { kindHeritage } from "@duplojs/utils";
-import { createInterfacesNodeLibKind } from "@interface-node/kind";
 
 export class ParseJsonError extends kindHeritage(
 	"parse-json-error",
-	createInterfacesNodeLibKind("parse-json-error"),
+	createCoreLibKind("parse-json-error"),
 	Error,
 ) {
 	public constructor(

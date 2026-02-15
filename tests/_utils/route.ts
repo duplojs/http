@@ -7,4 +7,5 @@ export const testRoute = createRoute({
 	preflightSteps: [],
 	steps: [],
 	metadata: [],
+	bodyController: null,
 });

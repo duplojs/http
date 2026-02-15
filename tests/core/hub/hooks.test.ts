@@ -27,7 +27,7 @@ describe("hub hooks", () => {
 		await launchHookServer(
 			[fakeHook, fakeHook2],
 			hub,
-			{},
+			{} as any,
 		);
 
 		expect(fakeHook).toBeCalledWith(hub, {});

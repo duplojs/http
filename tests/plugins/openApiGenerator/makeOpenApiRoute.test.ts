@@ -1,6 +1,7 @@
 import { makeOpenApiPage, makeOpenApiRoute } from "@plugin-openApiGenerator";
 import { useTestRouteFunctionBuilder } from "@test-utils/useTestRouteFunctionBuilder";
-import { PredictedResponse, Request, Response } from "@core";
+import { PredictedResponse, Request } from "@core";
+import { createBodyReader } from "@test-utils/bodyReader";
 
 describe("makeOpenApiRoute", () => {
 	const spyResponse = vi.fn();
@@ -47,6 +48,7 @@ describe("makeOpenApiRoute", () => {
 				params: {},
 				query: {},
 				url: "",
+				bodyReader: createBodyReader(),
 			}),
 		);
 

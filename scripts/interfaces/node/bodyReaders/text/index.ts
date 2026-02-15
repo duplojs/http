@@ -2,10 +2,7 @@ import { TextBodyController } from "@core/request";
 import { readRequestText } from "./readRequestText";
 import { A, E, type Json, stringToBytes, unwrap } from "@duplojs/utils";
 import { type HttpServerParams } from "@core/types";
-import { ParseJsonError } from "./parseJsonError";
-import { WrongContentTypeError } from "@core/errors";
-
-export * from "./parseJsonError";
+import { ParseJsonError, WrongContentTypeError } from "@core/errors";
 export * from "./readRequestText";
 
 export function createTextBodyReaderImplementation(serverParams: HttpServerParams) {

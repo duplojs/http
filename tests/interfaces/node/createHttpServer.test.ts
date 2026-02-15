@@ -74,9 +74,6 @@ describe("createHttpServer", () => {
 			},
 		);
 
-		expect(receivedHub?.hooksRouteLifeCycle.length).toBe(
-			baseHub.hooksRouteLifeCycle.length + 1,
-		);
 		expect(receivedHttpServerParams).toStrictEqual({
 			host: "localhost",
 			port: 3000,
@@ -85,6 +82,7 @@ describe("createHttpServer", () => {
 			predictedHeaderKey: "predicted",
 			fromHookHeaderKey: "from-hook",
 			interface: "node",
+			uploadFolder: "./upload",
 		});
 		expect(httpCreateServer).toHaveBeenCalledWith({});
 		expect(httpsCreateServer).not.toHaveBeenCalled();

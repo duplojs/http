@@ -2,7 +2,6 @@ import { createHub, launchHookServer, ResponseContract, useRouteBuilder } from "
 import { setEnvironment, TESTImplementation } from "@duplojs/server-utils";
 import { DPE, E } from "@duplojs/utils";
 import { openApiGeneratorPlugin } from "@plugin-openApiGenerator";
-import { testHub } from "@test-utils/hub";
 
 describe("plugin implementation", () => {
 	setEnvironment("TEST");
@@ -34,7 +33,7 @@ describe("plugin implementation", () => {
 		);
 
 	it("generate OpenApi file", async() => {
-		const hub = testHub
+		const hub = createHub({ environment: "DEV" })
 			.plug(openApiGeneratorPlugin({
 				outputFile: "swagger.json",
 			}))
@@ -43,7 +42,7 @@ describe("plugin implementation", () => {
 		await launchHookServer(
 			hub.aggregatesHooksHubLifeCycle("beforeServerBuildRoutes"),
 			hub,
-			{},
+			{} as any,
 		);
 
 		expect(spy.mock.lastCall?.at(0)).toBe("swagger.json");
@@ -51,7 +50,7 @@ describe("plugin implementation", () => {
 	});
 
 	it("generate OpenApi file with type bearer ok security option", async() => {
-		const hub = testHub
+		const hub = createHub({ environment: "DEV" })
 			.plug(
 				openApiGeneratorPlugin({
 					outputFile: "swagger.json",
@@ -64,7 +63,7 @@ describe("plugin implementation", () => {
 		await launchHookServer(
 			hub.aggregatesHooksHubLifeCycle("beforeServerBuildRoutes"),
 			hub,
-			{},
+			{} as any,
 		);
 
 		expect(spy.mock.lastCall?.at(0)).toBe("swagger.json");
@@ -72,7 +71,7 @@ describe("plugin implementation", () => {
 	});
 
 	it("generate OpenApi file with type apiKey ok security option", async() => {
-		const hub = testHub
+		const hub = createHub({ environment: "DEV" })
 			.plug(openApiGeneratorPlugin({
 				outputFile: "swagger.json",
 				routePath: "/swagger",
@@ -87,7 +86,7 @@ describe("plugin implementation", () => {
 		await launchHookServer(
 			hub.aggregatesHooksHubLifeCycle("beforeServerBuildRoutes"),
 			hub,
-			{},
+			{} as any,
 		);
 
 		expect(spy.mock.lastCall?.at(0)).toBe("swagger.json");
@@ -95,7 +94,7 @@ describe("plugin implementation", () => {
 	});
 
 	it("not generate OpenApi file", async() => {
-		const hub = testHub
+		const hub = createHub({ environment: "DEV" })
 			.plug(openApiGeneratorPlugin({
 				routePath: "/swagger",
 			}))
@@ -104,14 +103,14 @@ describe("plugin implementation", () => {
 		await launchHookServer(
 			hub.aggregatesHooksHubLifeCycle("beforeServerBuildRoutes"),
 			hub,
-			{},
+			{} as any,
 		);
 
 		expect(spy).not.toHaveBeenCalled();
 	});
 
 	it("empty route", async() => {
-		const hub = testHub
+		const hub = createHub({ environment: "DEV" })
 			.plug(openApiGeneratorPlugin({
 				outputFile: "./swagger.json",
 			}));
@@ -119,33 +118,20 @@ describe("plugin implementation", () => {
 		await launchHookServer(
 			hub.aggregatesHooksHubLifeCycle("beforeServerBuildRoutes"),
 			hub,
-			{},
+			{} as any,
 		);
 
 		expect(spy).not.toHaveBeenCalled();
 	});
 
 	it("empty params", async() => {
-		const hub = testHub
+		const hub = createHub({ environment: "DEV" })
 			.plug(openApiGeneratorPlugin({}));
 
 		await launchHookServer(
 			hub.aggregatesHooksHubLifeCycle("beforeServerBuildRoutes"),
 			hub,
-			{},
-		);
-
-		expect(spy).not.toHaveBeenCalled();
-	});
-
-	it("empty params", async() => {
-		const hub = testHub
-			.plug(openApiGeneratorPlugin({}));
-
-		await launchHookServer(
-			hub.aggregatesHooksHubLifeCycle("beforeServerBuildRoutes"),
-			hub,
-			{},
+			{} as any,
 		);
 
 		expect(spy).not.toHaveBeenCalled();
@@ -158,7 +144,7 @@ describe("plugin implementation", () => {
 		await launchHookServer(
 			hub.aggregatesHooksHubLifeCycle("beforeServerBuildRoutes"),
 			hub,
-			{},
+			{} as any,
 		);
 
 		expect(spy).not.toHaveBeenCalled();

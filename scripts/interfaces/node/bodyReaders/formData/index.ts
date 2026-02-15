@@ -1,7 +1,7 @@
 import { FormDataBodyController } from "@core/request";
 import { type HttpServerParams } from "@core/types";
 import { SF } from "@duplojs/server-utils";
-import { A, E, type MaybeArray, Path, stringToBytes, unwrap } from "@duplojs/utils";
+import { A, E, forward, justReturn, type MaybeArray, Path, stringToBytes, unwrap } from "@duplojs/utils";
 import { readRequestFormData } from "./readRequestFormData";
 import { createWriteStream } from "node:fs";
 import { WrongContentTypeError } from "@core/errors";
@@ -53,6 +53,8 @@ export function createFormDataBodyReaderImplementation(serverParams: HttpServerP
 					fileMaxSize: params.fileMaxSize ?? Infinity,
 					maxFileQuantity: params.maxFileQuantity,
 					mimeType: params.mimeType,
+					maxBufferSize: params.maxBufferSize,
+					maxKeyLength: params.maxKeyLength,
 				},
 				(header) => {
 					const fieldName = header.name;
@@ -109,12 +111,12 @@ export function createFormDataBodyReaderImplementation(serverParams: HttpServerP
 							addValue(
 								valueAccumulator,
 								fieldName,
-								SF.createFileInterface(currentValue),
+								currentValue,
 							);
 
 							return valueAccumulator;
 						},
-						onError: () => {},
+						onError: null,
 					};
 				},
 			);
@@ -131,7 +133,12 @@ export function createFormDataBodyReaderImplementation(serverParams: HttpServerP
 				const resultObject = {};
 
 				for (const entry of result.entries()) {
-					setAtPath(resultObject, entry[0], entry[1]);
+					setAtPath(
+						resultObject,
+						entry[0],
+						entry[1],
+						params.maxIndexArray,
+					);
 				}
 
 				return E.success(resultObject);

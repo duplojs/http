@@ -18,7 +18,7 @@ describe("codeGenerator", () => {
 		await launchHookServer(
 			hubWithPlugins.aggregatesHooksHubLifeCycle("beforeStartServer"),
 			hubWithPlugins,
-			{},
+			{} as any,
 		);
 
 		expect(readFileSync(fileName, "utf-8")).toMatchSnapshot();

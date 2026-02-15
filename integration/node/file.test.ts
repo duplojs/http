@@ -1,5 +1,7 @@
 import { hub } from "@core";
 import { createHttpServer } from "@duplojs/http/node";
+import { SF } from "@duplojs/server-utils";
+import { asserts, E } from "@duplojs/utils";
 import { createFileToSend } from "@utils";
 import { resolve } from "path";
 
@@ -18,9 +20,9 @@ describe("receive file", async() => {
 
 	it("sendFile", async() => {
 		const formData = new FormData();
-		formData.append("accepéééééé", "true");
+		formData.append("bool", "true");
 		formData.append(
-			"ééééééé",
+			"myFile",
 			await createFileToSend("files/fakeFiles/1mb.jpg", "//😄.jpg"),
 		);
 
@@ -29,13 +31,21 @@ describe("receive file", async() => {
 				method: "POST",
 				body: formData,
 			})
-				.then(async(response) => ({
-					body: await response.json(),
+				.then((response) => ({
 					headers: [...response.headers.entries()],
 				})),
 		).resolves.toStrictEqual({
-			headers: expect.arrayContaining([]),
-			body: undefined,
+			headers: expect.arrayContaining([
+				[
+					"information",
+					"file.receive",
+				],
+			]),
 		});
+
+		asserts(await SF.remove("files/store/picture.jpg"), E.isRight);
+		expect(await SF.readDirectory("files/upload")).toStrictEqual(
+			E.success([".gitkeep"]),
+		);
 	});
 });

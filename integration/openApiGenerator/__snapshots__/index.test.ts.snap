@@ -121,6 +121,45 @@ exports[`openApiGenerator > correct generate file 1`] = `
           }
         }
       }
+    },
+    "/documents": {
+      "post": {
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NotIdentified5"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "headers": {
+              "information": {
+                "schema": {
+                  "const": "file.receive",
+                  "type": "string"
+                },
+                "description": "file.receive"
+              }
+            }
+          },
+          "422": {
+            "headers": {
+              "information": {
+                "schema": {
+                  "const": "extract-error",
+                  "type": "string"
+                },
+                "description": "extract-error"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -212,6 +251,42 @@ exports[`openApiGenerator > correct generate file 1`] = `
           "id",
           "name",
           "age"
+        ]
+      },
+      "NotIdentified5": {
+        "type": "object",
+        "properties": {
+          "bool": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "true",
+                  "false",
+                  "0",
+                  "1"
+                ]
+              },
+              {
+                "type": "number",
+                "enum": [
+                  0,
+                  1
+                ]
+              }
+            ]
+          },
+          "myFile": {
+            "type": "string",
+            "format": "binary"
+          }
+        },
+        "required": [
+          "bool",
+          "myFile"
         ]
       }
     }

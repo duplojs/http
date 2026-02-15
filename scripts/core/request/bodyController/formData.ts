@@ -5,6 +5,9 @@ export interface FormDataBodyReaderParams extends BodyControllerParams {
 	maxFileQuantity: number;
 	mimeType?: RegExp;
 	fileMaxSize?: number;
+	maxBufferSize: number;
+	maxIndexArray: number;
+	maxKeyLength: number;
 }
 
 export const FormDataBodyController = createBodyController<
@@ -18,6 +21,9 @@ export interface ControlBodyAsFormDataParams {
 	mimeType?: string | string[] | RegExp;
 	bodyMaxSize?: number | BytesInString;
 	fileMaxSize?: number | BytesInString;
+	maxBufferSize?: number | BytesInString;
+	maxIndexArray?: number;
+	maxKeyLength?: number;
 }
 
 export function controlBodyAsFormData(
@@ -30,5 +36,14 @@ export function controlBodyAsFormData(
 		mimeType: params.mimeType !== undefined
 			? toRegExp(params.mimeType)
 			: undefined,
+		maxBufferSize: params.maxBufferSize !== undefined
+			? stringToBytes(params.maxBufferSize)
+			: stringToBytes("128kb"),
+		maxIndexArray: params.maxIndexArray !== undefined
+			? params.maxIndexArray
+			: 500,
+		maxKeyLength: params.maxKeyLength !== undefined
+			? params.maxKeyLength
+			: 500,
 	});
 }
