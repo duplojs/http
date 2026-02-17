@@ -1,15 +1,13 @@
 import { FormDataBodyController } from "@core/request";
 import { type HttpServerParams } from "@core/types";
 import { SF } from "@duplojs/server-utils";
-import { A, E, forward, justReturn, type MaybeArray, Path, stringToBytes, unwrap } from "@duplojs/utils";
+import { A, E, type MaybeArray, O, Path, stringToBytes, TheFormData, unwrap } from "@duplojs/utils";
 import { readRequestFormData } from "./readRequestFormData";
 import { createWriteStream } from "node:fs";
 import { WrongContentTypeError } from "@core/errors";
-import { setAtPath } from "./setAtPath";
 
 export * from "./error";
 export * from "./readRequestFormData";
-export * from "./setAtPath";
 
 export function createFormDataBodyReaderImplementation(serverParams: HttpServerParams) {
 	const serverMaxBodySize = stringToBytes(serverParams.maxBodySize);
@@ -130,21 +128,12 @@ export function createFormDataBodyReaderImplementation(serverParams: HttpServerP
 			}
 
 			if (request.headers["content-type-options"]?.includes("advanced")) {
-				const resultObject = {};
-
-				for (const entry of result.entries()) {
-					setAtPath(
-						resultObject,
-						entry[0],
-						entry[1],
-						params.maxIndexArray,
-					);
-				}
-
-				return E.success(resultObject);
+				return E.success(
+					TheFormData.fromEntries(result.entries(), params.maxIndexArray),
+				);
 			}
 
-			return E.success(Object.fromEntries(result.entries()));
+			return E.success(O.fromEntries(result.entries()));
 		},
 	);
 }

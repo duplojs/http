@@ -1,6 +1,6 @@
 import { createCoreLibKind } from "@core/kind";
 import { type Request } from "@core/request";
-import { E, type RemoveKind, type Kind, type IsEqual } from "@duplojs/utils";
+import { E, type RemoveKind, type Kind } from "@duplojs/utils";
 
 export interface BodyControllerParams {
 	bodyMaxSize?: number;
@@ -28,12 +28,15 @@ export interface BodyReaderImplementation<
 	): Promise<E.Success | E.Error<Error>>;
 }
 
-const bodyControllerKind = createCoreLibKind("body-controller");
+const bodyControllerKind = createCoreLibKind<"body-controller", string>("body-controller");
 
 export interface BodyController<
 	GenericName extends string = string,
 	GenericParams extends BodyControllerParams = BodyControllerParams,
-> extends Kind<typeof bodyControllerKind.definition> {
+> extends Kind<
+		typeof bodyControllerKind.definition,
+		GenericName
+	> {
 	readonly name: GenericName;
 	readonly params: GenericParams;
 	tryToCreateReader(
@@ -52,6 +55,7 @@ export interface BodyControllerHandler<
 	createReaderImplementation(
 		read: BodyReaderImplementation<GenericName, GenericParams>["read"]
 	): BodyReaderImplementation<GenericName, GenericParams>;
+	is(input: unknown): input is BodyController<GenericName, GenericParams>;
 }
 
 export function createBodyController<
@@ -63,7 +67,8 @@ export function createBodyController<
 			name,
 			create(params) {
 				return bodyControllerKind.setTo<
-					RemoveKind<BodyController<GenericName, GenericParams>>
+					RemoveKind<BodyController<GenericName, GenericParams>>,
+					GenericName
 				>(
 					{
 						name,
@@ -82,6 +87,7 @@ export function createBodyController<
 							);
 						},
 					},
+					name,
 				);
 			},
 			createReaderImplementation(read) {
@@ -89,6 +95,9 @@ export function createBodyController<
 					{ read },
 					name,
 				);
+			},
+			is(input) {
+				return bodyControllerKind.has(input) && bodyControllerKind.getValue(input) === name;
 			},
 		} satisfies RemoveKind<BodyControllerHandler<GenericName, GenericParams>>,
 	);

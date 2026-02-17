@@ -128,7 +128,7 @@ exports[`openApiGenerator > correct generate file 1`] = `
         "requestBody": {
           "required": true,
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
                 "$ref": "#/components/schemas/NotIdentified5"
               }

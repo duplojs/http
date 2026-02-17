@@ -392,7 +392,7 @@ describe("createFormDataBodyReaderImplementation", () => {
 						"content-type": contentType,
 					},
 					bodyChunks: [
-						Buffer.from(`--${boundary}\r\nContent-Disposition: form-data; name="user/\\/\\[0]/\\/\\name"\r\n\r\n`),
+						Buffer.from(`--${boundary}\r\nContent-Disposition: form-data; name="user/*\\[0]/*\\name"\r\n\r\n`),
 						Buffer.from("bob"),
 						Buffer.from(`\r\n--${boundary}--`),
 					],

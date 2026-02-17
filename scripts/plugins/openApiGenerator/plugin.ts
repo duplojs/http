@@ -4,7 +4,6 @@ import { routeToOpenApi, type ResultSchemaContext } from "./routeToOpenApi";
 import { A, asserts, E, equal, G, justReturn, O, P, pipe } from "@duplojs/utils";
 import { makeOpenApiPage } from "./makeOpenApiPage";
 import { makeOpenApiRoute } from "./makeOpenApiRoute";
-import { writeFile } from "fs/promises";
 import type { RoutePath } from "@core/route";
 import type { OpenApiDocument } from "./types/openApiDocument";
 import type { OpenApiSecuritySchema, SupportedBearerFormat } from "./types";

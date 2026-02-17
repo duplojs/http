@@ -1,4 +1,4 @@
-import { type BodyControllerParams, createBodyController } from "@core";
+import { type BodyControllerParams, controlBodyAsText, createBodyController } from "@core";
 import { asserts, E, unwrap } from "@duplojs/utils";
 
 describe("createBodyController", () => {
@@ -39,5 +39,12 @@ describe("createBodyController", () => {
 		asserts(reader, E.isRight);
 		await unwrap(reader).read({} as never);
 		expect(spy).toHaveBeenCalledTimes(1);
+	});
+
+	it("is", () => {
+		const bodyController = BodyController.create({ test: "" });
+
+		expect(BodyController.is(bodyController)).toStrictEqual(true);
+		expect(BodyController.is(controlBodyAsText())).toStrictEqual(false);
 	});
 });
