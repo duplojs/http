@@ -33,7 +33,6 @@ const defaultRouteFunctionBuilder = create.createRouteFunctionBuilder(index.rout
     const hookBeforeRouteExecution = utils.pipe(allHooks, utils.A.map(({ beforeRouteExecution }) => beforeRouteExecution), utils.A.filter(utils.isType("function")), utils.forward);
     const hookBeforeSendResponse = utils.pipe(allHooks, utils.A.map(({ beforeSendResponse }) => beforeSendResponse), utils.A.filter(utils.isType("function")), utils.forward);
     const hookOnConstructRequest = utils.pipe(allHooks, utils.A.map(({ onConstructRequest }) => onConstructRequest), utils.A.filter(utils.isType("function")), utils.forward);
-    const hookParseBody = utils.pipe(allHooks, utils.A.map(({ parseBody }) => parseBody), utils.A.filter(utils.isType("function")), utils.forward);
     const hookError = utils.pipe(allHooks, utils.A.map(({ error }) => error), utils.A.filter(utils.isType("function")), utils.forward);
     const hookSendResponse = utils.pipe(allHooks, utils.A.map(({ sendResponse }) => sendResponse), utils.A.filter(utils.isType("function")), utils.forward);
     const hooks = {
@@ -52,7 +51,6 @@ const defaultRouteFunctionBuilder = create.createRouteFunctionBuilder(index.rout
                 return newRequest;
             }
             : (params) => params.request,
-        parseBody: hook.buildHookBefore(hookParseBody),
         error: hook.buildHookErrorBefore(hookError),
         sendResponse: hook.buildHookAfter(hookSendResponse),
     };
@@ -74,15 +72,6 @@ const defaultRouteFunctionBuilder = create.createRouteFunctionBuilder(index.rout
                     return result;
                 }
                 floor = result;
-            }
-            const parseBodyResult = await hooks.parseBody({
-                request,
-                exit: hook.exitHookFunction,
-                next: hook.nextHookFunction,
-                response: hook.createHookResponse("parseBody"),
-            });
-            if (parseBodyResult instanceof base.Response) {
-                return parseBodyResult;
             }
             for (let index = 0; index < buildedSteps.length; index++) {
                 const result = await buildedSteps[index].buildedFunction(request, floor);

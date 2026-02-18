@@ -6,7 +6,9 @@ import { type Metadata } from "../metadata";
 export interface DisabledExtractKeysCustom {
 }
 export type DisabledExtractKeys = O.GetPropsWithValue<DisabledExtractKeysCustom, true>;
-export type ExtractShape<GenericRequest extends Request = Request> = Partial<Record<Exclude<keyof GenericRequest, O.GetPropsWithValueExtends<GenericRequest, AnyFunction> | DisabledExtractKeys>, DP.DataParser | Record<string, DP.DataParser>>>;
+export type ExtractShape<GenericRequest extends Request = Request> = Partial<Record<Exclude<keyof GenericRequest, O.GetPropsWithValueExtends<GenericRequest, AnyFunction> | DisabledExtractKeys | "body" | "bodyReader" | symbol>, DP.DataParser | Record<string, DP.DataParser>> & {
+    body: (DP.DataParser | Record<string, DP.DataParser>);
+}>;
 export interface ExtractStepDefinition {
     readonly shape: ExtractShape;
     readonly responseContract?: ResponseContract.Contract<ClientErrorResponseCode, string, DP.DataParserEmpty>;

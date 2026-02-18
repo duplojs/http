@@ -3,7 +3,8 @@
 var DataParserToTypescript = require('@duplojs/data-parser-tools/toTypescript');
 var utils = require('@duplojs/utils');
 var routeToDataParser = require('./routeToDataParser.cjs');
-var promises = require('node:fs/promises');
+var serverUtils = require('@duplojs/server-utils');
+var typescriptTransfomer = require('./typescriptTransfomer.cjs');
 
 function _interopNamespaceDefault(e) {
     var n = Object.create(null);
@@ -33,7 +34,7 @@ function codeGeneratorPlugin(pluginParams) {
                     if (!utils.equal(hub.config.environment, ["DEV", "BUILD"])) {
                         return;
                     }
-                    const routes = hub.aggregatesRoutes();
+                    const routes = utils.A.from(hub.routes);
                     const dataParserRoutes = utils.A.flatMap(routes, (route) => routeToDataParser.routeToDataParser(route, {
                         defaultExtractContract: hub.defaultExtractContract,
                     }));
@@ -42,9 +43,12 @@ function codeGeneratorPlugin(pluginParams) {
                     }
                     const output = DataParserToTypescript__namespace.render(utils.DP.union(dataParserRoutes), {
                         identifier: "Routes",
-                        transformers: DataParserToTypescript__namespace.defaultTransformers,
+                        transformers: [
+                            typescriptTransfomer.fileTransformer,
+                            ...DataParserToTypescript__namespace.defaultTransformers,
+                        ],
                     });
-                    await promises.writeFile(pluginParams.outputFile, output);
+                    utils.asserts(await serverUtils.SF.writeTextFile(pluginParams.outputFile, output), utils.E.isRight);
                 },
             },
         ],

@@ -1,7 +1,9 @@
 import { aggregateStepContract } from './aggregateStepContract.mjs';
 import { O, A, pipe, DP, when, justReturn, whenNot, P, isType, S } from '@duplojs/utils';
 import { render, defaultTransformers } from '@duplojs/data-parser-tools/toJsonSchema';
+import '../../core/request/index.mjs';
 import { IgnoreByOpenApiGeneratorMetadata } from './metadata.mjs';
+import { FormDataBodyController } from '../../core/request/bodyController/formData.mjs';
 
 function factoryJsonSchema(params) {
     const identifier = params.schema.definition.identifier
@@ -30,6 +32,7 @@ const methodMapper = {
     TRACE: "trace",
     CONNECT: "connect",
     OPTIONS: "options",
+    PATCH: "patch",
 };
 function routeToOpenApi(route, params) {
     const isIgnore = A.find(route.definition.metadata, IgnoreByOpenApiGeneratorMetadata.is);
@@ -56,7 +59,19 @@ function routeToOpenApi(route, params) {
             schema,
         }),
     }))));
-    const requestBody = pipe(body, when((value) => O.countKeys(value) === 0, justReturn(DP.empty())), whenNot(DP.dataParserKind.has, DP.object), P.when(DP.identifier(DP.emptyKind), justReturn(undefined)), P.when(DP.identifier(DP.objectKind), (objectSchema) => ({
+    const requestBody = pipe(body, when((value) => O.countKeys(value) === 0, justReturn(DP.empty())), whenNot(DP.dataParserKind.has, DP.object), P.when(DP.identifier(DP.emptyKind), justReturn(undefined)), P.when(() => FormDataBodyController.is(route.definition.bodyController), (objectSchema) => ({
+        required: true,
+        content: {
+            "multipart/form-data": {
+                schema: factoryJsonSchema({
+                    context: params.contextToJsonSchemaFactory,
+                    resultSchemaContext: params.resultSchemaContext,
+                    mode: "in",
+                    schema: objectSchema,
+                }),
+            },
+        },
+    })), P.when(DP.identifier(DP.objectKind), (objectSchema) => ({
         required: true,
         content: {
             "application/json": {

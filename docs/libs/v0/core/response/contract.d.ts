@@ -283,7 +283,7 @@ export declare namespace ResponseContract {
     }>>(information: GenericInformation, schema?: (GenericSchema & ForbiddenBigintDataParser<GenericSchema>) | undefined) => NoInfer<Contract<"511", GenericInformation, NeverCoalescing<GenericSchema, DP.DataParserEmpty<DP.DataParserDefinitionEmpty>>>>;
     const Error_base: new (params: {
         "@DuplojsHttpCore/contract-error"?: unknown;
-    }, parentParams: [message?: string | undefined, options?: ErrorOptions | undefined]) => Kind<import("@duplojs/utils").KindDefinition<"@DuplojsHttpCore/contract-error", unknown>, unknown> & Kind<import("@duplojs/utils").KindDefinition<"contract-error", unknown>, unknown> & globalThis.Error;
+    }, parentParams: readonly [message?: string | undefined, options?: ErrorOptions | undefined]) => globalThis.Error & Kind<import("@duplojs/utils").KindDefinition<"@DuplojsHttpCore/contract-error", unknown>, unknown> & Kind<import("@duplojs/utils").KindDefinition<"contract-error", unknown>, unknown>;
     export class Error extends Error_base {
         information: string;
         dataParserError?: DP.DataParserError | undefined;

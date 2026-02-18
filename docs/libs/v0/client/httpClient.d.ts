@@ -3,7 +3,7 @@ import { type ClientRequestInitParams, type ServerRoute, type ServerRouteToClien
 import { PromiseRequest, type PromiseRequestParams } from "./promiseRequest";
 import { type Hooks, type RequestHook, type ResponseHook, type InformationHook, type CodeHook, type ResponseTypeHook, type ExpectedResponseHook, type ErrorHook, type NotPredictedResponseHook } from "./hooks";
 export declare const httpClientKind: import("@duplojs/utils").KindHandler<import("@duplojs/utils").KindDefinition<"@DuplojsHttpClient/http-client", unknown>>;
-type MaybeRequestParams<GenericRequestParams extends object> = {} extends GenericRequestParams ? [params?: GenericRequestParams] : [params: GenericRequestParams];
+type MaybeRequestParams<GenericRequestParams extends object> = {} extends GenericRequestParams ? [params?: NoInfer<GenericRequestParams>] : [params: NoInfer<GenericRequestParams>];
 type HttpClientRequestMethod<GenericServerRoute extends ServerRoute, GenericHookParams extends Record<string, unknown>, GenericMethod extends string> = <GenericClientRequestParams extends NeverCoalescing<ServerRouteToClientRequestParams<Extract<GenericServerRoute, {
     method: GenericMethod;
 }>, GenericHookParams>, ClientRequestParams<GenericHookParams>>, GenericPath extends GenericClientRequestParams["path"], GenericClientRequestRest extends SimplifyTopLevel<Omit<NeverCoalescing<Extract<GenericClientRequestParams, {
@@ -45,6 +45,7 @@ export interface HttpClient<GenericServerRoute extends ServerRoute = ServerRoute
     get: HttpClientRequestMethod<GenericServerRoute, GenericHookParams, "GET">;
     post: HttpClientRequestMethod<GenericServerRoute, GenericHookParams, "POST">;
     put: HttpClientRequestMethod<GenericServerRoute, GenericHookParams, "PUT">;
+    patch: HttpClientRequestMethod<GenericServerRoute, GenericHookParams, "PATCH">;
     delete: HttpClientRequestMethod<GenericServerRoute, GenericHookParams, "DELETE">;
 }
 export interface CreateHttpClientParams {

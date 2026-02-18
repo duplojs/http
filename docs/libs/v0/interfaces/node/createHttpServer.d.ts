@@ -1,20 +1,21 @@
-import { type HttpServerParams, type Hub } from "../../core/hub";
-import { type Hosts } from "./types/host";
-import { type BytesInString, O } from "@duplojs/utils";
+import { type Hub } from "../../core/hub";
 import http from "http";
 import https from "https";
-declare module "../../core/hub" {
+import { O } from "@duplojs/utils";
+import { type HttpServerParams } from "../../core/types";
+declare module "../../core/types" {
     interface HttpServerParams {
         readonly interface: "node";
-        readonly host: Hosts;
-        readonly port: number;
-        readonly maxBodySize: BytesInString | number;
-        readonly informationHeaderKey: string;
-        readonly predictedHeaderKey: string;
-        readonly fromHookHeaderKey: string;
         readonly http?: http.ServerOptions;
         readonly https?: https.ServerOptions;
     }
+    interface HostCustom {
+        "::": true;
+        "0.0.0.0": true;
+        localhost: true;
+        "127.0.0.1": true;
+        "::1": true;
+    }
 }
-export type CreateHttpServerParams = O.PartialKeys<Omit<HttpServerParams, "interface">, "maxBodySize" | "informationHeaderKey" | "predictedHeaderKey" | "fromHookHeaderKey">;
-export declare function createHttpServer(inputHub: Hub, params: CreateHttpServerParams): Promise<https.Server<typeof http.IncomingMessage, typeof http.ServerResponse> | http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>>;
+export type CreateHttpServerParams = O.PartialKeys<Omit<HttpServerParams, "interface">, "maxBodySize" | "informationHeaderKey" | "predictedHeaderKey" | "fromHookHeaderKey" | "uploadFolder">;
+export declare function createHttpServer(hub: Hub, params: CreateHttpServerParams): Promise<https.Server<typeof http.IncomingMessage, typeof http.ServerResponse> | http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>>;

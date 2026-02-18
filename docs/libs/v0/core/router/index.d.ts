@@ -4,4 +4,5 @@ export * from "./types";
 export * from "./pathToRegExp";
 export * from "./buildError";
 export * from "./decodeUrl";
-export declare function buildRouter(inputHub: Hub): Promise<BuildedRouter>;
+export * from "./notFoundBodyReaderImplementationError";
+export declare function buildRouter(hub: Hub): Promise<BuildedRouter>;

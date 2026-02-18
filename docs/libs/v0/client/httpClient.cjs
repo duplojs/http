@@ -140,6 +140,11 @@ function createHttpClient(clientParams) {
             path,
             ...params,
         })),
+        patch: ((path, params) => self.request({
+            method: "PATCH",
+            path,
+            ...params,
+        })),
         delete: ((path, params) => self.request({
             method: "DELETE",
             path,

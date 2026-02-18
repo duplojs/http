@@ -1,5 +1,5 @@
 import { type O, type Kind } from "@duplojs/utils";
-import { type RequestMethods } from "../request";
+import { type BodyController, type RequestMethods } from "../request";
 import { type ExtractStep, type CheckerStep, type CutStep, type HandlerStep, type ProcessStep, type stepKind, type PresetCheckerStep } from "../steps";
 import { type HookRouteLifeCycle } from "./hooks";
 import { type Metadata } from "../metadata";
@@ -19,6 +19,7 @@ export interface RouteDefinition {
     readonly steps: readonly RouteSteps[];
     readonly hooks: readonly HookRouteLifeCycle[];
     readonly metadata: readonly Metadata[];
+    readonly bodyController: BodyController | null;
 }
 export declare const routeKind: import("@duplojs/utils").KindHandler<import("@duplojs/utils").KindDefinition<"@DuplojsHttpCore/route", unknown>>;
 export interface Route<GenericDefinition extends RouteDefinition = RouteDefinition> extends Kind<typeof routeKind.definition> {

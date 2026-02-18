@@ -3,7 +3,9 @@
 var aggregateStepContract = require('./aggregateStepContract.cjs');
 var utils = require('@duplojs/utils');
 var toJsonSchema = require('@duplojs/data-parser-tools/toJsonSchema');
+require('../../core/request/index.cjs');
 var metadata = require('./metadata.cjs');
+var formData = require('../../core/request/bodyController/formData.cjs');
 
 function factoryJsonSchema(params) {
     const identifier = params.schema.definition.identifier
@@ -32,6 +34,7 @@ const methodMapper = {
     TRACE: "trace",
     CONNECT: "connect",
     OPTIONS: "options",
+    PATCH: "patch",
 };
 function routeToOpenApi(route, params) {
     const isIgnore = utils.A.find(route.definition.metadata, metadata.IgnoreByOpenApiGeneratorMetadata.is);
@@ -58,7 +61,19 @@ function routeToOpenApi(route, params) {
             schema,
         }),
     }))));
-    const requestBody = utils.pipe(body, utils.when((value) => utils.O.countKeys(value) === 0, utils.justReturn(utils.DP.empty())), utils.whenNot(utils.DP.dataParserKind.has, utils.DP.object), utils.P.when(utils.DP.identifier(utils.DP.emptyKind), utils.justReturn(undefined)), utils.P.when(utils.DP.identifier(utils.DP.objectKind), (objectSchema) => ({
+    const requestBody = utils.pipe(body, utils.when((value) => utils.O.countKeys(value) === 0, utils.justReturn(utils.DP.empty())), utils.whenNot(utils.DP.dataParserKind.has, utils.DP.object), utils.P.when(utils.DP.identifier(utils.DP.emptyKind), utils.justReturn(undefined)), utils.P.when(() => formData.FormDataBodyController.is(route.definition.bodyController), (objectSchema) => ({
+        required: true,
+        content: {
+            "multipart/form-data": {
+                schema: factoryJsonSchema({
+                    context: params.contextToJsonSchemaFactory,
+                    resultSchemaContext: params.resultSchemaContext,
+                    mode: "in",
+                    schema: objectSchema,
+                }),
+            },
+        },
+    })), utils.P.when(utils.DP.identifier(utils.DP.objectKind), (objectSchema) => ({
         required: true,
         content: {
             "application/json": {

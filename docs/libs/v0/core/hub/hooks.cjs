@@ -9,7 +9,9 @@ async function launchHookBeforeBuildRoute(hooks, route) {
     return utils.G.asyncReduce(hooks, utils.G.reduceFrom(route), async ({ element: hook, lastValue, next, }) => next(await hook(lastValue)));
 }
 async function launchHookServer(hooks, hub, httpServerParams) {
-    return utils.G.asyncReduce(hooks, utils.G.reduceFrom(hub), async ({ element: hook, lastValue, next, }) => next((await hook(lastValue, httpServerParams)) ?? lastValue));
+    for (const hook of hooks) {
+        await hook(hub, httpServerParams);
+    }
 }
 const hookExit = hookServerExitKind.setTo({});
 const hookNext = hookServerNextKind.setTo({});

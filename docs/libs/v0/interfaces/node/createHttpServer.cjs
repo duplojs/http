@@ -1,12 +1,16 @@
 'use strict';
 
-var utils = require('@duplojs/utils');
 var http = require('http');
 var https = require('https');
-var hooks = require('./hooks.cjs');
+var index$3 = require('./hooks/index.cjs');
 var implementHttpServer = require('../../core/implementHttpServer.cjs');
+var utils = require('@duplojs/utils');
+var index$2 = require('../../core/defaultHooks/index.cjs');
+require('./bodyReaders/index.cjs');
+var index = require('./bodyReaders/text/index.cjs');
+var index$1 = require('./bodyReaders/formData/index.cjs');
 
-function createHttpServer(inputHub, params) {
+function createHttpServer(hub, params) {
     const httpServerParams = utils.O.override({
         host: "localhost",
         port: 80,
@@ -15,9 +19,13 @@ function createHttpServer(inputHub, params) {
         predictedHeaderKey: "predicted",
         fromHookHeaderKey: "from-hook",
         interface: "node",
+        uploadFolder: "./upload",
     }, params);
-    const hooks$1 = hooks.makeNodeHook(inputHub, httpServerParams);
-    const hub = inputHub.addRouteHooks(hooks$1);
+    hub.addBodyReaderImplementation([
+        index.createTextBodyReaderImplementation(httpServerParams),
+        index$1.createFormDataBodyReaderImplementation(httpServerParams),
+    ]);
+    hub.addRouteHooks([index$2.initDefaultHook(hub, httpServerParams), index$3.nodeHook]);
     function whenUncaughtError(error, routerInitializationData) {
         const serverResponse = routerInitializationData.raw.response;
         if (!serverResponse.headersSent && !serverResponse.writableEnded) {
@@ -51,6 +59,9 @@ function createHttpServer(inputHub, params) {
                 response: serverResponse,
             },
         }, whenUncaughtError));
+        if (hub.config.environment === "BUILD") {
+            return server;
+        }
         return new Promise((resolve) => {
             server.listen({
                 port: httpServerParams.port,

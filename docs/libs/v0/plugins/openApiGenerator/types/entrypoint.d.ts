@@ -10,12 +10,17 @@ export interface EntrypointContentBodyApplicationJson {
         schema: JsonSchema;
     };
 }
+export interface EntrypointContentBodyFormData {
+    "multipart/form-data": {
+        schema: JsonSchema;
+    };
+}
 export interface EntrypointContentBodyTextPlain {
     "text/plain": {
         schema: JsonSchema;
     };
 }
-export type EntrypointContentBody = EntrypointContentBodyApplicationJson | EntrypointContentBodyTextPlain;
+export type EntrypointContentBody = (EntrypointContentBodyApplicationJson | EntrypointContentBodyTextPlain | EntrypointContentBodyFormData);
 export interface EntrypointRequestBody {
     required: true;
     content: EntrypointContentBody;

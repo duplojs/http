@@ -18,4 +18,5 @@ builder.preflightBuilder.set("useRouteBuilder", ({ args: [method, paths, options
         ...(options?.metadata ?? []),
         ...accumulator.metadata,
     ],
+    bodyController: options?.bodyController ?? null,
 }));

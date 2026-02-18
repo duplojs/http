@@ -1,1 +1,2 @@
-export declare const defaultExtractStepFunctionBuilder: (step: import("../../../steps").Steps, params: import("..").StepFunctionBuilderParams) => import("@duplojs/utils").MaybePromise<import("..").BuildStepSuccessEither | import("..").BuildStepNotSupportEither>;
+import { type MaybePromise } from "@duplojs/utils";
+export declare const defaultExtractStepFunctionBuilder: (step: import("../../../steps").Steps, params: import("..").StepFunctionBuilderParams) => MaybePromise<import("..").BuildStepSuccessEither | import("..").BuildStepNotSupportEither>;
