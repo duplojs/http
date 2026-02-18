@@ -42,6 +42,11 @@ export function createTextBodyReaderImplementation(serverParams: HttpServerParam
 				},
 			);
 
+			if (E.isLeft(result)) {
+				// mandatory in case of error to avoid monopolizing the client connection if a stream is not finished.
+				request.raw.response.setHeader("Connection", "close");
+			}
+
 			if (E.hasInformation(result, "server-error")) {
 				throw unwrap(result);
 			}

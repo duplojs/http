@@ -4,9 +4,9 @@
 	"baseUrl": "./",
 	"paths": {
 		"@core": ["../core/index.ts"],
-		"@utils": ["./utils/index.ts"],
+		"@utils": ["../utils/index.ts"],
 	},
 	"types": ["vitest/globals", "node"]
   },
-  "include": ["**/*.ts", "../core/**/*.ts"],
+  "include": ["**/*.ts", "../core/**/*.ts", "../utils/**/*.ts"],
 }

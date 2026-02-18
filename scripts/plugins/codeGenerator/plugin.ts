@@ -3,6 +3,7 @@ import { type HubPlugin } from "@core/hub";
 import { A, asserts, DP, E, equal } from "@duplojs/utils";
 import { routeToDataParser } from "./routeToDataParser";
 import { SF } from "@duplojs/server-utils";
+import { fileTransformer } from "./typescriptTransfomer";
 
 export interface CodeGeneratorPluginParams {
 	outputFile: string;
@@ -35,8 +36,10 @@ export function codeGeneratorPlugin(pluginParams: CodeGeneratorPluginParams) {
 						DP.union(dataParserRoutes),
 						{
 							identifier: "Routes",
-							transformers: DataParserToTypescript.defaultTransformers,
-
+							transformers: [
+								fileTransformer,
+								...DataParserToTypescript.defaultTransformers,
+							],
 						},
 					);
 

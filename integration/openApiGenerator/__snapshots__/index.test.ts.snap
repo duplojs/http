@@ -160,6 +160,31 @@ exports[`openApiGenerator > correct generate file 1`] = `
           }
         }
       }
+    },
+    "/documents/*": {
+      "get": {
+        "parameters": [],
+        "responses": {
+          "200": {
+            "headers": {
+              "information": {
+                "schema": {
+                  "const": "file.send",
+                  "type": "string"
+                },
+                "description": "file.send"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotIdentified6"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -288,6 +313,10 @@ exports[`openApiGenerator > correct generate file 1`] = `
           "bool",
           "myFile"
         ]
+      },
+      "NotIdentified6": {
+        "type": "string",
+        "format": "binary"
       }
     }
   }

@@ -30,7 +30,7 @@ export const defaultExtractStepFunctionBuilder = createStepFunctionBuilder(
 					result,
 				)
 				: () => new PredictedResponse(responseContract.code, responseContract.information, undefined);
-			const setHeader = subKey === undefined
+			const setHeader = subKey === undefined || key === "body"
 				? (response: PredictedResponse) => response.setHeader("extract-key", `request.${key}`)
 				: (response: PredictedResponse) => response.setHeader("extract-key", `request.${key}.${subKey}`);
 			const getResponse = (result: unknown) => setHeader(createResponse(result));

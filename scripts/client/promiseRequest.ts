@@ -1,4 +1,4 @@
-import { type NeverCoalescing, type MaybePromise, unwrap } from "@duplojs/utils";
+import { type NeverCoalescing, type MaybePromise, unwrap, TheFormData } from "@duplojs/utils";
 import { getBody } from "./getBody";
 import { insertParamsInPath } from "./insertParamsInPath";
 import { queryToString } from "./queryToString";
@@ -12,11 +12,11 @@ import { type NotPredictedClientResponse, type ClientRequestParams, type ClientR
 type MaybeResponse<
 	GenericClientResponse extends ClientResponse = ClientResponse,
 > = (
-	| EE.EitherRight<
+	| EE.Right<
 		"response",
 		GenericClientResponse
 	>
-	| EE.EitherLeft<
+	| EE.Left<
 		"request-error",
 		RequestErrorContent
 	>
@@ -26,15 +26,15 @@ type MaybeWantedResponse<
 	GenericWantedClientResponse extends ClientResponse = ClientResponse,
 	GenericUnexpectClientResponse extends ClientResponse = ClientResponse,
 > = (
-		| EE.EitherRight<
+		| EE.Right<
 			"response",
 			GenericWantedClientResponse
 		>
-		| EE.EitherLeft<
+		| EE.Left<
 			"unexpect-response",
 			GenericUnexpectClientResponse
 		>
-		| EE.EitherLeft<
+		| EE.Left<
 			"request-error",
 			RequestErrorContent
 		>
@@ -921,6 +921,8 @@ export class PromiseRequest<
 				if (typeof body === "string") {
 					headers["content-type"] = "text/plain; charset=utf-8";
 					body = body.toString();
+				} else if (body instanceof TheFormData) {
+					headers["content-type-options"] = "advanced";
 				} else if (
 					(
 						body

@@ -1,9 +1,13 @@
 import { controlBodyAsFormData, ResponseContract, useRouteBuilder } from "@duplojs/http";
 import { SDPE } from "@duplojs/server-utils";
+import { createFileInterface } from "@duplojs/server-utils/file";
 import { asserts, DPE, E } from "@duplojs/utils";
 
 useRouteBuilder("POST", "/documents", {
-	bodyController: controlBodyAsFormData({ maxFileQuantity: 10 }),
+	bodyController: controlBodyAsFormData({
+		maxFileQuantity: 10,
+		bodyMaxSize: "1.5mb",
+	}),
 })
 	.extract({
 		body: {
@@ -21,4 +25,10 @@ useRouteBuilder("POST", "/documents", {
 
 			return response("file.receive");
 		},
+	);
+
+useRouteBuilder("GET", "/documents/*")
+	.handler(
+		ResponseContract.ok("file.send", SDPE.file()),
+		(__, { response }) => response("file.send", createFileInterface("files/fakeFiles/superTextFile.txt")),
 	);

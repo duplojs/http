@@ -17,9 +17,9 @@ export interface BuildStepResult {
 }
 
 export type BuildStepSuccessEither<
-> = E.EitherRight<"buildSuccess", BuildStepResult>;
+> = E.Right<"buildSuccess", BuildStepResult>;
 
-export type BuildStepNotSupportEither = E.EitherLeft<"stepNotSupport", Steps>;
+export type BuildStepNotSupportEither = E.Left<"stepNotSupport", Steps>;
 
 export interface StepFunctionBuilderParams {
 	buildStep(

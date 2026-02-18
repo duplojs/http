@@ -1,4 +1,4 @@
-import type { FileInterface } from "@duplojs/server-utils/file";
+import type { TheFormData } from "@duplojs/utils";
 
 export type Routes = {
 	method: "GET";
@@ -55,10 +55,10 @@ export type Routes = {
 } | {
 	method: "POST";
 	path: "/documents";
-	body: {
+	body: TheFormData<{
 		bool: boolean;
-		myFile: FileInterface;
-	};
+		myFile: File;
+	}>;
 	responses: {
 		code: "422";
 		information: "extract-error";
@@ -67,5 +67,13 @@ export type Routes = {
 		code: "204";
 		information: "file.receive";
 		body?: undefined;
+	};
+} | {
+	method: "GET";
+	path: `/documents/${string}`;
+	responses: {
+		code: "200";
+		information: "file.send";
+		body: File;
 	};
 };

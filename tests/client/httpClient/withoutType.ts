@@ -140,7 +140,7 @@ void promiseRequest
 		if (E.isRight(value)) {
 			type Check = ExpectType<
 				typeof value,
-				E.EitherRight<"response", ClientResponse<PromiseRequestParams<{
+				E.Right<"response", ClientResponse<PromiseRequestParams<{
 					params1: string;
 				}>>>,
 				"strict"
@@ -148,7 +148,7 @@ void promiseRequest
 		} else {
 			type Check = ExpectType<
 				typeof value,
-				E.EitherLeft<"request-error", RequestErrorContent> | E.EitherLeft<"unexpect-response", ClientResponse<PromiseRequestParams<{
+				E.Left<"request-error", RequestErrorContent> | E.Left<"unexpect-response", ClientResponse<PromiseRequestParams<{
 					params1: string;
 				}>>>,
 				"strict"
@@ -162,7 +162,7 @@ void promiseRequest
 		if (E.isRight(value)) {
 			type Check = ExpectType<
 				typeof value,
-				E.EitherRight<"response", ClientResponse<PromiseRequestParams<{
+				E.Right<"response", ClientResponse<PromiseRequestParams<{
 					params1: string;
 				}>>>,
 				"strict"
@@ -170,7 +170,7 @@ void promiseRequest
 		} else {
 			type Check = ExpectType<
 				typeof value,
-				E.EitherLeft<"request-error", RequestErrorContent> | E.EitherLeft<"unexpect-response", ClientResponse<PromiseRequestParams<{
+				E.Left<"request-error", RequestErrorContent> | E.Left<"unexpect-response", ClientResponse<PromiseRequestParams<{
 					params1: string;
 				}>>>,
 				"strict"
@@ -184,7 +184,7 @@ void promiseRequest
 		if (E.isRight(value)) {
 			type Check = ExpectType<
 				typeof value,
-				E.EitherRight<"response", ClientResponse<PromiseRequestParams<{
+				E.Right<"response", ClientResponse<PromiseRequestParams<{
 					params1: string;
 				}>>>,
 				"strict"
@@ -192,7 +192,7 @@ void promiseRequest
 		} else {
 			type Check = ExpectType<
 				typeof value,
-				E.EitherLeft<"request-error", RequestErrorContent> | E.EitherLeft<"unexpect-response", ClientResponse<PromiseRequestParams<{
+				E.Left<"request-error", RequestErrorContent> | E.Left<"unexpect-response", ClientResponse<PromiseRequestParams<{
 					params1: string;
 				}>>>,
 				"strict"
@@ -206,7 +206,7 @@ void promiseRequest
 		if (E.isRight(value)) {
 			type Check = ExpectType<
 				typeof value,
-				E.EitherRight<"response", ClientResponse<PromiseRequestParams<{
+				E.Right<"response", ClientResponse<PromiseRequestParams<{
 					params1: string;
 				}>>>,
 				"strict"
@@ -214,7 +214,7 @@ void promiseRequest
 		} else {
 			type Check = ExpectType<
 				typeof value,
-				E.EitherLeft<"request-error", RequestErrorContent> | E.EitherLeft<"unexpect-response", ClientResponse<PromiseRequestParams<{
+				E.Left<"request-error", RequestErrorContent> | E.Left<"unexpect-response", ClientResponse<PromiseRequestParams<{
 					params1: string;
 				}>>>,
 				"strict"
@@ -228,7 +228,7 @@ void promiseRequest
 		if (E.isRight(value)) {
 			type Check = ExpectType<
 				typeof value,
-				E.EitherRight<"response", ClientResponse<PromiseRequestParams<{
+				E.Right<"response", ClientResponse<PromiseRequestParams<{
 					params1: string;
 				}>>>,
 				"strict"
@@ -236,7 +236,7 @@ void promiseRequest
 		} else {
 			type Check = ExpectType<
 				typeof value,
-				E.EitherLeft<"request-error", RequestErrorContent> | E.EitherLeft<"unexpect-response", ClientResponse<PromiseRequestParams<{
+				E.Left<"request-error", RequestErrorContent> | E.Left<"unexpect-response", ClientResponse<PromiseRequestParams<{
 					params1: string;
 				}>>>,
 				"strict"
@@ -250,7 +250,7 @@ void promiseRequest
 		if (E.isRight(value)) {
 			type Check = ExpectType<
 				typeof value,
-				E.EitherRight<"response", ClientResponse<PromiseRequestParams<{
+				E.Right<"response", ClientResponse<PromiseRequestParams<{
 					params1: string;
 				}>>>,
 				"strict"
@@ -258,7 +258,7 @@ void promiseRequest
 		} else {
 			type Check = ExpectType<
 				typeof value,
-				E.EitherLeft<"request-error", RequestErrorContent> | E.EitherLeft<"unexpect-response", ClientResponse<PromiseRequestParams<{
+				E.Left<"request-error", RequestErrorContent> | E.Left<"unexpect-response", ClientResponse<PromiseRequestParams<{
 					params1: string;
 				}>>>,
 				"strict"
@@ -272,7 +272,7 @@ void promiseRequest
 		if (E.isRight(value)) {
 			type Check = ExpectType<
 				typeof value,
-				E.EitherRight<"response", ClientResponse<PromiseRequestParams<{
+				E.Right<"response", ClientResponse<PromiseRequestParams<{
 					params1: string;
 				}>>>,
 				"strict"
@@ -280,7 +280,7 @@ void promiseRequest
 		} else {
 			type Check = ExpectType<
 				typeof value,
-				E.EitherLeft<"request-error", RequestErrorContent> | E.EitherLeft<"unexpect-response", ClientResponse<PromiseRequestParams<{
+				E.Left<"request-error", RequestErrorContent> | E.Left<"unexpect-response", ClientResponse<PromiseRequestParams<{
 					params1: string;
 				}>>>,
 				"strict"
@@ -294,7 +294,7 @@ void promiseRequest
 		if (E.isRight(value)) {
 			type Check = ExpectType<
 				typeof value,
-				E.EitherRight<"response", ClientResponse<PromiseRequestParams<{
+				E.Right<"response", ClientResponse<PromiseRequestParams<{
 					params1: string;
 				}>>>,
 				"strict"
@@ -302,7 +302,7 @@ void promiseRequest
 		} else {
 			type Check = ExpectType<
 				typeof value,
-				E.EitherLeft<"request-error", RequestErrorContent> | E.EitherLeft<"unexpect-response", ClientResponse<PromiseRequestParams<{
+				E.Left<"request-error", RequestErrorContent> | E.Left<"unexpect-response", ClientResponse<PromiseRequestParams<{
 					params1: string;
 				}>>>,
 				"strict"
@@ -411,7 +411,7 @@ void promiseRequest
 		if (E.isRight(value)) {
 			type Check = ExpectType<
 				typeof value,
-				E.EitherRight<
+				E.Right<
 					"response",
 					| ClientResponse<PromiseRequestParams<{
 						params1: string;
@@ -425,7 +425,7 @@ void promiseRequest
 		} else {
 			type Check = ExpectType<
 				typeof value,
-				E.EitherLeft<"request-error", RequestErrorContent>,
+				E.Left<"request-error", RequestErrorContent>,
 				"strict"
 			>;
 		}
@@ -444,8 +444,8 @@ void httpClient.get("/test")
 	.then((value) => {
 		type Check = ExpectType<
 			typeof value,
-			| E.EitherLeft<"request-error", RequestErrorContent>
-			| E.EitherRight<
+			| E.Left<"request-error", RequestErrorContent>
+			| E.Right<
 				"response",
 				| ClientResponse<PromiseRequestParams<{ params1: string }>>
 				| NotPredictedClientResponse<PromiseRequestParams<{ params1: string }>>
@@ -467,8 +467,8 @@ void httpClient.get("/test", { body: "" })
 	.then((value) => {
 		type Check = ExpectType<
 			typeof value,
-			| E.EitherLeft<"request-error", RequestErrorContent>
-			| E.EitherRight<
+			| E.Left<"request-error", RequestErrorContent>
+			| E.Right<
 				"response",
 				| ClientResponse<PromiseRequestParams<{ params1: string }>>
 				| NotPredictedClientResponse<PromiseRequestParams<{ params1: string }>>

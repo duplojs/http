@@ -3,8 +3,8 @@ import { type Hooks, type ErrorHook, type NotPredictedResponseHook } from "./hoo
 import * as EE from "@duplojs/utils/either";
 import { type RequestErrorContent } from "./unexpectedResponseError";
 import { type NotPredictedClientResponse, type ClientRequestParams, type ClientResponse } from "./types";
-type MaybeResponse<GenericClientResponse extends ClientResponse = ClientResponse> = (EE.EitherRight<"response", GenericClientResponse> | EE.EitherLeft<"request-error", RequestErrorContent>);
-type MaybeWantedResponse<GenericWantedClientResponse extends ClientResponse = ClientResponse, GenericUnexpectClientResponse extends ClientResponse = ClientResponse> = (EE.EitherRight<"response", GenericWantedClientResponse> | EE.EitherLeft<"unexpect-response", GenericUnexpectClientResponse> | EE.EitherLeft<"request-error", RequestErrorContent>);
+type MaybeResponse<GenericClientResponse extends ClientResponse = ClientResponse> = (EE.Right<"response", GenericClientResponse> | EE.Left<"request-error", RequestErrorContent>);
+type MaybeWantedResponse<GenericWantedClientResponse extends ClientResponse = ClientResponse, GenericUnexpectClientResponse extends ClientResponse = ClientResponse> = (EE.Right<"response", GenericWantedClientResponse> | EE.Left<"unexpect-response", GenericUnexpectClientResponse> | EE.Left<"request-error", RequestErrorContent>);
 export interface PromiseRequestParams<GenericHookParams extends Record<string, unknown> = Record<string, unknown>> extends ClientRequestParams<GenericHookParams> {
     baseUrl: string;
     hooks: Hooks;

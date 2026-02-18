@@ -6,8 +6,8 @@ import { type BuildStepSuccessEither, type BuildStepNotSupportEither } from "../
 import { type Steps } from "../../steps";
 import { type ResponseContract } from "../../response";
 export type BuildedRouteFunction = (request: Request) => Promise<void>;
-export type BuildRouteSuccessEither = E.EitherRight<"buildSuccess", BuildedRouteFunction>;
-export type BuildRouteNotSupportEither = E.EitherLeft<"routeNotSupport", Route>;
+export type BuildRouteSuccessEither = E.Right<"buildSuccess", BuildedRouteFunction>;
+export type BuildRouteNotSupportEither = E.Left<"routeNotSupport", Route>;
 export interface RouteFunctionBuilderParams {
     readonly globalHooksRouteLifeCycle: readonly HookRouteLifeCycle[];
     readonly environment: Environment;

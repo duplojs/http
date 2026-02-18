@@ -2,7 +2,7 @@ import { PromiseRequest, type PromiseRequestParams } from "@client/promiseReques
 import { type Hooks } from "@client/hooks";
 import { type ClientResponse } from "@client/types/clientResponse";
 import { UnexpectedCodeResponseError, UnexpectedInformationResponseError, UnexpectedResponseError, UnexpectedResponseTypeError } from "@client/unexpectedResponseError";
-import { asserts, unwrap, E } from "@duplojs/utils";
+import { asserts, unwrap, E, createFormData } from "@duplojs/utils";
 
 describe("PromiseRequest", () => {
 	const createHooks = (): Hooks => ({
@@ -96,6 +96,7 @@ describe("PromiseRequest", () => {
 			.mockResolvedValueOnce(jsonResponse)
 			.mockResolvedValueOnce(jsonResponse)
 			.mockResolvedValueOnce(jsonResponse)
+			.mockResolvedValueOnce(jsonResponse)
 			.mockRejectedValueOnce(new Error("network"));
 
 		vi.stubGlobal("fetch", fetchMock);
@@ -128,6 +129,10 @@ describe("PromiseRequest", () => {
 			body: new FormData(),
 		});
 
+		const paramsWithTheFormData = createParams({
+			body: createFormData({}),
+		});
+
 		const paramsWithArray = createParams({
 			body: ["test"],
 		});
@@ -138,6 +143,7 @@ describe("PromiseRequest", () => {
 		const resultNumber = await PromiseRequest.fetch(paramsWithNumber);
 		const resultHeader = await PromiseRequest.fetch(paramsWithHeader);
 		const resultFormData = await PromiseRequest.fetch(paramsWithFormData);
+		const resultTheFormData = await PromiseRequest.fetch(paramsWithTheFormData);
 		const resultArray = await PromiseRequest.fetch(paramsWithArray);
 		const resultError = await PromiseRequest.fetch(createParams());
 
@@ -148,6 +154,16 @@ describe("PromiseRequest", () => {
 				method: "GET",
 			}),
 		);
+		expect(fetchMock).toHaveBeenNthCalledWith(
+			7,
+			"http://test.local/resource",
+			expect.objectContaining({
+				method: "GET",
+				headers: {
+					"content-type-options": "advanced",
+				},
+			}),
+		);
 
 		asserts(result, E.isRight);
 		asserts(resultObject, E.isRight);
@@ -155,6 +171,7 @@ describe("PromiseRequest", () => {
 		asserts(resultNumber, E.isRight);
 		asserts(resultHeader, E.isRight);
 		asserts(resultFormData, E.isRight);
+		asserts(resultTheFormData, E.isRight);
 		asserts(resultArray, E.isRight);
 		asserts(resultError, E.isLeft);
 

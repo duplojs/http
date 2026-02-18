@@ -125,8 +125,8 @@ describe("route function builder", () => {
 		const route = useRouteBuilder("GET", "/test", { hooks: [{ afterSendResponse: spyResponse }] })
 			.extract({ params: { value: DPE.string() } })
 			.handler(
-				ResponseContract.ok("good", DPE.string()),
-				(floor, { response }) => ({}) as never,
+				ResponseContract.ok("good", DPE.empty()),
+				(floor, { response }) => ({ information: "good" }) as never,
 			);
 
 		const buildedRoute = await useTestRouteFunctionBuilder(route);

@@ -14,7 +14,7 @@ describe("handler step function builder", () => {
 		const route = useRouteBuilder("GET", "/test", { hooks: [{ afterSendResponse: spyResponse }] })
 			.extract({ params: { value: DPE.string() } })
 			.handler(
-				ResponseContract.ok("good", DPE.string()),
+				ResponseContract.ok("good", DPE.string().transform(async(value) => Promise.resolve(value))),
 				(floor, { response }) => response("good", floor.value),
 			);
 

@@ -306,7 +306,7 @@ void promiseRequest
 		if (E.isRight(value)) {
 			type Check = ExpectType<
 				typeof value,
-				E.EitherRight<"response", {
+				E.Right<"response", {
 					code: "422";
 					information: "extract-error";
 					body: undefined;
@@ -324,7 +324,7 @@ void promiseRequest
 		} else {
 			type Check = ExpectType<
 				typeof value,
-				E.EitherLeft<"request-error", RequestErrorContent> | E.EitherLeft<"unexpect-response", {
+				E.Left<"request-error", RequestErrorContent> | E.Left<"unexpect-response", {
 					code: "200";
 					information: "users.find";
 					body: {
@@ -354,7 +354,7 @@ void promiseRequest
 		if (E.isRight(value)) {
 			type Check = ExpectType<
 				typeof value,
-				E.EitherRight<"response", {
+				E.Right<"response", {
 					code: "422";
 					information: "extract-error";
 					body: undefined;
@@ -372,7 +372,7 @@ void promiseRequest
 		} else {
 			type Check = ExpectType<
 				typeof value,
-				E.EitherLeft<"request-error", RequestErrorContent> | E.EitherLeft<"unexpect-response", {
+				E.Left<"request-error", RequestErrorContent> | E.Left<"unexpect-response", {
 					code: "200";
 					information: "users.find";
 					body: {
@@ -402,7 +402,7 @@ void promiseRequest
 		if (E.isRight(value)) {
 			type Check = ExpectType<
 				typeof value,
-				E.EitherRight<"response", ClientResponse<PromiseRequestParams<{
+				E.Right<"response", ClientResponse<PromiseRequestParams<{
 					params1: string;
 				}>>>,
 				"strict"
@@ -410,7 +410,7 @@ void promiseRequest
 		} else {
 			type Check = ExpectType<
 				typeof value,
-				E.EitherLeft<"request-error", RequestErrorContent> | E.EitherLeft<"unexpect-response", ClientResponse<PromiseRequestParams<{
+				E.Left<"request-error", RequestErrorContent> | E.Left<"unexpect-response", ClientResponse<PromiseRequestParams<{
 					params1: string;
 				}>>>,
 				"strict"
@@ -424,7 +424,7 @@ void promiseRequest
 		if (E.isRight(value)) {
 			type Check = ExpectType<
 				typeof value,
-				E.EitherRight<"response", {
+				E.Right<"response", {
 					code: "200";
 					information: "users.find";
 					body: {
@@ -448,7 +448,7 @@ void promiseRequest
 		} else {
 			type Check = ExpectType<
 				typeof value,
-				E.EitherLeft<"request-error", RequestErrorContent> | E.EitherLeft<"unexpect-response", {
+				E.Left<"request-error", RequestErrorContent> | E.Left<"unexpect-response", {
 					code: "422";
 					information: "extract-error";
 					body: undefined;
@@ -472,7 +472,7 @@ void promiseRequest
 		if (E.isRight(value)) {
 			type Check = ExpectType<
 				typeof value,
-				E.EitherRight<"response", ClientResponse<PromiseRequestParams<{
+				E.Right<"response", ClientResponse<PromiseRequestParams<{
 					params1: string;
 				}>>>,
 				"strict"
@@ -480,7 +480,7 @@ void promiseRequest
 		} else {
 			type Check = ExpectType<
 				typeof value,
-				E.EitherLeft<"request-error", RequestErrorContent> | E.EitherLeft<"unexpect-response", ClientResponse<PromiseRequestParams<{
+				E.Left<"request-error", RequestErrorContent> | E.Left<"unexpect-response", ClientResponse<PromiseRequestParams<{
 					params1: string;
 				}>>>,
 				"strict"
@@ -494,7 +494,7 @@ void promiseRequest
 		if (E.isRight(value)) {
 			type Check = ExpectType<
 				typeof value,
-				E.EitherRight<"response", {
+				E.Right<"response", {
 					code: "422";
 					information: "extract-error";
 					body: undefined;
@@ -512,7 +512,7 @@ void promiseRequest
 		} else {
 			type Check = ExpectType<
 				typeof value,
-				E.EitherLeft<"request-error", RequestErrorContent> | E.EitherLeft<"unexpect-response", {
+				E.Left<"request-error", RequestErrorContent> | E.Left<"unexpect-response", {
 					code: "200";
 					information: "users.find";
 					body: {
@@ -542,7 +542,7 @@ void promiseRequest
 		if (E.isRight(value)) {
 			type Check = ExpectType<
 				typeof value,
-				E.EitherRight<"response", ClientResponse<PromiseRequestParams<{
+				E.Right<"response", ClientResponse<PromiseRequestParams<{
 					params1: string;
 				}>>>,
 				"strict"
@@ -550,7 +550,7 @@ void promiseRequest
 		} else {
 			type Check = ExpectType<
 				typeof value,
-				E.EitherLeft<"request-error", RequestErrorContent> | E.EitherLeft<"unexpect-response", ClientResponse<PromiseRequestParams<{
+				E.Left<"request-error", RequestErrorContent> | E.Left<"unexpect-response", ClientResponse<PromiseRequestParams<{
 					params1: string;
 				}>>>,
 				"strict"
@@ -564,7 +564,7 @@ void promiseRequest
 		if (E.isRight(value)) {
 			type Check = ExpectType<
 				typeof value,
-				E.EitherRight<"response", {
+				E.Right<"response", {
 					code: "422";
 					information: "extract-error";
 					body: undefined;
@@ -602,7 +602,7 @@ void promiseRequest
 		} else {
 			type Check = ExpectType<
 				typeof value,
-				E.EitherLeft<"request-error", RequestErrorContent> | E.EitherLeft<"unexpect-response", ClientResponse<PromiseRequestParams<{
+				E.Left<"request-error", RequestErrorContent> | E.Left<"unexpect-response", ClientResponse<PromiseRequestParams<{
 					params1: string;
 				}>>>,
 				"strict"
@@ -801,7 +801,7 @@ void promiseRequest
 		if (E.isRight(value)) {
 			type Check = ExpectType<
 				typeof value,
-				E.EitherRight<
+				E.Right<
 					"response",
 					| {
 						code: "422";
@@ -840,7 +840,7 @@ void promiseRequest
 		} else {
 			type Check = ExpectType<
 				typeof value,
-				E.EitherLeft<"request-error", RequestErrorContent>,
+				E.Left<"request-error", RequestErrorContent>,
 				"strict"
 			>;
 		}
@@ -875,8 +875,8 @@ void httpClient.get("/users")
 	.then((value) => {
 		type Check = ExpectType<
 			typeof value,
-			| E.EitherLeft<"request-error", RequestErrorContent>
-			| E.EitherRight<
+			| E.Left<"request-error", RequestErrorContent>
+			| E.Right<
 				"response",
 				| NotPredictedClientResponse<PromiseRequestParams<{ params1: string }>>
 				| {
@@ -934,8 +934,8 @@ void httpClient.post("/users", {
 	.then((value) => {
 		type Check = ExpectType<
 			typeof value,
-			| E.EitherLeft<"request-error", RequestErrorContent>
-			| E.EitherRight<
+			| E.Left<"request-error", RequestErrorContent>
+			| E.Right<
 				"response",
 				| NotPredictedClientResponse<PromiseRequestParams<{ params1: string }>>
 				| {
