@@ -1,6 +1,7 @@
-import { type Hub, type HttpServerParams } from "./hub";
+import { type Hub } from "./hub";
 import { type RouterInitializationData } from "./router";
 import { type MaybePromise } from "@duplojs/utils";
+import { type HttpServerParams } from "./types";
 export interface ImplementHttpServerParams {
     readonly hub: Hub;
     readonly httpServerParams: HttpServerParams;

@@ -6,10 +6,10 @@ var utils = require('@duplojs/utils');
 var hooks = require('./hub/hooks.cjs');
 
 async function implementHttpServer(params, initHttpServer) {
-    const newHub1 = await hooks.launchHookServer(params.hub.aggregatesHooksHubLifeCycle("beforeServerBuildRoutes"), params.hub, params.httpServerParams);
-    const router = await index.buildRouter(newHub1);
-    const newHub2 = await hooks.launchHookServer(newHub1.aggregatesHooksHubLifeCycle("beforeStartServer"), newHub1, params.httpServerParams);
-    const serverErrorHooks = newHub1.aggregatesHooksHubLifeCycle("serverError");
+    await hooks.launchHookServer(params.hub.aggregatesHooksHubLifeCycle("beforeServerBuildRoutes"), params.hub, params.httpServerParams);
+    const router = await index.buildRouter(params.hub);
+    await hooks.launchHookServer(params.hub.aggregatesHooksHubLifeCycle("beforeStartServer"), params.hub, params.httpServerParams);
+    const serverErrorHooks = params.hub.aggregatesHooksHubLifeCycle("serverError");
     function catchCriticalError(error) {
         console.error("Critical Error :", error);
     }
@@ -29,7 +29,7 @@ async function implementHttpServer(params, initHttpServer) {
         execRouteSystem: execRouteSystem,
         httpServerParams: params.httpServerParams,
     });
-    await hooks.launchHookServer(newHub2.aggregatesHooksHubLifeCycle("afterStartServer"), newHub2, params.httpServerParams);
+    await hooks.launchHookServer(params.hub.aggregatesHooksHubLifeCycle("afterStartServer"), params.hub, params.httpServerParams);
     return result;
 }
 

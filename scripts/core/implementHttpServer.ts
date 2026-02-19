@@ -1,7 +1,9 @@
 
-import { type Hub, type HttpServerParams, launchHookServer, launchHookServerError, serverErrorExitHookFunction, serverErrorNextHookFunction } from "./hub";
+import { type Hub, launchHookServer, launchHookServerError, serverErrorExitHookFunction, serverErrorNextHookFunction } from "./hub";
 import { buildRouter, type RouterInitializationData } from "./router";
 import { forward, type MaybePromise } from "@duplojs/utils";
+import { type HttpServerParams } from "./types";
+import { initDefaultHook } from "./defaultHooks";
 
 export interface ImplementHttpServerParams {
 	readonly hub: Hub;
@@ -27,23 +29,23 @@ export async function implementHttpServer<
 	params: ImplementHttpServerParams,
 	initHttpServer: (params: InitHttpServerParams) => MaybePromise<GenericServer>,
 ): Promise<GenericServer> {
-	const newHub1 = await launchHookServer(
+	await launchHookServer(
 		params.hub.aggregatesHooksHubLifeCycle("beforeServerBuildRoutes"),
 		params.hub,
 		params.httpServerParams,
 	);
 
 	const router = await buildRouter(
-		newHub1,
+		params.hub,
 	);
 
-	const newHub2 = await launchHookServer(
-		newHub1.aggregatesHooksHubLifeCycle("beforeStartServer"),
-		newHub1,
+	await launchHookServer(
+		params.hub.aggregatesHooksHubLifeCycle("beforeStartServer"),
+		params.hub,
 		params.httpServerParams,
 	);
 
-	const serverErrorHooks = newHub1.aggregatesHooksHubLifeCycle("serverError");
+	const serverErrorHooks = params.hub.aggregatesHooksHubLifeCycle("serverError");
 
 	function catchCriticalError(error: unknown) {
 		console.error("Critical Error :", error);
@@ -72,8 +74,8 @@ export async function implementHttpServer<
 	});
 
 	await launchHookServer(
-		newHub2.aggregatesHooksHubLifeCycle("afterStartServer"),
-		newHub2,
+		params.hub.aggregatesHooksHubLifeCycle("afterStartServer"),
+		params.hub,
 		params.httpServerParams,
 	);
 

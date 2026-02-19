@@ -1,10 +1,14 @@
-import { O } from '@duplojs/utils';
 import http from 'http';
 import https from 'https';
-import { makeNodeHook } from './hooks.mjs';
+import { nodeHook } from './hooks/index.mjs';
 import { implementHttpServer } from '../../core/implementHttpServer.mjs';
+import { O } from '@duplojs/utils';
+import { initDefaultHook } from '../../core/defaultHooks/index.mjs';
+import './bodyReaders/index.mjs';
+import { createTextBodyReaderImplementation } from './bodyReaders/text/index.mjs';
+import { createFormDataBodyReaderImplementation } from './bodyReaders/formData/index.mjs';
 
-function createHttpServer(inputHub, params) {
+function createHttpServer(hub, params) {
     const httpServerParams = O.override({
         host: "localhost",
         port: 80,
@@ -13,9 +17,13 @@ function createHttpServer(inputHub, params) {
         predictedHeaderKey: "predicted",
         fromHookHeaderKey: "from-hook",
         interface: "node",
+        uploadFolder: "./upload",
     }, params);
-    const hooks = makeNodeHook(inputHub, httpServerParams);
-    const hub = inputHub.addRouteHooks(hooks);
+    hub.addBodyReaderImplementation([
+        createTextBodyReaderImplementation(httpServerParams),
+        createFormDataBodyReaderImplementation(httpServerParams),
+    ]);
+    hub.addRouteHooks([initDefaultHook(hub, httpServerParams), nodeHook]);
     function whenUncaughtError(error, routerInitializationData) {
         const serverResponse = routerInitializationData.raw.response;
         if (!serverResponse.headersSent && !serverResponse.writableEnded) {
@@ -49,6 +57,9 @@ function createHttpServer(inputHub, params) {
                 response: serverResponse,
             },
         }, whenUncaughtError));
+        if (hub.config.environment === "BUILD") {
+            return server;
+        }
         return new Promise((resolve) => {
             server.listen({
                 port: httpServerParams.port,

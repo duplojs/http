@@ -1,6 +1,7 @@
 import { ResponseContract, useRouteBuilder, Request, Response, PredictedResponse } from "@core";
 import { DP, DPE } from "@duplojs/utils";
 import { useTestRouteFunctionBuilder } from "@test-utils/useTestRouteFunctionBuilder";
+import { createBodyReader } from "@test-utils/bodyReader";
 
 describe("handler step function builder", () => {
 	const spyResponse = vi.fn();
@@ -13,7 +14,7 @@ describe("handler step function builder", () => {
 		const route = useRouteBuilder("GET", "/test", { hooks: [{ afterSendResponse: spyResponse }] })
 			.extract({ params: { value: DPE.string() } })
 			.handler(
-				ResponseContract.ok("good", DPE.string()),
+				ResponseContract.ok("good", DPE.string().transform(async(value) => Promise.resolve(value))),
 				(floor, { response }) => response("good", floor.value),
 			);
 
@@ -30,6 +31,7 @@ describe("handler step function builder", () => {
 				params: { value: "test" },
 				query: {},
 				url: "",
+				bodyReader: createBodyReader(),
 			}),
 		);
 
@@ -60,6 +62,7 @@ describe("handler step function builder", () => {
 				params: {},
 				query: {},
 				url: "",
+				bodyReader: createBodyReader(),
 			}),
 		);
 
@@ -90,6 +93,7 @@ describe("handler step function builder", () => {
 				params: {},
 				query: {},
 				url: "",
+				bodyReader: createBodyReader(),
 			}),
 		);
 

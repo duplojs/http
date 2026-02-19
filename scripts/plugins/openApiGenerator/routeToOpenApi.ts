@@ -3,7 +3,7 @@ import { aggregateStepContract } from "./aggregateStepContract";
 import { A, DP, isType, justReturn, O, P, pipe, S, when, whenNot } from "@duplojs/utils";
 import type { ResponseCode, ResponseContract } from "@core/response";
 import { type MapContext, type JsonSchema, render, defaultTransformers } from "@duplojs/data-parser-tools/toJsonSchema";
-import type { RequestMethods } from "@core/request";
+import { FormDataBodyController, type RequestMethods } from "@core/request";
 import type { EndpointResponse, EntrypointParameter, OpenApiMethod } from "./types";
 import { IgnoreByOpenApiGeneratorMetadata } from "./metadata";
 
@@ -126,6 +126,22 @@ export function routeToOpenApi(
 		P.when(
 			DP.identifier(DP.emptyKind),
 			justReturn(undefined),
+		),
+		P.when(
+			() => FormDataBodyController.is(route.definition.bodyController),
+			(objectSchema) => ({
+				required: <const>true,
+				content: {
+					"multipart/form-data": {
+						schema: factoryJsonSchema({
+							context: params.contextToJsonSchemaFactory,
+							resultSchemaContext: params.resultSchemaContext,
+							mode: "in",
+							schema: objectSchema,
+						}),
+					},
+				},
+			}),
 		),
 		P.when(
 			DP.identifier(DP.objectKind),

@@ -15,7 +15,7 @@ function getBody(response) {
         return response.formData();
     }
     else {
-        return response.blob();
+        return Promise.resolve(undefined);
     }
 }
 

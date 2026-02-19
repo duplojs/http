@@ -1,8 +1,8 @@
 import { routeToOpenApi } from './routeToOpenApi.mjs';
-import { equal, pipe, A, O, G, P, justReturn } from '@duplojs/utils';
+import { equal, A, pipe, O, G, P, justReturn, asserts, E } from '@duplojs/utils';
 import { makeOpenApiPage } from './makeOpenApiPage.mjs';
 import { makeOpenApiRoute } from './makeOpenApiRoute.mjs';
-import { writeFile } from 'fs/promises';
+import { SF } from '@duplojs/server-utils';
 
 function openApiGeneratorPlugin(pluginParams) {
     return () => ({
@@ -17,7 +17,7 @@ function openApiGeneratorPlugin(pluginParams) {
                     }
                     const contextToJsonSchemaFactory = new Map();
                     const resultSchemaContext = new Map();
-                    const routes = hub.aggregatesRoutes();
+                    const routes = A.from(hub.routes);
                     const openApiRoutes = pipe(routes, A.filter((route) => route.definition.method !== "OPTIONS"), A.flatMap((route) => routeToOpenApi(route, {
                         defaultExtractContract: hub.defaultExtractContract,
                         resultSchemaContext,
@@ -75,7 +75,7 @@ function openApiGeneratorPlugin(pluginParams) {
                     };
                     const openApiDocumentString = JSON.stringify(openApiDocument, null, 2);
                     if (pluginParams.outputFile) {
-                        await writeFile(pluginParams.outputFile, openApiDocumentString);
+                        asserts(await SF.writeTextFile(pluginParams.outputFile, openApiDocumentString), E.isRight);
                     }
                     if (pluginParams.routePath) {
                         const openApiPage = makeOpenApiPage({

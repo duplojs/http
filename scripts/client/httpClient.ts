@@ -1,10 +1,9 @@
-import { type RemoveKind, type Kind, type MayBeGetter, type NeverCoalescing, type SimplifyTopLevel } from "@duplojs/utils";
+import { type RemoveKind, type Kind, type MayBeGetter, type SimplifyTopLevel, type IsEqual } from "@duplojs/utils";
 import * as OO from "@duplojs/utils/object";
 import * as GG from "@duplojs/utils/generator";
 import { createClientKind } from "./kind";
-import { type ClientRequestInitParams, type ServerRoute, type ServerRouteToClientRequestParams, type ServerRouteToClientResponse, type ClientRequestParamsHeaders, type ClientRequestParams } from "./types";
-import { PromiseRequest, type PromiseRequestParams } from "./promiseRequest";
-import { type Hooks, type RequestHook, type ResponseHook, type InformationHook, type CodeHook, type ResponseTypeHook, type ExpectedResponseHook, type ErrorHook, type NotPredictedResponseHook } from "./hooks";
+import { type ClientRequestInitParams, type ServerRoute, type ServerRouteToClientRequestParams, type ServerRouteToClientResponse, type ClientRequestParamsHeaders, type ClientRequestParams, type ClientResponse, type Hooks, type RequestHook, type ResponseHook, type InformationHook, type CodeHook, type ResponseTypeHook, type ExpectedResponseHook, type NotPredictedResponseHook, type ErrorHook, type GetServerRoutePath } from "./types";
+import { PromiseRequest } from "./promiseRequest";
 
 export const httpClientKind = createClientKind("http-client");
 
@@ -18,46 +17,57 @@ type HttpClientRequestMethod<
 	GenericServerRoute extends ServerRoute,
 	GenericHookParams extends Record<string, unknown>,
 	GenericMethod extends string,
-> = <
-	GenericClientRequestParams extends NeverCoalescing<
-		ServerRouteToClientRequestParams<
-			Extract<GenericServerRoute, { method: GenericMethod }>,
-			GenericHookParams
-		>,
-		ClientRequestParams<GenericHookParams>
-	>,
-	GenericPath extends GenericClientRequestParams["path"],
-	GenericClientRequestRest extends SimplifyTopLevel<
-		Omit<
-			NeverCoalescing<
-				Extract<
-					GenericClientRequestParams,
-					{ path: GenericPath }
-				>,
-				ClientRequestParams<GenericHookParams>
-			>,
-			"method" | "path"
+> = IsEqual<GenericServerRoute, ServerRoute> extends true
+	? (
+		path: string,
+		params?: SimplifyTopLevel<
+			Omit<
+				ClientRequestParams<GenericHookParams>,
+				"method" | "path"
+			>
 		>
-	>,
->(
-	path: GenericPath,
-	...args: MaybeRequestParams<GenericClientRequestRest>
-) => PromiseRequest<
-	PromiseRequestParams<GenericHookParams>,
-	ServerRouteToClientResponse<
-		NeverCoalescing<
+	) => PromiseRequest<
+		GenericHookParams,
+		ClientResponse<GenericHookParams>
+	>
+	: <
+		GenericPath extends Extract<GenericServerRoute, { method: GenericMethod }>["path"],
+		GenericMatchedPath extends GetServerRoutePath<
+			Extract<GenericServerRoute, { method: GenericMethod }>,
+			GenericPath
+		>,
+	>(
+		path: GenericPath,
+		...args: MaybeRequestParams<
+			SimplifyTopLevel<
+				Omit<
+					ServerRouteToClientRequestParams<
+						Extract<
+							GenericServerRoute,
+							{
+								method: GenericMethod;
+								path: GenericMatchedPath | GenericPath;
+							}
+						>,
+						GenericHookParams
+					>,
+					"method" | "path"
+				>
+			>
+		>
+	) => PromiseRequest<
+		GenericHookParams,
+		ServerRouteToClientResponse<
 			Extract<
 				GenericServerRoute,
 				{
 					method: GenericMethod;
-					path: GenericPath;
+					path: GenericMatchedPath;
 				}
 			>,
-			ServerRoute
-		>,
-		GenericHookParams
-	>
->;
+			GenericHookParams
+		>
+	>;
 
 export interface HttpClientConfig {
 	readonly baseUrl: string;
@@ -87,34 +97,38 @@ export interface HttpClient<
 		>
 	): void;
 
-	addRequestHook(hook: RequestHook<PromiseRequestParams<GenericHookParams>>): void;
-	addResponseHook(hook: ResponseHook<PromiseRequestParams<GenericHookParams>>): void;
-	addInformationHook(information: string, hook: InformationHook<PromiseRequestParams<GenericHookParams>>): void;
-	addCodeHook(code: string, hook: CodeHook<PromiseRequestParams<GenericHookParams>>): void;
-	addInformationalResponseTypeHook(hook: ResponseTypeHook<PromiseRequestParams<GenericHookParams>>): void;
-	addSuccessfulResponseTypeHook(hook: ResponseTypeHook<PromiseRequestParams<GenericHookParams>>): void;
-	addRedirectionResponseTypeHook(hook: ResponseTypeHook<PromiseRequestParams<GenericHookParams>>): void;
-	addClientErrorResponseTypeHook(hook: ResponseTypeHook<PromiseRequestParams<GenericHookParams>>): void;
-	addServerErrorResponseTypeHook(hook: ResponseTypeHook<PromiseRequestParams<GenericHookParams>>): void;
-	addExpectedResponseHook(hook: ExpectedResponseHook<PromiseRequestParams<GenericHookParams>>): void;
-	addNotPredictedResponseHook(hook: NotPredictedResponseHook<PromiseRequestParams<GenericHookParams>>): void;
-	addErrorHook(hook: ErrorHook<PromiseRequestParams<GenericHookParams>>): void;
+	addRequestHook(hook: RequestHook<GenericHookParams>): void;
+	addResponseHook(hook: ResponseHook<GenericHookParams>): void;
+	addInformationHook(information: string, hook: InformationHook<GenericHookParams>): void;
+	addCodeHook(code: string, hook: CodeHook<GenericHookParams>): void;
+	addInformationalResponseTypeHook(hook: ResponseTypeHook<GenericHookParams>): void;
+	addSuccessfulResponseTypeHook(hook: ResponseTypeHook<GenericHookParams>): void;
+	addRedirectionResponseTypeHook(hook: ResponseTypeHook<GenericHookParams>): void;
+	addClientErrorResponseTypeHook(hook: ResponseTypeHook<GenericHookParams>): void;
+	addServerErrorResponseTypeHook(hook: ResponseTypeHook<GenericHookParams>): void;
+	addExpectedResponseHook(hook: ExpectedResponseHook<GenericHookParams>): void;
+	addNotPredictedResponseHook(hook: NotPredictedResponseHook<GenericHookParams>): void;
+	addErrorHook(hook: ErrorHook<GenericHookParams>): void;
 
 	request<
 		GenericClientRequestParams extends ServerRouteToClientRequestParams<
 			GenericServerRoute,
 			GenericHookParams
 		>,
+		GenericMatchedPath extends GetServerRoutePath<
+			Extract<GenericServerRoute, { method: GenericClientRequestParams["method"] }>,
+			GenericClientRequestParams["path"]
+		>,
 	>(
 		params: GenericClientRequestParams
 	): PromiseRequest<
-		PromiseRequestParams<GenericHookParams>,
+		GenericHookParams,
 		ServerRouteToClientResponse<
 			Extract<
 				GenericServerRoute,
 				{
 					method: GenericClientRequestParams["method"];
-					path: GenericClientRequestParams["path"];
+					path: GenericMatchedPath;
 				}
 			>,
 			GenericHookParams
@@ -163,12 +177,12 @@ export interface CreateHttpClientParams {
 }
 
 export function createHttpClient<
-	GenericServerRoute extends ServerRoute = never,
+	GenericServerRoute extends ServerRoute = ServerRoute,
 	GenericHookParams extends Record<string, unknown> = Record<string, unknown>,
 >(
 	clientParams: CreateHttpClientParams,
 ): HttpClient<
-		NeverCoalescing<GenericServerRoute, ServerRoute>,
+		GenericServerRoute,
 		GenericHookParams
 	> {
 	const hooks = OO.override<Hooks>(

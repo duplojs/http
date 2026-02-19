@@ -4,10 +4,10 @@ import { forward } from '@duplojs/utils';
 import { launchHookServer, launchHookServerError, serverErrorNextHookFunction, serverErrorExitHookFunction } from './hub/hooks.mjs';
 
 async function implementHttpServer(params, initHttpServer) {
-    const newHub1 = await launchHookServer(params.hub.aggregatesHooksHubLifeCycle("beforeServerBuildRoutes"), params.hub, params.httpServerParams);
-    const router = await buildRouter(newHub1);
-    const newHub2 = await launchHookServer(newHub1.aggregatesHooksHubLifeCycle("beforeStartServer"), newHub1, params.httpServerParams);
-    const serverErrorHooks = newHub1.aggregatesHooksHubLifeCycle("serverError");
+    await launchHookServer(params.hub.aggregatesHooksHubLifeCycle("beforeServerBuildRoutes"), params.hub, params.httpServerParams);
+    const router = await buildRouter(params.hub);
+    await launchHookServer(params.hub.aggregatesHooksHubLifeCycle("beforeStartServer"), params.hub, params.httpServerParams);
+    const serverErrorHooks = params.hub.aggregatesHooksHubLifeCycle("serverError");
     function catchCriticalError(error) {
         console.error("Critical Error :", error);
     }
@@ -27,7 +27,7 @@ async function implementHttpServer(params, initHttpServer) {
         execRouteSystem: execRouteSystem,
         httpServerParams: params.httpServerParams,
     });
-    await launchHookServer(newHub2.aggregatesHooksHubLifeCycle("afterStartServer"), newHub2, params.httpServerParams);
+    await launchHookServer(params.hub.aggregatesHooksHubLifeCycle("afterStartServer"), params.hub, params.httpServerParams);
     return result;
 }
 

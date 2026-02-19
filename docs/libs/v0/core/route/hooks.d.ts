@@ -20,7 +20,6 @@ export interface RouteHookParams<GenericRequest extends Request = Request> {
     response<GenericCode extends ResponseCode = ResponseCode, GenericInformation extends string = string, GenericBody extends unknown = unknown>(code: GenericCode, information: GenericInformation, body?: GenericBody): HookResponse<GenericCode, GenericInformation, GenericBody | undefined>;
 }
 export type HookBeforeRouteExecution<GenericRequest extends Request = Request> = (params: RouteHookParams<GenericRequest>) => MaybePromise<HookResponse | RouteHookExit | RouteHookNext>;
-export type HookParseBody<GenericRequest extends Request = Request> = (params: RouteHookParams<GenericRequest>) => MaybePromise<HookResponse | RouteHookExit | RouteHookNext>;
 export interface RouteHookErrorParams<GenericRequest extends Request = Request> {
     readonly request: GenericRequest;
     readonly error: unknown;
@@ -41,7 +40,6 @@ export type HookAfterSendResponse<GenericRequest extends Request = Request> = (p
 export interface HookRouteLifeCycle<GenericRequest extends Request = Request> {
     onConstructRequest?: HookOnConstructRequest<GenericRequest>;
     beforeRouteExecution?: HookBeforeRouteExecution<GenericRequest>;
-    parseBody?: HookParseBody<GenericRequest>;
     error?: HookError;
     beforeSendResponse?: HookBeforeSendResponse<GenericRequest>;
     sendResponse?: HookSendResponse<GenericRequest>;

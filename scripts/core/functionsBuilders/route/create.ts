@@ -11,9 +11,9 @@ export type BuildedRouteFunction = (
 ) => Promise<void>;
 
 export type BuildRouteSuccessEither<
-> = E.EitherRight<"buildSuccess", BuildedRouteFunction>;
+> = E.Right<"buildSuccess", BuildedRouteFunction>;
 
-export type BuildRouteNotSupportEither = E.EitherLeft<"routeNotSupport", Route>;
+export type BuildRouteNotSupportEither = E.Left<"routeNotSupport", Route>;
 
 export interface RouteFunctionBuilderParams {
 	readonly globalHooksRouteLifeCycle: readonly HookRouteLifeCycle[];

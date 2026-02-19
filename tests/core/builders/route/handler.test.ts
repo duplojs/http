@@ -27,6 +27,7 @@ describe("route builder handler method", () => {
 				method: "GET",
 				paths: ["/test"],
 				preflightSteps: [],
+				bodyController: null,
 				metadata: [IgnoreByRouteStoreMetadata()],
 				steps: [
 					expect.objectContaining({
@@ -57,6 +58,7 @@ describe("route builder handler method", () => {
 					readonly method: "GET";
 					readonly paths: readonly ["/test"];
 					readonly preflightSteps: readonly [];
+					readonly bodyController: null;
 					readonly hooks: readonly [];
 					readonly steps: readonly [
 						ExtractStep<{
@@ -113,6 +115,7 @@ describe("route builder handler method", () => {
 				method: "GET",
 				paths: ["/test"],
 				preflightSteps: [],
+				bodyController: null,
 				metadata: [],
 				steps: [
 					{
@@ -145,6 +148,7 @@ describe("route builder handler method", () => {
 					readonly paths: readonly ["/test"];
 					readonly preflightSteps: readonly [];
 					readonly hooks: readonly [];
+					readonly bodyController: null;
 					readonly steps: readonly [
 						HandlerStep<{
 							readonly responseContract: [
@@ -210,6 +214,7 @@ describe("route builder handler method", () => {
 				method: "GET",
 				paths: ["/test"],
 				preflightSteps: [],
+				bodyController: null,
 				metadata: [],
 				steps: [
 					{
@@ -235,6 +240,7 @@ describe("route builder handler method", () => {
 					readonly method: "GET";
 					readonly paths: readonly ["/test"];
 					readonly preflightSteps: readonly [];
+					readonly bodyController: null;
 					readonly hooks: readonly [
 						{
 							// eslint-disable-next-line @typescript-eslint/method-signature-style

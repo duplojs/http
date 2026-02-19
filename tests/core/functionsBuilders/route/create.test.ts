@@ -47,6 +47,7 @@ describe("createFunctionBuilder", () => {
 				preflightSteps: [],
 				steps: [],
 				metadata: [],
+				bodyController: null,
 			}),
 			{
 				success: (element) => E.right("buildSuccess", element),

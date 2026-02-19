@@ -310,6 +310,9 @@ class PromiseRequest extends Promise {
                     headers["content-type"] = "text/plain; charset=utf-8";
                     body = body.toString();
                 }
+                else if (body instanceof utils.TheFormData) {
+                    headers["content-type-options"] = "advanced";
+                }
                 else if ((body
                     && typeof body === "object"
                     && body?.constructor?.name === "Object")

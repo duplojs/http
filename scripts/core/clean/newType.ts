@@ -5,7 +5,8 @@ declare module "@duplojs/utils/clean" {
 	interface NewTypeHandler<
 		GenericName extends string = string,
 		GenericValue extends unknown = unknown,
-		GenericConstraintsHandler extends readonly ConstraintHandler[] = readonly [],
+		GenericConstraintsHandler extends readonly ConstraintHandler[] = readonly ConstraintHandler[],
+		GenericInput extends unknown = unknown,
 	> {
 		toExtractParser(): DPE.ContractExtended<
 			NewType<

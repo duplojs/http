@@ -31,7 +31,6 @@ const defaultRouteFunctionBuilder = createRouteFunctionBuilder(routeKind.has, as
     const hookBeforeRouteExecution = pipe(allHooks, A.map(({ beforeRouteExecution }) => beforeRouteExecution), A.filter(isType("function")), forward);
     const hookBeforeSendResponse = pipe(allHooks, A.map(({ beforeSendResponse }) => beforeSendResponse), A.filter(isType("function")), forward);
     const hookOnConstructRequest = pipe(allHooks, A.map(({ onConstructRequest }) => onConstructRequest), A.filter(isType("function")), forward);
-    const hookParseBody = pipe(allHooks, A.map(({ parseBody }) => parseBody), A.filter(isType("function")), forward);
     const hookError = pipe(allHooks, A.map(({ error }) => error), A.filter(isType("function")), forward);
     const hookSendResponse = pipe(allHooks, A.map(({ sendResponse }) => sendResponse), A.filter(isType("function")), forward);
     const hooks = {
@@ -50,7 +49,6 @@ const defaultRouteFunctionBuilder = createRouteFunctionBuilder(routeKind.has, as
                 return newRequest;
             }
             : (params) => params.request,
-        parseBody: buildHookBefore(hookParseBody),
         error: buildHookErrorBefore(hookError),
         sendResponse: buildHookAfter(hookSendResponse),
     };
@@ -72,15 +70,6 @@ const defaultRouteFunctionBuilder = createRouteFunctionBuilder(routeKind.has, as
                     return result;
                 }
                 floor = result;
-            }
-            const parseBodyResult = await hooks.parseBody({
-                request,
-                exit: exitHookFunction,
-                next: nextHookFunction,
-                response: createHookResponse("parseBody"),
-            });
-            if (parseBodyResult instanceof Response) {
-                return parseBodyResult;
             }
             for (let index = 0; index < buildedSteps.length; index++) {
                 const result = await buildedSteps[index].buildedFunction(request, floor);

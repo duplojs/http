@@ -1,8 +1,9 @@
 import * as DataParserToTypescript from "@duplojs/data-parser-tools/toTypescript";
 import { type HubPlugin } from "@core/hub";
-import { A, DP, equal, S } from "@duplojs/utils";
+import { A, asserts, DP, E, equal } from "@duplojs/utils";
 import { routeToDataParser } from "./routeToDataParser";
-import { writeFile } from "node:fs/promises";
+import { SF } from "@duplojs/server-utils";
+import { fileTransformer } from "./typescriptTransfomer";
 
 export interface CodeGeneratorPluginParams {
 	outputFile: string;
@@ -18,7 +19,7 @@ export function codeGeneratorPlugin(pluginParams: CodeGeneratorPluginParams) {
 						return;
 					}
 
-					const routes = hub.aggregatesRoutes();
+					const routes = A.from(hub.routes);
 
 					const dataParserRoutes = A.flatMap(
 						routes,
@@ -35,12 +36,17 @@ export function codeGeneratorPlugin(pluginParams: CodeGeneratorPluginParams) {
 						DP.union(dataParserRoutes),
 						{
 							identifier: "Routes",
-							transformers: DataParserToTypescript.defaultTransformers,
-
+							transformers: [
+								fileTransformer,
+								...DataParserToTypescript.defaultTransformers,
+							],
 						},
 					);
 
-					await writeFile(pluginParams.outputFile, output);
+					asserts(
+						await SF.writeTextFile(pluginParams.outputFile, output),
+						E.isRight,
+					);
 				},
 			},
 		],

@@ -3,6 +3,7 @@ import { type EscapeVoid, G, type Kind, type MaybePromise } from "@duplojs/utils
 import { type Hub } from ".";
 import { createCoreLibKind } from "@core/kind";
 import { type RouterInitializationData } from "@core/router";
+import { type HttpServerParams } from "@core/types";
 
 export const hookServerExitKind = createCoreLibKind("server-hook-exit");
 
@@ -35,10 +36,6 @@ export async function launchHookBeforeBuildRoute(
 	);
 }
 
-export interface HttpServerParams {
-
-}
-
 export type HookBeforeServerBuildRoutes = (
 	hub: Hub,
 	httpServerParams: HttpServerParams
@@ -59,17 +56,9 @@ export async function launchHookServer(
 	hub: Hub,
 	httpServerParams: HttpServerParams,
 ) {
-	return G.asyncReduce(
-		hooks,
-		G.reduceFrom(hub),
-		async({
-			element: hook,
-			lastValue,
-			next,
-		}) => next(
-			(await hook(lastValue, httpServerParams)) ?? lastValue,
-		),
-	);
+	for (const hook of hooks) {
+		await hook(hub, httpServerParams);
+	}
 }
 
 export interface HttpServerErrorParams {

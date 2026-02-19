@@ -1,23 +1,27 @@
-import { type HttpServerParams, type Hub } from "@core/hub";
+import { type Hub } from "@core/hub";
 import { type RouterInitializationData } from "@core/router";
-import { type Hosts } from "./types/host";
-import { type BytesInString, O } from "@duplojs/utils";
 import http from "http";
 import https from "https";
-import { makeNodeHook } from "./hooks";
+import { nodeHook } from "./hooks";
 import { implementHttpServer } from "@core/implementHttpServer";
+import { O } from "@duplojs/utils";
+import { type HttpServerParams } from "@core/types";
+import { initDefaultHook } from "@core/defaultHooks";
+import { createFormDataBodyReaderImplementation, createTextBodyReaderImplementation } from "./bodyReaders";
 
-declare module "@core/hub" {
+declare module "@core/types" {
 	interface HttpServerParams {
 		readonly interface: "node";
-		readonly host: Hosts;
-		readonly port: number;
-		readonly maxBodySize: BytesInString | number;
-		readonly informationHeaderKey: string;
-		readonly predictedHeaderKey: string;
-		readonly fromHookHeaderKey: string;
 		readonly http?: http.ServerOptions;
 		readonly https?: https.ServerOptions;
+	}
+
+	interface HostCustom {
+		"::": true;
+		"0.0.0.0": true;
+		localhost: true;
+		"127.0.0.1": true;
+		"::1": true;
 	}
 }
 
@@ -27,10 +31,11 @@ export type CreateHttpServerParams = O.PartialKeys<
 	| "informationHeaderKey"
 	| "predictedHeaderKey"
 	| "fromHookHeaderKey"
+	| "uploadFolder"
 >;
 
 export function createHttpServer(
-	inputHub: Hub,
+	hub: Hub,
 	params: CreateHttpServerParams,
 ) {
 	const httpServerParams: HttpServerParams = O.override<HttpServerParams>(
@@ -42,13 +47,16 @@ export function createHttpServer(
 			predictedHeaderKey: "predicted",
 			fromHookHeaderKey: "from-hook",
 			interface: "node",
+			uploadFolder: "./upload",
 		},
 		params,
 	);
 
-	const hooks = makeNodeHook(inputHub, httpServerParams);
-
-	const hub = inputHub.addRouteHooks(hooks);
+	hub.addBodyReaderImplementation([
+		createTextBodyReaderImplementation(httpServerParams),
+		createFormDataBodyReaderImplementation(httpServerParams),
+	]);
+	hub.addRouteHooks([initDefaultHook(hub, httpServerParams), nodeHook]);
 
 	function whenUncaughtError(
 		error: unknown,

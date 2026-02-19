@@ -10,8 +10,8 @@ export interface BuildStepResult {
     readonly buildedFunction: BuildedStepFunction;
     readonly hooksRouteLifeCycle: readonly HookRouteLifeCycle[];
 }
-export type BuildStepSuccessEither = E.EitherRight<"buildSuccess", BuildStepResult>;
-export type BuildStepNotSupportEither = E.EitherLeft<"stepNotSupport", Steps>;
+export type BuildStepSuccessEither = E.Right<"buildSuccess", BuildStepResult>;
+export type BuildStepNotSupportEither = E.Left<"stepNotSupport", Steps>;
 export interface StepFunctionBuilderParams {
     buildStep(element: Steps): Promise<BuildStepSuccessEither | BuildStepNotSupportEither>;
     success(result: BuildStepResult): BuildStepSuccessEither;

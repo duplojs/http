@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/prefer-for-of */
-import { type HookAfterSendResponse, type HookBeforeRouteExecution, type HookBeforeSendResponse, type HookError, type HookOnConstructRequest, type HookParseBody, type HookRouteLifeCycle, type HookSendResponse, routeKind } from "@core/route";
+import { type HookAfterSendResponse, type HookBeforeRouteExecution, type HookBeforeSendResponse, type HookError, type HookOnConstructRequest, type HookRouteLifeCycle, type HookSendResponse, routeKind } from "@core/route";
 import { A, E, forward, isType, pipe } from "@duplojs/utils";
 import { HookResponse, Response } from "@core/response";
 import { type Request } from "@core/request";
@@ -82,12 +82,6 @@ export const defaultRouteFunctionBuilder = createRouteFunctionBuilder(
 			A.filter(isType("function")),
 			forward,
 		);
-		const hookParseBody: HookParseBody[] = pipe(
-			allHooks,
-			A.map(({ parseBody }) => parseBody),
-			A.filter(isType("function")),
-			forward,
-		);
 		const hookError: HookError[] = pipe(
 			allHooks,
 			A.map(({ error }) => error),
@@ -119,7 +113,6 @@ export const defaultRouteFunctionBuilder = createRouteFunctionBuilder(
 					return newRequest;
 				}
 				: (params) => params.request,
-			parseBody: buildHookBefore(hookParseBody),
 			error: buildHookErrorBefore(hookError),
 			sendResponse: buildHookAfter(hookSendResponse),
 		};
@@ -147,17 +140,6 @@ export const defaultRouteFunctionBuilder = createRouteFunctionBuilder(
 					}
 
 					floor = result;
-				}
-
-				const parseBodyResult = await hooks.parseBody({
-					request,
-					exit: exitHookFunction,
-					next: nextHookFunction,
-					response: createHookResponse("parseBody"),
-				});
-
-				if (parseBodyResult instanceof Response) {
-					return parseBodyResult;
 				}
 
 				for (let index = 0; index < buildedSteps.length; index++) {

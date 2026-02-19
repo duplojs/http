@@ -10,7 +10,10 @@ declare module "@duplojs/utils/clean" {
 			unknown
 		>;
 
-		toEndpointSchema(): DPE.ContractExtended<GenericValue>;
+		toEndpointSchema(): DPE.ContractExtended<
+			GenericValue,
+			unknown
+		>;
 	}
 }
 

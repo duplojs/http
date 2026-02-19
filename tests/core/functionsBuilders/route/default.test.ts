@@ -1,5 +1,6 @@
 import { ResponseContract, useRouteBuilder, Request, Response, usePreflightBuilder, useProcessBuilder, defaultExtractStepFunctionBuilder, defaultHandlerStepFunctionBuilder, HookResponse, type HookRouteLifeCycle, PredictedResponse } from "@core";
 import { DPE } from "@duplojs/utils";
+import { createBodyReader } from "@test-utils/bodyReader";
 import { useTestRouteFunctionBuilder } from "@test-utils/useTestRouteFunctionBuilder";
 
 describe("route function builder", () => {
@@ -68,6 +69,7 @@ describe("route function builder", () => {
 				params: { value: "test" },
 				query: {},
 				url: "",
+				bodyReader: createBodyReader(),
 			}),
 		);
 
@@ -108,6 +110,7 @@ describe("route function builder", () => {
 				params: { value: "test" },
 				query: {},
 				url: "",
+				bodyReader: createBodyReader(),
 			}),
 		);
 
@@ -122,8 +125,8 @@ describe("route function builder", () => {
 		const route = useRouteBuilder("GET", "/test", { hooks: [{ afterSendResponse: spyResponse }] })
 			.extract({ params: { value: DPE.string() } })
 			.handler(
-				ResponseContract.ok("good", DPE.string()),
-				(floor, { response }) => ({}) as never,
+				ResponseContract.ok("good", DPE.empty()),
+				(floor, { response }) => ({ information: "good" }) as never,
 			);
 
 		const buildedRoute = await useTestRouteFunctionBuilder(route);
@@ -139,6 +142,7 @@ describe("route function builder", () => {
 				params: { value: "test" },
 				query: {},
 				url: "",
+				bodyReader: createBodyReader(),
 			}),
 		);
 
@@ -179,6 +183,7 @@ describe("route function builder", () => {
 					params: { },
 					query: {},
 					url: "",
+					bodyReader: createBodyReader(),
 				}),
 			);
 
@@ -216,49 +221,13 @@ describe("route function builder", () => {
 					params: { },
 					query: {},
 					url: "",
+					bodyReader: createBodyReader(),
 				}),
 			);
 
 			expect(spyResponse).toHaveBeenCalledWith(
 				expect.objectContaining({
 					currentResponse: new HookResponse("beforeRouteExecution", "400", "info", undefined),
-				}),
-			);
-		});
-
-		it("parseBody", async() => {
-			const route = useRouteBuilder("GET", "/test", {
-				hooks: [
-					{
-						afterSendResponse: spyResponse,
-						parseBody: ({ response }) => response("400", "info"),
-					},
-				],
-			})
-				.handler(
-					ResponseContract.noContent("good"),
-					(floor, { response }) => response("good"),
-				);
-
-			const buildedRoute = await useTestRouteFunctionBuilder(route);
-
-			await buildedRoute(
-				new Request({
-					headers: {},
-					host: "",
-					matchedPath: "",
-					method: "",
-					origin: "",
-					path: "",
-					params: { },
-					query: {},
-					url: "",
-				}),
-			);
-
-			expect(spyResponse).toHaveBeenCalledWith(
-				expect.objectContaining({
-					currentResponse: new HookResponse("parseBody", "400", "info", undefined),
 				}),
 			);
 		});
@@ -292,6 +261,7 @@ describe("route function builder", () => {
 					params: { },
 					query: {},
 					url: "",
+					bodyReader: createBodyReader(),
 				}),
 			);
 
@@ -306,7 +276,7 @@ describe("route function builder", () => {
 			const route = useRouteBuilder("GET", "/test", {
 				hooks: [
 					{
-						parseBody: ({ next }) => next(),
+						beforeRouteExecution: ({ next }) => next(),
 						afterSendResponse: spyResponse,
 						sendResponse: ({ exit }) => exit(),
 						error: ({ next }) => next(),
@@ -333,6 +303,7 @@ describe("route function builder", () => {
 					params: { },
 					query: {},
 					url: "",
+					bodyReader: createBodyReader(),
 				}),
 			);
 
@@ -367,10 +338,6 @@ describe("route function builder", () => {
 					onConstructRequest: ({ request }) => {
 						checkpoint.push(`onConstructRequest ${value}`);
 						return request;
-					},
-					parseBody: ({ next }) => {
-						checkpoint.push(`parseBody ${value}`);
-						return next();
 					},
 					sendResponse: ({ next }) => {
 						checkpoint.push(`sendResponse ${value}`);
@@ -417,6 +384,7 @@ describe("route function builder", () => {
 					params: { },
 					query: {},
 					url: "",
+					bodyReader: createBodyReader(),
 				}),
 			);
 
@@ -436,14 +404,6 @@ describe("route function builder", () => {
 				"beforeRouteExecution process",
 				"beforeRouteExecution deep process",
 				"beforeRouteExecution global",
-
-				"parseBody route",
-				"parseBody builder preflight process",
-				"parseBody preflight process",
-				"parseBody preflight deep process",
-				"parseBody process",
-				"parseBody deep process",
-				"parseBody global",
 
 				"beforeSendResponse route",
 				"beforeSendResponse builder preflight process",

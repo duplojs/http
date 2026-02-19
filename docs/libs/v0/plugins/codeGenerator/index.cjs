@@ -10,6 +10,8 @@ var metadata = require('./metadata.cjs');
 
 
 exports.codeGeneratorPlugin = plugin.codeGeneratorPlugin;
+exports.bodyAsFormData = routeToDataParser.bodyAsFormData;
+exports.convertRoutePath = routeToDataParser.convertRoutePath;
 exports.routeToDataParser = routeToDataParser.routeToDataParser;
 exports.aggregateStepContract = aggregateStepContract.aggregateStepContract;
 exports.IgnoreByCodeGeneratorMetadata = metadata.IgnoreByCodeGeneratorMetadata;

@@ -10,6 +10,7 @@ describe("route", () => {
 				steps: [],
 				hooks: [],
 				metadata: [],
+				bodyController: null,
 			}),
 		).toStrictEqual({
 			definition: {
@@ -19,6 +20,7 @@ describe("route", () => {
 				steps: [],
 				hooks: [],
 				metadata: [],
+				bodyController: null,
 			},
 			[routeKind.runTimeKey]: null,
 		});

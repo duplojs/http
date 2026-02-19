@@ -12,6 +12,7 @@ function useRouteBuilder(method, path, options) {
         steps: [],
         hooks: options?.hooks ?? [],
         metadata: options?.metadata ?? [],
+        bodyController: options?.bodyController ?? null,
     });
 }
 

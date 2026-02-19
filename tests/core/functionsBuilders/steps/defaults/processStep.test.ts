@@ -1,5 +1,6 @@
 import { ResponseContract, useProcessBuilder, useRouteBuilder, Request, defaultHandlerStepFunctionBuilder, defaultProcessStepFunctionBuilder, PredictedResponse } from "@core";
 import { DPE } from "@duplojs/utils";
+import { createBodyReader } from "@test-utils/bodyReader";
 import { useTestRouteFunctionBuilder } from "@test-utils/useTestRouteFunctionBuilder";
 
 describe("process function builder", () => {
@@ -56,6 +57,8 @@ describe("process function builder", () => {
 				params: {},
 				query: {},
 				url: "",
+				bodyReader: createBodyReader(),
+
 			}),
 		);
 
@@ -92,6 +95,8 @@ describe("process function builder", () => {
 				params: {},
 				query: {},
 				url: "",
+				bodyReader: createBodyReader(),
+
 			}),
 		);
 
@@ -127,6 +132,8 @@ describe("process function builder", () => {
 				params: {},
 				query: {},
 				url: "",
+				bodyReader: createBodyReader(),
+
 			}),
 		);
 

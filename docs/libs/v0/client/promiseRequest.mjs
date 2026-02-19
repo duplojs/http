@@ -1,4 +1,4 @@
-import { unwrap } from '@duplojs/utils';
+import { unwrap, TheFormData } from '@duplojs/utils';
 import { getBody } from './getBody.mjs';
 import { insertParamsInPath } from './insertParamsInPath.mjs';
 import { queryToString } from './queryToString.mjs';
@@ -286,6 +286,9 @@ class PromiseRequest extends Promise {
                 if (typeof body === "string") {
                     headers["content-type"] = "text/plain; charset=utf-8";
                     body = body.toString();
+                }
+                else if (body instanceof TheFormData) {
+                    headers["content-type-options"] = "advanced";
                 }
                 else if ((body
                     && typeof body === "object"

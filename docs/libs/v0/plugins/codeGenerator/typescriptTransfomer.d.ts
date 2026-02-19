@@ -1,0 +1,1 @@
+export declare const fileTransformer: (schema: import("@duplojs/utils/dataParser").DataParsers, params: import("@duplojs/data-parser-tools/toTypescript").TransformerParams) => import("@duplojs/data-parser-tools/toTypescript").MaybeTransformerEither;

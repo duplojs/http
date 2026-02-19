@@ -121,6 +121,70 @@ exports[`openApiGenerator > correct generate file 1`] = `
           }
         }
       }
+    },
+    "/documents": {
+      "post": {
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/NotIdentified5"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "headers": {
+              "information": {
+                "schema": {
+                  "const": "file.receive",
+                  "type": "string"
+                },
+                "description": "file.receive"
+              }
+            }
+          },
+          "422": {
+            "headers": {
+              "information": {
+                "schema": {
+                  "const": "extract-error",
+                  "type": "string"
+                },
+                "description": "extract-error"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/documents/*": {
+      "get": {
+        "parameters": [],
+        "responses": {
+          "200": {
+            "headers": {
+              "information": {
+                "schema": {
+                  "const": "file.send",
+                  "type": "string"
+                },
+                "description": "file.send"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotIdentified6"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -213,6 +277,54 @@ exports[`openApiGenerator > correct generate file 1`] = `
           "name",
           "age"
         ]
+      },
+      "NotIdentified5": {
+        "type": "object",
+        "properties": {
+          "bool": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "true",
+                  "false",
+                  "0",
+                  "1"
+                ]
+              },
+              {
+                "type": "number",
+                "enum": [
+                  0,
+                  1
+                ]
+              }
+            ]
+          },
+          "myFile": {
+            "type": "array",
+            "items": [
+              {
+                "type": "string",
+                "format": "binary"
+              }
+            ],
+            "minItems": 1,
+            "additionalItems": false,
+            "maxItems": 1
+          }
+        },
+        "required": [
+          "bool",
+          "myFile"
+        ]
+      },
+      "NotIdentified6": {
+        "type": "string",
+        "format": "binary"
       }
     }
   }

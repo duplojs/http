@@ -17,32 +17,29 @@ const defaultCutStepFunctionBuilder = createStepFunctionBuilder(cutStepKind.has,
         if (!currentContract) {
             throw new ResponseContract.Error(information);
         }
-        const result = currentContract.body.parse(body);
-        if (E.isLeft(result)) {
-            throw new ResponseContract.Error(information, unwrap(result));
-        }
         return new PredictedResponse(currentContract.code, currentContract.information, body);
     };
-    function treatResult(result, floor) {
-        if (cutStepOutputKind.has(result)) {
-            return {
-                ...floor,
-                ...unwrap(result),
-            };
-        }
-        return result;
-    }
     return success({
-        buildedFunction: (request, floor) => {
-            const result = cutFunction(floor, {
+        buildedFunction: async (request, floor) => {
+            const cutResult = await cutFunction(floor, {
                 request,
                 output,
                 response,
             });
-            if (result instanceof Promise) {
-                return result.then((awaitedResult) => treatResult(awaitedResult, floor));
+            if (cutResult instanceof PredictedResponse) {
+                const currentContract = preparedContractResponse[cutResult.information];
+                const resultBody = currentContract.body.isAsynchronous()
+                    ? await currentContract.body.asyncParse(cutResult.body)
+                    : currentContract.body.parse(cutResult.body);
+                if (E.isLeft(resultBody)) {
+                    throw new ResponseContract.Error(cutResult.information, unwrap(resultBody));
+                }
+                return cutResult;
             }
-            return treatResult(result, floor);
+            return {
+                ...floor,
+                ...unwrap(cutResult),
+            };
         },
         hooksRouteLifeCycle: [],
     });

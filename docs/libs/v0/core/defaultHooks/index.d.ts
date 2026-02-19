@@ -1,0 +1,5 @@
+import { type Hub } from "../hub";
+import { type HttpServerParams } from "../types";
+export declare function initDefaultHook(hub: Hub, serverParams: HttpServerParams): {
+    beforeSendResponse({ currentResponse, next }: import("../route").RouteHookParamsAfter<import("..").Request>): import("../route").RouteHookNext;
+};

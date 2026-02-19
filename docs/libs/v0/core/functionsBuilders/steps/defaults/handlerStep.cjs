@@ -18,17 +18,23 @@ const defaultHandlerStepFunctionBuilder = create.createStepFunctionBuilder(handl
         if (!currentContract) {
             throw new contract.ResponseContract.Error(information);
         }
-        const result = currentContract.body.parse(body);
-        if (utils.E.isLeft(result)) {
-            throw new contract.ResponseContract.Error(information, utils.unwrap(result));
-        }
         return new predicted.PredictedResponse(currentContract.code, currentContract.information, body);
     };
     return success({
-        buildedFunction: (request, floor) => handlerFunction(floor, {
-            request,
-            response,
-        }),
+        buildedFunction: async (request, floor) => {
+            const predictedResponse = await handlerFunction(floor, {
+                request,
+                response,
+            });
+            const currentContract = preparedContractResponse[predictedResponse.information];
+            const result = currentContract.body.isAsynchronous()
+                ? await currentContract.body.asyncParse(predictedResponse.body)
+                : currentContract.body.parse(predictedResponse.body);
+            if (utils.E.isLeft(result)) {
+                throw new contract.ResponseContract.Error(predictedResponse.information, utils.unwrap(result));
+            }
+            return predictedResponse;
+        },
         hooksRouteLifeCycle: [],
     });
 });

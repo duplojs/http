@@ -58,12 +58,6 @@ export type HookBeforeRouteExecution<
 	params: RouteHookParams<GenericRequest>
 ) => MaybePromise<HookResponse | RouteHookExit | RouteHookNext>;
 
-export type HookParseBody<
-	GenericRequest extends Request = Request,
-> = (
-	params: RouteHookParams<GenericRequest>
-) => MaybePromise<HookResponse | RouteHookExit | RouteHookNext>;
-
 export interface RouteHookErrorParams<
 	GenericRequest extends Request = Request,
 > {
@@ -122,7 +116,6 @@ export interface HookRouteLifeCycle<
 > {
 	onConstructRequest?: HookOnConstructRequest<GenericRequest>;
 	beforeRouteExecution?: HookBeforeRouteExecution<GenericRequest>;
-	parseBody?: HookParseBody<GenericRequest>;
 	error?: HookError;
 	beforeSendResponse?: HookBeforeSendResponse<GenericRequest>;
 	sendResponse?: HookSendResponse<GenericRequest>;

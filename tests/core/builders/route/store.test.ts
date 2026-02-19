@@ -9,6 +9,7 @@ describe("route store", () => {
 		preflightSteps: [],
 		steps: [],
 		metadata: [],
+		bodyController: null,
 	});
 	const route2 = createRoute({
 		hooks: [],
@@ -17,6 +18,7 @@ describe("route store", () => {
 		preflightSteps: [],
 		steps: [],
 		metadata: [],
+		bodyController: null,
 	});
 
 	it("adds routes and returns them in the store", () => {

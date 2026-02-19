@@ -1,7 +1,7 @@
 import { type HandlerStepFunctionParams, handlerStepKind } from "@core/steps";
 import { createStepFunctionBuilder } from "../create";
 import { A, E, unwrap } from "@duplojs/utils";
-import { PredictedResponse, Response, ResponseContract } from "@core/response";
+import { PredictedResponse, ResponseContract } from "@core/response";
 
 export const defaultHandlerStepFunctionBuilder = createStepFunctionBuilder(
 	handlerStepKind.has,
@@ -32,15 +32,6 @@ export const defaultHandlerStepFunctionBuilder = createStepFunctionBuilder(
 				throw new ResponseContract.Error(information);
 			}
 
-			const result = currentContract.body.parse(body);
-
-			if (E.isLeft(result)) {
-				throw new ResponseContract.Error(
-					information,
-					unwrap(result),
-				);
-			}
-
 			return new PredictedResponse(
 				currentContract.code,
 				currentContract.information,
@@ -49,13 +40,29 @@ export const defaultHandlerStepFunctionBuilder = createStepFunctionBuilder(
 		};
 
 		return success({
-			buildedFunction: (request, floor) => handlerFunction(
-				floor,
-				{
-					request,
-					response,
-				},
-			),
+			buildedFunction: async(request, floor) => {
+				const predictedResponse = await handlerFunction(
+					floor,
+					{
+						request,
+						response,
+					},
+				);
+
+				const currentContract = preparedContractResponse[predictedResponse.information]!;
+				const result = currentContract.body.isAsynchronous()
+					? await currentContract.body.asyncParse(predictedResponse.body)
+					: currentContract.body.parse(predictedResponse.body);
+
+				if (E.isLeft(result)) {
+					throw new ResponseContract.Error(
+						predictedResponse.information,
+						unwrap(result),
+					);
+				}
+
+				return predictedResponse;
+			},
 			hooksRouteLifeCycle: [],
 		});
 	},

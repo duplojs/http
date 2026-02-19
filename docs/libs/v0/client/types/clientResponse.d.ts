@@ -1,9 +1,9 @@
 import type * as SS from "@duplojs/utils/string";
 import { type ServerRouteResponse, type ServerRoute } from "./serverRoute";
 import { type IsEqual, type SimplifyTopLevel } from "@duplojs/utils";
-import { type PromiseRequestParams } from "../promiseRequest";
+import { type PromiseRequestParams } from "./promiseRequestParams";
 export type ClientResponseBody = unknown;
-export interface ClientResponse<GenericPromiseRequestParams extends PromiseRequestParams = PromiseRequestParams> {
+export interface ClientResponse<GenericHookParams extends Record<string, unknown> = Record<string, unknown>> {
     code: SS.Number;
     information: undefined | string;
     body: ClientResponseBody;
@@ -13,16 +13,16 @@ export interface ClientResponse<GenericPromiseRequestParams extends PromiseReque
     url: string;
     redirected: boolean;
     raw: globalThis.Response;
-    requestParams: GenericPromiseRequestParams;
+    requestParams: PromiseRequestParams<GenericHookParams>;
     predicted: boolean;
 }
-export interface NotPredictedClientResponse<GenericPromiseRequestParams extends PromiseRequestParams = PromiseRequestParams> extends ClientResponse<GenericPromiseRequestParams> {
+export interface NotPredictedClientResponse<GenericHookParams extends Record<string, unknown> = Record<string, unknown>> extends ClientResponse<GenericHookParams> {
     predicted: false;
 }
-export type ServerRouteToClientResponse<GenericServerRoute extends ServerRoute = ServerRoute, GenericHookParams extends Record<string, unknown> = Record<string, unknown>> = IsEqual<GenericServerRoute, ServerRoute> extends true ? ClientResponse<PromiseRequestParams<GenericHookParams>> : GenericServerRoute extends any ? GenericServerRoute["responses"] extends infer InferredResponse ? InferredResponse extends ServerRouteResponse ? SimplifyTopLevel<{
+export type ServerRouteToClientResponse<GenericServerRoute extends ServerRoute = ServerRoute, GenericHookParams extends Record<string, unknown> = Record<string, unknown>> = GenericServerRoute extends any ? GenericServerRoute["responses"] extends infer InferredResponse ? InferredResponse extends ServerRouteResponse ? SimplifyTopLevel<{
     code: InferredResponse["code"];
     information: InferredResponse["information"];
-    body: InferredResponse["body"];
+    body: IsEqual<InferredResponse["body"], File> extends true ? undefined : InferredResponse["body"];
     ok: boolean | null;
     headers: Headers;
     type: ResponseType;

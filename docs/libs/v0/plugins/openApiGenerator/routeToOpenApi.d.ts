@@ -10,9 +10,18 @@ export interface RouteToOpenApiParams {
 }
 export declare function routeToOpenApi(route: Route, params: RouteToOpenApiParams): {
     path: `/${string}`;
-    method: "options" | "get" | "post" | "put" | "delete" | "head" | "trace" | "connect";
+    method: "options" | "get" | "post" | "put" | "patch" | "delete" | "head" | "trace" | "connect";
     parameters: EntrypointParameter[];
     requestBody: {
+        required: true;
+        content: {
+            "multipart/form-data": {
+                schema: {
+                    $ref: `#/components/schemas/${string}`;
+                };
+            };
+        };
+    } | {
         required: true;
         content: {
             "application/json": {

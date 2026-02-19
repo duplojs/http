@@ -1,13 +1,13 @@
 import type { HubPlugin } from "@core/hub";
 import type { JsonSchema, MapContext } from "@duplojs/data-parser-tools/toJsonSchema";
 import { routeToOpenApi, type ResultSchemaContext } from "./routeToOpenApi";
-import { A, equal, G, justReturn, O, P, pipe } from "@duplojs/utils";
+import { A, asserts, E, equal, G, justReturn, O, P, pipe } from "@duplojs/utils";
 import { makeOpenApiPage } from "./makeOpenApiPage";
 import { makeOpenApiRoute } from "./makeOpenApiRoute";
-import { writeFile } from "fs/promises";
 import type { RoutePath } from "@core/route";
 import type { OpenApiDocument } from "./types/openApiDocument";
 import type { OpenApiSecuritySchema, SupportedBearerFormat } from "./types";
+import { SF } from "@duplojs/server-utils";
 
 interface OpenApiSecurityOptionBearer {
 	type: "bearer";
@@ -81,7 +81,7 @@ export function openApiGeneratorPlugin(pluginParams: OpenApiGeneratorPluginParam
 
 					const contextToJsonSchemaFactory: MapContext = new Map();
 					const resultSchemaContext: ResultSchemaContext = new Map();
-					const routes = hub.aggregatesRoutes();
+					const routes = A.from(hub.routes);
 
 					const openApiRoutes = pipe(
 						routes,
@@ -203,9 +203,9 @@ export function openApiGeneratorPlugin(pluginParams: OpenApiGeneratorPluginParam
 					const openApiDocumentString = JSON.stringify(openApiDocument, null, 2);
 
 					if (pluginParams.outputFile) {
-						await writeFile(
-							pluginParams.outputFile,
-							openApiDocumentString,
+						asserts(
+							await SF.writeTextFile(pluginParams.outputFile, openApiDocumentString),
+							E.isRight,
 						);
 					}
 

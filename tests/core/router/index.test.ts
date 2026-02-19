@@ -1,9 +1,12 @@
-import { buildRouter, createHub, defaultCheckerStepFunctionBuilder, defaultCutStepFunctionBuilder, defaultExtractStepFunctionBuilder, defaultHandlerStepFunctionBuilder, defaultProcessStepFunctionBuilder, defaultRouteFunctionBuilder, ResponseContract, routeKind, RouterBuildError, stepKind, useRouteBuilder } from "@core";
-import { DP } from "@duplojs/utils";
+import { buildRouter, createHub, defaultCheckerStepFunctionBuilder, defaultCutStepFunctionBuilder, defaultExtractStepFunctionBuilder, defaultHandlerStepFunctionBuilder, defaultProcessStepFunctionBuilder, defaultRouteFunctionBuilder, NotFoundBodyReaderImplementationError, ResponseContract, RouterBuildError, stepKind, TextBodyController, useRouteBuilder } from "@core";
+import { DP, E } from "@duplojs/utils";
 import { testRoute } from "@test-utils/route";
 
 describe("buildRouter", () => {
+	const textBodyReaderImplementation = TextBodyController
+		.createReaderImplementation(() => Promise.resolve(E.success(null)));
 	it("correct build router", async() => {
+		const otherRoute = { ...testRoute };
 		const router = await buildRouter(
 			createHub({
 				environment: "DEV",
@@ -19,8 +22,9 @@ describe("buildRouter", () => {
 					hooksRouteLifeCycle: [{}],
 					routeFunctionBuilders: [defaultRouteFunctionBuilder],
 					stepFunctionBuilders: [defaultCutStepFunctionBuilder],
-					routes: [testRoute],
-				}),
+					routes: [otherRoute],
+				})
+				.addBodyReaderImplementation(textBodyReaderImplementation),
 		);
 
 		expect(router).toStrictEqual({
@@ -32,15 +36,15 @@ describe("buildRouter", () => {
 				defaultRouteFunctionBuilder,
 				defaultRouteFunctionBuilder,
 			],
-			routes: [testRoute, testRoute],
+			routes: new Set([testRoute, otherRoute]),
 			stepFunctionBuilders: [
 				defaultCheckerStepFunctionBuilder,
+				defaultCutStepFunctionBuilder,
 				defaultCheckerStepFunctionBuilder,
 				defaultCutStepFunctionBuilder,
 				defaultHandlerStepFunctionBuilder,
 				defaultExtractStepFunctionBuilder,
 				defaultProcessStepFunctionBuilder,
-				defaultCutStepFunctionBuilder,
 			],
 		});
 	});
@@ -51,13 +55,26 @@ describe("buildRouter", () => {
 				createHub({
 					environment: "DEV",
 				})
-					.register([{}] as any),
+					.register([{}] as any)
+					.addBodyReaderImplementation(textBodyReaderImplementation),
 			),
 		).rejects.instanceof(RouterBuildError);
 	});
 
+	it("throw error when not found body reader implementation", async() => {
+		await expect(
+			buildRouter(
+				createHub({
+					environment: "DEV",
+				})
+					.register(testRoute),
+			),
+		).rejects.instanceof(NotFoundBodyReaderImplementationError);
+	});
+
 	it("throw error when build notfound route", async() => {
-		const hub = createHub({ environment: "DEV" });
+		const hub = createHub({ environment: "DEV" })
+			.addBodyReaderImplementation(textBodyReaderImplementation);
 
 		(hub as any).notfoundHandler = stepKind.setTo({}) as any;
 
@@ -74,11 +91,12 @@ describe("buildRouter", () => {
 			createHub({ environment: "DEV" })
 				.setNotfoundHandler(
 					ResponseContract.notFound("notfound"),
-					({ response }) => {
-						spy();
+					async({ response, request }) => {
+						spy(await request.getBody());
 						return response("notfound");
 					},
-				),
+				)
+				.addBodyReaderImplementation(textBodyReaderImplementation),
 		);
 
 		await buildedRouter.exec({
@@ -89,7 +107,7 @@ describe("buildRouter", () => {
 			url: "/test",
 		});
 
-		expect(spy).toHaveBeenCalled();
+		expect(spy).toHaveBeenCalledWith(E.error(new Error("Inaccessible body in not found route.")));
 	});
 
 	it("buildedRouter use notfound route after search route", async() => {
@@ -115,7 +133,8 @@ describe("buildRouter", () => {
 						spy();
 						return response("notfound");
 					},
-				),
+				)
+				.addBodyReaderImplementation(textBodyReaderImplementation),
 		);
 
 		await buildedRouter.exec({
@@ -153,7 +172,8 @@ describe("buildRouter", () => {
 						spyNotfound();
 						return response("notfound");
 					},
-				),
+				)
+				.addBodyReaderImplementation(textBodyReaderImplementation),
 		);
 
 		await buildedRouter.exec({
@@ -201,7 +221,8 @@ describe("buildRouter", () => {
 						spyNotfound();
 						return response("notfound");
 					},
-				),
+				)
+				.addBodyReaderImplementation(textBodyReaderImplementation),
 		);
 
 		await buildedRouter.exec({
@@ -245,7 +266,8 @@ describe("buildRouter", () => {
 						spyNotfound();
 						return response("notfound");
 					},
-				),
+				)
+				.addBodyReaderImplementation(textBodyReaderImplementation),
 		);
 
 		await buildedRouter.exec({

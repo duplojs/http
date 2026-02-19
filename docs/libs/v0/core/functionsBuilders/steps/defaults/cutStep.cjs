@@ -19,32 +19,29 @@ const defaultCutStepFunctionBuilder = create.createStepFunctionBuilder(cut.cutSt
         if (!currentContract) {
             throw new contract.ResponseContract.Error(information);
         }
-        const result = currentContract.body.parse(body);
-        if (utils.E.isLeft(result)) {
-            throw new contract.ResponseContract.Error(information, utils.unwrap(result));
-        }
         return new predicted.PredictedResponse(currentContract.code, currentContract.information, body);
     };
-    function treatResult(result, floor) {
-        if (cut.cutStepOutputKind.has(result)) {
-            return {
-                ...floor,
-                ...utils.unwrap(result),
-            };
-        }
-        return result;
-    }
     return success({
-        buildedFunction: (request, floor) => {
-            const result = cutFunction(floor, {
+        buildedFunction: async (request, floor) => {
+            const cutResult = await cutFunction(floor, {
                 request,
                 output,
                 response,
             });
-            if (result instanceof Promise) {
-                return result.then((awaitedResult) => treatResult(awaitedResult, floor));
+            if (cutResult instanceof predicted.PredictedResponse) {
+                const currentContract = preparedContractResponse[cutResult.information];
+                const resultBody = currentContract.body.isAsynchronous()
+                    ? await currentContract.body.asyncParse(cutResult.body)
+                    : currentContract.body.parse(cutResult.body);
+                if (utils.E.isLeft(resultBody)) {
+                    throw new contract.ResponseContract.Error(cutResult.information, utils.unwrap(resultBody));
+                }
+                return cutResult;
             }
-            return treatResult(result, floor);
+            return {
+                ...floor,
+                ...utils.unwrap(cutResult),
+            };
         },
         hooksRouteLifeCycle: [],
     });

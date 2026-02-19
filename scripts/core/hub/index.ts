@@ -1,19 +1,21 @@
 import { createCoreLibKind } from "@core/kind";
 import { type Route, type HookRouteLifeCycle, routeKind } from "@core/route";
-import { A, O, pipe, type Kind, type MaybeArray, type MaybePromise, type DP, isType, P } from "@duplojs/utils";
+import { A, O, pipe, type MaybeArray, type MaybePromise, type DP, isType, P, kindHeritage } from "@duplojs/utils";
 import { type HookHubLifeCycle } from "./hooks";
 import { type HandlerStepFunctionParams, type HandlerStep, createHandlerStep } from "@core/steps";
-import { Request } from "@core/request";
+import { type BodyController, type BodyReaderImplementation, Request } from "@core/request";
 import { type ClientErrorResponseCode, type ResponseContract } from "@core/response";
 import { defaultNotfoundHandler } from "./defaultNotfoundHandler";
 import { type Environment } from "@core/types";
 import { defaultExtractContract } from "./defaultExtractContract";
 import { type createStepFunctionBuilder } from "@core/functionsBuilders/steps";
 import { type createRouteFunctionBuilder } from "@core/functionsBuilders/route";
+import { defaultBodyController } from "./defaultBodyController";
 
 export * from "./hooks";
 export * from "./defaultNotfoundHandler";
 export * from "./defaultExtractContract";
+export * from "./defaultBodyController";
 
 export const hubKind = createCoreLibKind("hub");
 
@@ -28,68 +30,139 @@ export interface HubPlugin {
 	readonly routes?: readonly Route[];
 	readonly routeFunctionBuilders?: readonly ReturnType<typeof createRouteFunctionBuilder>[];
 	readonly stepFunctionBuilders?: readonly ReturnType<typeof createStepFunctionBuilder>[];
+	readonly bodyReaderImplementations?: readonly BodyReaderImplementation[];
 }
 
-export interface HubAggregates {
-	readonly hooksRouteLifeCycle: readonly HookRouteLifeCycle[];
-	readonly hooksHubLifeCycle: readonly HookHubLifeCycle[];
-	readonly routes: readonly Route[];
-	readonly routeFunctionBuilders: readonly ReturnType<typeof createRouteFunctionBuilder>[];
-	readonly stepFunctionBuilders: readonly ReturnType<typeof createStepFunctionBuilder>[];
-}
-
-export interface Hub<
+export class Hub<
 	GenericConfig extends HubConfig = HubConfig,
-> extends Kind<typeof hubKind.definition> {
-	readonly config: GenericConfig;
+> extends kindHeritage(
+		"hub",
+		createCoreLibKind("hub"),
+	) {
+	public plugins: HubPlugin[] = [];
 
-	readonly plugins: readonly HubPlugin[];
+	public hooksRouteLifeCycle: HookRouteLifeCycle[] = [];
 
-	readonly hooksRouteLifeCycle: readonly HookRouteLifeCycle[];
+	public hooksHubLifeCycle: HookHubLifeCycle[] = [];
 
-	readonly hooksHubLifeCycle: readonly HookHubLifeCycle[];
+	public routes = new Set<Route>();
 
-	readonly routes: readonly Route[];
+	public routeFunctionBuilders: ReturnType<typeof createRouteFunctionBuilder>[] = [];
 
-	readonly routeFunctionBuilders: readonly ReturnType<typeof createRouteFunctionBuilder>[];
+	public stepFunctionBuilders: ReturnType<typeof createStepFunctionBuilder>[] = [];
 
-	readonly stepFunctionBuilders: readonly ReturnType<typeof createStepFunctionBuilder>[];
+	public bodyReaderImplementations: BodyReaderImplementation[] = [];
 
-	readonly classRequest: typeof Request;
+	public classRequest = Request;
 
-	readonly notfoundHandler: HandlerStep;
+	public notfoundHandler: HandlerStep = defaultNotfoundHandler;
 
-	readonly defaultExtractContract: ResponseContract.Contract<
+	public defaultExtractContract: ResponseContract.Contract<
 		ClientErrorResponseCode,
 		string,
 		DP.DataParserEmpty
-	>;
+	> = defaultExtractContract;
 
-	register(
-		routes: Route | Iterable<Route> | Record<string, Route>
-	): Hub<GenericConfig>;
+	public defaultBodyController: BodyController = defaultBodyController;
 
-	addRouteFunctionBuilder(
-		functionBuilder: MaybeArray<ReturnType<typeof createRouteFunctionBuilder>>
-	): Hub<GenericConfig>;
+	private constructor(
+		public config: GenericConfig,
+	) {
+		super({});
+	}
 
-	addStepFunctionBuilder(
-		functionBuilder: MaybeArray<ReturnType<typeof createStepFunctionBuilder>>
-	): Hub<GenericConfig>;
+	public register(
+		routes: Route | Iterable<Route> | Record<string, Route>,
+	) {
+		pipe(
+			routes,
+			P.when(
+				routeKind.has,
+				A.coalescing,
+			),
+			P.when(
+				isType("iterable"),
+				A.from,
+			),
+			P.otherwise(O.values),
+			A.map((route) => this.routes.add(route)),
+		);
 
-	addRouteHooks(
-		hook: MaybeArray<HookRouteLifeCycle>
-	): Hub<GenericConfig>;
+		return this;
+	}
 
-	addHubHooks(
-		hook: MaybeArray<HookHubLifeCycle>
-	): Hub<GenericConfig>;
+	public addRouteFunctionBuilder(
+		functionBuilder: MaybeArray<ReturnType<typeof createRouteFunctionBuilder>>,
+	) {
+		this.routeFunctionBuilders.push(...A.coalescing(functionBuilder));
+		return this;
+	}
 
-	plug(
-		plugin: HubPlugin | ((self: this) => HubPlugin)
-	): Hub<GenericConfig>;
+	public addStepFunctionBuilder(
+		functionBuilder: MaybeArray<ReturnType<typeof createStepFunctionBuilder>>,
+	) {
+		this.stepFunctionBuilders.push(...A.coalescing(functionBuilder));
+		return this;
+	}
 
-	setNotfoundHandler<
+	public addRouteHooks(
+		hook: MaybeArray<HookRouteLifeCycle>,
+	) {
+		this.hooksRouteLifeCycle.push(...A.coalescing(hook));
+		return this;
+	}
+
+	public addHubHooks(
+		hook: MaybeArray<HookHubLifeCycle>,
+	) {
+		this.hooksHubLifeCycle.push(...A.coalescing(hook));
+		return this;
+	}
+
+	public addBodyReaderImplementation(
+		bodyReaderImplementation: MaybeArray<BodyReaderImplementation>,
+	) {
+		this.bodyReaderImplementations.push(...A.coalescing(bodyReaderImplementation));
+		return this;
+	}
+
+	public plug(
+		plugin: HubPlugin | ((self: this) => HubPlugin),
+	) {
+		const pluginResult = typeof plugin === "function"
+			? plugin(this)
+			: plugin;
+
+		if (pluginResult.bodyReaderImplementations) {
+			this.addBodyReaderImplementation(pluginResult.bodyReaderImplementations);
+		}
+
+		if (pluginResult.hooksHubLifeCycle) {
+			this.addHubHooks(pluginResult.hooksHubLifeCycle);
+		}
+
+		if (pluginResult.hooksRouteLifeCycle) {
+			this.addRouteHooks(pluginResult.hooksRouteLifeCycle);
+		}
+
+		if (pluginResult.routeFunctionBuilders) {
+			this.addRouteFunctionBuilder(pluginResult.routeFunctionBuilders);
+		}
+
+		if (pluginResult.routes) {
+			this.register(pluginResult.routes);
+		}
+
+		if (pluginResult.stepFunctionBuilders) {
+			this.addStepFunctionBuilder(pluginResult.stepFunctionBuilders);
+		}
+
+		this.plugins.push(pluginResult);
+
+		return this;
+	}
+
+	public setNotfoundHandler<
 		GenericResponseContract extends ResponseContract.Contract,
 		GenericResponse extends ResponseContract.Convert<
 			GenericResponseContract
@@ -101,250 +174,63 @@ export interface Hub<
 				Request,
 				GenericResponse
 			>
-		) => MaybePromise<GenericResponse>
-	): Hub<GenericConfig>;
+		) => MaybePromise<GenericResponse>,
+	) {
+		this.notfoundHandler = createHandlerStep({
+			responseContract,
+			theFunction: (floor, params) => theFunction(params),
+			metadata: [],
+		});
 
-	setDefaultExtractContract(
-		responseContract: this["defaultExtractContract"]
-	): Hub<GenericConfig>;
+		return this;
+	}
 
-	aggregates(): HubAggregates;
+	public setDefaultExtractContract(
+		responseContract: this["defaultExtractContract"],
+	) {
+		this.defaultExtractContract = responseContract;
 
-	aggregatesRoutes(): readonly Route[];
+		return this;
+	}
 
-	aggregatesRouteFunctionBuilders(): readonly ReturnType<typeof createRouteFunctionBuilder>[];
-
-	aggregatesStepFunctionBuilders(): readonly ReturnType<typeof createStepFunctionBuilder>[];
-
-	aggregatesHooksHubLifeCycle<
+	public aggregatesHooksHubLifeCycle<
 		GenericHookName extends keyof HookHubLifeCycle,
-	>(hookName: GenericHookName): readonly Exclude<HookHubLifeCycle[GenericHookName], undefined>[];
+	>(hookName: GenericHookName) {
+		return A.flatMap(
+			this.hooksHubLifeCycle,
+			(hooks) => hooks[hookName] ?? [],
+		);
+	}
 
-	aggregatesHooksRouteLifeCycle<
+	public setDefaultBodyController(bodyController: BodyController) {
+		this.defaultBodyController = bodyController;
+
+		return this;
+	}
+
+	public aggregatesHooksRouteLifeCycle<
 		GenericHookName extends keyof HookRouteLifeCycle,
-	>(hookName: GenericHookName): readonly Exclude<HookRouteLifeCycle[GenericHookName], undefined>[];
+	>(hookName: GenericHookName) {
+		return A.flatMap(
+			this.hooksRouteLifeCycle,
+			(hooks) => hooks[hookName] ?? [],
+		);
+	}
+
+	/**
+	 * @internal
+	 */
+	public static "new"<
+		GenericConfig extends HubConfig,
+	>(config: GenericConfig) {
+		return new Hub(config);
+	}
 }
 
 export function createHub<
 	const GenericConfig extends HubConfig,
 >(
 	config: GenericConfig,
-): Hub<GenericConfig> {
-	return {
-		...hubKind.addTo({}),
-		config,
-		plugins: [],
-		hooksHubLifeCycle: [],
-		hooksRouteLifeCycle: [],
-		routeFunctionBuilders: [],
-		routes: [],
-		stepFunctionBuilders: [],
-		notfoundHandler: defaultNotfoundHandler,
-		defaultExtractContract,
-		classRequest: Request,
-		addHubHooks(hook) {
-			return {
-				...this,
-				hooksHubLifeCycle: A.concat(this.hooksHubLifeCycle, A.coalescing(hook)),
-			};
-		},
-		addRouteFunctionBuilder(functionBuilder) {
-			return {
-				...this,
-				routeFunctionBuilders: A.concat(this.routeFunctionBuilders, A.coalescing(functionBuilder)),
-			};
-		},
-		addRouteHooks(hook) {
-			return {
-				...this,
-				hooksRouteLifeCycle: A.concat(this.hooksRouteLifeCycle, A.coalescing(hook)),
-			};
-		},
-		addStepFunctionBuilder(hook) {
-			return {
-				...this,
-				stepFunctionBuilders: A.concat(this.stepFunctionBuilders, A.coalescing(hook)),
-			};
-		},
-		plug(plugin) {
-			return {
-				...this,
-				plugins: A.push(
-					this.plugins,
-					typeof plugin === "function"
-						? plugin(this)
-						: plugin,
-				),
-			};
-		},
-		register(route) {
-			return {
-				...this,
-				routes: A.concat(
-					this.routes,
-					pipe(
-						route,
-						P.when(
-							routeKind.has,
-							A.coalescing,
-						),
-						P.when(
-							isType("iterable"),
-							A.from,
-						),
-						P.otherwise(O.values),
-						A.filter((route) => !A.includes(this.routes, route)),
-					),
-				),
-			};
-		},
-		setDefaultExtractContract(defaultExtractContract) {
-			return {
-				...this,
-				defaultExtractContract,
-			};
-		},
-		setNotfoundHandler(responseContract, theFunction) {
-			return {
-				...this,
-				notfoundHandler: createHandlerStep({
-					responseContract,
-					theFunction: (floor, params) => theFunction(params),
-					metadata: [],
-				}),
-			};
-		},
-		aggregates() {
-			return A.reduce(
-				this.plugins,
-				A.reduceFrom<HubAggregates>({
-					hooksRouteLifeCycle: this.hooksRouteLifeCycle,
-					routeFunctionBuilders: this.routeFunctionBuilders,
-					stepFunctionBuilders: this.stepFunctionBuilders,
-					routes: this.routes,
-					hooksHubLifeCycle: this.hooksHubLifeCycle,
-				}),
-				({
-					lastValue,
-					element: plugin,
-					next,
-				}) => next({
-					hooksRouteLifeCycle: plugin.hooksRouteLifeCycle
-						? A.concat(lastValue.hooksRouteLifeCycle, plugin.hooksRouteLifeCycle)
-						: lastValue.hooksRouteLifeCycle,
-					routeFunctionBuilders: plugin.routeFunctionBuilders
-						? A.concat(lastValue.routeFunctionBuilders, plugin.routeFunctionBuilders)
-						: lastValue.routeFunctionBuilders,
-					stepFunctionBuilders: plugin.stepFunctionBuilders
-						? A.concat(lastValue.stepFunctionBuilders, plugin.stepFunctionBuilders)
-						: lastValue.stepFunctionBuilders,
-					routes: plugin.routes
-						? A.concat(lastValue.routes, plugin.routes)
-						: lastValue.routes,
-					hooksHubLifeCycle: plugin.hooksHubLifeCycle
-						? A.concat(lastValue.hooksHubLifeCycle, plugin.hooksHubLifeCycle)
-						: lastValue.hooksHubLifeCycle,
-				}),
-			);
-		},
-		aggregatesRoutes() {
-			return A.reduce(
-				this.plugins,
-				A.reduceFrom(this.routes),
-				({
-					lastValue,
-					element: { routes },
-					next,
-				}) => routes
-					? next(A.concat(lastValue, routes))
-					: next(lastValue),
-			);
-		},
-		aggregatesRouteFunctionBuilders() {
-			return A.reduce(
-				this.plugins,
-				A.reduceFrom(this.routeFunctionBuilders),
-				({
-					lastValue,
-					element: { routeFunctionBuilders },
-					next,
-				}) => routeFunctionBuilders
-					? next(A.concat(lastValue, routeFunctionBuilders))
-					: next(lastValue),
-			);
-		},
-		aggregatesStepFunctionBuilders() {
-			return A.reduce(
-				this.plugins,
-				A.reduceFrom(this.stepFunctionBuilders),
-				({
-					lastValue,
-					element: { stepFunctionBuilders },
-					next,
-				}) => stepFunctionBuilders
-					? next(A.concat(lastValue, stepFunctionBuilders))
-					: next(lastValue),
-			);
-		},
-		aggregatesHooksHubLifeCycle(hookName) {
-			const hooks = A.flatMap(
-				this.hooksHubLifeCycle,
-				(hooks) => hooks[hookName] ?? [],
-			);
-
-			return A.reduce(
-				this.plugins,
-				A.reduceFrom<HookHubLifeCycle[keyof HookHubLifeCycle][]>(hooks),
-				({
-					lastValue,
-					element: { hooksHubLifeCycle },
-					next,
-				}) => {
-					if (!hooksHubLifeCycle) {
-						return next(lastValue);
-					}
-
-					return next(
-						A.concat(
-							lastValue,
-							A.flatMap(
-								hooksHubLifeCycle,
-								(hooks) => hooks[hookName] ?? [],
-							),
-						),
-					);
-				},
-			) as never;
-		},
-		aggregatesHooksRouteLifeCycle(hookName) {
-			const hooks = A.flatMap(
-				this.hooksRouteLifeCycle,
-				(hooks) => hooks[hookName] ?? [],
-			);
-
-			return A.reduce(
-				this.plugins,
-				A.reduceFrom<HookRouteLifeCycle[keyof HookRouteLifeCycle][]>(hooks),
-				({
-					lastValue,
-					element: { hooksRouteLifeCycle },
-					next,
-				}) => {
-					if (!hooksRouteLifeCycle) {
-						return next(lastValue);
-					}
-
-					return next(
-						A.concat(
-							lastValue,
-							A.flatMap(
-								hooksRouteLifeCycle,
-								(hooks) => hooks[hookName] ?? [],
-							),
-						),
-					);
-				},
-			) as never;
-		},
-	};
+) {
+	return Hub.new(config);
 }

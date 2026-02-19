@@ -4,7 +4,7 @@ var routeToOpenApi = require('./routeToOpenApi.cjs');
 var utils = require('@duplojs/utils');
 var makeOpenApiPage = require('./makeOpenApiPage.cjs');
 var makeOpenApiRoute = require('./makeOpenApiRoute.cjs');
-var promises = require('fs/promises');
+var serverUtils = require('@duplojs/server-utils');
 
 function openApiGeneratorPlugin(pluginParams) {
     return () => ({
@@ -19,7 +19,7 @@ function openApiGeneratorPlugin(pluginParams) {
                     }
                     const contextToJsonSchemaFactory = new Map();
                     const resultSchemaContext = new Map();
-                    const routes = hub.aggregatesRoutes();
+                    const routes = utils.A.from(hub.routes);
                     const openApiRoutes = utils.pipe(routes, utils.A.filter((route) => route.definition.method !== "OPTIONS"), utils.A.flatMap((route) => routeToOpenApi.routeToOpenApi(route, {
                         defaultExtractContract: hub.defaultExtractContract,
                         resultSchemaContext,
@@ -77,7 +77,7 @@ function openApiGeneratorPlugin(pluginParams) {
                     };
                     const openApiDocumentString = JSON.stringify(openApiDocument, null, 2);
                     if (pluginParams.outputFile) {
-                        await promises.writeFile(pluginParams.outputFile, openApiDocumentString);
+                        utils.asserts(await serverUtils.SF.writeTextFile(pluginParams.outputFile, openApiDocumentString), utils.E.isRight);
                     }
                     if (pluginParams.routePath) {
                         const openApiPage = makeOpenApiPage.makeOpenApiPage({

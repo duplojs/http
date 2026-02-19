@@ -1,5 +1,6 @@
 import { ResponseContract, useCheckerBuilder, useRouteBuilder, Request, Response, createPresetChecker, PredictedResponse } from "@core";
 import { DPE } from "@duplojs/utils";
+import { createBodyReader } from "@test-utils/bodyReader";
 import { useTestRouteFunctionBuilder } from "@test-utils/useTestRouteFunctionBuilder";
 
 describe("checker step function builder", () => {
@@ -45,6 +46,7 @@ describe("checker step function builder", () => {
 				params: { value: "" },
 				query: {},
 				url: "",
+				bodyReader: createBodyReader(),
 			}),
 		);
 
@@ -92,6 +94,7 @@ describe("checker step function builder", () => {
 				params: { value: "test" },
 				query: {},
 				url: "",
+				bodyReader: createBodyReader(),
 			}),
 		);
 
@@ -139,6 +142,7 @@ describe("checker step function builder", () => {
 				params: { value: "test" },
 				query: {},
 				url: "",
+				bodyReader: createBodyReader(),
 			}),
 		);
 
@@ -189,6 +193,7 @@ describe("checker step function builder", () => {
 				params: { value: "test" },
 				query: {},
 				url: "",
+				bodyReader: createBodyReader(),
 			}),
 		);
 
@@ -237,6 +242,7 @@ describe("checker step function builder", () => {
 				params: { value: "test" },
 				query: {},
 				url: "",
+				bodyReader: createBodyReader(),
 			}),
 		);
 
@@ -285,6 +291,7 @@ describe("checker step function builder", () => {
 				params: { value: "test" },
 				query: {},
 				url: "",
+				bodyReader: createBodyReader(),
 			}),
 		);
 
@@ -335,6 +342,7 @@ describe("checker step function builder", () => {
 				params: { value: "" },
 				query: {},
 				url: "",
+				bodyReader: createBodyReader(),
 			}),
 		);
 

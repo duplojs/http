@@ -6,8 +6,10 @@ var pathToRegExp = require('./pathToRegExp.cjs');
 var index = require('../route/index.cjs');
 var buildError = require('./buildError.cjs');
 require('../functionsBuilders/route/index.cjs');
-require('../functionsBuilders/steps/index.cjs');
 var decodeUrl = require('./decodeUrl.cjs');
+var text = require('../request/bodyController/text.cjs');
+var notFoundBodyReaderImplementationError = require('./notFoundBodyReaderImplementationError.cjs');
+require('../functionsBuilders/index.cjs');
 require('./types/index.cjs');
 var _default = require('../functionsBuilders/route/default.cjs');
 var checkerStep = require('../functionsBuilders/steps/defaults/checkerStep.cjs');
@@ -18,18 +20,21 @@ var processStep = require('../functionsBuilders/steps/defaults/processStep.cjs')
 var hooks = require('../hub/hooks.cjs');
 var build = require('../functionsBuilders/route/build.cjs');
 
-async function buildRouter(inputHub) {
-    const hub = inputHub
-        .addRouteFunctionBuilder(_default.defaultRouteFunctionBuilder)
-        .addStepFunctionBuilder([
+async function buildRouter(hub) {
+    const { environment } = hub.config;
+    const { hooksRouteLifeCycle, routes, hooksHubLifeCycle, bodyReaderImplementations, } = hub;
+    const routeFunctionBuilders = [
+        ...hub.routeFunctionBuilders,
+        _default.defaultRouteFunctionBuilder,
+    ];
+    const stepFunctionBuilders = [
+        ...hub.stepFunctionBuilders,
         checkerStep.defaultCheckerStepFunctionBuilder,
         cutStep.defaultCutStepFunctionBuilder,
         handlerStep.defaultHandlerStepFunctionBuilder,
         extractStep.defaultExtractStepFunctionBuilder,
         processStep.defaultProcessStepFunctionBuilder,
-    ]);
-    const { environment } = hub.config;
-    const { hooksRouteLifeCycle, routeFunctionBuilders, routes, stepFunctionBuilders, hooksHubLifeCycle, } = hub.aggregates();
+    ];
     const hooksBeforeBuildRoute = utils.pipe(hooksHubLifeCycle, utils.A.map(({ beforeBuildRoute }) => beforeBuildRoute), utils.A.filter(utils.isType("function")));
     const buildParams = {
         environment,
@@ -44,14 +49,23 @@ async function buildRouter(inputHub) {
         if (utils.E.isLeft(buildedRoute)) {
             throw new buildError.RouterBuildError(route, utils.unwrap(buildedRoute));
         }
+        const routeBodyController = route.definition.bodyController ?? hub.defaultBodyController;
+        const bodyReader = utils.pipe(bodyReaderImplementations, utils.A.reduce(utils.A.reduceFrom(null), ({ element, next, exit }) => utils.pipe(element, routeBodyController.tryToCreateReader, utils.E.whenIsRight(exit), utils.E.whenIsLeft(utils.justReturn(next(null))))));
+        if (!bodyReader) {
+            throw new notFoundBodyReaderImplementationError.NotFoundBodyReaderImplementationError(route, routeBodyController);
+        }
         return nextWithObject(lastValue, {
             [route.definition.method]: utils.A.concat(lastValue[route.definition.method] ?? [], utils.A.map(route.definition.paths, utils.O.to({
                 pattern: pathToRegExp.pathToRegExp,
                 buildedRoute: utils.justReturn(utils.unwrap(buildedRoute)),
                 matchedPath: utils.forward,
+                bodyReader: utils.justReturn(bodyReader),
             }))),
         });
     });
+    const bodyControllerNotfoundRoute = text.controlBodyAsText();
+    const bodyReaderNotFoundRoute = utils.unwrap(bodyControllerNotfoundRoute.tryToCreateReader(text.TextBodyController.createReaderImplementation(() => Promise.resolve(utils.E.error(new Error("Inaccessible body in not found route."))))));
+    utils.asserts(bodyReaderNotFoundRoute, utils.isType("object"));
     const buildedNotfoundRoute = await utils.asyncPipe(index.createRoute({
         method: "GET",
         paths: ["/"],
@@ -59,6 +73,7 @@ async function buildRouter(inputHub) {
         preflightSteps: [],
         steps: [hub.notfoundHandler],
         metadata: [],
+        bodyController: bodyControllerNotfoundRoute,
     }), async (route) => {
         const result = await build.buildRouteFunction(route, buildParams);
         return utils.E.whenIsLeft(result, (element) => {
@@ -76,6 +91,7 @@ async function buildRouter(inputHub) {
                     ...decodedUrl,
                     params: {},
                     matchedPath: null,
+                    bodyReader: bodyReaderNotFoundRoute,
                 }));
             }
             // eslint-disable-next-line @typescript-eslint/prefer-for-of
@@ -90,6 +106,7 @@ async function buildRouter(inputHub) {
                     ...decodedUrl,
                     params: result.groups ?? {},
                     matchedPath: routerElement.matchedPath,
+                    bodyReader: routerElement.bodyReader,
                 }));
             }
             return buildedNotfoundRoute(new Request({
@@ -97,6 +114,7 @@ async function buildRouter(inputHub) {
                 ...decodedUrl,
                 params: {},
                 matchedPath: null,
+                bodyReader: bodyReaderNotFoundRoute,
             }));
         },
         hooksRouteLifeCycle,
@@ -112,4 +130,5 @@ exports.RouterBuildError = buildError.RouterBuildError;
 exports.decodeUrl = decodeUrl.decodeUrl;
 exports.regexQueryAnalyser = decodeUrl.regexQueryAnalyser;
 exports.regexUrlAnalyser = decodeUrl.regexUrlAnalyser;
+exports.NotFoundBodyReaderImplementationError = notFoundBodyReaderImplementationError.NotFoundBodyReaderImplementationError;
 exports.buildRouter = buildRouter;

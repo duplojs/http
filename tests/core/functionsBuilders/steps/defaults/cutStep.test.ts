@@ -1,5 +1,6 @@
 import { ResponseContract, useRouteBuilder, Request, Response, PredictedResponse } from "@core";
 import { DP, DPE } from "@duplojs/utils";
+import { createBodyReader } from "@test-utils/bodyReader";
 import { useTestRouteFunctionBuilder } from "@test-utils/useTestRouteFunctionBuilder";
 
 describe("cut step function builder", () => {
@@ -13,7 +14,7 @@ describe("cut step function builder", () => {
 		const route = useRouteBuilder("GET", "/test", { hooks: [{ afterSendResponse: spyResponse }] })
 			.extract({ params: { value: DPE.string() } })
 			.cut(
-				[ResponseContract.ok("goodCut", DPE.string())],
+				[ResponseContract.ok("goodCut", DPE.string().transform(async(value) => Promise.resolve(value)))],
 				(floor, { response }) => response("goodCut", floor.value),
 			)
 			.handler(
@@ -34,6 +35,8 @@ describe("cut step function builder", () => {
 				params: { value: "test" },
 				query: {},
 				url: "",
+				bodyReader: createBodyReader(),
+
 			}),
 		);
 
@@ -68,6 +71,8 @@ describe("cut step function builder", () => {
 				params: {},
 				query: {},
 				url: "",
+				bodyReader: createBodyReader(),
+
 			}),
 		);
 
@@ -102,6 +107,8 @@ describe("cut step function builder", () => {
 				params: {},
 				query: {},
 				url: "",
+				bodyReader: createBodyReader(),
+
 			}),
 		);
 
@@ -140,6 +147,8 @@ describe("cut step function builder", () => {
 				params: {},
 				query: {},
 				url: "",
+				bodyReader: createBodyReader(),
+
 			}),
 		);
 
@@ -171,6 +180,8 @@ describe("cut step function builder", () => {
 				params: {},
 				query: {},
 				url: "",
+				bodyReader: createBodyReader(),
+
 			}),
 		);
 

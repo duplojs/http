@@ -17,7 +17,7 @@ export type DisabledExtractKeys = O.GetPropsWithValue<
 export type ExtractShape<
 	GenericRequest extends Request = Request,
 > = Partial<
-	Record<
+	& Record<
 		Exclude<
 			keyof GenericRequest,
 			| O.GetPropsWithValueExtends<
@@ -26,10 +26,19 @@ export type ExtractShape<
 			>
 			// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
 			| DisabledExtractKeys
+			| "body"
+			| "bodyReader"
+			| symbol
 		>,
 		| DP.DataParser
 		| Record<string, DP.DataParser>
 	>
+	& {
+		body: (
+			| DP.DataParser
+			| Record<string, DP.DataParser>
+		);
+	}
 >;
 
 export interface ExtractStepDefinition {

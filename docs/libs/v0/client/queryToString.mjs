@@ -7,7 +7,7 @@ function queryToString(query) {
         if (!value) {
             return pv;
         }
-        if (Array.isArray(value)) {
+        if (value instanceof Array) {
             value.forEach((subValue) => {
                 pv.push(`${key}=${subValue}`);
             });

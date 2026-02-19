@@ -1,11 +1,12 @@
-import { defaultExtractContract, ResponseContract, useProcessBuilder, useRouteBuilder } from "@core";
+import { controlBodyAsFormData, defaultExtractContract, ResponseContract, useProcessBuilder, useRouteBuilder } from "@core";
 import { DP, DPE } from "@duplojs/utils";
 import { testPresetChecker } from "@test-utils/presetChecker";
 import { omitFunctions } from "@test-utils/omitFunction";
 import { IgnoreByOpenApiGeneratorMetadata, routeToOpenApi } from "@plugin-openApiGenerator";
+import { SDPE } from "@duplojs/server-utils";
 
 describe("routeToOpenApi", () => {
-	it("empty result", () => {
+	it("request body application/json", () => {
 		const process1 = useProcessBuilder()
 			.extract({
 				headers: {
@@ -275,6 +276,73 @@ describe("routeToOpenApi", () => {
 									},
 								},
 							},
+						},
+					},
+				},
+			],
+		);
+	});
+
+	it("request body multipart/form-data", () => {
+		const route = useRouteBuilder("GET", "/test", { bodyController: controlBodyAsFormData({ maxFileQuantity: 10 }) })
+			.extract({
+				body: {
+					superFile: SDPE.file(),
+					field: DPE.coerce.boolean(),
+				},
+			})
+			.handler(
+				ResponseContract.ok("handler", DP.string()),
+				(__, { response }) => response("handler", "handler"),
+			);
+
+		const result = routeToOpenApi(
+			route,
+			{
+				defaultExtractContract,
+				contextToJsonSchemaFactory: new Map(),
+				resultSchemaContext: new Map(),
+			},
+		);
+
+		expect(result).toStrictEqual(
+			[
+				{
+					path: "/test",
+					method: "get",
+					parameters: [],
+					requestBody: {
+						required: true,
+						content: {
+							"multipart/form-data": { schema: { $ref: "#/components/schemas/NotIdentified0" } },
+						},
+					},
+					responses: {
+						200: {
+							headers: {
+								information: {
+									schema: {
+										const: "handler",
+										type: "string",
+									},
+									description: "handler",
+								},
+							},
+							content: {
+								"plain/text": { schema: { $ref: "#/components/schemas/NotIdentified1" } },
+							},
+						},
+						422: {
+							headers: {
+								information: {
+									schema: {
+										const: "extract-error",
+										type: "string",
+									},
+									description: "extract-error",
+								},
+							},
+							content: undefined,
 						},
 					},
 				},

@@ -3,8 +3,7 @@ vi.mock("@client/promiseRequest", () => ({
 }));
 
 import { PromiseRequest } from "@client/promiseRequest";
-import { createHttpClient, httpClientKind } from "@client";
-import { type Hooks } from "@client/hooks";
+import { createHttpClient, type Hooks, httpClientKind } from "@client";
 import { forward } from "@duplojs/utils";
 
 describe("httpClient", () => {
