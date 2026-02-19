@@ -1,7 +1,7 @@
 import { defaultTransformers, render } from "@duplojs/data-parser-tools/toTypescript";
 import { SDPE } from "@duplojs/server-utils";
 import { DPE } from "@duplojs/utils";
-import { fileTransformer } from "@plugin-codeGenerator/typescriptTransfomer";
+import { dateTransformer, fileTransformer, timeTransformer } from "@plugin-codeGenerator/typescriptTransfomer";
 
 describe("typescript transformer", () => {
 	it("file", () => {
@@ -11,7 +11,33 @@ describe("typescript transformer", () => {
 				{
 					identifier: "ArrayString",
 					transformers: [fileTransformer, ...defaultTransformers],
-					mode: "out",
+					mode: "in",
+				},
+			),
+		).toMatchSnapshot();
+	});
+
+	it("date", () => {
+		expect(
+			render(
+				DPE.array(DPE.date()),
+				{
+					identifier: "ArrayString",
+					transformers: [dateTransformer, ...defaultTransformers],
+					mode: "in",
+				},
+			),
+		).toMatchSnapshot();
+	});
+
+	it("time", () => {
+		expect(
+			render(
+				DPE.array(DPE.time()),
+				{
+					identifier: "ArrayString",
+					transformers: [timeTransformer, ...defaultTransformers],
+					mode: "in",
 				},
 			),
 		).toMatchSnapshot();

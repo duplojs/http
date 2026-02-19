@@ -1,3 +1,15 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`typescript transformer > date 1`] = `
+"import type { TheDate, SerializedTheDate } from "@duplojs/utils/date";
+
+export type ArrayString = (SerializedTheDate | TheDate)[];"
+`;
+
 exports[`typescript transformer > file 1`] = `"export type ArrayString = File[];"`;
+
+exports[`typescript transformer > time 1`] = `
+"import type { TheTime, SerializedTheTime } from "@duplojs/utils/date";
+
+export type ArrayString = (SerializedTheTime | TheTime)[];"
+`;

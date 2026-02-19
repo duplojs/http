@@ -19,7 +19,6 @@ interface FactoryParams {
 	context: MapContext;
 	resultSchemaContext: ResultSchemaContext;
 	schema: DP.DataParser;
-	mode: "in" | "out";
 }
 
 function factoryJsonSchema(params: FactoryParams) {
@@ -30,7 +29,7 @@ function factoryJsonSchema(params: FactoryParams) {
 		params.schema,
 		{
 			identifier,
-			mode: params.mode,
+			mode: "in",
 			context: params.context,
 			version: "openApi31",
 			transformers: defaultTransformers,
@@ -105,7 +104,6 @@ export function routeToOpenApi(
 					schema: factoryJsonSchema({
 						context: params.contextToJsonSchemaFactory,
 						resultSchemaContext: params.resultSchemaContext,
-						mode: "in",
 						schema,
 					}),
 				}),
@@ -136,7 +134,6 @@ export function routeToOpenApi(
 						schema: factoryJsonSchema({
 							context: params.contextToJsonSchemaFactory,
 							resultSchemaContext: params.resultSchemaContext,
-							mode: "in",
 							schema: objectSchema,
 						}),
 					},
@@ -152,7 +149,6 @@ export function routeToOpenApi(
 						schema: factoryJsonSchema({
 							context: params.contextToJsonSchemaFactory,
 							resultSchemaContext: params.resultSchemaContext,
-							mode: "in",
 							schema: objectSchema,
 						}),
 					},
@@ -167,7 +163,6 @@ export function routeToOpenApi(
 						schema: factoryJsonSchema({
 							context: params.contextToJsonSchemaFactory,
 							resultSchemaContext: params.resultSchemaContext,
-							mode: "in",
 							schema: primitiveSchema,
 						}),
 					},
@@ -192,7 +187,6 @@ export function routeToOpenApi(
 					? factoryJsonSchema({
 						context: params.contextToJsonSchemaFactory,
 						resultSchemaContext: params.resultSchemaContext,
-						mode: "in",
 						schema: body,
 					})
 					: undefined;

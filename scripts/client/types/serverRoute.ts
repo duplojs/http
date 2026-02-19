@@ -3,11 +3,11 @@ import type * as SS from "@duplojs/utils/string";
 
 export type ServerPrimitiveData = string | undefined | number | null | boolean;
 
-export type ServerRouteHeaders = Record<string, ServerPrimitiveData>;
+export type ServerRouteHeaders = Record<string, ServerPrimitiveData | { toString(): string }>;
 
-export type ServerRouteParams = Record<string, ServerPrimitiveData>;
+export type ServerRouteParams = Record<string, ServerPrimitiveData | { toString(): string }>;
 
-export type ServerRouteQuery = Record<string, MaybeArray<ServerPrimitiveData>>;
+export type ServerRouteQuery = Record<string, MaybeArray<ServerPrimitiveData | { toString(): string }>>;
 
 export type ServerRouteBody = unknown;
 

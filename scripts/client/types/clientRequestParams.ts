@@ -18,11 +18,11 @@ export interface ClientRequestInitParams extends Pick<
 
 }
 
-export type ClientRequestParamsHeaders = Record<string, string | undefined>;
+export type ClientRequestParamsHeaders = Record<string, string | undefined | { toString(): string }>;
 
-export type ClientRequestParamsParams = Record<string, string | undefined>;
+export type ClientRequestParamsParams = Record<string, string | undefined | { toString(): string }>;
 
-export type ClientRequestParamsQuery = Record<string, MaybeArray<string> | undefined>;
+export type ClientRequestParamsQuery = Record<string, MaybeArray<string | { toString(): string }> | undefined>;
 
 export type ClientRequestParamsBody = unknown;
 

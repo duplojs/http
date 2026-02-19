@@ -13,13 +13,13 @@ next:
 ## Installation des dépendances
 ::: code-group
 ```bash [npm]
-npm install @duplojs/http@0 @duplojs/utils@1 @duplojs/data-parser-tools@0
+npm install @duplojs/http@0 @duplojs/utils@1
 ```
 ```bash [yarn]
-yarn add @duplojs/http@0 @duplojs/utils@1 @duplojs/data-parser-tools@0
+yarn add @duplojs/http@0 @duplojs/utils@1
 ```
 ```bash [pnpm]
-pnpm add @duplojs/http@0 @duplojs/utils@1 @duplojs/data-parser-tools@0
+pnpm add @duplojs/http@0 @duplojs/utils@1
 ```
 :::
 

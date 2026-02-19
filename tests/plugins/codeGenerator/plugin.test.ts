@@ -15,8 +15,8 @@ describe("plugin implementation", () => {
 	const route = useRouteBuilder("GET", "/user")
 		.extract({
 			headers: {
-				header1: DPE.string(),
-				header2: DPE.string(),
+				header1: DPE.date(),
+				header2: DPE.time(),
 			},
 			body: DPE.object({
 				name: DPE.string(),

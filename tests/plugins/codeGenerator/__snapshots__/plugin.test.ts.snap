@@ -1,7 +1,9 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`plugin implementation > generate API type 1`] = `
-"export type Routes = {
+"import type { TheDate, SerializedTheDate, TheTime, SerializedTheTime } from "@duplojs/utils/date";
+
+export type Routes = {
     method: "GET";
     path: "/user";
     body: {
@@ -9,8 +11,8 @@ exports[`plugin implementation > generate API type 1`] = `
         age: number;
     };
     headers: {
-        header1: string;
-        header2: string;
+        header1: SerializedTheDate | TheDate;
+        header2: SerializedTheTime | TheTime;
     };
     responses: {
         code: "422";
