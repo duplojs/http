@@ -57,7 +57,9 @@ export type Routes = {
 	path: "/documents";
 	body: TheFormData<{
 		bool: boolean;
-		myFile: File;
+		myFile: [
+			File,
+		];
 	}>;
 	responses: {
 		code: "422";

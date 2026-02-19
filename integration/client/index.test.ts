@@ -49,7 +49,7 @@ describe("node server", async() => {
 					predicted: boolean;
 				}
 				| NotPredictedClientResponse<
-					PromiseRequestParams<Record<string, unknown>>
+					Record<string, unknown>
 				>
 			>,
 			"strict"
@@ -83,7 +83,7 @@ describe("node server", async() => {
 			| E.Right<
 				"response",
 				| NotPredictedClientResponse<
-					PromiseRequestParams<Record<string, unknown>>
+					Record<string, unknown>
 				>
 				| {
 					code: "422";
@@ -181,7 +181,7 @@ describe("node server", async() => {
 					predicted: boolean;
 				}
 				| NotPredictedClientResponse<
-					PromiseRequestParams<Record<string, unknown>>
+					Record<string, unknown>
 				>
 			>,
 			"strict"
@@ -208,7 +208,7 @@ describe("node server", async() => {
 		const result = await httpClient.post("/documents", {
 			body: createFormData({
 				bool: true,
-				myFile: await createFileToSend("files/fakeFiles/1mb.jpg", "//😄.jpg"),
+				myFile: [await createFileToSend("files/fakeFiles/1mb.jpg", "//😄.jpg")],
 			}),
 		});
 
@@ -244,7 +244,7 @@ describe("node server", async() => {
 					predicted: boolean;
 				}
 				| NotPredictedClientResponse<
-					PromiseRequestParams<Record<string, unknown>>
+					Record<string, unknown>
 				>
 			>,
 			"strict"

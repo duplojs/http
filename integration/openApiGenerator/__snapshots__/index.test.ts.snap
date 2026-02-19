@@ -305,8 +305,16 @@ exports[`openApiGenerator > correct generate file 1`] = `
             ]
           },
           "myFile": {
-            "type": "string",
-            "format": "binary"
+            "type": "array",
+            "items": [
+              {
+                "type": "string",
+                "format": "binary"
+              }
+            ],
+            "minItems": 1,
+            "additionalItems": false,
+            "maxItems": 1
           }
         },
         "required": [

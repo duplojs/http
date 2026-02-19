@@ -12,12 +12,12 @@ useRouteBuilder("POST", "/documents", {
 	.extract({
 		body: {
 			bool: DPE.coerce.boolean(),
-			myFile: SDPE.file(),
+			myFile: DPE.tuple([SDPE.file()]),
 		},
 	})
 	.handler(
 		ResponseContract.noContent("file.receive"),
-		async({ myFile }, { response }) => {
+		async({ myFile: [myFile] }, { response }) => {
 			asserts(
 				await myFile.move("files/store/picture.jpg"),
 				E.isRight,

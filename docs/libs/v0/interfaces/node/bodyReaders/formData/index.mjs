@@ -39,7 +39,7 @@ function createFormDataBodyReaderImplementation(serverParams) {
                 const displayExtension = extension ? `.${extension}` : "";
                 const filePath = Path.resolveRelative([
                     serverParams.uploadFolder,
-                    `${Date.now().toString()}${displayExtension}`,
+                    `${Math.random().toString(36).slice(2, 10)}-${Date.now()}${displayExtension}`,
                 ]);
                 filesAttache.push(filePath);
                 const currentFile = createWriteStream(filePath, {

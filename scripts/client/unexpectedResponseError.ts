@@ -1,7 +1,6 @@
 import { kindHeritage } from "@duplojs/utils";
 import { createClientKind } from "./kind";
-import { type ClientResponse } from "./types";
-import { type PromiseRequestParams } from "./promiseRequest";
+import { type PromiseRequestParams, type ClientResponse } from "./types";
 
 export interface RequestErrorContent {
 	error: unknown;

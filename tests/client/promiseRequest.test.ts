@@ -1,5 +1,5 @@
-import { PromiseRequest, type PromiseRequestParams } from "@client/promiseRequest";
-import { type Hooks } from "@client/hooks";
+import { type Hooks, type PromiseRequestParams } from "@client";
+import { PromiseRequest } from "@client/promiseRequest";
 import { type ClientResponse } from "@client/types/clientResponse";
 import { UnexpectedCodeResponseError, UnexpectedInformationResponseError, UnexpectedResponseError, UnexpectedResponseTypeError } from "@client/unexpectedResponseError";
 import { asserts, unwrap, E, createFormData } from "@duplojs/utils";

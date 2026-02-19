@@ -9,6 +9,6 @@ export function getBody(response: Response): Promise<unknown> {
 	} else if (responseContentType.includes("form-data")) {
 		return response.formData();
 	} else {
-		return response.blob();
+		return Promise.resolve(undefined);
 	}
 }

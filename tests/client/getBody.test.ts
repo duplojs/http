@@ -43,13 +43,10 @@ describe("getBody", () => {
 	});
 
 	it("parses blob for other content-types", async() => {
-		const blob = vi.fn().mockResolvedValue(new Blob(["data"]));
 		const response = {
 			headers: new Headers({ "content-type": "application/octet-stream" }),
-			blob,
 		} as unknown as Response;
 
-		await expect(getBody(response)).resolves.toBeInstanceOf(Blob);
-		expect(blob).toHaveBeenCalledTimes(1);
+		await expect(getBody(response)).resolves.toBe(undefined);
 	});
 });

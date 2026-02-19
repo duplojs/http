@@ -2,12 +2,12 @@ import { type NeverCoalescing, type MaybePromise, unwrap, TheFormData } from "@d
 import { getBody } from "./getBody";
 import { insertParamsInPath } from "./insertParamsInPath";
 import { queryToString } from "./queryToString";
-import { type Hooks, launchRequestHook, launchResponseHook, launchInformationHook, launchCodeHook, launchResponseTypeHook, launchExpectedResponseHook, launchErrorHook, type ErrorHook, launchNotPredictedHook, type NotPredictedResponseHook } from "./hooks";
+import { launchRequestHook, launchResponseHook, launchInformationHook, launchCodeHook, launchResponseTypeHook, launchExpectedResponseHook, launchErrorHook, launchNotPredictedHook } from "./hooks";
 import * as EE from "@duplojs/utils/either";
 import * as SS from "@duplojs/utils/string";
 import * as AA from "@duplojs/utils/array";
 import { UnexpectedCodeResponseError, UnexpectedInformationResponseError, UnexpectedResponseError, UnexpectedResponseTypeError, type RequestErrorContent } from "./unexpectedResponseError";
-import { type NotPredictedClientResponse, type ClientRequestParams, type ClientResponse } from "./types";
+import { type NotPredictedClientResponse, type ClientResponse, type PromiseRequestParams, type Hooks, type NotPredictedResponseHook, type ErrorHook } from "./types";
 
 type MaybeResponse<
 	GenericClientResponse extends ClientResponse = ClientResponse,
@@ -40,23 +40,13 @@ type MaybeWantedResponse<
 		>
 	);
 
-export interface PromiseRequestParams<
-	GenericHookParams extends Record<string, unknown> = Record<string, unknown>,
-> extends ClientRequestParams<GenericHookParams> {
-	baseUrl: string;
-	hooks: Hooks;
-	informationHeaderKey: string;
-	predictedHeaderKey: string;
-	disabledPredicateMode: boolean;
-}
-
 export class PromiseRequest<
-	GenericPromiseRequestParams extends PromiseRequestParams = PromiseRequestParams,
-	GenericClientResponse extends ClientResponse = ClientResponse,
+	GenericHookParams extends Record<string, unknown> = Record<string, unknown>,
+	GenericClientResponse extends ClientResponse<GenericHookParams> = ClientResponse<GenericHookParams>,
 > extends Promise<
 		MaybeResponse<
 			| GenericClientResponse
-			| NotPredictedClientResponse<GenericPromiseRequestParams>
+			| NotPredictedClientResponse<GenericHookParams>
 		>
 	> {
 	public readonly hooks: Partial<Hooks> = {};
@@ -180,7 +170,9 @@ export class PromiseRequest<
 	}
 
 	public addRequestInterceptor(
-		callback: (requestParams: GenericPromiseRequestParams) => MaybePromise<GenericPromiseRequestParams>,
+		callback: (
+			requestParams: GenericClientResponse["requestParams"]
+		) => MaybePromise<GenericClientResponse["requestParams"]>,
 	) {
 		this.hooks.request ??= [];
 		this.hooks.request.push(callback as never);
@@ -198,7 +190,7 @@ export class PromiseRequest<
 	}
 
 	public whenNotPredictedResponse(
-		callback: NotPredictedResponseHook<GenericPromiseRequestParams>,
+		callback: NotPredictedResponseHook<GenericHookParams>,
 	) {
 		this.hooks.notPredictedResponse ??= [];
 		this.hooks.notPredictedResponse.push(callback as never);
@@ -221,7 +213,7 @@ export class PromiseRequest<
 						? { information: GenericInformation }
 						: never
 				>,
-				ClientResponse<GenericPromiseRequestParams>
+				ClientResponse<GenericHookParams>
 			>,
 		) => MaybePromise<void>,
 	) {
@@ -250,7 +242,7 @@ export class PromiseRequest<
 						? { code: GenericCode }
 						: never
 				>,
-				ClientResponse<GenericPromiseRequestParams>
+				ClientResponse<GenericHookParams>
 			>,
 		) => MaybePromise<void>,
 	) {
@@ -274,7 +266,7 @@ export class PromiseRequest<
 					GenericClientResponse,
 					{ code: `1${number}` }
 				>,
-				ClientResponse<GenericPromiseRequestParams>
+				ClientResponse<GenericHookParams>
 			>,
 		) => MaybePromise<void>,
 	) {
@@ -291,7 +283,7 @@ export class PromiseRequest<
 					GenericClientResponse,
 					{ code: `2${number}` }
 				>,
-				ClientResponse<GenericPromiseRequestParams>
+				ClientResponse<GenericHookParams>
 			>,
 		) => MaybePromise<void>,
 	) {
@@ -308,7 +300,7 @@ export class PromiseRequest<
 					GenericClientResponse,
 					{ code: `3${number}` }
 				>,
-				ClientResponse<GenericPromiseRequestParams>
+				ClientResponse<GenericHookParams>
 			>,
 		) => MaybePromise<void>,
 	) {
@@ -325,7 +317,7 @@ export class PromiseRequest<
 					GenericClientResponse,
 					{ code: `4${number}` }
 				>,
-				ClientResponse<GenericPromiseRequestParams>
+				ClientResponse<GenericHookParams>
 			>,
 		) => MaybePromise<void>,
 	) {
@@ -342,7 +334,7 @@ export class PromiseRequest<
 					GenericClientResponse,
 					{ code: `5${number}` }
 				>,
-				ClientResponse<GenericPromiseRequestParams>
+				ClientResponse<GenericHookParams>
 			>,
 		) => MaybePromise<void>,
 	) {
@@ -359,7 +351,7 @@ export class PromiseRequest<
 					GenericClientResponse,
 					{ code: `2${number}` | `4${number}` }
 				>,
-				ClientResponse<GenericPromiseRequestParams>
+				ClientResponse<GenericHookParams>
 			>,
 		) => MaybePromise<void>,
 	) {
@@ -369,7 +361,7 @@ export class PromiseRequest<
 		return this;
 	}
 
-	public whenError(callback: ErrorHook<GenericPromiseRequestParams>) {
+	public whenError(callback: ErrorHook<GenericHookParams>) {
 		this.hooks.error ??= [];
 		this.hooks.error.push(callback as never);
 
@@ -388,7 +380,7 @@ export class PromiseRequest<
 					? { information: GenericInformation }
 					: never
 			>,
-			ClientResponse<GenericPromiseRequestParams>
+			ClientResponse<GenericHookParams>
 		>,
 	>(
 		information: GenericInformation | GenericInformation[],
@@ -397,7 +389,7 @@ export class PromiseRequest<
 				GenericResponse,
 				NeverCoalescing<
 					Exclude<GenericClientResponse, GenericResponse>,
-					ClientResponse<GenericPromiseRequestParams>
+					ClientResponse<GenericHookParams>
 				>
 			>
 		> {
@@ -434,7 +426,7 @@ export class PromiseRequest<
 					? { code: GenericCode }
 					: never
 			>,
-			ClientResponse<GenericPromiseRequestParams>
+			ClientResponse<GenericHookParams>
 		>,
 	>(
 		code: GenericCode | GenericCode[],
@@ -443,7 +435,7 @@ export class PromiseRequest<
 				GenericResponse,
 				NeverCoalescing<
 					Exclude<GenericClientResponse, GenericResponse>,
-					ClientResponse<GenericPromiseRequestParams>
+					ClientResponse<GenericHookParams>
 				>
 			>
 		> {
@@ -474,14 +466,14 @@ export class PromiseRequest<
 				GenericClientResponse,
 				{ code: `1${number}` }
 			>,
-			ClientResponse<GenericPromiseRequestParams>
+			ClientResponse<GenericHookParams>
 		>,
 	>(): Promise<
 		MaybeWantedResponse<
 			GenericResponse,
 			NeverCoalescing<
 				Exclude<GenericClientResponse, GenericResponse>,
-				ClientResponse<GenericPromiseRequestParams>
+				ClientResponse<GenericHookParams>
 			>
 		>
 	> {
@@ -510,14 +502,14 @@ export class PromiseRequest<
 				GenericClientResponse,
 				{ code: `2${number}` }
 			>,
-			ClientResponse<GenericPromiseRequestParams>
+			ClientResponse<GenericHookParams>
 		>,
 	>(): Promise<
 		MaybeWantedResponse<
 			GenericResponse,
 			NeverCoalescing<
 				Exclude<GenericClientResponse, GenericResponse>,
-				ClientResponse<GenericPromiseRequestParams>
+				ClientResponse<GenericHookParams>
 			>
 		>
 	> {
@@ -546,14 +538,14 @@ export class PromiseRequest<
 				GenericClientResponse,
 				{ code: `3${number}` }
 			>,
-			ClientResponse<GenericPromiseRequestParams>
+			ClientResponse<GenericHookParams>
 		>,
 	>(): Promise<
 		MaybeWantedResponse<
 			GenericResponse,
 			NeverCoalescing<
 				Exclude<GenericClientResponse, GenericResponse>,
-				ClientResponse<GenericPromiseRequestParams>
+				ClientResponse<GenericHookParams>
 			>
 		>
 	> {
@@ -582,14 +574,14 @@ export class PromiseRequest<
 				GenericClientResponse,
 				{ code: `4${number}` }
 			>,
-			ClientResponse<GenericPromiseRequestParams>
+			ClientResponse<GenericHookParams>
 		>,
 	>(): Promise<
 		MaybeWantedResponse<
 			GenericResponse,
 			NeverCoalescing<
 				Exclude<GenericClientResponse, GenericResponse>,
-				ClientResponse<GenericPromiseRequestParams>
+				ClientResponse<GenericHookParams>
 			>
 		>
 	> {
@@ -618,14 +610,14 @@ export class PromiseRequest<
 				GenericClientResponse,
 				{ code: `5${number}` }
 			>,
-			ClientResponse<GenericPromiseRequestParams>
+			ClientResponse<GenericHookParams>
 		>,
 	>(): Promise<
 		MaybeWantedResponse<
 			GenericResponse,
 			NeverCoalescing<
 				Exclude<GenericClientResponse, GenericResponse>,
-				ClientResponse<GenericPromiseRequestParams>
+				ClientResponse<GenericHookParams>
 			>
 		>
 	> {
@@ -654,14 +646,14 @@ export class PromiseRequest<
 				GenericClientResponse,
 				{ code: `2${number}` | `4${number}` }
 			>,
-			ClientResponse<GenericPromiseRequestParams>
+			ClientResponse<GenericHookParams>
 		>,
 	>(): Promise<
 		MaybeWantedResponse<
 			GenericResponse,
 			NeverCoalescing<
 				Exclude<GenericClientResponse, GenericResponse>,
-				ClientResponse<GenericPromiseRequestParams>
+				ClientResponse<GenericHookParams>
 			>
 		>
 	> {
@@ -699,7 +691,7 @@ export class PromiseRequest<
 						? { information: GenericInformation }
 						: never
 				>,
-				ClientResponse<GenericPromiseRequestParams>
+				ClientResponse<GenericHookParams>
 			>
 		> {
 		return this
@@ -730,7 +722,7 @@ export class PromiseRequest<
 						? { code: GenericCode }
 						: never
 				>,
-				ClientResponse<GenericPromiseRequestParams>
+				ClientResponse<GenericHookParams>
 			>
 		> {
 		return this
@@ -755,7 +747,7 @@ export class PromiseRequest<
 				GenericClientResponse,
 				{ code: `1${number}` }
 			>,
-			ClientResponse<GenericPromiseRequestParams>
+			ClientResponse<GenericHookParams>
 		>
 	> {
 		return this
@@ -780,7 +772,7 @@ export class PromiseRequest<
 				GenericClientResponse,
 				{ code: `2${number}` }
 			>,
-			ClientResponse<GenericPromiseRequestParams>
+			ClientResponse<GenericHookParams>
 		>
 	> {
 		return this
@@ -805,7 +797,7 @@ export class PromiseRequest<
 				GenericClientResponse,
 				{ code: `3${number}` }
 			>,
-			ClientResponse<GenericPromiseRequestParams>
+			ClientResponse<GenericHookParams>
 		>
 	> {
 		return this
@@ -830,7 +822,7 @@ export class PromiseRequest<
 				GenericClientResponse,
 				{ code: `4${number}` }
 			>,
-			ClientResponse<GenericPromiseRequestParams>
+			ClientResponse<GenericHookParams>
 		>
 	> {
 		return this
@@ -855,7 +847,7 @@ export class PromiseRequest<
 				GenericClientResponse,
 				{ code: `5${number}` }
 			>,
-			ClientResponse<GenericPromiseRequestParams>
+			ClientResponse<GenericHookParams>
 		>
 	> {
 		return this
@@ -880,7 +872,7 @@ export class PromiseRequest<
 				GenericClientResponse,
 				{ code: `2${number}` | `4${number}` }
 			>,
-			ClientResponse<GenericPromiseRequestParams>
+			ClientResponse<GenericHookParams>
 		>
 	> {
 		return this

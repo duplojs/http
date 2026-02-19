@@ -1,97 +1,89 @@
 import { type NeverCoalescing, type MaybePromise } from "@duplojs/utils";
-import { type Hooks, type ErrorHook, type NotPredictedResponseHook } from "./hooks";
 import * as EE from "@duplojs/utils/either";
 import { type RequestErrorContent } from "./unexpectedResponseError";
-import { type NotPredictedClientResponse, type ClientRequestParams, type ClientResponse } from "./types";
+import { type NotPredictedClientResponse, type ClientResponse, type PromiseRequestParams, type Hooks, type NotPredictedResponseHook, type ErrorHook } from "./types";
 type MaybeResponse<GenericClientResponse extends ClientResponse = ClientResponse> = (EE.Right<"response", GenericClientResponse> | EE.Left<"request-error", RequestErrorContent>);
 type MaybeWantedResponse<GenericWantedClientResponse extends ClientResponse = ClientResponse, GenericUnexpectClientResponse extends ClientResponse = ClientResponse> = (EE.Right<"response", GenericWantedClientResponse> | EE.Left<"unexpect-response", GenericUnexpectClientResponse> | EE.Left<"request-error", RequestErrorContent>);
-export interface PromiseRequestParams<GenericHookParams extends Record<string, unknown> = Record<string, unknown>> extends ClientRequestParams<GenericHookParams> {
-    baseUrl: string;
-    hooks: Hooks;
-    informationHeaderKey: string;
-    predictedHeaderKey: string;
-    disabledPredicateMode: boolean;
-}
-export declare class PromiseRequest<GenericPromiseRequestParams extends PromiseRequestParams = PromiseRequestParams, GenericClientResponse extends ClientResponse = ClientResponse> extends Promise<MaybeResponse<GenericClientResponse | NotPredictedClientResponse<GenericPromiseRequestParams>>> {
+export declare class PromiseRequest<GenericHookParams extends Record<string, unknown> = Record<string, unknown>, GenericClientResponse extends ClientResponse<GenericHookParams> = ClientResponse<GenericHookParams>> extends Promise<MaybeResponse<GenericClientResponse | NotPredictedClientResponse<GenericHookParams>>> {
     params: PromiseRequestParams;
     readonly hooks: Partial<Hooks>;
     constructor(params: PromiseRequestParams);
-    addRequestInterceptor(callback: (requestParams: GenericPromiseRequestParams) => MaybePromise<GenericPromiseRequestParams>): this;
+    addRequestInterceptor(callback: (requestParams: GenericClientResponse["requestParams"]) => MaybePromise<GenericClientResponse["requestParams"]>): this;
     addResponseInterceptor(callback: (response: GenericClientResponse) => MaybePromise<GenericClientResponse>): this;
-    whenNotPredictedResponse(callback: NotPredictedResponseHook<GenericPromiseRequestParams>): this;
+    whenNotPredictedResponse(callback: NotPredictedResponseHook<GenericHookParams>): this;
     whenInformation<GenericInformation extends Extract<GenericClientResponse["information"], string>>(information: GenericInformation | GenericInformation[], callback: (response: NeverCoalescing<Extract<GenericClientResponse, GenericInformation extends any ? {
         information: GenericInformation;
-    } : never>, ClientResponse<GenericPromiseRequestParams>>) => MaybePromise<void>): this;
+    } : never>, ClientResponse<GenericHookParams>>) => MaybePromise<void>): this;
     whenCode<GenericCode extends GenericClientResponse["code"]>(code: GenericCode | GenericCode[], callback: (response: NeverCoalescing<Extract<GenericClientResponse, GenericCode extends any ? {
         code: GenericCode;
-    } : never>, ClientResponse<GenericPromiseRequestParams>>) => MaybePromise<void>): this;
+    } : never>, ClientResponse<GenericHookParams>>) => MaybePromise<void>): this;
     whenInformationalResponse(callback: (response: NeverCoalescing<Extract<GenericClientResponse, {
         code: `1${number}`;
-    }>, ClientResponse<GenericPromiseRequestParams>>) => MaybePromise<void>): this;
+    }>, ClientResponse<GenericHookParams>>) => MaybePromise<void>): this;
     whenSuccessfulResponse(callback: (response: NeverCoalescing<Extract<GenericClientResponse, {
         code: `2${number}`;
-    }>, ClientResponse<GenericPromiseRequestParams>>) => MaybePromise<void>): this;
+    }>, ClientResponse<GenericHookParams>>) => MaybePromise<void>): this;
     whenRedirectionResponse(callback: (response: NeverCoalescing<Extract<GenericClientResponse, {
         code: `3${number}`;
-    }>, ClientResponse<GenericPromiseRequestParams>>) => MaybePromise<void>): this;
+    }>, ClientResponse<GenericHookParams>>) => MaybePromise<void>): this;
     whenClientErrorResponse(callback: (response: NeverCoalescing<Extract<GenericClientResponse, {
         code: `4${number}`;
-    }>, ClientResponse<GenericPromiseRequestParams>>) => MaybePromise<void>): this;
+    }>, ClientResponse<GenericHookParams>>) => MaybePromise<void>): this;
     whenServerErrorResponse(callback: (response: NeverCoalescing<Extract<GenericClientResponse, {
         code: `5${number}`;
-    }>, ClientResponse<GenericPromiseRequestParams>>) => MaybePromise<void>): this;
+    }>, ClientResponse<GenericHookParams>>) => MaybePromise<void>): this;
     whenExpectedResponse(callback: (response: NeverCoalescing<Extract<GenericClientResponse, {
         code: `2${number}` | `4${number}`;
-    }>, ClientResponse<GenericPromiseRequestParams>>) => MaybePromise<void>): this;
-    whenError(callback: ErrorHook<GenericPromiseRequestParams>): this;
+    }>, ClientResponse<GenericHookParams>>) => MaybePromise<void>): this;
+    whenError(callback: ErrorHook<GenericHookParams>): this;
     iWantInformation<GenericInformation extends Extract<GenericClientResponse["information"], string>, GenericResponse extends NeverCoalescing<Extract<GenericClientResponse, GenericInformation extends any ? {
         information: GenericInformation;
-    } : never>, ClientResponse<GenericPromiseRequestParams>>>(information: GenericInformation | GenericInformation[]): Promise<MaybeWantedResponse<GenericResponse, NeverCoalescing<Exclude<GenericClientResponse, GenericResponse>, ClientResponse<GenericPromiseRequestParams>>>>;
+    } : never>, ClientResponse<GenericHookParams>>>(information: GenericInformation | GenericInformation[]): Promise<MaybeWantedResponse<GenericResponse, NeverCoalescing<Exclude<GenericClientResponse, GenericResponse>, ClientResponse<GenericHookParams>>>>;
     iWantCode<GenericCode extends GenericClientResponse["code"], GenericResponse extends NeverCoalescing<Extract<GenericClientResponse, GenericCode extends any ? {
         code: GenericCode;
-    } : never>, ClientResponse<GenericPromiseRequestParams>>>(code: GenericCode | GenericCode[]): Promise<MaybeWantedResponse<GenericResponse, NeverCoalescing<Exclude<GenericClientResponse, GenericResponse>, ClientResponse<GenericPromiseRequestParams>>>>;
+    } : never>, ClientResponse<GenericHookParams>>>(code: GenericCode | GenericCode[]): Promise<MaybeWantedResponse<GenericResponse, NeverCoalescing<Exclude<GenericClientResponse, GenericResponse>, ClientResponse<GenericHookParams>>>>;
     iWantInformationalResponse<GenericResponse extends NeverCoalescing<Extract<GenericClientResponse, {
         code: `1${number}`;
-    }>, ClientResponse<GenericPromiseRequestParams>>>(): Promise<MaybeWantedResponse<GenericResponse, NeverCoalescing<Exclude<GenericClientResponse, GenericResponse>, ClientResponse<GenericPromiseRequestParams>>>>;
+    }>, ClientResponse<GenericHookParams>>>(): Promise<MaybeWantedResponse<GenericResponse, NeverCoalescing<Exclude<GenericClientResponse, GenericResponse>, ClientResponse<GenericHookParams>>>>;
     iWantSuccessfulResponse<GenericResponse extends NeverCoalescing<Extract<GenericClientResponse, {
         code: `2${number}`;
-    }>, ClientResponse<GenericPromiseRequestParams>>>(): Promise<MaybeWantedResponse<GenericResponse, NeverCoalescing<Exclude<GenericClientResponse, GenericResponse>, ClientResponse<GenericPromiseRequestParams>>>>;
+    }>, ClientResponse<GenericHookParams>>>(): Promise<MaybeWantedResponse<GenericResponse, NeverCoalescing<Exclude<GenericClientResponse, GenericResponse>, ClientResponse<GenericHookParams>>>>;
     iWantRedirectionResponse<GenericResponse extends NeverCoalescing<Extract<GenericClientResponse, {
         code: `3${number}`;
-    }>, ClientResponse<GenericPromiseRequestParams>>>(): Promise<MaybeWantedResponse<GenericResponse, NeverCoalescing<Exclude<GenericClientResponse, GenericResponse>, ClientResponse<GenericPromiseRequestParams>>>>;
+    }>, ClientResponse<GenericHookParams>>>(): Promise<MaybeWantedResponse<GenericResponse, NeverCoalescing<Exclude<GenericClientResponse, GenericResponse>, ClientResponse<GenericHookParams>>>>;
     iWantClientErrorResponse<GenericResponse extends NeverCoalescing<Extract<GenericClientResponse, {
         code: `4${number}`;
-    }>, ClientResponse<GenericPromiseRequestParams>>>(): Promise<MaybeWantedResponse<GenericResponse, NeverCoalescing<Exclude<GenericClientResponse, GenericResponse>, ClientResponse<GenericPromiseRequestParams>>>>;
+    }>, ClientResponse<GenericHookParams>>>(): Promise<MaybeWantedResponse<GenericResponse, NeverCoalescing<Exclude<GenericClientResponse, GenericResponse>, ClientResponse<GenericHookParams>>>>;
     iWantServerErrorResponse<GenericResponse extends NeverCoalescing<Extract<GenericClientResponse, {
         code: `5${number}`;
-    }>, ClientResponse<GenericPromiseRequestParams>>>(): Promise<MaybeWantedResponse<GenericResponse, NeverCoalescing<Exclude<GenericClientResponse, GenericResponse>, ClientResponse<GenericPromiseRequestParams>>>>;
+    }>, ClientResponse<GenericHookParams>>>(): Promise<MaybeWantedResponse<GenericResponse, NeverCoalescing<Exclude<GenericClientResponse, GenericResponse>, ClientResponse<GenericHookParams>>>>;
     iWantExpectedResponse<GenericResponse extends NeverCoalescing<Extract<GenericClientResponse, {
         code: `2${number}` | `4${number}`;
-    }>, ClientResponse<GenericPromiseRequestParams>>>(): Promise<MaybeWantedResponse<GenericResponse, NeverCoalescing<Exclude<GenericClientResponse, GenericResponse>, ClientResponse<GenericPromiseRequestParams>>>>;
+    }>, ClientResponse<GenericHookParams>>>(): Promise<MaybeWantedResponse<GenericResponse, NeverCoalescing<Exclude<GenericClientResponse, GenericResponse>, ClientResponse<GenericHookParams>>>>;
     iWantInformationOrThrow<GenericInformation extends Extract<GenericClientResponse["information"], string>>(information: GenericInformation | GenericInformation[]): Promise<NeverCoalescing<Extract<GenericClientResponse, GenericInformation extends any ? {
         information: GenericInformation;
-    } : never>, ClientResponse<GenericPromiseRequestParams>>>;
+    } : never>, ClientResponse<GenericHookParams>>>;
     iWantCodeOrThrow<GenericCode extends GenericClientResponse["code"]>(code: GenericCode | GenericCode[]): Promise<NeverCoalescing<Extract<GenericClientResponse, GenericCode extends any ? {
         code: GenericCode;
-    } : never>, ClientResponse<GenericPromiseRequestParams>>>;
+    } : never>, ClientResponse<GenericHookParams>>>;
     iWantInformationalResponseOrThrow(): Promise<NeverCoalescing<Extract<GenericClientResponse, {
         code: `1${number}`;
-    }>, ClientResponse<GenericPromiseRequestParams>>>;
+    }>, ClientResponse<GenericHookParams>>>;
     iWantSuccessfulResponseOrThrow(): Promise<NeverCoalescing<Extract<GenericClientResponse, {
         code: `2${number}`;
-    }>, ClientResponse<GenericPromiseRequestParams>>>;
+    }>, ClientResponse<GenericHookParams>>>;
     iWantRedirectionResponseOrThrow(): Promise<NeverCoalescing<Extract<GenericClientResponse, {
         code: `3${number}`;
-    }>, ClientResponse<GenericPromiseRequestParams>>>;
+    }>, ClientResponse<GenericHookParams>>>;
     iWantClientErrorResponseOrThrow(): Promise<NeverCoalescing<Extract<GenericClientResponse, {
         code: `4${number}`;
-    }>, ClientResponse<GenericPromiseRequestParams>>>;
+    }>, ClientResponse<GenericHookParams>>>;
     iWantServerErrorResponseOrThrow(): Promise<NeverCoalescing<Extract<GenericClientResponse, {
         code: `5${number}`;
-    }>, ClientResponse<GenericPromiseRequestParams>>>;
+    }>, ClientResponse<GenericHookParams>>>;
     iWantExpectedResponseOrThrow(): Promise<NeverCoalescing<Extract<GenericClientResponse, {
         code: `2${number}` | `4${number}`;
-    }>, ClientResponse<GenericPromiseRequestParams>>>;
+    }>, ClientResponse<GenericHookParams>>>;
     static get [Symbol.species](): PromiseConstructor;
     static fetch<GenericPromiseRequestParams extends PromiseRequestParams>(requestParams: GenericPromiseRequestParams): Promise<MaybeResponse>;
 }

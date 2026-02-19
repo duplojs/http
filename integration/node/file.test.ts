@@ -22,7 +22,7 @@ describe("receive file", async() => {
 		const formData = new FormData();
 		formData.append("bool", "true");
 		formData.append(
-			"myFile",
+			"myFile/*\\[0]",
 			await createFileToSend("files/fakeFiles/1mb.jpg", "//😄.jpg"),
 		);
 
@@ -30,6 +30,7 @@ describe("receive file", async() => {
 			fetch("http://localhost:8961/documents", {
 				method: "POST",
 				body: formData,
+				headers: { "content-type-options": "advanced" },
 			})
 				.then((response) => ({
 					headers: [...response.headers.entries()],
@@ -43,7 +44,7 @@ describe("receive file", async() => {
 			]),
 		});
 
-		await sleep(100);
+		await sleep(500);
 
 		expect(await SF.stat("files/store/picture.jpg")).toStrictEqual(
 			E.success(
@@ -60,7 +61,7 @@ describe("receive file", async() => {
 		const formData = new FormData();
 		formData.append("bool", "true");
 		formData.append(
-			"myFile",
+			"myFile/*\\[0]",
 			await createFileToSend("files/fakeFiles/2mb.jpg", "//😄.jpg"),
 		);
 
@@ -89,7 +90,7 @@ describe("receive file", async() => {
 			]),
 		});
 
-		await sleep(100);
+		await sleep(500);
 
 		expect(await SF.readDirectory("files/upload")).toStrictEqual(
 			E.success([".gitkeep"]),

@@ -1,5 +1,5 @@
-import { type ClientResponse, createHttpClient, type RequestErrorContent, type NotPredictedClientResponse, type PromiseRequest, type PromiseRequestParams } from "@client";
-import { E, S, type ExpectType } from "@duplojs/utils";
+import { type ClientResponse, createHttpClient, type RequestErrorContent, type NotPredictedClientResponse, type PromiseRequest, type PromiseRequestParams, type GetServerRoutePath, type FindServerRoute, type AddPrefixPathServerRoute, type RemovePrefixPathServerRoute, type FindServerRouteResponse } from "@client";
+import { E, S, type TheFormData, type ExpectType, createFormData } from "@duplojs/utils";
 
 type Routes = {
 	method: "GET";
@@ -53,6 +53,30 @@ type Routes = {
 			age: number;
 		};
 	};
+} | {
+	method: "POST";
+	path: "/documents";
+	body: TheFormData<{
+		bool: boolean;
+		myFile: File;
+	}>;
+	responses: {
+		code: "422";
+		information: "extract-error";
+		body?: undefined;
+	} | {
+		code: "204";
+		information: "file.receive";
+		body?: undefined;
+	};
+} | {
+	method: "GET";
+	path: `/documents/${string}`;
+	responses: {
+		code: "200";
+		information: "file.send";
+		body: File;
+	};
 };
 
 const httpClient = createHttpClient<Routes, { params1: string }>({
@@ -71,9 +95,9 @@ const promiseRequest = httpClient
 type Check = ExpectType<
 	typeof promiseRequest,
 	PromiseRequest<
-		PromiseRequestParams<{
+		{
 			params1: string;
-		}>,
+		},
 		| {
 			code: "422";
 			information: "extract-error";
@@ -166,9 +190,9 @@ void promiseRequest
 	.whenInformationalResponse((value) => {
 		type Check = ExpectType<
 			typeof value,
-			ClientResponse<PromiseRequestParams<{
+			ClientResponse<{
 				params1: string;
-			}>>,
+			}>,
 			"strict"
 		>;
 	})
@@ -200,9 +224,9 @@ void promiseRequest
 	.whenRedirectionResponse((value) => {
 		type Check = ExpectType<
 			typeof value,
-			ClientResponse<PromiseRequestParams<{
+			ClientResponse<{
 				params1: string;
-			}>>,
+			}>,
 			"strict"
 		>;
 	})
@@ -230,9 +254,9 @@ void promiseRequest
 	.whenServerErrorResponse((value) => {
 		type Check = ExpectType<
 			typeof value,
-			ClientResponse<PromiseRequestParams<{
+			ClientResponse<{
 				params1: string;
-			}>>,
+			}>,
 			"strict"
 		>;
 	})
@@ -278,9 +302,9 @@ void promiseRequest
 	.whenNotPredictedResponse((value) => {
 		type Check = ExpectType<
 			typeof value,
-			NotPredictedClientResponse<PromiseRequestParams<{
+			NotPredictedClientResponse<{
 				params1: string;
-			}>>,
+			}>,
 			"strict"
 		>;
 	})
@@ -402,17 +426,17 @@ void promiseRequest
 		if (E.isRight(value)) {
 			type Check = ExpectType<
 				typeof value,
-				E.Right<"response", ClientResponse<PromiseRequestParams<{
+				E.Right<"response", ClientResponse<{
 					params1: string;
-				}>>>,
+				}>>,
 				"strict"
 			>;
 		} else {
 			type Check = ExpectType<
 				typeof value,
-				E.Left<"request-error", RequestErrorContent> | E.Left<"unexpect-response", ClientResponse<PromiseRequestParams<{
+				E.Left<"request-error", RequestErrorContent> | E.Left<"unexpect-response", ClientResponse<{
 					params1: string;
-				}>>>,
+				}>>,
 				"strict"
 			>;
 		}
@@ -472,17 +496,17 @@ void promiseRequest
 		if (E.isRight(value)) {
 			type Check = ExpectType<
 				typeof value,
-				E.Right<"response", ClientResponse<PromiseRequestParams<{
+				E.Right<"response", ClientResponse<{
 					params1: string;
-				}>>>,
+				}>>,
 				"strict"
 			>;
 		} else {
 			type Check = ExpectType<
 				typeof value,
-				E.Left<"request-error", RequestErrorContent> | E.Left<"unexpect-response", ClientResponse<PromiseRequestParams<{
+				E.Left<"request-error", RequestErrorContent> | E.Left<"unexpect-response", ClientResponse<{
 					params1: string;
-				}>>>,
+				}>>,
 				"strict"
 			>;
 		}
@@ -542,17 +566,17 @@ void promiseRequest
 		if (E.isRight(value)) {
 			type Check = ExpectType<
 				typeof value,
-				E.Right<"response", ClientResponse<PromiseRequestParams<{
+				E.Right<"response", ClientResponse<{
 					params1: string;
-				}>>>,
+				}>>,
 				"strict"
 			>;
 		} else {
 			type Check = ExpectType<
 				typeof value,
-				E.Left<"request-error", RequestErrorContent> | E.Left<"unexpect-response", ClientResponse<PromiseRequestParams<{
+				E.Left<"request-error", RequestErrorContent> | E.Left<"unexpect-response", ClientResponse<{
 					params1: string;
-				}>>>,
+				}>>,
 				"strict"
 			>;
 		}
@@ -602,9 +626,9 @@ void promiseRequest
 		} else {
 			type Check = ExpectType<
 				typeof value,
-				E.Left<"request-error", RequestErrorContent> | E.Left<"unexpect-response", ClientResponse<PromiseRequestParams<{
+				E.Left<"request-error", RequestErrorContent> | E.Left<"unexpect-response", ClientResponse<{
 					params1: string;
-				}>>>,
+				}>>,
 				"strict"
 			>;
 		}
@@ -671,9 +695,9 @@ void promiseRequest
 	.then((value) => {
 		type Check = ExpectType<
 			typeof value,
-			ClientResponse<PromiseRequestParams<{
+			ClientResponse<{
 				params1: string;
-			}>>,
+			}>,
 			"strict"
 		>;
 	});
@@ -711,9 +735,9 @@ void promiseRequest
 	.then((value) => {
 		type Check = ExpectType<
 			typeof value,
-			ClientResponse<PromiseRequestParams<{
+			ClientResponse<{
 				params1: string;
-			}>>,
+			}>,
 			"strict"
 		>;
 	});
@@ -747,9 +771,9 @@ void promiseRequest
 	.then((value) => {
 		type Check = ExpectType<
 			typeof value,
-			ClientResponse<PromiseRequestParams<{
+			ClientResponse<{
 				params1: string;
-			}>>,
+			}>,
 			"strict"
 		>;
 	});
@@ -833,7 +857,7 @@ void promiseRequest
 						requestParams: PromiseRequestParams<{ params1: string }>;
 						predicted: boolean;
 					}
-					| NotPredictedClientResponse<PromiseRequestParams<{ params1: string }>>
+					| NotPredictedClientResponse<{ params1: string }>
 				>,
 				"strict"
 			>;
@@ -878,7 +902,7 @@ void httpClient.get("/users")
 			| E.Left<"request-error", RequestErrorContent>
 			| E.Right<
 				"response",
-				| NotPredictedClientResponse<PromiseRequestParams<{ params1: string }>>
+				| NotPredictedClientResponse<{ params1: string }>
 				| {
 					code: "200";
 					information: "users.findMany";
@@ -937,7 +961,7 @@ void httpClient.post("/users", {
 			| E.Left<"request-error", RequestErrorContent>
 			| E.Right<
 				"response",
-				| NotPredictedClientResponse<PromiseRequestParams<{ params1: string }>>
+				| NotPredictedClientResponse<{ params1: string }>
 				| {
 					code: "422";
 					information: "extract-error";
@@ -972,3 +996,77 @@ void httpClient.post("/users", {
 			"strict"
 		>;
 	});
+
+void httpClient.post(
+	"/documents",
+	{
+		body: createFormData({
+			bool: true,
+			myFile: new File([], "test"),
+		}),
+	},
+);
+
+void httpClient
+	.get(
+		"/documents/test",
+		{
+			hookParams: { params1: "" },
+		},
+	)
+	.whenInformation("file.send", ({ body }) => {
+		type Check = ExpectType<
+			typeof body,
+			undefined,
+			"strict"
+		>;
+	});
+
+type Check1 = ExpectType<
+	RemovePrefixPathServerRoute<
+		AddPrefixPathServerRoute<
+			FindServerRoute<Routes, "GET", "/users/{userId}">,
+			"/titi/toto"
+		>,
+		"/titi/"
+	>,
+	{
+		method: "GET";
+		path: "toto/users/{userId}";
+		params: {
+			userId: number;
+		};
+		responses: {
+			code: "422";
+			information: "extract-error";
+			body?: undefined;
+		} | {
+			code: "200";
+			information: "users.find";
+			body: {
+				id: number;
+				name: string;
+				age: number;
+			};
+		};
+	},
+	"strict"
+>;
+
+type Check2 = ExpectType<
+	FindServerRouteResponse<
+		FindServerRoute<Routes, "GET", "/users/{userId}">,
+		"information",
+		"users.find"
+	>,
+	{
+		code: "200";
+		information: "users.find";
+		body: {
+			id: number;
+			name: string;
+			age: number;
+		};
+	},
+	"strict"
+>;
