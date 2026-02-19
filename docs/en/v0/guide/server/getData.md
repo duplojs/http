@@ -26,3 +26,17 @@ The data is then available in the `Floor`, an object that contains the accumulat
 ```
 
 Data extraction can be done at two levels. The storage key will be the `dataParser` key.
+
+## Receive FormData
+```ts twoslash {6,11}
+// @version: 0
+<!--@include: @/examples/v0/guide/server/getData/formData.ts-->
+```
+
+To receive `FormData`, you just need to configure a `bodyController` on your route. This tells the route to prepare for a `FormData` stream during a request. The parameters defined for this `bodyController` are applied while streaming the body, unlike the `dataParser`, which is applied after the body is received.
+
+::: info
+Extraction schemas can be as complex as JSON schemas, because the `FormData` serializer used supports deeper nesting than the default `FormData`.
+
+File extraction is done with the file `dataParser` (`SDPE.file()`) from `@duplojs/server-utils`.
+:::

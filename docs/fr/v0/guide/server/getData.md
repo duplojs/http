@@ -26,3 +26,17 @@ Les données sont ensuite disponibles dans le `Floor`, qui est un objet qui cont
 ```
 
 L'extraction de données peut se faire sur deux niveaux. La clé de stockage sera la clé du `dataParser`. 
+
+## Recevoir du FormData
+```ts twoslash {6,11}
+// @version: 0
+<!--@include: @/examples/v0/guide/server/getData/formData.ts-->
+```
+
+Pour recevoir du `FormData`, il vous suffit de configurer un `bodyController` sur votre route. Cela permet d'indiquer à la route qu'elle doit se préparer à recevoir un flux de `FormData` lors d'une requête. Les paramètres définis pour ce `bodyController` s'appliquent pendant le flux du body, contrairement au `dataParser` qui s'applique après la réception du body.
+
+::: info
+Les schémas d'extraction peuvent avoir la même complexité que ceux d'un JSON, car le serializer de `FormData` utilisé permet des niveaux de profondeur supérieurs au `FormData` de base.
+
+L'extraction de fichiers se fait via le `dataParser` file (`SDPE.file()`) provenant de la librairie `@duplojs/server-utils`.
+:::
