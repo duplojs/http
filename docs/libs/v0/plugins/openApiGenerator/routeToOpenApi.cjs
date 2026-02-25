@@ -12,7 +12,7 @@ function factoryJsonSchema(params) {
         ?? `NotIdentified${params.resultSchemaContext.size}`;
     const renderResult = toJsonSchema.render(params.schema, {
         identifier,
-        mode: params.mode,
+        mode: "in",
         context: params.context,
         version: "openApi31",
         transformers: toJsonSchema.defaultTransformers,
@@ -57,7 +57,6 @@ function routeToOpenApi(route, params) {
         schema: factoryJsonSchema({
             context: params.contextToJsonSchemaFactory,
             resultSchemaContext: params.resultSchemaContext,
-            mode: "in",
             schema,
         }),
     }))));
@@ -68,7 +67,6 @@ function routeToOpenApi(route, params) {
                 schema: factoryJsonSchema({
                     context: params.contextToJsonSchemaFactory,
                     resultSchemaContext: params.resultSchemaContext,
-                    mode: "in",
                     schema: objectSchema,
                 }),
             },
@@ -80,7 +78,6 @@ function routeToOpenApi(route, params) {
                 schema: factoryJsonSchema({
                     context: params.contextToJsonSchemaFactory,
                     resultSchemaContext: params.resultSchemaContext,
-                    mode: "in",
                     schema: objectSchema,
                 }),
             },
@@ -92,7 +89,6 @@ function routeToOpenApi(route, params) {
                 schema: factoryJsonSchema({
                     context: params.contextToJsonSchemaFactory,
                     resultSchemaContext: params.resultSchemaContext,
-                    mode: "in",
                     schema: primitiveSchema,
                 }),
             },
@@ -103,7 +99,6 @@ function routeToOpenApi(route, params) {
             ? factoryJsonSchema({
                 context: params.contextToJsonSchemaFactory,
                 resultSchemaContext: params.resultSchemaContext,
-                mode: "in",
                 schema: body,
             })
             : undefined;

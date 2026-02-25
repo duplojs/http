@@ -9,11 +9,11 @@ function queryToString(query) {
         }
         if (value instanceof Array) {
             value.forEach((subValue) => {
-                pv.push(`${key}=${subValue}`);
+                pv.push(`${key}=${subValue.toString()}`);
             });
         }
         else {
-            pv.push(`${key}=${value}`);
+            pv.push(`${key}=${value.toString()}`);
         }
         return pv;
     }, [])

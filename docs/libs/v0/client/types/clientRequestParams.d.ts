@@ -4,9 +4,15 @@ import { type ObjectCanBeEmpty } from "./ObjectCanBeEmpty";
 import type * as OO from "@duplojs/utils/object";
 export interface ClientRequestInitParams extends Pick<RequestInit, "cache" | "credentials" | "integrity" | "keepalive" | "mode" | "redirect" | "referrer" | "referrerPolicy" | "signal"> {
 }
-export type ClientRequestParamsHeaders = Record<string, string | undefined>;
-export type ClientRequestParamsParams = Record<string, string | undefined>;
-export type ClientRequestParamsQuery = Record<string, MaybeArray<string> | undefined>;
+export type ClientRequestParamsHeaders = Record<string, string | undefined | {
+    toString(): string;
+}>;
+export type ClientRequestParamsParams = Record<string, string | undefined | {
+    toString(): string;
+}>;
+export type ClientRequestParamsQuery = Record<string, MaybeArray<string | {
+    toString(): string;
+}> | undefined>;
 export type ClientRequestParamsBody = unknown;
 export interface ClientRequestParams<GenericHookParams extends Record<string, unknown> = Record<string, unknown>> {
     method: string;

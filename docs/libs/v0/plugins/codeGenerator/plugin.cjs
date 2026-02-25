@@ -43,8 +43,11 @@ function codeGeneratorPlugin(pluginParams) {
                     }
                     const output = DataParserToTypescript__namespace.render(utils.DP.union(dataParserRoutes), {
                         identifier: "Routes",
+                        mode: "in",
                         transformers: [
                             typescriptTransfomer.fileTransformer,
+                            typescriptTransfomer.dateTransformer,
+                            typescriptTransfomer.timeTransformer,
                             ...DataParserToTypescript__namespace.defaultTransformers,
                         ],
                     });
