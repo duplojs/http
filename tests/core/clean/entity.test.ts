@@ -140,6 +140,27 @@ describe("entity", () => {
 		>;
 	});
 
+	it("toExtractParser with single key", () => {
+		const id = C.createNewType("id", DP.number(), C.NumberMin(1));
+		const name = C.createNewType("name", DP.string());
+		const user = C.createEntity("User", () => ({
+			id,
+			name,
+		}));
+		const parser = user.toExtractParser("id");
+
+		asserts(parser.parse(1), E.isRight);
+		asserts(parser.parse(0), E.isLeft);
+
+		expect(parser.parseOrThrow(10)).toStrictEqual(id.createOrThrow(10));
+
+		type Check = ExpectType<
+			DPE.Output<typeof parser>,
+			C.NewType<"id", number, "number-min-1">,
+			"strict"
+		>;
+	});
+
 	it("toEndpointSchema", () => {
 		const id = C.createNewType("id", DP.number(), C.NumberMin(1));
 		const name = C.createNewType("name", DP.string());
@@ -245,6 +266,27 @@ describe("entity", () => {
 				id: number;
 				_entityName: "User/create";
 			},
+			"strict"
+		>;
+	});
+
+	it("toEndpointSchema with single key", () => {
+		const id = C.createNewType("id", DP.number(), C.NumberMin(1));
+		const name = C.createNewType("name", DP.string());
+		const user = C.createEntity("User", () => ({
+			id,
+			name,
+		}));
+		const parser = user.toEndpointSchema("id");
+
+		asserts(parser.parse(1), E.isRight);
+		asserts(parser.parse(0), E.isLeft);
+
+		expect(parser.parseOrThrow(10)).toStrictEqual(10);
+
+		type Check = ExpectType<
+			DPE.Output<typeof parser>,
+			number,
 			"strict"
 		>;
 	});
