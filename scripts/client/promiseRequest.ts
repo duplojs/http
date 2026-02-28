@@ -1,4 +1,4 @@
-import { type NeverCoalescing, type MaybePromise, unwrap, TheFormData } from "@duplojs/utils";
+import { type NeverCoalescing, type MaybePromise, unwrap, TheFormData, type O, type IsEqual } from "@duplojs/utils";
 import { getBody } from "./getBody";
 import { insertParamsInPath } from "./insertParamsInPath";
 import { queryToString } from "./queryToString";
@@ -676,6 +676,54 @@ export class PromiseRequest<
 		) as never;
 	}
 
+	public iSelectExpectedResponseByInformation<
+		const GenericSelector extends Record<
+			Extract<GenericClientResponse["information"], string>,
+			boolean
+		>,
+		GenericResponse extends Extract<
+			GenericClientResponse,
+			| { information: O.GetPropsWithValue<GenericSelector, true> }
+			| { information: O.GetPropsWithValue<GenericSelector, boolean> }
+		>,
+		GenericUnexpectedResponse extends Extract<
+			GenericClientResponse,
+			| { information: O.GetPropsWithValue<GenericSelector, false> }
+			| { information: O.GetPropsWithValue<GenericSelector, boolean> }
+		>,
+	>(
+		selector: GenericSelector,
+	): Promise<
+			MaybeWantedResponse<
+				NeverCoalescing<
+					GenericResponse,
+					ClientResponse<GenericHookParams>
+				>,
+				NeverCoalescing<
+					GenericUnexpectedResponse,
+					ClientResponse<GenericHookParams>
+				>
+			>
+		> {
+		return this.then(
+			EE.whenIsRight(
+				(response) => {
+					if (selector[(response.information ?? "") as never] === true) {
+						return EE.right(
+							"response",
+							response,
+						);
+					}
+
+					return EE.left(
+						"unexpect-response",
+						response,
+					);
+				},
+			),
+		) as never;
+	}
+
 	public iWantInformationOrThrow<
 		GenericInformation extends Extract<
 			GenericClientResponse["information"],
@@ -888,6 +936,39 @@ export class PromiseRequest<
 					);
 				},
 			);
+	}
+
+	public iSelectExpectedResponseByInformationOrThrow<
+		const GenericSelector extends Record<
+			Extract<GenericClientResponse["information"], string>,
+			boolean
+		>,
+		GenericResponse extends Extract<
+			GenericClientResponse,
+			| { information: O.GetPropsWithValue<GenericSelector, true> }
+			| { information: O.GetPropsWithValue<GenericSelector, boolean> }
+		>,
+	>(
+		selector: GenericSelector,
+	): Promise<
+			NeverCoalescing<
+				GenericResponse,
+				ClientResponse<GenericHookParams>
+			>
+		> {
+		return this
+			.iSelectExpectedResponseByInformation(selector)
+			.then(
+				(maybeResponse) => {
+					if (EE.isRight(maybeResponse)) {
+						return unwrap(maybeResponse);
+					}
+
+					throw new UnexpectedResponseError(
+						unwrap(maybeResponse),
+					);
+				},
+			) as never;
 	}
 
 	public static override get [Symbol.species]() {

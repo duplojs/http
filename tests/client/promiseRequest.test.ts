@@ -563,6 +563,35 @@ describe("PromiseRequest", () => {
 		expect(unwrap(miss)).toBe(responseMiss);
 	});
 
+	it("selectByInformation", async() => {
+		const params = createParams();
+		const response = createResponse(params, { information: "ready" });
+		const fetchSpy = vi.spyOn(PromiseRequest, "fetch");
+		fetchSpy.mockResolvedValueOnce(E.right("response", response));
+
+		const request = new PromiseRequest(params);
+		const match = await request.iSelectExpectedResponseByInformation({
+			ready: true,
+			other: false,
+		});
+
+		expect(E.isRight(match)).toBe(true);
+		expect(unwrap(match)).toBe(response);
+
+		const paramsMiss = createParams();
+		const responseMiss = createResponse(paramsMiss, { information: undefined });
+		fetchSpy.mockResolvedValueOnce(E.right("response", responseMiss));
+
+		const requestMiss = new PromiseRequest(paramsMiss);
+		const miss = await requestMiss.iSelectExpectedResponseByInformation({
+			ready: true,
+			other: false,
+		});
+
+		expect(E.isLeft(miss)).toBe(true);
+		expect(unwrap(miss)).toBe(responseMiss);
+	});
+
 	it("iWantInformationOrThrow", async() => {
 		const params = createParams();
 		const response = createResponse(params, { information: "ready" });
@@ -716,6 +745,33 @@ describe("PromiseRequest", () => {
 		await expect(requestMiss.iWantExpectedResponseOrThrow()).rejects.toBeInstanceOf(
 			UnexpectedResponseError,
 		);
+	});
+
+	it("selectByInformationOrThrow", async() => {
+		const params = createParams();
+		const response = createResponse(params, { information: "ready" });
+		const fetchSpy = vi.spyOn(PromiseRequest, "fetch");
+		fetchSpy.mockResolvedValueOnce(E.right("response", response));
+
+		const request = new PromiseRequest(params);
+		await expect(
+			request.iSelectExpectedResponseByInformationOrThrow({
+				ready: true,
+				other: false,
+			}),
+		).resolves.toBe(response);
+
+		const paramsMiss = createParams();
+		const responseMiss = createResponse(paramsMiss, { information: "other" });
+		fetchSpy.mockResolvedValueOnce(E.right("response", responseMiss));
+
+		const requestMiss = new PromiseRequest(paramsMiss);
+		await expect(
+			requestMiss.iSelectExpectedResponseByInformationOrThrow({
+				ready: true,
+				other: false,
+			}),
+		).rejects.toBeInstanceOf(UnexpectedResponseError);
 	});
 
 	it("Symbol.species returns Promise", () => {

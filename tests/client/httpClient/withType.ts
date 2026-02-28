@@ -635,6 +635,57 @@ void promiseRequest
 	});
 
 void promiseRequest
+	.iSelectExpectedResponseByInformation({
+		"extract-error": false,
+		"users.find": true,
+	})
+	.then((value) => {
+		if (E.isRight(value)) {
+			type Check = ExpectType<
+				typeof value,
+				E.Right<"response", {
+					code: "200";
+					information: "users.find";
+					body: {
+						id: number;
+						name: string;
+						age: number;
+					};
+					ok: boolean | null;
+					headers: Headers;
+					type: ResponseType;
+					url: string;
+					redirected: boolean;
+					raw: globalThis.Response;
+					requestParams: PromiseRequestParams<{
+						params1: string;
+					}>;
+					predicted: boolean;
+				}>,
+				"strict"
+			>;
+		} else {
+			type Check = ExpectType<
+				typeof value,
+				E.Left<"request-error", RequestErrorContent> | E.Left<"unexpect-response", {
+					code: "422";
+					information: "extract-error";
+					body: undefined;
+					ok: boolean | null;
+					headers: Headers;
+					type: ResponseType;
+					url: string;
+					redirected: boolean;
+					raw: Response;
+					requestParams: PromiseRequestParams<{ params1: string }>;
+					predicted: boolean;
+				}>,
+				"strict"
+			>;
+		}
+	});
+
+void promiseRequest
 	.iWantInformationOrThrow("users.find")
 	.then((value) => {
 		type Check = ExpectType<
@@ -805,6 +856,33 @@ void promiseRequest
 					name: string;
 					age: number;
 				};
+				ok: boolean | null;
+				headers: Headers;
+				type: ResponseType;
+				url: string;
+				redirected: boolean;
+				raw: globalThis.Response;
+				requestParams: PromiseRequestParams<{
+					params1: string;
+				}>;
+				predicted: boolean;
+			},
+			"strict"
+		>;
+	});
+
+void promiseRequest
+	.iSelectExpectedResponseByInformationOrThrow({
+		"extract-error": true,
+		"users.find": false,
+	})
+	.then((value) => {
+		type Check = ExpectType<
+			typeof value,
+			{
+				code: "422";
+				information: "extract-error";
+				body: undefined;
 				ok: boolean | null;
 				headers: Headers;
 				type: ResponseType;

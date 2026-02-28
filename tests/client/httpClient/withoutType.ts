@@ -301,6 +301,30 @@ void promiseRequest
 	});
 
 void promiseRequest
+	.iSelectExpectedResponseByInformation({
+		testInformation: true,
+	})
+	.then((value) => {
+		if (E.isRight(value)) {
+			type Check = ExpectType<
+				typeof value,
+				E.Right<"response", ClientResponse<{
+					params1: string;
+				}>>,
+				"strict"
+			>;
+		} else {
+			type Check = ExpectType<
+				typeof value,
+				E.Left<"request-error", RequestErrorContent> | E.Left<"unexpect-response", ClientResponse<{
+					params1: string;
+				}>>,
+				"strict"
+			>;
+		}
+	});
+
+void promiseRequest
 	.iWantInformationOrThrow("test")
 	.then((value) => {
 		type Check = ExpectType<
@@ -386,6 +410,20 @@ void promiseRequest
 
 void promiseRequest
 	.iWantExpectedResponseOrThrow()
+	.then((value) => {
+		type Check = ExpectType<
+			typeof value,
+			ClientResponse<{
+				params1: string;
+			}>,
+			"strict"
+		>;
+	});
+
+void promiseRequest
+	.iSelectExpectedResponseByInformationOrThrow({
+		testInformation: true,
+	})
 	.then((value) => {
 		type Check = ExpectType<
 			typeof value,
