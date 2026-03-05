@@ -21,6 +21,19 @@ export interface ClientResponse<
 	predicted: boolean;
 }
 
+export interface ServerEvent {
+	data: unknown;
+	event: string;
+	id?: string;
+	retry?: number;
+}
+
+export interface ClientEventsResponse<
+	GenericHookParams extends Record<string, unknown> = Record<string, unknown>,
+> extends ClientResponse<GenericHookParams>, AsyncIterable<ServerEvent, void> {
+
+}
+
 export interface NotPredictedClientResponse<
 	GenericHookParams extends Record<string, unknown> = Record<string, unknown>,
 > extends ClientResponse<GenericHookParams> {

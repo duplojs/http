@@ -123,8 +123,8 @@ export interface HookRouteLifeCycle<
 }
 
 export function createHookRouteLifeCycle<
-	GenericHookLiveCycle extends Omit<
-		HookRouteLifeCycle,
+	const GenericHookLiveCycle extends Omit<
+		HookRouteLifeCycle<Request>,
 		"onConstructRequest"
 	>,
 >(
@@ -133,7 +133,7 @@ export function createHookRouteLifeCycle<
 
 export function createHookRouteLifeCycle<
 	GenericOnConstructRequest extends HookOnConstructRequest,
-	GenericHookLiveCycle extends Omit<
+	const GenericHookLiveCycle extends Omit<
 		HookRouteLifeCycle<
 			Awaited<ReturnType<GenericOnConstructRequest>>
 		>,
@@ -143,7 +143,7 @@ export function createHookRouteLifeCycle<
 	onConstructRequest: GenericOnConstructRequest,
 	hookRouteLifeCycle: GenericHookLiveCycle,
 ): SimplifyTopLevel<
-	& { onConstructRequest: GenericOnConstructRequest }
+	& { readonly onConstructRequest: GenericOnConstructRequest }
 	& GenericHookLiveCycle
 >;
 

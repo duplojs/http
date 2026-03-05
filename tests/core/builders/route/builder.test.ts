@@ -1,4 +1,4 @@
-import { type RouteBuilder, useRouteBuilder, type Request, type HookParamsOnConstructRequest, type Metadata, IgnoreByRouteStoreMetadata, controlBodyAsFormData, type BodyController, type FormDataBodyReaderParams } from "@core";
+import { type RouteBuilder, useRouteBuilder, type Request, type HookParamsOnConstructRequest, type Metadata, IgnoreByRouteStoreMetadata, controlBodyAsFormData, type BodyController, type FormDataBodyReaderParams, createHookRouteLifeCycle, type RouteHookParamsAfter, type RouteHookNext } from "@core";
 import { builderKind, type ExpectType } from "@duplojs/utils";
 
 describe("route builder", () => {
@@ -75,9 +75,13 @@ describe("route builder", () => {
 	});
 
 	it("useRouteBuilder with hook", () => {
+		const tt = createHookRouteLifeCycle(
+			({ addRequestProperties }) => addRequestProperties({ aa: 1 }),
+			{ beforeSendResponse: ({ next, request }) => next() },
+		);
 		const routeBuilder = useRouteBuilder("GET", "/test", {
 			hooks: [
-				{ onConstructRequest: ({ addRequestProperties }) => addRequestProperties({ aa: 1 }) },
+				tt,
 				{ onConstructRequest: ({ addRequestProperties }) => addRequestProperties({ bb: 1 }) },
 			],
 		});
@@ -113,6 +117,10 @@ describe("route builder", () => {
 							readonly onConstructRequest: (params: HookParamsOnConstructRequest) => Request & {
 								aa: number;
 							};
+							// eslint-disable-next-line @typescript-eslint/method-signature-style
+							readonly beforeSendResponse: ({ next, request }: RouteHookParamsAfter<Request & {
+								aa: number;
+							}>) => RouteHookNext;
 						},
 						{
 							// eslint-disable-next-line @typescript-eslint/method-signature-style

@@ -1,5 +1,5 @@
 import { createCoreLibKind } from "@core/kind";
-import { pipe, type WrappedValue, type Kind, type MaybePromise, type NeverCoalescing } from "@duplojs/utils";
+import { pipe, type WrappedValue, type Kind, type MaybePromise, type NeverCoalescing, type MaybeArray } from "@duplojs/utils";
 import { type StepKind, stepKind } from "./kind";
 import { type Floor } from "@core/floor";
 import { type StepFunctionParams } from "./types";
@@ -30,7 +30,7 @@ export interface CutStepFunctionParams<
 
 export interface CutStepDefinition {
 	theFunction(floor: Floor, params: CutStepFunctionParams): MaybePromise<CutStepFunctionOutput | PredictedResponse>;
-	readonly responseContract: ResponseContract.Contract | readonly ResponseContract.Contract[];
+	readonly responseContract: MaybeArray<ResponseContract.Contract>;
 	readonly metadata: readonly Metadata[];
 }
 

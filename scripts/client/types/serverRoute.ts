@@ -13,10 +13,13 @@ export type ServerRouteBody = unknown;
 
 export type ServerRouteResponseBody = unknown;
 
+export type ServerRouteResponseEvents = Record<string, unknown>;
+
 export interface ServerRouteResponse {
 	code: SS.Number;
 	information?: string;
 	body?: ServerRouteResponseBody;
+	events?: ServerRouteResponseEvents;
 }
 
 export interface ServerRoute {

@@ -9,4 +9,5 @@ export interface PromiseRequestParams<
 	informationHeaderKey: string;
 	predictedHeaderKey: string;
 	disabledPredicateMode: boolean;
+	abortController: AbortController;
 }

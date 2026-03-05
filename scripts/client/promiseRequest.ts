@@ -1,4 +1,4 @@
-import { type NeverCoalescing, type MaybePromise, unwrap, TheFormData, type O, type IsEqual } from "@duplojs/utils";
+import { type NeverCoalescing, type MaybePromise, unwrap, TheFormData, type O } from "@duplojs/utils";
 import { getBody } from "./getBody";
 import { insertParamsInPath } from "./insertParamsInPath";
 import { queryToString } from "./queryToString";
@@ -8,6 +8,7 @@ import * as SS from "@duplojs/utils/string";
 import * as AA from "@duplojs/utils/array";
 import { UnexpectedCodeResponseError, UnexpectedInformationResponseError, UnexpectedResponseError, UnexpectedResponseTypeError, type RequestErrorContent } from "./unexpectedResponseError";
 import { type NotPredictedClientResponse, type ClientResponse, type PromiseRequestParams, type Hooks, type NotPredictedResponseHook, type ErrorHook } from "./types";
+import { makeClientEventsResponse } from "./serverSentEvents";
 
 type MaybeResponse<
 	GenericClientResponse extends ClientResponse = ClientResponse,
@@ -1016,23 +1017,26 @@ export class PromiseRequest<
 			}
 		}
 
+		const fetchUrl = `${requestParams.baseUrl}${url}`;
+		const fetchInitParams: RequestInit = {
+			...requestParams.initParams,
+			headers: <never>headers,
+			method: requestParams.method,
+			body: <never>body,
+			signal: requestParams.abortController.signal,
+		};
+
 		return fetch(
-			`${requestParams.baseUrl}${url}`,
-			{
-				...requestParams.initParams,
-				headers: <never>headers,
-				method: requestParams.method,
-				body: <never>body,
-			},
+			fetchUrl,
+			fetchInitParams,
 		)
 			.then(
 				(response) => getBody(response)
 					.then(
-						(body) => EE.right(
-							"response",
-							{
+						(body) => {
+							const clientResponse: ClientResponse = {
 								body,
-								information: response.headers.get(requestParams.informationHeaderKey) || undefined,
+								information: response.headers.get(requestParams.informationHeaderKey) ?? undefined,
 								code: response.status.toString() as SS.Number,
 								ok: (response.status < 500)
 									? response.ok
@@ -1044,8 +1048,38 @@ export class PromiseRequest<
 								raw: response,
 								requestParams,
 								predicted: response.headers.get(requestParams.predictedHeaderKey) !== null,
-							} satisfies ClientResponse,
-						),
+							};
+
+							if (response.headers.get("content-type")?.includes("text/event-stream")) {
+								return EE.right(
+									"response",
+									makeClientEventsResponse(
+										clientResponse,
+										fetchUrl,
+										fetchInitParams,
+									),
+								);
+							}
+
+							return EE.right(
+								"response",
+								{
+									body,
+									information: response.headers.get(requestParams.informationHeaderKey) || undefined,
+									code: response.status.toString() as SS.Number,
+									ok: (response.status < 500)
+										? response.ok
+										: null,
+									headers: response.headers,
+									type: response.type,
+									url: response.url,
+									redirected: response.redirected,
+									raw: response,
+									requestParams,
+									predicted: response.headers.get(requestParams.predictedHeaderKey) !== null,
+								},
+							);
+						},
 					),
 			)
 			.catch(

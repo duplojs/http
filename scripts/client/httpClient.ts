@@ -297,6 +297,7 @@ export function createHttpClient<
 					predictedHeaderKey: config.predictedHeaderKey,
 					informationHeaderKey: config.informationHeaderKey,
 					disabledPredicateMode: config.disabledPredictedMode,
+					abortController: params.abortController ?? new AbortController(),
 				});
 			},
 			get: ((path: string, params?: object) => self.request({

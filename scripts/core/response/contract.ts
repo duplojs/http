@@ -1,6 +1,6 @@
 import { DP, type Kind, pipe, type IsEqual, type NeverCoalescing, kindHeritage } from "@duplojs/utils";
 import { createCoreLibKind } from "../kind";
-import { type ResponseCode, type PredictedResponse } from ".";
+import { type ResponseCode, type PredictedResponse, type ServerSentEventsPredictedResponse, type SuccessResponseCode } from ".";
 import { type ForbiddenBigintDataParser } from "@core/types";
 
 const ErrorClass = Error;
@@ -9,7 +9,6 @@ export namespace ResponseContract {
 	type SupportedDataParser = DP.DataParser;
 
 	export const contractKind = createCoreLibKind("response-contract");
-
 	export interface Contract<
 		GenericCode extends ResponseCode = ResponseCode,
 		GenericInformation extends string = string,
@@ -19,16 +18,6 @@ export namespace ResponseContract {
 		information: GenericInformation;
 		body: GenericSchema;
 	}
-
-	export type Convert<
-		GenericContract extends Contract,
-	> = GenericContract extends Contract
-		? PredictedResponse<
-			GenericContract["code"],
-			GenericContract["information"],
-			DP.Input<GenericContract["body"]>
-		>
-		: never;
 
 	function createContractBuilder<
 		GenericCode extends ResponseCode,
@@ -136,6 +125,71 @@ export namespace ResponseContract {
 	export const loopDetected = createContractBuilder("508", { defaultSchema });
 	export const notExtended = createContractBuilder("510", { defaultSchema });
 	export const networkAuthenticationRequired = createContractBuilder("511", { defaultSchema });
+
+	export const serverSentEventsContractKind = createCoreLibKind("server-sent-events-response-contract");
+	export interface ServerSentEventsContract<
+		GenericCode extends SuccessResponseCode = SuccessResponseCode,
+		GenericInformation extends string = string,
+		GenericEvents extends Record<string, SupportedDataParser> = Record<string, SupportedDataParser>,
+		GenericSchema extends SupportedDataParser = SupportedDataParser,
+	> extends Kind<typeof serverSentEventsContractKind.definition> {
+		code: GenericCode;
+		information: GenericInformation;
+		events: GenericEvents;
+		body: GenericSchema;
+	}
+
+	const pingSchema = DP.empty();
+	export function serverSentEvents<
+		GenericInformation extends string,
+		GenericMainEventSchema extends SupportedDataParser,
+		GenericEvents extends Record<string, SupportedDataParser> = {},
+	>(
+		information: GenericInformation,
+		mainEventSchema: GenericMainEventSchema,
+		events: GenericEvents = {} as GenericEvents,
+	): ServerSentEventsContract<
+			"200",
+			GenericInformation,
+			& GenericEvents
+			& {
+				message: GenericMainEventSchema;
+				ping: typeof pingSchema;
+			}
+		> {
+		return serverSentEventsContractKind.setTo({
+			code: <const>"200",
+			information,
+			events: {
+				...events,
+				message: mainEventSchema,
+				ping: pingSchema,
+			},
+			body: defaultSchema,
+		});
+	}
+
+	export type Convert<
+		GenericContract extends Contract | ServerSentEventsContract,
+	> = GenericContract extends Contract
+		? PredictedResponse<
+			GenericContract["code"],
+			GenericContract["information"],
+			DP.Input<GenericContract["body"]>
+		>
+		: GenericContract extends ServerSentEventsContract
+			? ServerSentEventsPredictedResponse<
+				GenericContract["code"],
+				GenericContract["information"],
+				{
+					[Prop in keyof GenericContract["events"]]: [
+						Extract<Prop, string>,
+						DP.Output<GenericContract["events"][Prop]>,
+					]
+				}[keyof GenericContract["events"]]
+			>
+			: never;
+
 	export class Error extends kindHeritage(
 		"contract-error",
 		createCoreLibKind("contract-error"),
@@ -143,9 +197,9 @@ export namespace ResponseContract {
 	) {
 		public constructor(
 			public information: string,
-			public dataParserError?: DP.DataParserError,
+			public detail: DP.DataParserError | string,
 		) {
-			super({}, [`Error executing the response contract with the information: "${information}".`]);
+			super({}, [`Error executing the response contract with the information: "${information}"\nDetail: ${JSON.stringify(detail)}.`]);
 		}
 	}
 }
