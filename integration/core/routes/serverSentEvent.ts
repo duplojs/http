@@ -13,8 +13,6 @@ useRouteBuilder("GET", "/sse")
 
 				send("message", { test: "2" }, { id: "test" });
 
-				send("ping", undefined, { retry: 500 });
-
 				await sleep(500);
 
 				send("other", "3");

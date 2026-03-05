@@ -7,10 +7,6 @@ import { kindHeritage, type MillisecondInString, type MaybePromise } from "@dupl
 const defaultParamsParent = [undefined, undefined, undefined] as const;
 const defaultParams = {};
 
-export interface ServerSentEventsPredictedResponseParams {
-	intervalPing?: number | MillisecondInString;
-}
-
 export class ServerSentEventsPredictedResponse<
 	GenericCode extends SuccessResponseCode = SuccessResponseCode,
 	GenericInformation extends string = string,
@@ -32,7 +28,6 @@ export class ServerSentEventsPredictedResponse<
 		public startSendingEvents: (
 			params: ServerSentEvents.StartSendingParams<GenericEvents>
 		) => MaybePromise<void>,
-		public params?: ServerSentEventsPredictedResponseParams,
 	) {
 		super(defaultParams, defaultParamsParent);
 		this.code = code;

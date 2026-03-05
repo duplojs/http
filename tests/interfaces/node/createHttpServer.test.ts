@@ -83,7 +83,6 @@ describe("createHttpServer", () => {
 			fromHookHeaderKey: "from-hook",
 			interface: "node",
 			uploadFolder: "./upload",
-			serverSentEventsDefaultIntervalPing: "15s",
 		});
 		expect(httpCreateServer).toHaveBeenCalledWith({});
 		expect(httpsCreateServer).not.toHaveBeenCalled();

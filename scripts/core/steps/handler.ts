@@ -19,7 +19,6 @@ interface HandlerStepFunctionParamsServerSentEventsResponse<
 	>(
 		information: GenericInformation,
 		startSendingEvents: GenericFilteredResponse["startSendingEvents"],
-		params?: GenericFilteredResponse["params"],
 	): GenericFilteredResponse;
 }
 

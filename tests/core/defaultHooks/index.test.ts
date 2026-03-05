@@ -1,4 +1,4 @@
-import { createHub, HookResponse, type HttpServerParams, initDefaultHook, PredictedResponse, Response } from "@core";
+import { createHub, HookResponse, type HttpServerParams, initDefaultHook, PredictedResponse, Response, ServerSentEventsPredictedResponse } from "@core";
 import { SF } from "@duplojs/server-utils";
 
 describe("defaultHook", () => {
@@ -193,6 +193,26 @@ describe("defaultHook", () => {
 		expect(response.headers).toStrictEqual({
 			information: "superInfo",
 			"content-type": "test",
+		});
+	});
+
+	it("beforeSendResponse ServerSentEventsPredictedResponse", () => {
+		const response = new ServerSentEventsPredictedResponse("200", "test", () => undefined);
+
+		defaultHook.beforeSendResponse({
+			currentResponse: response,
+			next: () => ({}) as any,
+			request: {} as any,
+			exit: {} as any,
+		});
+
+		expect(response.headers).toStrictEqual({
+			"cache-control": "no-cache",
+			connection: "keep-alive",
+			"content-type": "text/event-stream",
+			information: "test",
+			predicted: "1",
+			"transfer-encoding": "chunked",
 		});
 	});
 });

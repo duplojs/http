@@ -23,6 +23,8 @@ export function makeClientEventsResponse(
 	let reader = response.raw.body?.getReader();
 	let abortController = response.requestParams.abortController;
 
+	// event subscriber and hook
+
 	if (!reader || response.code === "204") {
 		return {
 			...response,

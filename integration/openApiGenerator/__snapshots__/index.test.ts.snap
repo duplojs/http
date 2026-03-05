@@ -191,7 +191,7 @@ exports[`openApiGenerator > correct generate file 1`] = `
         "parameters": [],
         "responses": {
           "200": {
-            "description": "undefined\\nFlux SSE.",
+            "description": "Flux SSE.",
             "headers": {
               "information": {
                 "schema": {
@@ -368,10 +368,6 @@ exports[`openApiGenerator > correct generate file 1`] = `
               {
                 "const": "message",
                 "type": "string"
-              },
-              {
-                "const": "ping",
-                "type": "string"
               }
             ]
           },
@@ -390,8 +386,7 @@ exports[`openApiGenerator > correct generate file 1`] = `
                 "required": [
                   "test"
                 ]
-              },
-              {}
+              }
             ]
           },
           "id": {
@@ -402,7 +397,8 @@ exports[`openApiGenerator > correct generate file 1`] = `
           }
         },
         "required": [
-          "event"
+          "event",
+          "data"
         ]
       }
     }

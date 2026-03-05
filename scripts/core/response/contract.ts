@@ -139,7 +139,6 @@ export namespace ResponseContract {
 		body: GenericSchema;
 	}
 
-	const pingSchema = DP.empty();
 	export function serverSentEvents<
 		GenericInformation extends string,
 		GenericMainEventSchema extends SupportedDataParser,
@@ -154,7 +153,6 @@ export namespace ResponseContract {
 			& GenericEvents
 			& {
 				message: GenericMainEventSchema;
-				ping: typeof pingSchema;
 			}
 		> {
 		return serverSentEventsContractKind.setTo({
@@ -163,7 +161,6 @@ export namespace ResponseContract {
 			events: {
 				...events,
 				message: mainEventSchema,
-				ping: pingSchema,
 			},
 			body: defaultSchema,
 		});

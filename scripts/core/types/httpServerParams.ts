@@ -1,4 +1,4 @@
-import { type MillisecondInString, type BytesInString } from "@duplojs/utils";
+import { type BytesInString } from "@duplojs/utils";
 import { type Hosts } from "./hosts";
 
 export interface HttpServerParams {
@@ -8,6 +8,5 @@ export interface HttpServerParams {
 	readonly informationHeaderKey: string;
 	readonly predictedHeaderKey: string;
 	readonly fromHookHeaderKey: string;
-	readonly serverSentEventsDefaultIntervalPing: MillisecondInString | number;
 	readonly uploadFolder: string;
 }

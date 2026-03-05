@@ -11,7 +11,6 @@ export function initNodeHook(
 	hub: Hub,
 	serverParams: HttpServerParams,
 ) {
-	const serverSentEventsDefaultIntervalPing = stringToMillisecond(serverParams.serverSentEventsDefaultIntervalPing);
 	const isDev = hub.config.environment === "DEV";
 
 	return createHookRouteLifeCycle({
@@ -31,14 +30,13 @@ export function initNodeHook(
 				const handler = ServerSentEvents.init(
 					serverSentEventsResponse,
 					{
-						defaultIntervalPing: serverSentEventsDefaultIntervalPing,
 						lastId: typeof request.headers["last-event-id"] === "string"
 							? request.headers["last-event-id"]
 							: null,
 					},
 				);
 				rawRequest.on("close", handler.abort);
-				await handler.start(
+				void handler.start(
 					(value) => void rawResponse.write(value),
 					() => void rawResponse.end(),
 				);

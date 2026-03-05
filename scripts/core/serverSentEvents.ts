@@ -1,15 +1,9 @@
 /* eslint-disable @typescript-eslint/prefer-for-of */
-import { E, type MaybePromise, type MillisecondInString, stringToMillisecond } from "@duplojs/utils";
+import { type MaybePromise, type MillisecondInString, stringToMillisecond } from "@duplojs/utils";
 import { type ServerSentEventsPredictedResponse } from "./response";
 
 export namespace ServerSentEvents {
 	export type DefinitionShape = [string, unknown];
-	export type SendUnknownError = E.Left<"unknown-error", unknown>;
-	export type SendError = (
-		| E.Left<"abort", unknown>
-		| E.Left<"close", unknown>
-		| SendUnknownError
-	);
 
 	export interface SendParams {
 		id?: string;
@@ -19,7 +13,19 @@ export namespace ServerSentEvents {
 	export interface StartSendingParams<
 		GenericEvents extends DefinitionShape = DefinitionShape,
 	> {
-		send(...args: [...GenericEvents, params?: SendParams]): void;
+		send(
+			...args: GenericEvents extends any
+				? [
+					event: GenericEvents[0],
+					...(
+						GenericEvents[1] extends undefined
+							? [data?: GenericEvents[1]]
+							: [data: GenericEvents[1]]
+					),
+					params?: SendParams,
+				]
+				: never
+		): void;
 		abort(): void;
 		onAbort(theFunction: () => void): void;
 		isAbort(): boolean;
@@ -40,7 +46,6 @@ export namespace ServerSentEvents {
 	}
 
 	export interface InitParams {
-		defaultIntervalPing: number;
 		readonly lastId: string | null;
 	}
 
@@ -53,7 +58,6 @@ export namespace ServerSentEvents {
 	) {
 		const abortSubscribers: Parameters<StartSendingParams["onAbort"]>[0][] = [];
 		let isAbort = false;
-		let interval = undefined as number | undefined;
 
 		const handler: Handler = {
 			async start(
@@ -72,9 +76,9 @@ export namespace ServerSentEvents {
 				const params: StartSendingParams = {
 					send: (event, data, params) => {
 						if (isClose) {
-							return E.left("close");
+							return;
 						} else if (isAbort) {
-							return E.left("abort");
+							return;
 						}
 
 						let content = `event: ${event || "message"}\n`;
@@ -83,7 +87,7 @@ export namespace ServerSentEvents {
 							for (let index = 0; index < splitData.length; index++) {
 								content += `data: ${splitData[index]}\n`;
 							}
-						} else {
+						} else if (data !== undefined) {
 							content += `content-type: application/json\ndata: ${JSON.stringify(data)}\n`;
 						}
 
@@ -108,7 +112,6 @@ export namespace ServerSentEvents {
 						}
 						isClose = true;
 						close();
-						clearInterval(interval);
 						for (let index = 0; index < closeSubscribers.length; index++) {
 							closeSubscribers[index]!();
 						}
@@ -126,11 +129,6 @@ export namespace ServerSentEvents {
 						: null,
 				};
 
-				interval = setInterval(
-					() => void params.send("ping", ""),
-					stringToMillisecond(response.params?.intervalPing ?? initParams.defaultIntervalPing),
-				) as unknown as number;
-
 				try {
 					await response.startSendingEvents(params);
 				} catch (error) {
@@ -144,7 +142,6 @@ export namespace ServerSentEvents {
 					return;
 				}
 				isAbort = true;
-				clearInterval(interval);
 				for (let index = 0; index < abortSubscribers.length; index++) {
 					abortSubscribers[index]!();
 				}

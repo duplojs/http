@@ -47,10 +47,10 @@ export function initDefaultHook(
 				currentResponse.setHeader(predictedHeaderKey, "1");
 			} else if (currentResponse instanceof ServerSentEventsPredictedResponse) {
 				currentResponse.setHeader(predictedHeaderKey, "1");
-				currentResponse.setHeader("Transfer-Encoding", "chunked");
-				currentResponse.setHeader("Content-Type", "text/event-stream");
-				currentResponse.setHeader("Cache-Control", "no-cache");
-				currentResponse.setHeader("Connection", "keep-alive");
+				currentResponse.setHeader("transfer-encoding", "chunked");
+				currentResponse.setHeader("content-type", "text/event-stream");
+				currentResponse.setHeader("cache-control", "no-cache");
+				currentResponse.setHeader("connection", "keep-alive");
 			} else if (currentResponse instanceof HookResponse) {
 				currentResponse.setHeader(fromHookHeaderKey, currentResponse.fromHook);
 			}

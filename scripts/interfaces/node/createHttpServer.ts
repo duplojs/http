@@ -31,7 +31,6 @@ export type CreateHttpServerParams = O.PartialKeys<
 	| "informationHeaderKey"
 	| "predictedHeaderKey"
 	| "fromHookHeaderKey"
-	| "serverSentEventsDefaultIntervalPing"
 	| "uploadFolder"
 >;
 
@@ -49,7 +48,6 @@ export function createHttpServer(
 			fromHookHeaderKey: "from-hook",
 			interface: "node",
 			uploadFolder: "./upload",
-			serverSentEventsDefaultIntervalPing: "15s",
 		},
 		params,
 	);

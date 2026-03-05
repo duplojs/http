@@ -20,7 +20,6 @@ describe("makeNodeHook", () => {
 		fromHookHeaderKey: "from-hook",
 		predictedHeaderKey: "predicted",
 		uploadFolder: "./upload",
-		serverSentEventsDefaultIntervalPing: 150,
 	};
 
 	const hooks = initNodeHook(testHub, baseServerParams);

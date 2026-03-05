@@ -93,7 +93,6 @@ export type Routes = {
             message: {
                 test: string;
             };
-            ping?: undefined;
         };
     };
 };"

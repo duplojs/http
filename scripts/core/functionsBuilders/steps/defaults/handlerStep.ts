@@ -58,7 +58,6 @@ export const defaultHandlerStepFunctionBuilder = createStepFunctionBuilder(
 		const serverSentEventsResponse: HandlerStepFunctionParams["serverSentEventsResponse"] = (
 			information,
 			startSendingEvents,
-			params,
 		) => {
 			const currentContract = preparedContractResponse[information];
 
@@ -78,22 +77,20 @@ export const defaultHandlerStepFunctionBuilder = createStepFunctionBuilder(
 						const dataParser = currentContract.events[event];
 
 						if (!dataParser) {
-							throw new ResponseContract.Error(information, "Event not found.");
+							console.error(new ResponseContract.Error(information, `Event '${event}' not found.`));
+							return;
 						}
 
 						const result = dataParser.parse(data);
 
 						if (E.isLeft(result)) {
-							throw new ResponseContract.Error(
-								information,
-								unwrap(result),
-							);
+							console.error(new ResponseContract.Error(information, unwrap(result)));
+							return;
 						}
 
 						params.send(event, data, sendParams);
 					},
 				}),
-				params,
 			) as never;
 		};
 
