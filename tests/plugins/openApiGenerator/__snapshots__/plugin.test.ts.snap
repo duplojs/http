@@ -52,7 +52,7 @@ exports[`plugin implementation > generate OpenApi file 1`] = `
             "content": {
               "plain/text": {
                 "schema": {
-                  "$ref": "#/components/schemas/NotIdentified3"
+                  "$ref": "#/components/schemas/NotIdentified5"
                 }
               }
             }
@@ -106,7 +106,9 @@ exports[`plugin implementation > generate OpenApi file 1`] = `
           "age"
         ]
       },
-      "NotIdentified3": {
+      "NotIdentified3": {},
+      "NotIdentified4": {},
+      "NotIdentified5": {
         "type": "string"
       }
     }
@@ -166,7 +168,7 @@ exports[`plugin implementation > generate OpenApi file with type apiKey ok secur
             "content": {
               "plain/text": {
                 "schema": {
-                  "$ref": "#/components/schemas/NotIdentified3"
+                  "$ref": "#/components/schemas/NotIdentified5"
                 }
               }
             }
@@ -220,7 +222,9 @@ exports[`plugin implementation > generate OpenApi file with type apiKey ok secur
           "age"
         ]
       },
-      "NotIdentified3": {
+      "NotIdentified3": {},
+      "NotIdentified4": {},
+      "NotIdentified5": {
         "type": "string"
       }
     },
@@ -292,7 +296,7 @@ exports[`plugin implementation > generate OpenApi file with type bearer ok secur
             "content": {
               "plain/text": {
                 "schema": {
-                  "$ref": "#/components/schemas/NotIdentified3"
+                  "$ref": "#/components/schemas/NotIdentified5"
                 }
               }
             }
@@ -346,7 +350,9 @@ exports[`plugin implementation > generate OpenApi file with type bearer ok secur
           "age"
         ]
       },
-      "NotIdentified3": {
+      "NotIdentified3": {},
+      "NotIdentified4": {},
+      "NotIdentified5": {
         "type": "string"
       }
     },

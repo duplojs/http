@@ -69,7 +69,7 @@ export const defaultProcessStepFunctionBuilder = createStepFunctionBuilder(
 
 				// eslint-disable-next-line @typescript-eslint/prefer-for-of
 				for (let index = 0; index < buildedSteps.length; index++) {
-					const result = await buildedSteps[index]!.buildedFunction(request, floor);
+					const result = await buildedSteps[index]!.buildedFunction(request, processFloor);
 
 					if (result instanceof Response) {
 						return result;

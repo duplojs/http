@@ -80,6 +80,7 @@ describe("httpClient", () => {
 				prop1: "1",
 				prop2: "2",
 			},
+			abortController: expect.any(AbortController),
 			hooks: {
 				clientErrorResponseType: [],
 				code: {},
@@ -114,6 +115,7 @@ describe("httpClient", () => {
 		expect(PromiseRequest).toHaveBeenCalledWith({
 			baseUrl: "http://test.com",
 			headers: {},
+			abortController: expect.any(AbortController),
 			hooks: {
 				clientErrorResponseType: [],
 				code: {},
@@ -148,6 +150,7 @@ describe("httpClient", () => {
 		expect(PromiseRequest).toHaveBeenCalledWith({
 			baseUrl: "http://test.com",
 			headers: {},
+			abortController: expect.any(AbortController),
 			hooks: {
 				clientErrorResponseType: [],
 				code: {},
@@ -183,6 +186,7 @@ describe("httpClient", () => {
 		expect(PromiseRequest).toHaveBeenCalledWith({
 			baseUrl: "http://test.com",
 			headers: {},
+			abortController: expect.any(AbortController),
 			hooks: {
 				clientErrorResponseType: [],
 				code: {},
@@ -218,6 +222,7 @@ describe("httpClient", () => {
 		expect(PromiseRequest).toHaveBeenCalledWith({
 			baseUrl: "http://test.com",
 			headers: {},
+			abortController: expect.any(AbortController),
 			hooks: {
 				clientErrorResponseType: [],
 				code: {},
@@ -253,6 +258,7 @@ describe("httpClient", () => {
 		expect(PromiseRequest).toHaveBeenCalledWith({
 			baseUrl: "http://test.com",
 			headers: {},
+			abortController: expect.any(AbortController),
 			hooks: {
 				clientErrorResponseType: [],
 				code: {},
@@ -338,6 +344,7 @@ describe("httpClient", () => {
 					prop1: "1",
 					prop2: "2",
 				},
+				abortController: expect.any(AbortController),
 				hooks: {
 					clientErrorResponseType: [responseTypeHook],
 					code: { 200: [codeHook] },

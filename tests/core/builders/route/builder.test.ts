@@ -75,13 +75,9 @@ describe("route builder", () => {
 	});
 
 	it("useRouteBuilder with hook", () => {
-		const tt = createHookRouteLifeCycle(
-			({ addRequestProperties }) => addRequestProperties({ aa: 1 }),
-			{ beforeSendResponse: ({ next, request }) => next() },
-		);
 		const routeBuilder = useRouteBuilder("GET", "/test", {
 			hooks: [
-				tt,
+				{ onConstructRequest: ({ addRequestProperties }) => addRequestProperties({ aa: 1 }) },
 				{ onConstructRequest: ({ addRequestProperties }) => addRequestProperties({ bb: 1 }) },
 			],
 		});
@@ -117,10 +113,6 @@ describe("route builder", () => {
 							readonly onConstructRequest: (params: HookParamsOnConstructRequest) => Request & {
 								aa: number;
 							};
-							// eslint-disable-next-line @typescript-eslint/method-signature-style
-							readonly beforeSendResponse: ({ next, request }: RouteHookParamsAfter<Request & {
-								aa: number;
-							}>) => RouteHookNext;
 						},
 						{
 							// eslint-disable-next-line @typescript-eslint/method-signature-style

@@ -73,13 +73,14 @@ describe("process function builder", () => {
 	it("route pickup process value", async() => {
 		const process = useProcessBuilder()
 			.extract({ origin: DPE.string() })
-			.exports(["origin"]);
+			.cut([], ({ origin }, { output }) => output({ newOrigin: origin }))
+			.exports(["newOrigin"]);
 
 		const route = useRouteBuilder("GET", "/users", { hooks: [{ afterSendResponse: spyResponse }] })
-			.exec(process, { imports: ["origin"] })
+			.exec(process, { imports: ["newOrigin"] })
 			.handler(
 				ResponseContract.ok("good", DPE.string()),
-				(floor, { response }) => response("good", floor.origin),
+				(floor, { response }) => response("good", floor.newOrigin),
 			);
 
 		const buildedRoute = await useTestRouteFunctionBuilder(route);
@@ -107,7 +108,7 @@ describe("process function builder", () => {
 		);
 	});
 
-	it("route pickup process value", async() => {
+	it("route not pickup process value", async() => {
 		const process = useProcessBuilder()
 			.extract({ origin: DPE.string() })
 			.exports(["origin"]);

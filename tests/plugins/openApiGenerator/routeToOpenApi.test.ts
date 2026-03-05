@@ -329,7 +329,7 @@ describe("routeToOpenApi", () => {
 								},
 							},
 							content: {
-								"plain/text": { schema: { $ref: "#/components/schemas/NotIdentified1" } },
+								"plain/text": { schema: { $ref: "#/components/schemas/NotIdentified2" } },
 							},
 						},
 						422: {
@@ -393,7 +393,7 @@ describe("routeToOpenApi", () => {
 								},
 							},
 							content: {
-								"plain/text": { schema: { $ref: "#/components/schemas/NotIdentified1" } },
+								"plain/text": { schema: { $ref: "#/components/schemas/NotIdentified2" } },
 							},
 						},
 						422: {

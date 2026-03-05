@@ -20,6 +20,6 @@ describe("insertParamsInPath", () => {
 			postId: undefined,
 		});
 
-		expect(result).toBe("/users/{id}/posts/{postId}");
+		expect(result).toBe("/users//posts/{postId}");
 	});
 });

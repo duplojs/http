@@ -1,5 +1,6 @@
 export const regexUrlAnalyser = /^(?<path>[^?]*)(?:\?(?<query>[^#]*))?(?:#(?<fragment>[^]*))?$/;
 export const regexQueryAnalyser = /(?<key>[^=&]+)=(?<value>[^&]*)/g;
+const invalidEntryRegex = /__proto__|constructor|prototype/;
 
 export interface DecodedUrl {
 	path: string;
@@ -26,6 +27,11 @@ export function decodeUrl(url: string): DecodedUrl {
 			const groups = result.groups as Record<"key" | "value", string>;
 
 			const key = decodeURIComponent(groups.key);
+
+			if (invalidEntryRegex.test(key)) {
+				continue;
+			}
+
 			const value = decodeURIComponent(groups.value);
 
 			const currentValue = query[key];

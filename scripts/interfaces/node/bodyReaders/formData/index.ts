@@ -69,6 +69,7 @@ export function createFormDataBodyReaderImplementation(serverParams: HttpServerP
 							filePath,
 							{
 								highWaterMark: request.raw.request.readableHighWaterMark,
+								flags: "wx",
 							},
 						);
 

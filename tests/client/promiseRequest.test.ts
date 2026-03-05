@@ -20,7 +20,7 @@ describe("PromiseRequest", () => {
 		error: [],
 	});
 
-	const createParams = (overrides: Partial<PromiseRequestParams> = {}) => ({
+	const createParams = (overrides: Partial<PromiseRequestParams> = {}): PromiseRequestParams => ({
 		baseUrl: "http://test.local",
 		method: "GET",
 		path: "/resource",
@@ -29,6 +29,7 @@ describe("PromiseRequest", () => {
 		informationHeaderKey: "information",
 		predictedHeaderKey: "predicted",
 		disabledPredicateMode: false,
+		abortController: new AbortController(),
 		...overrides,
 	});
 

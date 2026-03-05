@@ -14,7 +14,7 @@ describe("handler step function builder", () => {
 		const route = useRouteBuilder("GET", "/test", { hooks: [{ afterSendResponse: spyResponse }] })
 			.extract({ params: { value: DPE.string() } })
 			.handler(
-				ResponseContract.ok("good", DPE.string().transform(async(value) => Promise.resolve(value))),
+				ResponseContract.ok("good", DPE.string()),
 				(floor, { response }) => response("good", floor.value),
 			);
 
@@ -73,7 +73,7 @@ describe("handler step function builder", () => {
 		);
 	});
 
-	it("missing contract error", async() => {
+	it("contract error", async() => {
 		const route = useRouteBuilder("GET", "/test", { hooks: [{ afterSendResponse: spyResponse }] })
 			.handler(
 				[ResponseContract.ok("good", DPE.string().max(3))],

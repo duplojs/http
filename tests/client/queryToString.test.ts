@@ -9,7 +9,7 @@ describe("queryToString", () => {
 		expect(queryToString({
 			aa: undefined,
 			bb: "",
-		})).toBeNull();
+		})).toBe("bb=");
 	});
 
 	it("serializes single values", () => {
@@ -33,6 +33,6 @@ describe("queryToString", () => {
 			empty: "",
 		});
 
-		expect(result).toBe("tag=node");
+		expect(result).toBe("tag=node&empty=");
 	});
 });

@@ -81,5 +81,20 @@ export type Routes = {
         information: "file.send";
         body: File;
     };
+} | {
+    method: "GET";
+    path: "/sse";
+    responses: {
+        code: "200";
+        information: "super-sse";
+        body?: undefined;
+        events: {
+            other: string;
+            message: {
+                test: string;
+            };
+            ping?: undefined;
+        };
+    };
 };"
 `;

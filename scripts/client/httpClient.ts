@@ -275,7 +275,10 @@ export function createHttpClient<
 					defaultHeaders.entries(),
 					GG.reduceFrom<ClientRequestParamsHeaders>({}),
 					({ element, lastValue, next }) => {
-						lastValue[element[0]] = `${element[1]()}`;
+						const value = element[1]();
+						if (value !== undefined) {
+							lastValue[element[0]] = `${value}`;
+						}
 
 						return next(lastValue);
 					},

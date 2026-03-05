@@ -8,7 +8,7 @@ export function queryToString(query: ClientRequestParams["query"]) {
 	return Object.entries(query)
 		.reduce<string[]>(
 			(pv, [key, value]) => {
-				if (!value) {
+				if (value === undefined) {
 					return pv;
 				}
 

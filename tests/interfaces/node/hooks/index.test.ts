@@ -1,9 +1,10 @@
 import { fsSpy } from "@test-utils/fs";
 import { type HttpServerParams, Response, exitHookFunction, nextHookFunction } from "@core";
 import { createFakeRequest } from "@test-utils/request";
-import { nodeHook } from "@interface-node";
+import { initNodeHook } from "@interface-node";
 import { setEnvironment, SF, TESTImplementation } from "@duplojs/server-utils";
 import { EventEmitter } from "stream";
+import { testHub } from "@test-utils/hub";
 
 describe("makeNodeHook", () => {
 	beforeEach(() => {
@@ -19,9 +20,10 @@ describe("makeNodeHook", () => {
 		fromHookHeaderKey: "from-hook",
 		predictedHeaderKey: "predicted",
 		uploadFolder: "./upload",
+		serverSentEventsDefaultIntervalPing: 150,
 	};
 
-	const hooks = nodeHook;
+	const hooks = initNodeHook(testHub, baseServerParams);
 
 	describe("beforeSendResponse", () => {
 		it("sets headers and calls writeHead", () => {

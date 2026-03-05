@@ -113,6 +113,10 @@ export class Request extends kindHeritage(
 				externalPromise.resolve(result);
 				this.bodyResult = result;
 				return result;
+			})
+			.catch((error) => {
+				externalPromise.reject(error);
+				throw error;
 			});
 	}
 }

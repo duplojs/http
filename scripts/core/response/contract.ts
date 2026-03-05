@@ -199,7 +199,7 @@ export namespace ResponseContract {
 			public information: string,
 			public detail: DP.DataParserError | string,
 		) {
-			super({}, [`Error executing the response contract with the information: "${information}"\nDetail: ${JSON.stringify(detail)}.`]);
+			super({}, [`Error executing the response contract with the information: "${information}"`]);
 		}
 	}
 }
