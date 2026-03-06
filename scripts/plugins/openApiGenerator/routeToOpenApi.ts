@@ -225,9 +225,6 @@ export function routeToOpenApi(
 				};
 
 				if (ResponseContract.serverSentEventsContractKind.has(contract)) {
-					const description = lastValue[code]?.description
-						? `${lastValue[code]?.description}\nFlux SSE.`
-						: "Flux SSE.";
 					const eventNameList = O.keys(contract.events);
 					const eventDataList = O.values(contract.events);
 					if (!A.minElements(eventNameList, 1) || !A.minElements(eventDataList, 1)) {
@@ -264,7 +261,6 @@ export function routeToOpenApi(
 						lastValue,
 						{
 							[code]: {
-								description,
 								headers,
 								content,
 							},

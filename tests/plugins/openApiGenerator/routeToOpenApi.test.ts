@@ -432,4 +432,74 @@ describe("routeToOpenApi", () => {
 
 		expect(result).toStrictEqual([]);
 	});
+
+	it("server sent events", () => {
+		const route = useRouteBuilder("GET", "/test")
+			.handler(
+				[
+					ResponseContract.serverSentEvents("see", DPE.string()),
+					ResponseContract.serverSentEvents("see2", DPE.number()),
+					ResponseContract.serverSentEventsContractKind.addTo({
+						code: <const>"200",
+						information: "test",
+						body: DPE.empty(),
+						events: {},
+					}),
+				],
+				(__, { serverSentEventsResponse }) => serverSentEventsResponse("see", () => {}),
+			);
+
+		const result = routeToOpenApi(
+			route,
+			{
+				defaultExtractContract,
+				contextToJsonSchemaFactory: new Map(),
+				resultSchemaContext: new Map(),
+			},
+		);
+
+		expect(result).toStrictEqual([
+			{
+				method: "get",
+				parameters: [],
+				path: "/test",
+				requestBody: undefined,
+				responses: {
+					200: {
+						content: {
+							"text/event-stream": {
+								itemSchema: {
+									anyOf: [
+										{
+											$ref: "#/components/schemas/NotIdentified0",
+										},
+										{
+											$ref: "#/components/schemas/NotIdentified1",
+										},
+									],
+								},
+							},
+						},
+						headers: {
+							information: {
+								description: "see | see2",
+								schema: {
+									anyOf: [
+										{
+											const: "see",
+											type: "string",
+										},
+										{
+											const: "see2",
+											type: "string",
+										},
+									],
+								},
+							},
+						},
+					},
+				},
+			},
+		]);
+	});
 });

@@ -4,7 +4,7 @@ import { createHookRouteLifeCycle } from "@core/route";
 import { ServerSentEvents } from "@core/serverSentEvents";
 import { type HttpServerParams } from "@core/types";
 import { SF } from "@duplojs/server-utils";
-import { A, stringToMillisecond } from "@duplojs/utils";
+import { A } from "@duplojs/utils";
 import { createReadStream } from "node:fs";
 
 export function initNodeHook(
@@ -26,9 +26,8 @@ export function initNodeHook(
 			const { response: rawResponse, request: rawRequest } = request.raw;
 
 			if (currentResponse instanceof ServerSentEventsPredictedResponse) {
-				const serverSentEventsResponse = currentResponse as ServerSentEventsPredictedResponse;
 				const handler = ServerSentEvents.init(
-					serverSentEventsResponse,
+					currentResponse as ServerSentEventsPredictedResponse,
 					{
 						lastId: typeof request.headers["last-event-id"] === "string"
 							? request.headers["last-event-id"]

@@ -191,7 +191,6 @@ exports[`openApiGenerator > correct generate file 1`] = `
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Flux SSE.",
             "headers": {
               "information": {
                 "schema": {

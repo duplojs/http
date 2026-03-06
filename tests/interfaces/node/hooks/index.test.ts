@@ -1,10 +1,11 @@
 import { fsSpy } from "@test-utils/fs";
-import { type HttpServerParams, Response, exitHookFunction, nextHookFunction } from "@core";
+import { type HttpServerParams, Response, ServerSentEventsPredictedResponse, exitHookFunction, nextHookFunction } from "@core";
 import { createFakeRequest } from "@test-utils/request";
 import { initNodeHook } from "@interface-node";
 import { setEnvironment, SF, TESTImplementation } from "@duplojs/server-utils";
 import { EventEmitter } from "stream";
 import { testHub } from "@test-utils/hub";
+import { sleep } from "@duplojs/utils";
 
 describe("makeNodeHook", () => {
 	beforeEach(() => {
@@ -131,13 +132,103 @@ describe("makeNodeHook", () => {
 				request.raw.response.emit("close");
 			});
 
-			await hooks.sendResponse!({
+			await hooks.sendResponse({
 				request,
 				currentResponse: { body: SF.createFileInterface("test.txt") },
 				exit: exitHookFunction,
 			} as any);
 
 			expect(fsSpy.createReadStream).toBeCalledWith("test.txt");
+		});
+		describe("serverSentEvent", () => {
+			it("send events", async() => {
+				const request = createFakeRequest();
+
+				await hooks.sendResponse({
+					request,
+					currentResponse: new ServerSentEventsPredictedResponse(
+						"200",
+						"test",
+						({ send }) => {
+							send("test", "ok");
+							send("test", "ok2");
+						},
+					),
+					exit: exitHookFunction,
+				} as any);
+
+				expect(request.raw.response._getData()).toBe(
+					"event: test\ndata: ok\n\nevent: test\ndata: ok2\n\n",
+				);
+				expect(request.raw.response._isEndCalled()).toBe(true);
+			});
+
+			it("client close request", async() => {
+				const spyOnAbort = vi.fn();
+				const request = createFakeRequest();
+
+				await hooks.sendResponse({
+					request,
+					currentResponse: new ServerSentEventsPredictedResponse(
+						"200",
+						"test",
+						({ send, onAbort }) => {
+							onAbort(spyOnAbort);
+						},
+					),
+					exit: exitHookFunction,
+				} as any);
+
+				await sleep();
+
+				expect(spyOnAbort).toHaveBeenCalledTimes(0);
+				request.raw.request.emit("close");
+				expect(spyOnAbort).toHaveBeenCalledTimes(1);
+			});
+
+			it("client close request", async() => {
+				const spyOnAbort = vi.fn();
+				const request = createFakeRequest();
+
+				await hooks.sendResponse({
+					request,
+					currentResponse: new ServerSentEventsPredictedResponse(
+						"200",
+						"test",
+						({ send, onAbort }) => {
+							onAbort(spyOnAbort);
+						},
+					),
+					exit: exitHookFunction,
+				} as any);
+
+				await sleep();
+
+				expect(spyOnAbort).toHaveBeenCalledTimes(0);
+				request.raw.request.emit("close");
+				expect(spyOnAbort).toHaveBeenCalledTimes(1);
+			});
+
+			it("inject lastId", async() => {
+				const spyLastId = vi.fn();
+				const request = createFakeRequest({
+					headers: { "last-event-id": "test" },
+				});
+
+				await hooks.sendResponse({
+					request,
+					currentResponse: new ServerSentEventsPredictedResponse(
+						"200",
+						"test",
+						({ send, onAbort, lastId }) => spyLastId(lastId),
+					),
+					exit: exitHookFunction,
+				} as any);
+
+				await sleep();
+
+				expect(spyLastId).toHaveBeenCalledWith("test");
+			});
 		});
 	});
 

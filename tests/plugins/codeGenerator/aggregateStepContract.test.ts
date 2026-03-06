@@ -50,7 +50,7 @@ describe("stepsToDataParser", () => {
 		.exec(ignoredProcess)
 		.presetCheck(testPresetChecker, () => "")
 		.handler(
-			ResponseContract.noContent("test"),
+			[ResponseContract.noContent("test"), ResponseContract.serverSentEvents("sse", DPE.object({ test: DPE.string() }))],
 			(__, { response }) => response("test"),
 		);
 
@@ -74,6 +74,14 @@ describe("stepsToDataParser", () => {
 						code: DP.literal("204"),
 						information: DP.literal("test"),
 						body: DP.empty(),
+					}),
+					DP.object({
+						code: DP.literal("200"),
+						information: DP.literal("sse"),
+						body: DP.empty(),
+						events: DP.object({
+							message: DPE.object({ test: DPE.string() }),
+						}),
 					}),
 					DP.object({
 						code: DP.literal(defaultExtractContract.code),
