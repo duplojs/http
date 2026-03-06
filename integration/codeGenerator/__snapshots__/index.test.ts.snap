@@ -84,6 +84,7 @@ export type Routes = {
     };
 } | {
     method: "GET";
+<<<<<<< HEAD
     path: "/sse";
     query: {
         close?: boolean | undefined;
@@ -105,6 +106,36 @@ export type Routes = {
     } | {
         code: "204";
         information: "close";
+=======
+    path: "/static-file";
+    responses: {
+        code: "200";
+        information: "resource.found";
+        body: File;
+    } | {
+        code: "404";
+        information: "resource.notfound";
+        body?: undefined;
+    } | {
+        code: "304";
+        information: "resource.notModified";
+        body?: undefined;
+    };
+} | {
+    method: "GET";
+    path: \`/static-folder/\${string}\`;
+    responses: {
+        code: "200";
+        information: "resource.found";
+        body: File;
+    } | {
+        code: "404";
+        information: "resource.notfound";
+        body?: undefined;
+    } | {
+        code: "304";
+        information: "resource.notModified";
+>>>>>>> 35f4071 (feat(18): add plugin static and cacheController)
         body?: undefined;
     };
 };"

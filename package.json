@@ -17,7 +17,7 @@
     "test:tu:bench": "vitest bench",
     "test:tu:watch": "vitest --coverage --watch",
     "test:tu:update": "vitest --coverage --update",
-    "test:types": "tsc -p tests/core/tsconfig.json && tsc -p tests/client/tsconfig.json && tsc -p tests/interfaces/node/tsconfig.json && tsc -p tests/interfaces/bun/tsconfig.json && tsc -p tests/interfaces/deno/tsconfig.json && tsc -p tests/plugins/codeGenerator/tsconfig.json && tsc -p tests/plugins/openApiGenerator/tsconfig.json && npm -w integration run test:types && npm -w docs run test:types",
+    "test:types": "tsc -p tests/core/tsconfig.json && tsc -p tests/client/tsconfig.json && tsc -p tests/interfaces/node/tsconfig.json && tsc -p tests/interfaces/bun/tsconfig.json && tsc -p tests/interfaces/deno/tsconfig.json && tsc -p tests/plugins/codeGenerator/tsconfig.json && tsc -p tests/plugins/openApiGenerator/tsconfig.json && tsc -p tests/plugins/cacheController/tsconfig.json && tsc -p tests/plugins/static/tsconfig.json && npm -w integration run test:types && npm -w docs run test:types",
     "test:lint": "eslint --quiet",
     "test:lint:fix": "eslint --fix --quiet",
     "prepare": "husky"
@@ -58,6 +58,16 @@
       "import": "./dist/plugins/openApiGenerator/index.mjs",
       "require": "./dist/plugins/openApiGenerator/index.cjs",
       "types": "./dist/plugins/openApiGenerator/index.d.ts"
+    },
+    "./cacheController": {
+       "import": "./dist/plugins/cacheController/index.mjs",
+      "require": "./dist/plugins/cacheController/index.cjs",
+      "types": "./dist/plugins/cacheController/index.d.ts"
+    },
+    "./static": {
+      "import": "./dist/plugins/static/index.mjs",
+      "require": "./dist/plugins/static/index.cjs",
+      "types": "./dist/plugins/static/index.d.ts"
     }
   },
   "files": [

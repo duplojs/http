@@ -3,7 +3,7 @@ import { type HubPlugin } from "@core/hub";
 import { A, asserts, DP, E, equal } from "@duplojs/utils";
 import { routeToDataParser } from "./routeToDataParser";
 import { SF } from "@duplojs/server-utils";
-import { dateTransformer, fileTransformer, timeTransformer } from "./typescriptTransfomer";
+import { dateTransformer, fileTransformer, timeTransformer } from "./typescriptTransformer";
 
 export interface CodeGeneratorPluginParams {
 	outputFile: string;

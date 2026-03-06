@@ -1,6 +1,6 @@
 import { type Request } from "../request";
 import { createCoreLibKind } from "../kind";
-import { type UnionToIntersection, type AnyFunction, type Kind, type MaybePromise, type SimplifyTopLevel, type IsEqual } from "@duplojs/utils";
+import { type UnionToIntersection, type AnyFunction, type Kind, type MaybePromise, type SimplifyTopLevel, type IsEqual, type BivariantFunction } from "@duplojs/utils";
 import { type HookResponse } from "../response";
 import { type ResponseCode, type Response } from "@core/response";
 
@@ -114,12 +114,12 @@ export type HookAfterSendResponse<
 export interface HookRouteLifeCycle<
 	GenericRequest extends Request = Request,
 > {
-	onConstructRequest?: HookOnConstructRequest<GenericRequest>;
-	beforeRouteExecution?: HookBeforeRouteExecution<GenericRequest>;
+	onConstructRequest?: BivariantFunction<HookOnConstructRequest<GenericRequest>>;
+	beforeRouteExecution?: BivariantFunction<HookBeforeRouteExecution<GenericRequest>>;
 	error?: HookError;
-	beforeSendResponse?: HookBeforeSendResponse<GenericRequest>;
-	sendResponse?: HookSendResponse<GenericRequest>;
-	afterSendResponse?: HookAfterSendResponse<GenericRequest>;
+	beforeSendResponse?: BivariantFunction<HookBeforeSendResponse<GenericRequest>>;
+	sendResponse?: BivariantFunction<HookSendResponse<GenericRequest>>;
+	afterSendResponse?: BivariantFunction<HookAfterSendResponse<GenericRequest>>;
 }
 
 export function createHookRouteLifeCycle<
@@ -158,6 +158,22 @@ export function createHookRouteLifeCycle(
 	return {
 		...args[1],
 		onConstructRequest: args[0],
+	};
+}
+
+export function hookRouteLifeCycleAddRequestProperties<
+	GenericRequest extends Request = Request,
+>(
+	request: GenericRequest,
+) {
+	return <
+		GenericNewProperties extends Record<string, unknown> = Record<string, unknown>,
+	>(newProperties: GenericNewProperties) => {
+		for (const key in newProperties) {
+			request[key as never] = newProperties[key] as never;
+		}
+
+		return request as never;
 	};
 }
 

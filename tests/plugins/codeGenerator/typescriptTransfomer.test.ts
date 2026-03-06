@@ -1,7 +1,7 @@
 import { defaultTransformers, render } from "@duplojs/data-parser-tools/toTypescript";
 import { SDPE } from "@duplojs/server-utils";
 import { DPE } from "@duplojs/utils";
-import { dateTransformer, fileTransformer, timeTransformer } from "@plugin-codeGenerator/typescriptTransfomer";
+import { dateTransformer, fileTransformer, timeTransformer } from "@plugin-codeGenerator/typescriptTransformer";
 
 describe("typescript transformer", () => {
 	it("file", () => {

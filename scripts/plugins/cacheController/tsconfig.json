@@ -1,0 +1,11 @@
+{
+  "extends": "../../../tsconfig.app.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+	  "@core/*": ["../../core/*"],
+	  "@plugin-cacheController/*": ["./*"],
+    },
+  },
+  "include": ["**/*.ts", "../../core/**/*.ts"],
+}
