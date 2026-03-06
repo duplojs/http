@@ -1,5 +1,5 @@
 import { type MaybePromise } from "@duplojs/utils";
-import { type NotPredictedClientResponse, type ClientResponse } from "./clientResponse";
+import { type ClientEventsResponse, type ServerEvent, type AllClientResponse, type AllNotPredictedClientResponse } from "./clientResponse";
 import { type PromiseRequestParams } from "./promiseRequestParams";
 
 export type RequestHook<
@@ -9,42 +9,74 @@ export type RequestHook<
 export type ResponseHook<
 	GenericHookParams extends Record<string, unknown> = Record<string, unknown>,
 > = (
-	response: ClientResponse<GenericHookParams>
-) => MaybePromise<ClientResponse<GenericHookParams>>;
+	response: AllClientResponse<GenericHookParams>
+) => MaybePromise<AllClientResponse<GenericHookParams>>;
 
 export type InformationHook<
 	GenericHookParams extends Record<string, unknown> = Record<string, unknown>,
 > = (
-	response: ClientResponse<GenericHookParams>
+	response: AllClientResponse<GenericHookParams>
 ) => MaybePromise<void>;
 
 export type ResponseTypeHook<
 	GenericHookParams extends Record<string, unknown> = Record<string, unknown>,
 > = (
-	response: ClientResponse<GenericHookParams>
+	response: AllClientResponse<GenericHookParams>
 ) => MaybePromise<void>;
 
 export type ExpectedResponseHook<
 	GenericHookParams extends Record<string, unknown> = Record<string, unknown>,
 > = (
-	response: ClientResponse<GenericHookParams>
+	response: AllClientResponse<GenericHookParams>
 ) => MaybePromise<void>;
 
 export type CodeHook<
 	GenericHookParams extends Record<string, unknown> = Record<string, unknown>,
 > = (
-	response: ClientResponse<GenericHookParams>
+	response: AllClientResponse<GenericHookParams>
 ) => MaybePromise<void>;
 
 export type NotPredictedResponseHook<
 	GenericHookParams extends Record<string, unknown> = Record<string, unknown>,
 > = (
-	response: NotPredictedClientResponse<GenericHookParams>
+	response: AllNotPredictedClientResponse<GenericHookParams>
 ) => MaybePromise<void>;
 
 export type ErrorHook<
 	GenericHookParams extends Record<string, unknown> = Record<string, unknown>,
 > = (error: unknown, requestParams: PromiseRequestParams<GenericHookParams>) => MaybePromise<void>;
+
+export type CloseServerEventHook<
+	GenericHookParams extends Record<string, unknown> = Record<string, unknown>,
+> = (
+	response: ClientEventsResponse<GenericHookParams>
+) => MaybePromise<void>;
+
+export type BeforeRetryServerEventHook<
+	GenericHookParams extends Record<string, unknown> = Record<string, unknown>,
+> = (
+	response: ClientEventsResponse<GenericHookParams>
+) => MaybePromise<void>;
+
+export type ErrorServerEventHook<
+	GenericHookParams extends Record<string, unknown> = Record<string, unknown>,
+> = (
+	error: unknown,
+	response: ClientEventsResponse<GenericHookParams>
+) => MaybePromise<void>;
+
+export type StartServerEventHook<
+	GenericHookParams extends Record<string, unknown> = Record<string, unknown>,
+> = (
+	response: ClientEventsResponse<GenericHookParams>
+) => MaybePromise<void>;
+
+export type ReceiveEventServerEventHook<
+	GenericHookParams extends Record<string, unknown> = Record<string, unknown>,
+> = (
+	event: ServerEvent,
+	response: ClientEventsResponse<GenericHookParams>
+) => MaybePromise<void>;
 
 export interface Hooks {
 	request: RequestHook[];
@@ -59,4 +91,9 @@ export interface Hooks {
 	expectedResponse: ExpectedResponseHook[];
 	notPredictedResponse: NotPredictedResponseHook[];
 	error: ErrorHook[];
+	closeServerEvent: CloseServerEventHook[];
+	beforeRetryServerEvent: BeforeRetryServerEventHook[];
+	errorServerEvent: ErrorServerEventHook[];
+	startServerEvent: StartServerEventHook[];
+	receiveEventServerEvent: ReceiveEventServerEventHook[];
 }

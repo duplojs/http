@@ -18,6 +18,11 @@ describe("PromiseRequest", () => {
 		expectedResponse: [],
 		notPredictedResponse: [],
 		error: [],
+		beforeRetryServerEvent: [],
+		closeServerEvent: [],
+		errorServerEvent: [],
+		receiveEventServerEvent: [],
+		startServerEvent: [],
 	});
 
 	const createParams = (overrides: Partial<PromiseRequestParams> = {}): PromiseRequestParams => ({

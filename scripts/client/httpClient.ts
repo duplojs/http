@@ -2,7 +2,7 @@ import { type RemoveKind, type Kind, type MayBeGetter, type SimplifyTopLevel, ty
 import * as OO from "@duplojs/utils/object";
 import * as GG from "@duplojs/utils/generator";
 import { createClientKind } from "./kind";
-import { type ClientRequestInitParams, type ServerRoute, type ServerRouteToClientRequestParams, type ServerRouteToClientResponse, type ClientRequestParamsHeaders, type ClientRequestParams, type ClientResponse, type Hooks, type RequestHook, type ResponseHook, type InformationHook, type CodeHook, type ResponseTypeHook, type ExpectedResponseHook, type NotPredictedResponseHook, type ErrorHook, type GetServerRoutePath } from "./types";
+import { type ClientRequestInitParams, type ServerRoute, type ServerRouteToClientRequestParams, type ServerRouteToClientResponse, type ClientRequestParamsHeaders, type ClientRequestParams, type ClientResponse, type Hooks, type RequestHook, type ResponseHook, type InformationHook, type CodeHook, type ResponseTypeHook, type ExpectedResponseHook, type NotPredictedResponseHook, type ErrorHook, type GetServerRoutePath, type ClientEventsResponse, type AllClientResponse } from "./types";
 import { PromiseRequest } from "./promiseRequest";
 
 export const httpClientKind = createClientKind("http-client");
@@ -28,7 +28,7 @@ type HttpClientRequestMethod<
 		>
 	) => PromiseRequest<
 		GenericHookParams,
-		ClientResponse<GenericHookParams>
+		AllClientResponse<GenericHookParams>
 	>
 	: <
 		GenericPath extends Extract<GenericServerRoute, { method: GenericMethod }>["path"],
@@ -123,16 +123,18 @@ export interface HttpClient<
 		params: GenericClientRequestParams
 	): PromiseRequest<
 		GenericHookParams,
-		ServerRouteToClientResponse<
-			Extract<
-				GenericServerRoute,
-				{
-					method: GenericClientRequestParams["method"];
-					path: GenericMatchedPath;
-				}
-			>,
-			GenericHookParams
-		>
+		IsEqual<GenericServerRoute, ServerRoute> extends true
+			? AllClientResponse<GenericHookParams>
+			: ServerRouteToClientResponse<
+				Extract<
+					GenericServerRoute,
+					{
+						method: GenericClientRequestParams["method"];
+						path: GenericMatchedPath;
+					}
+				>,
+				GenericHookParams
+			>
 	>;
 
 	get: HttpClientRequestMethod<
@@ -199,6 +201,11 @@ export function createHttpClient<
 			expectedResponse: [],
 			error: [],
 			notPredictedResponse: [],
+			beforeRetryServerEvent: [],
+			closeServerEvent: [],
+			errorServerEvent: [],
+			receiveEventServerEvent: [],
+			startServerEvent: [],
 		},
 		clientParams.hooks ?? {},
 	);

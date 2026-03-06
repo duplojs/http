@@ -124,9 +124,9 @@ describe("handler step function builder", () => {
 				],
 			})
 				.handler(
-					ResponseContract.serverSentEvents("good", DPE.string()),
+					ResponseContract.serverSentEvents("good", DPE.string(), { ping: DPE.object({ value: DPE.number() }) }),
 					(floor, { serverSentEventsResponse }) => serverSentEventsResponse("good", ({ send }) => {
-						send("message", "test1");
+						send("ping", { value: 2 });
 						send("message", "test2");
 					}),
 				);
@@ -155,7 +155,7 @@ describe("handler step function builder", () => {
 		await response.startSendingEvents({ send: spySend } as never);
 
 		expect(spySend).toHaveBeenCalledTimes(2);
-		expect(spySend).toHaveBeenNthCalledWith(1, "message", "test1", undefined);
+		expect(spySend).toHaveBeenNthCalledWith(1, "ping", { value: 2 }, undefined);
 		expect(spySend).toHaveBeenNthCalledWith(2, "message", "test2", undefined);
 	});
 

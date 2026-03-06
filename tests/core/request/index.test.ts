@@ -88,6 +88,6 @@ describe("Request", () => {
 			bodyReader: createBodyReader(spy),
 		});
 
-		await expect(bodyRequest.getBody()).rejects.toStrictEqual(new Error("boom"));
+		await expect(bodyRequest.getBody()).resolves.toStrictEqual(E.error(new Error("boom")));
 	});
 });
