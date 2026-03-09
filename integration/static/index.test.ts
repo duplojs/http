@@ -1,13 +1,41 @@
+import { type SF, TESTImplementation, setEnvironment } from "@duplojs/server-utils";
+import { E, D } from "@duplojs/utils";
 import { createHttpServer } from "@duplojs/http/node";
+
 import { hub } from "@core";
 
 describe("static plugin", async() => {
+	const mockedModifiedAt = D.create("2026-03-02");
+
+	setEnvironment("TEST");
+
+	TESTImplementation.set("stat", async(path: string) => {
+		await Promise.resolve();
+
+		if (path === "files/fakeFiles") {
+			return E.success({
+				isFile: false,
+				modifiedAt: null,
+			} as SF.StatInfo);
+		}
+
+		if (path === "files/fakeFiles/superTextFile.txt") {
+			return E.success({
+				isFile: true,
+				modifiedAt: mockedModifiedAt,
+			} as SF.StatInfo);
+		}
+
+		return E.left("file-system-stat");
+	});
+
 	const server = await createHttpServer(hub, {
 		host: "0.0.0.0",
 		port: 8980,
 	});
 
 	afterAll(() => {
+		TESTImplementation.clear();
 		server.close();
 	});
 
@@ -33,7 +61,7 @@ describe("static plugin", async() => {
 				],
 				[
 					"last-modified",
-					"2026-03-02T09:51:37.413Z",
+					mockedModifiedAt.toISOString(),
 				],
 				[
 					"content-disposition",
@@ -48,7 +76,7 @@ describe("static plugin", async() => {
 			fetch("http://localhost:8980/static-file", {
 				method: "GET",
 				headers: {
-					"if-modified-since": "2026-03-02T09:51:37.413Z",
+					"if-modified-since": mockedModifiedAt.toISOString(),
 				},
 			})
 				.then(async(response) => ({
@@ -66,7 +94,7 @@ describe("static plugin", async() => {
 				],
 				[
 					"last-modified",
-					"2026-03-02T09:51:37.413Z",
+					mockedModifiedAt.toISOString(),
 				],
 			]),
 		});
@@ -94,7 +122,7 @@ describe("static plugin", async() => {
 				],
 				[
 					"last-modified",
-					"2026-03-02T09:51:37.413Z",
+					mockedModifiedAt.toISOString(),
 				],
 				[
 					"content-disposition",
@@ -109,7 +137,7 @@ describe("static plugin", async() => {
 			fetch("http://localhost:8980/static-folder/superTextFile.txt", {
 				method: "GET",
 				headers: {
-					"if-modified-since": "2026-03-02T09:51:37.413Z",
+					"if-modified-since": mockedModifiedAt.toISOString(),
 				},
 			})
 				.then(async(response) => ({
@@ -127,13 +155,13 @@ describe("static plugin", async() => {
 				],
 				[
 					"last-modified",
-					"2026-03-02T09:51:37.413Z",
+					mockedModifiedAt.toISOString(),
 				],
 			]),
 		});
 	});
 
-	it("file in folder notModified", async() => {
+	it("file in folder notfound", async() => {
 		await expect(
 			fetch("http://localhost:8980/static-folder/unknown.txt", {
 				method: "GET",
