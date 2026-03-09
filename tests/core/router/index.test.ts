@@ -5,6 +5,7 @@ import { testRoute } from "@test-utils/route";
 describe("buildRouter", () => {
 	const textBodyReaderImplementation = TextBodyController
 		.createReaderImplementation(() => Promise.resolve(E.success(null)));
+
 	it("correct build router", async() => {
 		const otherRoute = { ...testRoute };
 		const router = await buildRouter(
@@ -280,5 +281,70 @@ describe("buildRouter", () => {
 
 		expect(spyRoute).toHaveBeenCalledWith("12");
 		expect(spyNotfound).not.toHaveBeenCalled();
+	});
+
+	it("throw error when build malformed url route", async() => {
+		const hub = createHub({ environment: "DEV" })
+			.addBodyReaderImplementation(textBodyReaderImplementation);
+
+		hub.malformedUrlHandler = stepKind.setTo({}) as never;
+
+		await expect(
+			buildRouter(hub),
+		).rejects.instanceof(RouterBuildError);
+	});
+
+	it("buildedRouter use malformed url handler when url is invalid", async() => {
+		const spy = vi.fn();
+
+		const buildedRouter = await buildRouter(
+			createHub({ environment: "DEV" })
+				.setMalformedUrlHandler(
+					ResponseContract.badRequest("malformed"),
+					({ response, request }) => {
+						spy(request.url);
+						return response("malformed");
+					},
+				)
+				.addBodyReaderImplementation(textBodyReaderImplementation),
+		);
+
+		await buildedRouter.exec({
+			headers: {},
+			host: "",
+			method: "GET",
+			origin: "",
+			url: "/%E0%A4%A?value=%E0%A4",
+		});
+
+		expect(spy).toHaveBeenCalledWith("/%E0%A4%A?value=%E0%A4");
+	});
+
+	it("buildedRouter use malformed url route body reader when handler reads body", async() => {
+		const spy = vi.fn();
+
+		const buildedRouter = await buildRouter(
+			createHub({ environment: "DEV" })
+				.setMalformedUrlHandler(
+					ResponseContract.badRequest("malformed"),
+					async({ response, request }) => {
+						spy(await request.getBody());
+						return response("malformed");
+					},
+				)
+				.addBodyReaderImplementation(textBodyReaderImplementation),
+		);
+
+		await buildedRouter.exec({
+			headers: {},
+			host: "",
+			method: "GET",
+			origin: "",
+			url: "/%E0%A4%A?value=%E0%A4",
+		});
+
+		expect(spy).toHaveBeenCalledWith(
+			E.error(new Error("Inaccessible body in malformed url route.")),
+		);
 	});
 });

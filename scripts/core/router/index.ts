@@ -1,16 +1,15 @@
 import { type Hub, launchHookBeforeBuildRoute } from "@core/hub";
 import { type BuildedRouter } from "./types";
-import { A, asserts, asyncPipe, E, forward, G, isType, justReturn, O, pipe, unwrap } from "@duplojs/utils";
+import { A, E, forward, G, isType, justReturn, O, pipe, unwrap } from "@duplojs/utils";
 import { type BuildedRoute } from "@core/route/types";
 import { pathToRegExp } from "./pathToRegExp";
-import { createRoute } from "@core/route";
 import { RouterBuildError } from "./buildError";
 import { buildRouteFunction, type createRouteFunctionBuilder, defaultRouteFunctionBuilder, type BuildRouteFunctionParams } from "@core/functionsBuilders/route";
 import { decodeUrl } from "./decodeUrl";
 import { type BodyReader } from "@core/request";
-import { controlBodyAsText, TextBodyController } from "@core/request/bodyController/text";
 import { NotFoundBodyReaderImplementationError } from "./notFoundBodyReaderImplementationError";
 import { type createStepFunctionBuilder, defaultCheckerStepFunctionBuilder, defaultCutStepFunctionBuilder, defaultExtractStepFunctionBuilder, defaultHandlerStepFunctionBuilder, defaultProcessStepFunctionBuilder } from "@core/functionsBuilders";
+import { createDefaultMalformedUrlRoute, createDefaultNotfoundRoute } from "./defaultRoutes";
 
 export * from "./types";
 export * from "./pathToRegExp";
@@ -133,43 +132,15 @@ export async function buildRouter(hub: Hub): Promise<BuildedRouter> {
 		},
 	);
 
-	const bodyControllerNotfoundRoute = controlBodyAsText();
-	const bodyReaderNotFoundRoute = unwrap(
-		bodyControllerNotfoundRoute.tryToCreateReader(
-			TextBodyController.createReaderImplementation(
-				() => Promise.resolve(
-					E.error(new Error("Inaccessible body in not found route.")),
-				),
-			),
-		),
-	);
-	asserts(bodyReaderNotFoundRoute, isType("object"));
+	const defaultNotfoundRoute = await createDefaultNotfoundRoute({
+		hub,
+		buildParams,
+	});
 
-	const buildedNotfoundRoute = await asyncPipe(
-		createRoute({
-			method: "GET",
-			paths: ["/"],
-			hooks: [],
-			preflightSteps: [],
-			steps: [hub.notfoundHandler],
-			metadata: [],
-			bodyController: bodyControllerNotfoundRoute,
-		}),
-		async(route) => {
-			const result = await buildRouteFunction(
-				route,
-				buildParams,
-			);
-
-			return E.whenIsLeft(
-				result,
-				(element) => {
-					throw new RouterBuildError(route, element);
-				},
-			);
-		},
-		unwrap,
-	);
+	const defaultMalformedUrlRoute = await createDefaultMalformedUrlRoute({
+		hub,
+		buildParams,
+	});
 
 	const Request = hub.classRequest;
 
@@ -178,14 +149,27 @@ export async function buildRouter(hub: Hub): Promise<BuildedRouter> {
 			const routerElements = groupedRoute[initializationData.method];
 			const decodedUrl = decodeUrl(initializationData.url);
 
+			if (!decodedUrl) {
+				return defaultMalformedUrlRoute.buildedRoute(
+					new Request({
+						...initializationData,
+						params: {},
+						path: "",
+						query: {},
+						matchedPath: null,
+						bodyReader: defaultMalformedUrlRoute.bodyReader,
+					}),
+				);
+			}
+
 			if (!routerElements) {
-				return buildedNotfoundRoute(
+				return defaultNotfoundRoute.buildedRoute(
 					new Request({
 						...initializationData,
 						...decodedUrl,
 						params: {},
 						matchedPath: null,
-						bodyReader: bodyReaderNotFoundRoute,
+						bodyReader: defaultNotfoundRoute.bodyReader,
 					}),
 				);
 			}
@@ -210,13 +194,13 @@ export async function buildRouter(hub: Hub): Promise<BuildedRouter> {
 				);
 			}
 
-			return buildedNotfoundRoute(
+			return defaultNotfoundRoute.buildedRoute(
 				new Request({
 					...initializationData,
 					...decodedUrl,
 					params: {},
 					matchedPath: null,
-					bodyReader: bodyReaderNotFoundRoute,
+					bodyReader: defaultNotfoundRoute.bodyReader,
 				}),
 			);
 		},

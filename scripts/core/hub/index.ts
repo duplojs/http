@@ -11,11 +11,13 @@ import { defaultExtractContract } from "./defaultExtractContract";
 import { type createStepFunctionBuilder } from "@core/functionsBuilders/steps";
 import { type createRouteFunctionBuilder } from "@core/functionsBuilders/route";
 import { defaultBodyController } from "./defaultBodyController";
+import { defaultMalformedUrlHandler } from "./defaultMalformedUrlHandler";
 
 export * from "./hooks";
 export * from "./defaultNotfoundHandler";
 export * from "./defaultExtractContract";
 export * from "./defaultBodyController";
+export * from "./defaultMalformedUrlHandler";
 
 export const hubKind = createCoreLibKind("hub");
 
@@ -64,6 +66,8 @@ export class Hub<
 	> = defaultExtractContract;
 
 	public defaultBodyController: BodyController = defaultBodyController;
+
+	public malformedUrlHandler: HandlerStep = defaultMalformedUrlHandler;
 
 	private constructor(
 		public config: GenericConfig,
@@ -215,6 +219,29 @@ export class Hub<
 			this.hooksRouteLifeCycle,
 			(hooks) => hooks[hookName] ?? [],
 		);
+	}
+
+	public setMalformedUrlHandler<
+		GenericResponseContract extends ResponseContract.Contract,
+		GenericResponse extends ResponseContract.Convert<
+			GenericResponseContract
+		>,
+	>(
+		responseContract: GenericResponseContract,
+		theFunction: (
+			param: HandlerStepFunctionParams<
+				Request,
+				GenericResponse
+			>
+		) => MaybePromise<GenericResponse>,
+	) {
+		this.malformedUrlHandler = createHandlerStep({
+			responseContract,
+			theFunction: (__, params) => theFunction(params),
+			metadata: [],
+		});
+
+		return this;
 	}
 
 	/**

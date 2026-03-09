@@ -1,4 +1,4 @@
-import { type HookRouteLifeCycle, defaultBodyController, createHub, defaultCheckerStepFunctionBuilder, defaultExtractContract, defaultNotfoundHandler, defaultRouteFunctionBuilder, hubKind, Request, ResponseContract, type HookHubLifeCycle, TextBodyController, controlBodyAsText } from "@core";
+import { type HookRouteLifeCycle, defaultBodyController, createHub, defaultCheckerStepFunctionBuilder, defaultExtractContract, defaultNotfoundHandler, defaultRouteFunctionBuilder, hubKind, Request, ResponseContract, type HookHubLifeCycle, TextBodyController, controlBodyAsText, defaultMalformedUrlHandler } from "@core";
 import { testRoute } from "@test-utils/route";
 
 describe("hub", () => {
@@ -11,6 +11,7 @@ describe("hub", () => {
 		hooksRouteLifeCycle: [],
 		notfoundHandler: defaultNotfoundHandler,
 		defaultBodyController: defaultBodyController,
+		malformedUrlHandler: defaultMalformedUrlHandler,
 		plugins: [],
 		routeFunctionBuilders: [],
 		routes: new Set(),
@@ -220,6 +221,27 @@ describe("hub", () => {
 		expect({ ...hub }).toStrictEqual({
 			...baseHub,
 			notfoundHandler: expect.objectContaining({
+				definition: expect.objectContaining({
+					responseContract: contract,
+				}),
+			}),
+		});
+	});
+
+	it("hub set malformed url handler", () => {
+		const contract = ResponseContract.badRequest("malformed");
+
+		const hub = createHub({
+			environment: "DEV",
+		})
+			.setMalformedUrlHandler(
+				contract,
+				({ response }) => response("malformed"),
+			);
+
+		expect({ ...hub }).toStrictEqual({
+			...baseHub,
+			malformedUrlHandler: expect.objectContaining({
 				definition: expect.objectContaining({
 					responseContract: contract,
 				}),
