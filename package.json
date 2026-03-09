@@ -17,9 +17,9 @@
     "test:tu:bench": "vitest bench",
     "test:tu:watch": "vitest --coverage --watch",
     "test:tu:update": "vitest --coverage --update",
-    "test:types": "tsc -p tests/core/tsconfig.json && tsc -p tests/client/tsconfig.json && tsc -p tests/interfaces/node/tsconfig.json && tsc -p tests/interfaces/bun/tsconfig.json && tsc -p tests/interfaces/deno/tsconfig.json && tsc -p tests/plugins/codeGenerator/tsconfig.json && tsc -p tests/plugins/openApiGenerator/tsconfig.json && tsc -p tests/plugins/cacheController/tsconfig.json && tsc -p tests/plugins/static/tsconfig.json && npm -w integration run test:types && npm -w docs run test:types",
-    "test:lint": "eslint --quiet",
-    "test:lint:fix": "eslint --fix --quiet",
+    "test:types": "./.bin/test-types.sh",
+    "test:lint": "./.bin/test-eslint.sh",
+    "test:lint:fix": "./.bin/test-eslint.sh --fix",
     "prepare": "husky"
   },
   "types": "./dist/core/index.d.ts",
