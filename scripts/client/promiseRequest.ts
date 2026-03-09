@@ -379,9 +379,11 @@ export class PromiseRequest<
 	>(
 		eventName: GenericEventName,
 		callback: (
-			event: NeverCoalescing<
-				Extract<GenericEvent, { event: GenericEventName }>,
-				ServerEvent
+			event: NoInfer<
+				NeverCoalescing<
+					Extract<GenericEvent, { event: GenericEventName }>,
+					ServerEvent
+				>
 			>,
 			response: NeverCoalescing<
 				Extract<GenericClientResponse, ClientEventsResponseHandler<GenericEvent>>,

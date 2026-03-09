@@ -5,7 +5,7 @@ import { asserts, E, sleep, stringToBytes } from "@duplojs/utils";
 import { createFileToSend } from "@utils";
 import { resolve } from "path";
 
-describe("receive file", async() => {
+describe("file", async() => {
 	const server = await createHttpServer(hub, {
 		host: "0.0.0.0",
 		port: 8961,

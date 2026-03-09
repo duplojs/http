@@ -2,7 +2,7 @@ import { type RemoveKind, type Kind, type MayBeGetter, type SimplifyTopLevel, ty
 import * as OO from "@duplojs/utils/object";
 import * as GG from "@duplojs/utils/generator";
 import { createClientKind } from "./kind";
-import { type ClientRequestInitParams, type ServerRoute, type ServerRouteToClientRequestParams, type ServerRouteToClientResponse, type ClientRequestParamsHeaders, type ClientRequestParams, type ClientResponse, type Hooks, type RequestHook, type ResponseHook, type InformationHook, type CodeHook, type ResponseTypeHook, type ExpectedResponseHook, type NotPredictedResponseHook, type ErrorHook, type GetServerRoutePath, type ClientEventsResponse, type AllClientResponse, type BeforeRetryServerEventHook, type CloseServerEventHook, type ErrorServerEventHook, type StartServerEventHook, type ReceiveEventServerEventHook } from "./types";
+import { type ClientRequestInitParams, type ServerRoute, type ServerRouteToClientRequestParams, type ServerRouteToClientResponse, type ClientRequestParamsHeaders, type ClientRequestParams, type Hooks, type RequestHook, type ResponseHook, type InformationHook, type CodeHook, type ResponseTypeHook, type ExpectedResponseHook, type NotPredictedResponseHook, type ErrorHook, type GetServerRoutePath, type AllClientResponse, type BeforeRetryServerEventHook, type CloseServerEventHook, type ErrorServerEventHook, type StartServerEventHook, type ReceiveEventServerEventHook } from "./types";
 import { PromiseRequest } from "./promiseRequest";
 
 export const httpClientKind = createClientKind("http-client");

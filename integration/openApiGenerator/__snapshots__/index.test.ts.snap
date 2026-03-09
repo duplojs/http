@@ -188,7 +188,16 @@ exports[`openApiGenerator > correct generate file 1`] = `
     },
     "/sse": {
       "get": {
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "close",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/NotIdentified11"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "headers": {
@@ -203,8 +212,30 @@ exports[`openApiGenerator > correct generate file 1`] = `
             "content": {
               "text/event-stream": {
                 "itemSchema": {
-                  "$ref": "#/components/schemas/NotIdentified11"
+                  "$ref": "#/components/schemas/NotIdentified13"
                 }
+              }
+            }
+          },
+          "204": {
+            "headers": {
+              "information": {
+                "schema": {
+                  "const": "close",
+                  "type": "string"
+                },
+                "description": "close"
+              }
+            }
+          },
+          "422": {
+            "headers": {
+              "information": {
+                "schema": {
+                  "const": "extract-error",
+                  "type": "string"
+                },
+                "description": "extract-error"
               }
             }
           }
@@ -356,6 +387,30 @@ exports[`openApiGenerator > correct generate file 1`] = `
         "format": "binary"
       },
       "NotIdentified11": {
+        "anyOf": [
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "string",
+            "enum": [
+              "true",
+              "false",
+              "0",
+              "1"
+            ]
+          },
+          {
+            "type": "number",
+            "enum": [
+              0,
+              1
+            ]
+          }
+        ]
+      },
+      "NotIdentified12": {},
+      "NotIdentified13": {
         "type": "object",
         "properties": {
           "event": {
@@ -399,7 +454,8 @@ exports[`openApiGenerator > correct generate file 1`] = `
           "event",
           "data"
         ]
-      }
+      },
+      "NotIdentified14": {}
     }
   }
 }"

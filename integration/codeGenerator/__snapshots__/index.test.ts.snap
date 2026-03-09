@@ -84,7 +84,14 @@ export type Routes = {
 } | {
     method: "GET";
     path: "/sse";
+    query: {
+        close?: boolean | undefined;
+    };
     responses: {
+        code: "422";
+        information: "extract-error";
+        body?: undefined;
+    } | {
         code: "200";
         information: "super-sse";
         body?: undefined;
@@ -94,6 +101,10 @@ export type Routes = {
                 test: string;
             };
         };
+    } | {
+        code: "204";
+        information: "close";
+        body?: undefined;
     };
 };"
 `;
