@@ -2,7 +2,7 @@ import { type RemoveKind, type Kind, type MayBeGetter, type SimplifyTopLevel, ty
 import * as OO from "@duplojs/utils/object";
 import * as GG from "@duplojs/utils/generator";
 import { createClientKind } from "./kind";
-import { type ClientRequestInitParams, type ServerRoute, type ServerRouteToClientRequestParams, type ServerRouteToClientResponse, type ClientRequestParamsHeaders, type ClientRequestParams, type ClientResponse, type Hooks, type RequestHook, type ResponseHook, type InformationHook, type CodeHook, type ResponseTypeHook, type ExpectedResponseHook, type NotPredictedResponseHook, type ErrorHook, type GetServerRoutePath, type ClientEventsResponse, type AllClientResponse } from "./types";
+import { type ClientRequestInitParams, type ServerRoute, type ServerRouteToClientRequestParams, type ServerRouteToClientResponse, type ClientRequestParamsHeaders, type ClientRequestParams, type ClientResponse, type Hooks, type RequestHook, type ResponseHook, type InformationHook, type CodeHook, type ResponseTypeHook, type ExpectedResponseHook, type NotPredictedResponseHook, type ErrorHook, type GetServerRoutePath, type ClientEventsResponse, type AllClientResponse, type BeforeRetryServerEventHook, type CloseServerEventHook, type ErrorServerEventHook, type StartServerEventHook, type ReceiveEventServerEventHook } from "./types";
 import { PromiseRequest } from "./promiseRequest";
 
 export const httpClientKind = createClientKind("http-client");
@@ -109,6 +109,11 @@ export interface HttpClient<
 	addExpectedResponseHook(hook: ExpectedResponseHook<GenericHookParams>): void;
 	addNotPredictedResponseHook(hook: NotPredictedResponseHook<GenericHookParams>): void;
 	addErrorHook(hook: ErrorHook<GenericHookParams>): void;
+	addBeforeRetryServerEventHook(hook: BeforeRetryServerEventHook<GenericHookParams>): void;
+	addCloseServerEventHook(hook: CloseServerEventHook<GenericHookParams>): void;
+	addErrorServerEventHook(hook: ErrorServerEventHook<GenericHookParams>): void;
+	addStartServerEventHook(hook: StartServerEventHook<GenericHookParams>): void;
+	addReceiveEventServerEventHook(hook: ReceiveEventServerEventHook<GenericHookParams>): void;
 
 	request<
 		GenericClientRequestParams extends ServerRouteToClientRequestParams<
@@ -276,6 +281,21 @@ export function createHttpClient<
 			},
 			addErrorHook(hook) {
 				hooks.error.push(hook);
+			},
+			addBeforeRetryServerEventHook(hook) {
+				hooks.beforeRetryServerEvent.push(hook);
+			},
+			addCloseServerEventHook(hook) {
+				hooks.closeServerEvent.push(hook);
+			},
+			addErrorServerEventHook(hook) {
+				hooks.errorServerEvent.push(hook);
+			},
+			addReceiveEventServerEventHook(hook) {
+				hooks.receiveEventServerEvent.push(hook);
+			},
+			addStartServerEventHook(hook) {
+				hooks.startServerEvent.push(hook);
 			},
 			request(params) {
 				const headers = GG.reduce(

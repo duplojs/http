@@ -8,17 +8,17 @@ describe("queryToString", () => {
 	it("returns null when query has no usable values", () => {
 		expect(queryToString({
 			aa: undefined,
-			bb: "",
-		})).toBe("bb=");
+		})).toBe(null);
 	});
 
 	it("serializes single values", () => {
 		const result = queryToString({
 			search: "duplo",
 			page: "2",
+			tt: "",
 		});
 
-		expect(result).toBe("search=duplo&page=2");
+		expect(result).toBe("search=duplo&page=2&tt=");
 	});
 
 	it("serializes array values", () => {

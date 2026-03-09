@@ -38,6 +38,11 @@ describe("httpClient", () => {
 			response: [],
 			serverErrorResponseType: [],
 			successfulResponseType: [],
+			startServerEvent: [],
+			receiveEventServerEvent: [],
+			errorServerEvent: [],
+			closeServerEvent: [],
+			beforeRetryServerEvent: [],
 		});
 	});
 
@@ -67,6 +72,7 @@ describe("httpClient", () => {
 		httpClient.addDefaultHeaders({
 			prop1: () => "1",
 			prop2: "2",
+			prop3: undefined,
 		});
 
 		void httpClient.request({
@@ -94,6 +100,11 @@ describe("httpClient", () => {
 				response: [],
 				serverErrorResponseType: [],
 				successfulResponseType: [],
+				startServerEvent: [],
+				receiveEventServerEvent: [],
+				errorServerEvent: [],
+				closeServerEvent: [],
+				beforeRetryServerEvent: [],
 			},
 			initParams: {
 				cache: undefined,
@@ -129,6 +140,11 @@ describe("httpClient", () => {
 				response: [],
 				serverErrorResponseType: [],
 				successfulResponseType: [],
+				startServerEvent: [],
+				receiveEventServerEvent: [],
+				errorServerEvent: [],
+				closeServerEvent: [],
+				beforeRetryServerEvent: [],
 			},
 			initParams: {
 				cache: "default",
@@ -164,6 +180,11 @@ describe("httpClient", () => {
 				response: [],
 				serverErrorResponseType: [],
 				successfulResponseType: [],
+				startServerEvent: [],
+				receiveEventServerEvent: [],
+				errorServerEvent: [],
+				closeServerEvent: [],
+				beforeRetryServerEvent: [],
 			},
 			initParams: {
 				cache: undefined,
@@ -200,6 +221,11 @@ describe("httpClient", () => {
 				response: [],
 				serverErrorResponseType: [],
 				successfulResponseType: [],
+				startServerEvent: [],
+				receiveEventServerEvent: [],
+				errorServerEvent: [],
+				closeServerEvent: [],
+				beforeRetryServerEvent: [],
 			},
 			initParams: {
 				cache: undefined,
@@ -236,6 +262,11 @@ describe("httpClient", () => {
 				response: [],
 				serverErrorResponseType: [],
 				successfulResponseType: [],
+				startServerEvent: [],
+				receiveEventServerEvent: [],
+				errorServerEvent: [],
+				closeServerEvent: [],
+				beforeRetryServerEvent: [],
 			},
 			initParams: {
 				cache: undefined,
@@ -272,6 +303,11 @@ describe("httpClient", () => {
 				response: [],
 				serverErrorResponseType: [],
 				successfulResponseType: [],
+				startServerEvent: [],
+				receiveEventServerEvent: [],
+				errorServerEvent: [],
+				closeServerEvent: [],
+				beforeRetryServerEvent: [],
 			},
 			initParams: {
 				cache: undefined,
@@ -298,6 +334,11 @@ describe("httpClient", () => {
 		const expectedHook: Hooks["expectedResponse"][number] = vi.fn();
 		const notPredictedHook: Hooks["notPredictedResponse"][number] = vi.fn();
 		const errorHook: Hooks["error"][number] = vi.fn();
+		const beforeRetryServerEvent: Hooks["beforeRetryServerEvent"][number] = vi.fn();
+		const startServerEvent: Hooks["startServerEvent"][number] = vi.fn();
+		const closeServerEvent: Hooks["closeServerEvent"][number] = vi.fn();
+		const errorServerEvent: Hooks["errorServerEvent"][number] = vi.fn();
+		const receiveEventServerEvent: Hooks["receiveEventServerEvent"][number] = vi.fn();
 
 		httpClient.addRequestHook(requestHook);
 		httpClient.addResponseHook(responseHook);
@@ -311,6 +352,11 @@ describe("httpClient", () => {
 		httpClient.addExpectedResponseHook(expectedHook);
 		httpClient.addNotPredictedResponseHook(notPredictedHook);
 		httpClient.addErrorHook(errorHook);
+		httpClient.addBeforeRetryServerEventHook(beforeRetryServerEvent);
+		httpClient.addStartServerEventHook(startServerEvent);
+		httpClient.addCloseServerEventHook(closeServerEvent);
+		httpClient.addErrorServerEventHook(errorServerEvent);
+		httpClient.addReceiveEventServerEventHook(receiveEventServerEvent);
 
 		it("adds hooks to client registry", () => {
 			expect(httpClient.hooks.request).toContain(requestHook);
@@ -325,6 +371,11 @@ describe("httpClient", () => {
 			expect(httpClient.hooks.expectedResponse).toContain(expectedHook);
 			expect(httpClient.hooks.notPredictedResponse).toContain(notPredictedHook);
 			expect(httpClient.hooks.error).toContain(errorHook);
+			expect(httpClient.hooks.beforeRetryServerEvent).toContain(beforeRetryServerEvent);
+			expect(httpClient.hooks.startServerEvent).toContain(startServerEvent);
+			expect(httpClient.hooks.closeServerEvent).toContain(closeServerEvent);
+			expect(httpClient.hooks.errorServerEvent).toContain(errorServerEvent);
+			expect(httpClient.hooks.receiveEventServerEvent).toContain(receiveEventServerEvent);
 		});
 
 		it("pass hook to PromiseRequest", () => {
@@ -358,6 +409,11 @@ describe("httpClient", () => {
 					response: [responseHook],
 					serverErrorResponseType: [responseTypeHook],
 					successfulResponseType: [responseTypeHook],
+					startServerEvent: [startServerEvent],
+					receiveEventServerEvent: [receiveEventServerEvent],
+					errorServerEvent: [errorServerEvent],
+					closeServerEvent: [closeServerEvent],
+					beforeRetryServerEvent: [beforeRetryServerEvent],
 				},
 				initParams: {
 					cache: undefined,

@@ -1167,21 +1167,7 @@ export class PromiseRequest<
 
 							return EE.right(
 								"response",
-								{
-									body,
-									information: response.headers.get(requestParams.informationHeaderKey) || undefined,
-									code: response.status.toString() as SS.Number,
-									ok: (response.status < 500)
-										? response.ok
-										: null,
-									headers: response.headers,
-									type: response.type,
-									url: response.url,
-									redirected: response.redirected,
-									raw: response,
-									requestParams,
-									predicted: response.headers.get(requestParams.predictedHeaderKey) !== null,
-								},
+								clientResponse,
 							);
 						},
 					),

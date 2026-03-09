@@ -1,8 +1,7 @@
-import { pipe, sleep } from "@duplojs/utils";
+import { forward, pipe, sleep } from "@duplojs/utils";
 import * as GG from "@duplojs/utils/generator";
 import * as SS from "@duplojs/utils/string";
 import * as AA from "@duplojs/utils/array";
-import * as NN from "@duplojs/utils/number";
 import { type ServerEvent, type ClientEventsResponse, type ClientResponse, type CloseServerEventHook, type BeforeRetryServerEventHook, type ErrorServerEventHook, type StartServerEventHook, type ReceiveEventServerEventHook } from "./types";
 import { launchBeforeRetryServerEventHook, launchCloseServerEventHook, launchErrorServerEventHook, launchReceiveEventServerEventHook, launchStartServerEventHook } from "./hooks";
 
@@ -26,8 +25,6 @@ export function makeClientEventsResponse(
 ): ClientEventsResponse {
 	let reader = response.raw.body?.getReader();
 	let abortController = response.requestParams.abortController;
-
-	// event subscriber and hook
 
 	const createEventResponse = (
 		eventsReaderGenerator: (
@@ -73,22 +70,22 @@ export function makeClientEventsResponse(
 
 				return eventResponse;
 			},
-			consumeEventStream() {
-				eventResponse[Symbol.asyncIterator]();
+			async consumeEventStream() {
+				for await (const __ of eventResponse) { }
 			},
 			[Symbol.asyncIterator]: async function *() {
 				await launchStartServerEventHook(
 					response.requestParams.hooks.startServerEvent,
 					startServerEvent ?? [],
 					eventResponse,
-				);
+				).catch(console.error);
 
 				const onError = (error: unknown) => launchErrorServerEventHook(
 					response.requestParams.hooks.errorServerEvent,
 					errorServerEvent ?? [],
 					error,
 					eventResponse,
-				);
+				).catch(console.error);
 
 				const generator = eventsReaderGenerator(
 					onError,
@@ -96,7 +93,7 @@ export function makeClientEventsResponse(
 						response.requestParams.hooks.beforeRetryServerEvent,
 						beforeRetryServerEvent ?? [],
 						eventResponse,
-					),
+					).catch(console.error),
 				);
 
 				try {
@@ -106,18 +103,16 @@ export function makeClientEventsResponse(
 							receiveEventServerEvent ?? [],
 							event,
 							eventResponse,
-						);
+						).catch(console.error);
 
 						yield event;
 					}
-				} catch (error) {
-					await onError(error);
 				} finally {
 					await launchCloseServerEventHook(
 						response.requestParams.hooks.closeServerEvent,
 						closeServerEvent ?? [],
 						eventResponse,
-					);
+					).catch(console.error);
 				}
 			},
 		};
@@ -181,8 +176,7 @@ export function makeClientEventsResponse(
 									response.requestParams.informationHeaderKey,
 								);
 								if (
-									NN.between(fetchResponse.status, 200, 399)
-									&& fetchResponse.status !== 204
+									fetchResponse.status !== 204
 									&& fetchResponse.headers.get("content-type")?.includes("text/event-stream")
 									&& fetchResponse.body
 									&& (
@@ -296,14 +290,18 @@ export function makeClientEventsResponse(
 							continue;
 						}
 
-						yield {
-							event: eventContent.event || "message",
-							data: eventContent["content-type"]?.includes("application/json")
-								? JSON.parse(eventContent.data)
-								: eventContent.data,
-							id: eventContent.id,
-							retry: eventContent.retry,
-						} satisfies ServerEvent;
+						try {
+							yield {
+								event: eventContent.event || "message",
+								data: eventContent["content-type"]?.includes("application/json")
+									? JSON.parse(eventContent.data)
+									: eventContent.data,
+								id: eventContent.id,
+								retry: eventContent.retry,
+							} satisfies ServerEvent;
+						} catch (error) {
+							await emitError(error);
+						}
 					}
 				},
 			);

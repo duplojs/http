@@ -16,6 +16,12 @@ import {
 	type ErrorHook,
 	type ClientResponse,
 	type PromiseRequestParams,
+	launchCloseServerEventHook,
+	type CloseServerEventHook,
+	launchBeforeRetryServerEventHook,
+	launchErrorServerEventHook,
+	launchStartServerEventHook,
+	launchReceiveEventServerEventHook,
 } from "@client";
 
 describe("client hooks", () => {
@@ -223,5 +229,125 @@ describe("client hooks", () => {
 		await launchErrorHook(clientHooks, promiseHooks, error, requestParams);
 
 		expect(order).toStrictEqual(["promise-boom-/", "client-boom-/"]);
+	});
+
+	it("launchCloseServerEventHook runs promise hooks before client hooks", async() => {
+		const order: string[] = [];
+		const response = {
+			code: "200",
+			predicted: false,
+		} as unknown as ClientResponse;
+
+		const promiseHooks = [
+			() => {
+				order.push("promise");
+			},
+		];
+
+		const clientHooks = [
+			() => {
+				order.push("client");
+			},
+		];
+
+		await launchCloseServerEventHook(clientHooks, promiseHooks, response as never);
+
+		expect(order).toStrictEqual(["promise", "client"]);
+	});
+
+	it("launchBeforeRetryServerEventHook runs promise hooks before client hooks", async() => {
+		const order: string[] = [];
+		const response = {
+			code: "200",
+			predicted: false,
+		} as unknown as ClientResponse;
+
+		const promiseHooks = [
+			() => {
+				order.push("promise");
+			},
+		];
+
+		const clientHooks = [
+			() => {
+				order.push("client");
+			},
+		];
+
+		await launchBeforeRetryServerEventHook(clientHooks, promiseHooks, response as never);
+
+		expect(order).toStrictEqual(["promise", "client"]);
+	});
+
+	it("launchErrorServerEventHook runs promise hooks before client hooks", async() => {
+		const order: string[] = [];
+		const response = {
+			code: "200",
+			predicted: false,
+		} as unknown as ClientResponse;
+
+		const promiseHooks = [
+			() => {
+				order.push("promise");
+			},
+		];
+
+		const clientHooks = [
+			() => {
+				order.push("client");
+			},
+		];
+
+		await launchErrorServerEventHook(clientHooks, promiseHooks, {}, response as never);
+
+		expect(order).toStrictEqual(["promise", "client"]);
+	});
+
+	it("launchStartServerEventHook runs promise hooks before client hooks", async() => {
+		const order: string[] = [];
+		const response = {
+			code: "200",
+			predicted: false,
+		} as unknown as ClientResponse;
+
+		const promiseHooks = [
+			() => {
+				order.push("promise");
+			},
+		];
+
+		const clientHooks = [
+			() => {
+				order.push("client");
+			},
+		];
+
+		await launchStartServerEventHook(clientHooks, promiseHooks, response as never);
+
+		expect(order).toStrictEqual(["promise", "client"]);
+	});
+
+	it("launchReceiveEventServerEventHook runs promise hooks before client hooks", async() => {
+		const order: string[] = [];
+		const response = {
+			code: "200",
+			predicted: false,
+		} as unknown as ClientResponse;
+
+		const promiseHooks = [
+			() => {
+				order.push("promise");
+			},
+		];
+
+		const clientHooks = [
+			() => {
+				order.push("client");
+			},
+		];
+
+		await launchReceiveEventServerEventHook(clientHooks, promiseHooks, {} as never, response as never);
+
+		expect(order).toStrictEqual(["promise", "client"]);
 	});
 });

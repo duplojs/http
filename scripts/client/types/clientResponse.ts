@@ -49,7 +49,7 @@ export interface ClientEventsResponseHandler<
 	onStreamEvent(event: "error", callback: (error: unknown, response: this) => MaybePromise<void>): this;
 	onStreamEvent(event: "start", callback: (response: this) => MaybePromise<void>): this;
 	onStreamEvent(event: "receiveServerEvents", callback: (event: GenericServerEvent, response: this) => MaybePromise<void>): this;
-	consumeEventStream(): void;
+	consumeEventStream(): Promise<void>;
 }
 
 export interface ClientEventsResponse<

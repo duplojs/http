@@ -1,8 +1,8 @@
 import { type Hooks, type PromiseRequestParams } from "@client";
 import { PromiseRequest } from "@client/promiseRequest";
-import { type ClientResponse } from "@client/types/clientResponse";
+import { type AllClientResponse, type ClientResponse } from "@client/types/clientResponse";
 import { UnexpectedCodeResponseError, UnexpectedInformationResponseError, UnexpectedResponseError, UnexpectedResponseTypeError } from "@client/unexpectedResponseError";
-import { asserts, unwrap, E, createFormData } from "@duplojs/utils";
+import { asserts, unwrap, E, createFormData, sleep } from "@duplojs/utils";
 
 describe("PromiseRequest", () => {
 	const createHooks = (): Hooks => ({
@@ -40,7 +40,7 @@ describe("PromiseRequest", () => {
 
 	const createResponse = (
 		params: PromiseRequestParams,
-		overrides: Partial<ClientResponse> = {},
+		overrides: Partial<AllClientResponse> = {},
 	): ClientResponse => ({
 		code: "200",
 		information: undefined,
@@ -94,6 +94,16 @@ describe("PromiseRequest", () => {
 			redirected: false,
 		} as unknown as Response;
 
+		const seeResponse = {
+			...jsonResponse,
+			status: 204,
+			headers: new Headers({
+				"content-type": "text/event-stream",
+				information: "info",
+				predicted: "true",
+			}),
+		} as unknown as Response;
+
 		const fetchMock = vi.fn()
 			.mockResolvedValueOnce(jsonResponse)
 			.mockResolvedValueOnce(jsonResponse)
@@ -103,6 +113,7 @@ describe("PromiseRequest", () => {
 			.mockResolvedValueOnce(jsonResponse)
 			.mockResolvedValueOnce(jsonResponse)
 			.mockResolvedValueOnce(jsonResponse)
+			.mockResolvedValueOnce(seeResponse)
 			.mockRejectedValueOnce(new Error("network"));
 
 		vi.stubGlobal("fetch", fetchMock);
@@ -151,6 +162,7 @@ describe("PromiseRequest", () => {
 		const resultFormData = await PromiseRequest.fetch(paramsWithFormData);
 		const resultTheFormData = await PromiseRequest.fetch(paramsWithTheFormData);
 		const resultArray = await PromiseRequest.fetch(paramsWithArray);
+		const resultSEE = await PromiseRequest.fetch(createParams());
 		const resultError = await PromiseRequest.fetch(createParams());
 
 		expect(fetchMock).toHaveBeenNthCalledWith(
@@ -179,6 +191,7 @@ describe("PromiseRequest", () => {
 		asserts(resultFormData, E.isRight);
 		asserts(resultTheFormData, E.isRight);
 		asserts(resultArray, E.isRight);
+		asserts(resultSEE, E.isRight);
 		asserts(resultError, E.isLeft);
 
 		expect(unwrap(result).body).toStrictEqual({ value: 1 });
@@ -189,6 +202,7 @@ describe("PromiseRequest", () => {
 		expect(unwrap(resultNumber).ok).toBeNull();
 		expect(unwrap(resultNumber).predicted).toBe(false);
 		expect(unwrap(resultHeader).ok).toBe(true);
+		expect(Symbol.asyncIterator in unwrap(resultSEE)).toBe(true);
 	});
 
 	it("addRequestInterceptor", async() => {
@@ -385,6 +399,45 @@ describe("PromiseRequest", () => {
 		await expect(new PromiseRequest(params)).resolves.toStrictEqual(E.left("request-error", expect.objectContaining({})));
 	});
 
+	it("whenReceiveServerEvent", async() => {
+		const spy = vi.fn();
+		const params = createParams();
+		const response = createResponse(params, {
+			code: "200",
+			headers: new Headers({ "content-type": "text/event-stream" }),
+			onReceiveEvent: spy,
+			[Symbol.asyncIterator]: async function *() {},
+		});
+		vi.spyOn(PromiseRequest, "fetch").mockResolvedValue(E.right("response", response));
+
+		const request = new PromiseRequest(params);
+		const result = request.whenReceiveServerEvent(
+			"test",
+			() => {},
+		);
+		await request;
+
+		expect(result).toBe(request);
+		expect(spy).toHaveBeenCalledWith("test", expect.any(Function));
+
+		spy.mockClear();
+
+		vi.spyOn(PromiseRequest, "fetch").mockResolvedValue(E.right("response", {
+			...response,
+			predicted: false,
+		}));
+
+		const requestNotPredicted = new PromiseRequest(params);
+		const resultNotPredicated = requestNotPredicted.whenReceiveServerEvent(
+			"test",
+			() => {},
+		);
+		await requestNotPredicted;
+
+		expect(resultNotPredicated).toBe(requestNotPredicted);
+		expect(spy).toHaveBeenCalledTimes(0);
+	});
+
 	it("iWantInformation", async() => {
 		const params = createParams();
 		const response = createResponse(params, { information: "ready" });
@@ -406,6 +459,19 @@ describe("PromiseRequest", () => {
 
 		expect(E.isLeft(miss)).toBe(true);
 		expect(unwrap(miss)).toBe(responseMiss);
+
+		const paramsNotPredicted = createParams();
+		const responseNotPredicted = createResponse(paramsNotPredicted, {
+			information: "ready",
+			predicted: false,
+		});
+		fetchSpy.mockResolvedValueOnce(E.right("response", responseNotPredicted));
+
+		const requestNotPredicted = new PromiseRequest(paramsNotPredicted);
+		const notPredicted = await requestNotPredicted.iWantInformation("ready");
+
+		expect(E.isLeft(notPredicted)).toBe(true);
+		expect(unwrap(notPredicted)).toBe(responseNotPredicted);
 	});
 
 	it("iWantCode", async() => {
@@ -429,6 +495,19 @@ describe("PromiseRequest", () => {
 
 		expect(E.isLeft(miss)).toBe(true);
 		expect(unwrap(miss)).toBe(responseMiss);
+
+		const paramsNotPredicted = createParams();
+		const responseNotPredicted = createResponse(paramsNotPredicted, {
+			code: "200",
+			predicted: false,
+		});
+		fetchSpy.mockResolvedValueOnce(E.right("response", responseNotPredicted));
+
+		const requestNotPredicted = new PromiseRequest(paramsNotPredicted);
+		const notPredicted = await requestNotPredicted.iWantCode("200");
+
+		expect(E.isLeft(notPredicted)).toBe(true);
+		expect(unwrap(notPredicted)).toBe(responseNotPredicted);
 	});
 
 	it("iWantInformationalResponse", async() => {
@@ -452,6 +531,19 @@ describe("PromiseRequest", () => {
 
 		expect(E.isLeft(miss)).toBe(true);
 		expect(unwrap(miss)).toBe(responseMiss);
+
+		const paramsNotPredicted = createParams();
+		const responseNotPredicted = createResponse(paramsNotPredicted, {
+			code: "102",
+			predicted: false,
+		});
+		fetchSpy.mockResolvedValueOnce(E.right("response", responseNotPredicted));
+
+		const requestNotPredicted = new PromiseRequest(paramsNotPredicted);
+		const notPredicted = await requestNotPredicted.iWantInformationalResponse();
+
+		expect(E.isLeft(notPredicted)).toBe(true);
+		expect(unwrap(notPredicted)).toBe(responseNotPredicted);
 	});
 
 	it("iWantSuccessfulResponse", async() => {
@@ -475,6 +567,19 @@ describe("PromiseRequest", () => {
 
 		expect(E.isLeft(miss)).toBe(true);
 		expect(unwrap(miss)).toBe(responseMiss);
+
+		const paramsNotPredicted = createParams();
+		const responseNotPredicted = createResponse(paramsNotPredicted, {
+			code: "200",
+			predicted: false,
+		});
+		fetchSpy.mockResolvedValueOnce(E.right("response", responseNotPredicted));
+
+		const requestNotPredicted = new PromiseRequest(paramsNotPredicted);
+		const notPredicted = await requestNotPredicted.iWantSuccessfulResponse();
+
+		expect(E.isLeft(notPredicted)).toBe(true);
+		expect(unwrap(notPredicted)).toBe(responseNotPredicted);
 	});
 
 	it("iWantRedirectionResponse", async() => {
@@ -498,6 +603,19 @@ describe("PromiseRequest", () => {
 
 		expect(E.isLeft(miss)).toBe(true);
 		expect(unwrap(miss)).toBe(responseMiss);
+
+		const paramsNotPredicted = createParams();
+		const responseNotPredicted = createResponse(paramsNotPredicted, {
+			code: "302",
+			predicted: false,
+		});
+		fetchSpy.mockResolvedValueOnce(E.right("response", responseNotPredicted));
+
+		const requestNotPredicted = new PromiseRequest(paramsNotPredicted);
+		const notPredicted = await requestNotPredicted.iWantRedirectionResponse();
+
+		expect(E.isLeft(notPredicted)).toBe(true);
+		expect(unwrap(notPredicted)).toBe(responseNotPredicted);
 	});
 
 	it("iWantClientErrorResponse", async() => {
@@ -521,6 +639,19 @@ describe("PromiseRequest", () => {
 
 		expect(E.isLeft(miss)).toBe(true);
 		expect(unwrap(miss)).toBe(responseMiss);
+
+		const paramsNotPredicted = createParams();
+		const responseNotPredicted = createResponse(paramsNotPredicted, {
+			code: "404",
+			predicted: false,
+		});
+		fetchSpy.mockResolvedValueOnce(E.right("response", responseNotPredicted));
+
+		const requestNotPredicted = new PromiseRequest(paramsNotPredicted);
+		const notPredicted = await requestNotPredicted.iWantClientErrorResponse();
+
+		expect(E.isLeft(notPredicted)).toBe(true);
+		expect(unwrap(notPredicted)).toBe(responseNotPredicted);
 	});
 
 	it("iWantServerErrorResponse", async() => {
@@ -544,6 +675,19 @@ describe("PromiseRequest", () => {
 
 		expect(E.isLeft(miss)).toBe(true);
 		expect(unwrap(miss)).toBe(responseMiss);
+
+		const paramsNotPredicted = createParams();
+		const responseNotPredicted = createResponse(paramsNotPredicted, {
+			code: "500",
+			predicted: false,
+		});
+		fetchSpy.mockResolvedValueOnce(E.right("response", responseNotPredicted));
+
+		const requestNotPredicted = new PromiseRequest(paramsNotPredicted);
+		const notPredicted = await requestNotPredicted.iWantServerErrorResponse();
+
+		expect(E.isLeft(notPredicted)).toBe(true);
+		expect(unwrap(notPredicted)).toBe(responseNotPredicted);
 	});
 
 	it("iWantExpectedResponse", async() => {
@@ -567,6 +711,19 @@ describe("PromiseRequest", () => {
 
 		expect(E.isLeft(miss)).toBe(true);
 		expect(unwrap(miss)).toBe(responseMiss);
+
+		const paramsNotPredicted = createParams();
+		const responseNotPredicted = createResponse(paramsNotPredicted, {
+			code: "204",
+			predicted: false,
+		});
+		fetchSpy.mockResolvedValueOnce(E.right("response", responseNotPredicted));
+
+		const requestNotPredicted = new PromiseRequest(paramsNotPredicted);
+		const notPredicted = await requestNotPredicted.iWantExpectedResponse();
+
+		expect(E.isLeft(notPredicted)).toBe(true);
+		expect(unwrap(notPredicted)).toBe(responseNotPredicted);
 	});
 
 	it("selectByInformation", async() => {
@@ -596,6 +753,22 @@ describe("PromiseRequest", () => {
 
 		expect(E.isLeft(miss)).toBe(true);
 		expect(unwrap(miss)).toBe(responseMiss);
+
+		const paramsNotPredicted = createParams();
+		const responseNotPredicted = createResponse(paramsNotPredicted, {
+			information: "ready",
+			predicted: false,
+		});
+		fetchSpy.mockResolvedValueOnce(E.right("response", responseNotPredicted));
+
+		const requestNotPredicted = new PromiseRequest(paramsNotPredicted);
+		const notPredicted = await requestNotPredicted.iSelectExpectedResponseByInformation({
+			ready: true,
+			other: false,
+		});
+
+		expect(E.isLeft(notPredicted)).toBe(true);
+		expect(unwrap(notPredicted)).toBe(responseNotPredicted);
 	});
 
 	it("iWantInformationOrThrow", async() => {
@@ -659,7 +832,6 @@ describe("PromiseRequest", () => {
 		const params = createParams();
 		const response = createResponse(params, {
 			code: "200",
-			predicted: false,
 		});
 		const fetchSpy = vi.spyOn(PromiseRequest, "fetch");
 		fetchSpy.mockResolvedValueOnce(E.right("response", response));

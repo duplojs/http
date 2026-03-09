@@ -1,6 +1,6 @@
 import { hub } from "@core";
 import { createHttpServer } from "@duplojs/http/node";
-import { createHttpClient, type NotPredictedClientResponse, type PromiseRequestParams, type RequestErrorContent } from "@duplojs/http/client";
+import { type AllNotPredictedClientResponse, createHttpClient, type PromiseRequestParams, type RequestErrorContent } from "@duplojs/http/client";
 import { type Routes } from "./clientType";
 import { createFormData, E, S, type ExpectType } from "@duplojs/utils";
 import { createFileToSend } from "@utils";
@@ -48,7 +48,7 @@ describe("node server", async() => {
 					requestParams: PromiseRequestParams<Record<string, unknown>>;
 					predicted: boolean;
 				}
-				| NotPredictedClientResponse<
+				| AllNotPredictedClientResponse<
 					Record<string, unknown>
 				>
 			>,
@@ -82,7 +82,7 @@ describe("node server", async() => {
 			| E.Left<"request-error", RequestErrorContent>
 			| E.Right<
 				"response",
-				| NotPredictedClientResponse<
+				| AllNotPredictedClientResponse<
 					Record<string, unknown>
 				>
 				| {
@@ -180,7 +180,7 @@ describe("node server", async() => {
 					requestParams: PromiseRequestParams<Record<string, unknown>>;
 					predicted: boolean;
 				}
-				| NotPredictedClientResponse<
+				| AllNotPredictedClientResponse<
 					Record<string, unknown>
 				>
 			>,
@@ -243,7 +243,7 @@ describe("node server", async() => {
 					requestParams: PromiseRequestParams<Record<string, unknown>>;
 					predicted: boolean;
 				}
-				| NotPredictedClientResponse<
+				| AllNotPredictedClientResponse<
 					Record<string, unknown>
 				>
 			>,
