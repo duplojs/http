@@ -68,7 +68,7 @@ export async function readRequestFormData<
 	let valueAccumulator: GenericValueAccumulator = firstValueAccumulator;
 
 	const startPart = Buffer.from(`\r\n--${boundary}\r\n`);
-	const endMultiPart = Buffer.from(`\r\n--${boundary}--`);
+	const endMultiPart = Buffer.from(`\r\n--${boundary}--\r\n`);
 
 	let currentBuffer = bufferStart;
 	let size = 0;
@@ -233,6 +233,16 @@ export async function readRequestFormData<
 					// check if buffer contain only end of header part
 					return await treatError(new BodyParseFormDataError("Wrong content."));
 				}
+			}
+		}
+
+		if (currentBuffer.indexOf(endMultiPart) === -1) {
+			const resultChunk = await flushReceiveChunk(
+				currentBuffer.subarray(0, 2),
+			);
+
+			if (resultChunk !== true) {
+				return await treatError(resultChunk);
 			}
 		}
 

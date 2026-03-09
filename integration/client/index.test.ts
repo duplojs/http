@@ -2,9 +2,10 @@ import { hub } from "@core";
 import { createHttpServer } from "@duplojs/http/node";
 import { type AllNotPredictedClientResponse, createHttpClient, type PromiseRequestParams, type RequestErrorContent } from "@duplojs/http/client";
 import { type Routes } from "./clientType";
-import { A, createFormData, E, S, sleep, type ExpectType } from "@duplojs/utils";
+import { A, asserts, createFormData, E, S, sleep, stringToBytes, type ExpectType } from "@duplojs/utils";
 import { createFileToSend } from "@utils";
 import { resolve } from "path";
+import { SF } from "@duplojs/server-utils";
 
 describe("node server", async() => {
 	const server = await createHttpServer(hub, {
@@ -209,6 +210,7 @@ describe("node server", async() => {
 			body: createFormData({
 				bool: true,
 				myFile: [await createFileToSend("files/fakeFiles/1mb.jpg", "//😄.jpg")],
+				name: "client/testClient.generate",
 			}),
 		});
 
@@ -259,6 +261,18 @@ describe("node server", async() => {
 					predicted: true,
 				}),
 			),
+		);
+
+		await sleep(500);
+
+		expect(await SF.stat("files/store/client/testClient.generate.jpg")).toStrictEqual(
+			E.success(
+				expect.objectContaining({ sizeBytes: stringToBytes("1mb") }),
+			),
+		);
+		asserts(await SF.remove("files/store/client/testClient.generate.jpg"), E.isRight);
+		expect(await SF.readDirectory("files/upload")).toStrictEqual(
+			E.success([".gitkeep"]),
 		);
 	});
 

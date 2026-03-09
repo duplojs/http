@@ -13,13 +13,14 @@ useRouteBuilder("POST", "/documents", {
 		body: {
 			bool: DPE.coerce.boolean(),
 			myFile: DPE.tuple([SDPE.file()]),
+			name: DPE.string(),
 		},
 	})
 	.handler(
 		ResponseContract.noContent("file.receive"),
-		async({ myFile: [myFile] }, { response }) => {
+		async({ myFile: [myFile], name }, { response }) => {
 			asserts(
-				await myFile.move("files/store/picture.jpg"),
+				await myFile.move(`files/store/${name}.jpg`),
 				E.isRight,
 			);
 

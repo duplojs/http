@@ -60,6 +60,7 @@ export type Routes = {
 		myFile: [
 			File,
 		];
+		name: string;
 	}>;
 	responses: {
 		code: "422";

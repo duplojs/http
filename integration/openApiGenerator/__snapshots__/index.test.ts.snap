@@ -373,11 +373,15 @@ exports[`openApiGenerator > correct generate file 1`] = `
             "minItems": 1,
             "additionalItems": false,
             "maxItems": 1
+          },
+          "name": {
+            "type": "string"
           }
         },
         "required": [
           "bool",
-          "myFile"
+          "myFile",
+          "name"
         ]
       },
       "NotIdentified8": {},
