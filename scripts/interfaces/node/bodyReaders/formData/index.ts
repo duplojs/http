@@ -4,13 +4,45 @@ import { SF } from "@duplojs/server-utils";
 import { A, E, type MaybeArray, O, Path, stringToBytes, TheFormData, unwrap } from "@duplojs/utils";
 import { readRequestFormData } from "./readRequestFormData";
 import { createWriteStream } from "node:fs";
+import { randomUUID } from "node:crypto";
 import { WrongContentTypeError } from "@core/errors";
+import { once } from "node:events";
 
 export * from "./error";
 export * from "./readRequestFormData";
 
 export function createFormDataBodyReaderImplementation(serverParams: HttpServerParams) {
 	const serverMaxBodySize = stringToBytes(serverParams.maxBodySize);
+
+	async function createUploadFile(extension: string, highWaterMark?: number) {
+		let remainingAttempts = 5;
+
+		do {
+			const filePath = Path.resolveRelative([
+				serverParams.uploadFolder,
+				`${randomUUID()}${extension}`,
+			]);
+
+			const stream = createWriteStream(
+				filePath,
+				{
+					flags: "wx",
+					autoClose: true,
+					highWaterMark,
+				},
+			);
+
+			try {
+				await once(stream, "open");
+
+				return stream;
+			} catch (error) {
+				if ((error as NodeJS.ErrnoException).code !== "EEXIST" || --remainingAttempts === 0) {
+					throw error;
+				}
+			}
+		} while (true);
+	}
 
 	function addValue(
 		mapResult: Map<string, MaybeArray<SF.FileInterface | string>>,
@@ -54,23 +86,16 @@ export function createFormDataBodyReaderImplementation(serverParams: HttpServerP
 					maxBufferSize: params.maxBufferSize,
 					maxKeyLength: params.maxKeyLength,
 				},
-				(header) => {
+				async(header) => {
 					const fieldName = header.name;
 					if (header.filename) {
 						const extension = Path.getExtensionName(header.filename);
 						const displayExtension = extension ? `.${extension}` : "";
-						const filePath = Path.resolveRelative([
-							serverParams.uploadFolder,
-							`${Math.random().toString(36).slice(2, 10)}-${Date.now()}${displayExtension}`,
-						]);
-						filesAttache.push(filePath);
-
-						const currentFile = createWriteStream(
-							filePath,
-							{
-								highWaterMark: request.raw.request.readableHighWaterMark,
-							},
+						const currentFile = await createUploadFile(
+							displayExtension,
+							request.raw.request.readableHighWaterMark,
 						);
+						filesAttache.push(currentFile.path.toString());
 
 						return {
 							onReceiveChunk: (chunk) => new Promise(

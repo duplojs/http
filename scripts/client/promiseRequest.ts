@@ -393,7 +393,7 @@ export class PromiseRequest<
 				>
 			>
 		> {
-		const formattedInformation = AA.coalescing(information);
+		const formattedInformation: readonly string[] = AA.coalescing(information);
 
 		return this.then(
 			EE.whenIsRight(
@@ -439,7 +439,7 @@ export class PromiseRequest<
 				>
 			>
 		> {
-		const formattedCode = AA.coalescing(code);
+		const formattedCode: readonly SS.Number[] = AA.coalescing(code);
 
 		return this.then(
 			EE.whenIsRight(
