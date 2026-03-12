@@ -2,7 +2,7 @@
 import { createCoreLibKind } from "@core/kind";
 import { Response, type SuccessResponseCode } from "@core/response";
 import { type ServerSentEvents } from "@core/serverSentEvents";
-import { kindHeritage, type MillisecondInString, type MaybePromise } from "@duplojs/utils";
+import { kindHeritage, type MaybePromise } from "@duplojs/utils";
 
 const defaultParamsParent = [undefined, undefined, undefined] as const;
 const defaultParams = {};

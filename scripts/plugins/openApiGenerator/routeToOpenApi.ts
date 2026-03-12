@@ -1,7 +1,7 @@
 import type { Route } from "@core/route";
 import { aggregateStepContract } from "./aggregateStepContract";
 import { A, DP, isType, justReturn, O, P, pipe, S, when, whenNot } from "@duplojs/utils";
-import { type ResponseCode, ResponseContract } from "@core/response";
+import { ResponseContract } from "@core/response";
 import { type MapContext, type JsonSchema, render, defaultTransformers } from "@duplojs/data-parser-tools/toJsonSchema";
 import { FormDataBodyController, type RequestMethods } from "@core/request";
 import type { EndpointResponse, EndpointResponseContent, EntrypointParameter, OpenApiMethod } from "./types";

@@ -1,4 +1,4 @@
-import { forward, pipe, sleep } from "@duplojs/utils";
+import { pipe, sleep } from "@duplojs/utils";
 import * as GG from "@duplojs/utils/generator";
 import * as SS from "@duplojs/utils/string";
 import * as AA from "@duplojs/utils/array";
@@ -228,7 +228,7 @@ export function makeClientEventsResponse(
 							GG.reduceFrom<RawServerEvent>({}),
 							({ lastValue, element, next }) => {
 								const { field, value } = element.namedGroups as {
-									field: keyof RawServerEvent | "content-type";
+									field: keyof RawServerEvent;
 									value: string;
 								};
 

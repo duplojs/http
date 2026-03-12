@@ -124,7 +124,7 @@ export interface HookRouteLifeCycle<
 
 export function createHookRouteLifeCycle<
 	const GenericHookLiveCycle extends Omit<
-		HookRouteLifeCycle<Request>,
+		HookRouteLifeCycle,
 		"onConstructRequest"
 	>,
 >(
