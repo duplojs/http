@@ -6,6 +6,7 @@ import { type HttpServerParams } from "@core/types";
 import { SF } from "@duplojs/server-utils";
 import { A } from "@duplojs/utils";
 import { createReadStream } from "node:fs";
+import { resolve } from "node:path";
 
 export function initNodeHook(
 	hub: Hub,
@@ -36,7 +37,15 @@ export function initNodeHook(
 				);
 				rawRequest.on("close", handler.abort);
 				void handler.start(
-					(value) => void rawResponse.write(value),
+					(value) => new Promise(
+						(resolve) => {
+							if (!rawResponse.write(value)) {
+								rawResponse.once("drain", resolve);
+							} else {
+								resolve();
+							}
+						},
+					),
 					() => void rawResponse.end(),
 				);
 				return exit();

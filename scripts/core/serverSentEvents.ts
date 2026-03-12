@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/prefer-for-of */
-import { type MaybePromise, type MillisecondInString, stringToMillisecond } from "@duplojs/utils";
+import { type MillisecondInString, stringToMillisecond } from "@duplojs/utils";
 import { type ServerSentEventsPredictedResponse } from "./response";
 
 export namespace ServerSentEvents {
@@ -25,7 +25,7 @@ export namespace ServerSentEvents {
 					params?: SendParams,
 				]
 				: never
-		): void;
+		): Promise<void>;
 		abort(): void;
 		onAbort(theFunction: () => void): void;
 		isAbort(): boolean;
@@ -39,9 +39,9 @@ export namespace ServerSentEvents {
 
 	export interface Handler {
 		start(
-			send: (value: string) => void,
+			send: (value: string) => Promise<void>,
 			close: () => void
-		): MaybePromise<void>;
+		): Promise<void>;
 		abort(): void;
 	}
 
@@ -76,9 +76,9 @@ export namespace ServerSentEvents {
 				const params: StartSendingParams = {
 					send: (event, data, params) => {
 						if (isClose) {
-							return;
+							return Promise.resolve();
 						} else if (isAbort) {
-							return;
+							return Promise.resolve();
 						}
 
 						let content = `event: ${event || "message"}\n`;
@@ -101,7 +101,7 @@ export namespace ServerSentEvents {
 
 						content += "\n";
 
-						return void send(content);
+						return send(content);
 					},
 					abort: handler.abort,
 					isAbort: () => isAbort,

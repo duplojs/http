@@ -38,13 +38,13 @@ describe("ServerSentEvents", () => {
 			new ServerSentEventsPredictedResponse(
 				"200",
 				"test",
-				({ send, onClose, onAbort }) => {
+				async({ send, onClose, onAbort }) => {
 					onClose(spyOnClose);
 					onAbort(spyOnAbort);
 
-					send("superMessage", "test1");
-					send("superMessage", "test2");
-					send("superMessage", "test3");
+					await send("superMessage", "test1");
+					await send("superMessage", "test2");
+					await send("superMessage", "test3");
 				},
 			),
 			{
@@ -78,16 +78,16 @@ describe("ServerSentEvents", () => {
 			new ServerSentEventsPredictedResponse(
 				"200",
 				"test",
-				({ send, close, onClose, onAbort, isClose, isAbort }) => {
+				async({ send, close, onClose, onAbort, isClose, isAbort }) => {
 					onClose(spyOnClose);
 					onAbort(spyOnAbort);
 
 					expect(isAbort()).toBe(false);
 					expect(isClose()).toBe(false);
 
-					send("superMessage2", "test1");
+					await send("superMessage2", "test1");
 					close();
-					send("superMessage2", "test2");
+					await send("superMessage2", "test2");
 
 					expect(isAbort()).toBe(false);
 					expect(isClose()).toBe(true);
@@ -118,16 +118,16 @@ describe("ServerSentEvents", () => {
 			new ServerSentEventsPredictedResponse(
 				"200",
 				"test",
-				({ send, abort, onClose, onAbort, isClose, isAbort }) => {
+				async({ send, abort, onClose, onAbort, isClose, isAbort }) => {
 					onClose(spyOnClose);
 					onAbort(spyOnAbort);
 
 					expect(isAbort()).toBe(false);
 					expect(isClose()).toBe(false);
 
-					send("superMessage1", "test1");
+					await send("superMessage1", "test1");
 					abort();
-					send("superMessage1", "test2");
+					await send("superMessage1", "test2");
 
 					expect(isAbort()).toBe(true);
 					expect(isClose()).toBe(false);
@@ -185,20 +185,20 @@ describe("ServerSentEvents", () => {
 			new ServerSentEventsPredictedResponse(
 				"200",
 				"test",
-				({ send, onClose, onAbort, lastId }) => {
+				async({ send, onClose, onAbort, lastId }) => {
 					expect(lastId).toBe("test");
 					onClose(spyOnClose);
 					onAbort(spyOnAbort);
 
-					send("", "test1");
-					send("superMessage4", { super: "object" });
-					send("superMessage4", undefined);
-					send("superMessage4", "ok", { id: "tets" });
-					send("superMessage4", "ok1", { id: "ff\0" });
-					send("superMessage4", "ok2", { id: "\n" });
-					send("superMessage4", "ok3", { id: "\rokok" });
-					send("superMessage4", "ok4", { retry: "20h" });
-					send("superMessage4", { super: "object" }, {
+					await send("", "test1");
+					await send("superMessage4", { super: "object" });
+					await send("superMessage4", undefined);
+					await send("superMessage4", "ok", { id: "tets" });
+					await send("superMessage4", "ok1", { id: "ff\0" });
+					await send("superMessage4", "ok2", { id: "\n" });
+					await send("superMessage4", "ok3", { id: "\rokok" });
+					await send("superMessage4", "ok4", { retry: "20h" });
+					await send("superMessage4", { super: "object" }, {
 						id: "10",
 						retry: 20,
 					});

@@ -125,9 +125,9 @@ describe("handler step function builder", () => {
 			})
 				.handler(
 					ResponseContract.serverSentEvents("good", DPE.string(), { ping: DPE.object({ value: DPE.number() }) }),
-					(floor, { serverSentEventsResponse }) => serverSentEventsResponse("good", ({ send }) => {
-						send("ping", { value: 2 });
-						send("message", "test2");
+					(floor, { serverSentEventsResponse }) => serverSentEventsResponse("good", async({ send }) => {
+						await send("ping", { value: 2 });
+						await send("message", "test2");
 					}),
 				);
 
@@ -204,9 +204,9 @@ describe("handler step function builder", () => {
 			})
 				.handler(
 					ResponseContract.serverSentEvents("good", DPE.string(), { theMessage: DPE.number() }),
-					(floor, { serverSentEventsResponse }) => serverSentEventsResponse("good", ({ send }) => {
-						send("wrong" as any, "test1");
-						send("theMessage", "test1" as any);
+					(floor, { serverSentEventsResponse }) => serverSentEventsResponse("good", async({ send }) => {
+						await send("wrong" as any, "test1");
+						await send("theMessage", "test1" as any);
 					}),
 				);
 

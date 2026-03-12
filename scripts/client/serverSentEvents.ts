@@ -133,7 +133,7 @@ export function makeClientEventsResponse(
 	return createEventResponse(
 		(emitError, emitBeforeRetry) => {
 			let lastId = response.requestParams.headers?.["last-event-id"];
-			let retry = 0;
+			let retry = 3000;
 
 			return pipe(
 				GG.asyncLoop(

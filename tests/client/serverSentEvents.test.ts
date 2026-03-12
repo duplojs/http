@@ -468,7 +468,7 @@ describe("server sent event", () => {
 			.onStreamEvent("close", closeLocal)
 			.consumeEventStream();
 
-		await sleep(100);
+		await sleep(3100);
 
 		expect(errorLocal).toHaveBeenCalledTimes(1);
 		expect(secondErrorLocal).toHaveBeenCalledTimes(1);

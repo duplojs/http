@@ -78,17 +78,17 @@ export const defaultHandlerStepFunctionBuilder = createStepFunctionBuilder(
 
 						if (!dataParser) {
 							console.error(new ResponseContract.Error(information, `Event '${event}' not found.`));
-							return;
+							return Promise.resolve();
 						}
 
 						const result = dataParser.parse(data);
 
 						if (E.isLeft(result)) {
 							console.error(new ResponseContract.Error(information, unwrap(result)));
-							return;
+							return Promise.resolve();
 						}
 
-						params.send(event, data, sendParams);
+						return params.send(event, data, sendParams);
 					},
 				}),
 			) as never;

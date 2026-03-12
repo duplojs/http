@@ -144,18 +144,36 @@ describe("makeNodeHook", () => {
 			it("send events", async() => {
 				const request = createFakeRequest();
 
+				const write = request.raw.response.write;
+				request.raw.response.write = vi.fn()
+					.mockImplementationOnce(
+						(data) => {
+							write(data);
+							void sleep().then(() => request.raw.response.emit("drain"));
+							return false;
+						},
+					)
+					.mockImplementationOnce(
+						(data) => {
+							write(data);
+							return true;
+						},
+					);
+
 				await hooks.sendResponse({
 					request,
 					currentResponse: new ServerSentEventsPredictedResponse(
 						"200",
 						"test",
-						({ send }) => {
-							send("test", "ok");
-							send("test", "ok2");
+						async({ send }) => {
+							await send("test", "ok");
+							await send("test", "ok2");
 						},
 					),
 					exit: exitHookFunction,
 				} as any);
+
+				await sleep(1000);
 
 				expect(request.raw.response._getData()).toBe(
 					"event: test\ndata: ok\n\nevent: test\ndata: ok2\n\n",

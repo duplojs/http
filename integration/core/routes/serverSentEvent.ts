@@ -19,15 +19,15 @@ useRouteBuilder("GET", "/sse")
 			return serverSentEventsResponse(
 				"super-sse",
 				async({ send }) => {
-					send("message", { test: "1" }, { retry: 100 });
+					await send("message", { test: "1" }, { retry: 100 });
 
 					await sleep(200);
 
-					send("message", { test: "2" }, { id: "test" });
+					await send("message", { test: "2" }, { id: "test" });
 
 					await sleep(200);
 
-					send("other", "3");
+					await send("other", "3");
 				},
 			);
 		},
