@@ -6,7 +6,7 @@ function queryToString(query) {
     }
     return Object.entries(query)
         .reduce((pv, [key, value]) => {
-        if (!value) {
+        if (value === undefined) {
             return pv;
         }
         if (value instanceof Array) {

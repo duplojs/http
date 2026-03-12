@@ -46,6 +46,7 @@ function createFormDataBodyReaderImplementation(serverParams) {
                 filesAttache.push(filePath);
                 const currentFile = node_fs.createWriteStream(filePath, {
                     highWaterMark: request.raw.request.readableHighWaterMark,
+                    flags: "wx",
                 });
                 return {
                     onReceiveChunk: (chunk) => new Promise((resolve, reject) => void currentFile.write(chunk, (result) => {

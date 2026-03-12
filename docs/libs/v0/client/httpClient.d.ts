@@ -1,9 +1,9 @@
 import { type Kind, type MayBeGetter, type SimplifyTopLevel, type IsEqual } from "@duplojs/utils";
-import { type ClientRequestInitParams, type ServerRoute, type ServerRouteToClientRequestParams, type ServerRouteToClientResponse, type ClientRequestParams, type ClientResponse, type Hooks, type RequestHook, type ResponseHook, type InformationHook, type CodeHook, type ResponseTypeHook, type ExpectedResponseHook, type NotPredictedResponseHook, type ErrorHook, type GetServerRoutePath } from "./types";
+import { type ClientRequestInitParams, type ServerRoute, type ServerRouteToClientRequestParams, type ServerRouteToClientResponse, type ClientRequestParams, type Hooks, type RequestHook, type ResponseHook, type InformationHook, type CodeHook, type ResponseTypeHook, type ExpectedResponseHook, type NotPredictedResponseHook, type ErrorHook, type GetServerRoutePath, type AllClientResponse, type BeforeRetryServerEventHook, type CloseServerEventHook, type ErrorServerEventHook, type StartServerEventHook, type ReceiveEventServerEventHook } from "./types";
 import { PromiseRequest } from "./promiseRequest";
 export declare const httpClientKind: import("@duplojs/utils").KindHandler<import("@duplojs/utils").KindDefinition<"@DuplojsHttpClient/http-client", unknown>>;
 type MaybeRequestParams<GenericRequestParams extends object> = {} extends GenericRequestParams ? [params?: GenericRequestParams] : [params: GenericRequestParams];
-type HttpClientRequestMethod<GenericServerRoute extends ServerRoute, GenericHookParams extends Record<string, unknown>, GenericMethod extends string> = IsEqual<GenericServerRoute, ServerRoute> extends true ? (path: string, params?: SimplifyTopLevel<Omit<ClientRequestParams<GenericHookParams>, "method" | "path">>) => PromiseRequest<GenericHookParams, ClientResponse<GenericHookParams>> : <GenericPath extends Extract<GenericServerRoute, {
+type HttpClientRequestMethod<GenericServerRoute extends ServerRoute, GenericHookParams extends Record<string, unknown>, GenericMethod extends string> = IsEqual<GenericServerRoute, ServerRoute> extends true ? (path: string, params?: SimplifyTopLevel<Omit<ClientRequestParams<GenericHookParams>, "method" | "path">>) => PromiseRequest<GenericHookParams, AllClientResponse<GenericHookParams>> : <GenericPath extends Extract<GenericServerRoute, {
     method: GenericMethod;
 }>["path"], GenericMatchedPath extends GetServerRoutePath<Extract<GenericServerRoute, {
     method: GenericMethod;
@@ -40,9 +40,14 @@ export interface HttpClient<GenericServerRoute extends ServerRoute = ServerRoute
     addExpectedResponseHook(hook: ExpectedResponseHook<GenericHookParams>): void;
     addNotPredictedResponseHook(hook: NotPredictedResponseHook<GenericHookParams>): void;
     addErrorHook(hook: ErrorHook<GenericHookParams>): void;
+    addBeforeRetryServerEventHook(hook: BeforeRetryServerEventHook<GenericHookParams>): void;
+    addCloseServerEventHook(hook: CloseServerEventHook<GenericHookParams>): void;
+    addErrorServerEventHook(hook: ErrorServerEventHook<GenericHookParams>): void;
+    addStartServerEventHook(hook: StartServerEventHook<GenericHookParams>): void;
+    addReceiveEventServerEventHook(hook: ReceiveEventServerEventHook<GenericHookParams>): void;
     request<GenericClientRequestParams extends ServerRouteToClientRequestParams<GenericServerRoute, GenericHookParams>, GenericMatchedPath extends GetServerRoutePath<Extract<GenericServerRoute, {
         method: GenericClientRequestParams["method"];
-    }>, GenericClientRequestParams["path"]>>(params: GenericClientRequestParams): PromiseRequest<GenericHookParams, ServerRouteToClientResponse<Extract<GenericServerRoute, {
+    }>, GenericClientRequestParams["path"]>>(params: GenericClientRequestParams): PromiseRequest<GenericHookParams, IsEqual<GenericServerRoute, ServerRoute> extends true ? AllClientResponse<GenericHookParams> : ServerRouteToClientResponse<Extract<GenericServerRoute, {
         method: GenericClientRequestParams["method"];
         path: GenericMatchedPath;
     }>, GenericHookParams>>;

@@ -5,7 +5,7 @@ require('../../../response/index.cjs');
 var create = require('../create.cjs');
 var utils = require('@duplojs/utils');
 var process = require('../../../steps/process.cjs');
-var predicted = require('../../../response/predicted.cjs');
+var base = require('../../../response/base.cjs');
 
 function buildStepsFunction(steps, buildStep) {
     return utils.G.asyncReduce(steps, utils.G.reduceFrom([]), async ({ lastValue, element: step, next, exit }) => {
@@ -33,8 +33,8 @@ const defaultProcessStepFunctionBuilder = create.createStepFunctionBuilder(proce
             let processFloor = { options: getOptions(floor) };
             // eslint-disable-next-line @typescript-eslint/prefer-for-of
             for (let index = 0; index < buildedSteps.length; index++) {
-                const result = await buildedSteps[index].buildedFunction(request, floor);
-                if (result instanceof predicted.PredictedResponse) {
+                const result = await buildedSteps[index].buildedFunction(request, processFloor);
+                if (result instanceof base.Response) {
                     return result;
                 }
                 processFloor = result;

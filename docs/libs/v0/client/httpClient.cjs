@@ -40,6 +40,11 @@ function createHttpClient(clientParams) {
         expectedResponse: [],
         error: [],
         notPredictedResponse: [],
+        beforeRetryServerEvent: [],
+        closeServerEvent: [],
+        errorServerEvent: [],
+        receiveEventServerEvent: [],
+        startServerEvent: [],
     }, clientParams.hooks ?? {});
     const config = {
         baseUrl: clientParams.baseUrl,
@@ -102,9 +107,27 @@ function createHttpClient(clientParams) {
         addErrorHook(hook) {
             hooks.error.push(hook);
         },
+        addBeforeRetryServerEventHook(hook) {
+            hooks.beforeRetryServerEvent.push(hook);
+        },
+        addCloseServerEventHook(hook) {
+            hooks.closeServerEvent.push(hook);
+        },
+        addErrorServerEventHook(hook) {
+            hooks.errorServerEvent.push(hook);
+        },
+        addReceiveEventServerEventHook(hook) {
+            hooks.receiveEventServerEvent.push(hook);
+        },
+        addStartServerEventHook(hook) {
+            hooks.startServerEvent.push(hook);
+        },
         request(params) {
             const headers = GG__namespace.reduce(defaultHeaders.entries(), GG__namespace.reduceFrom({}), ({ element, lastValue, next }) => {
-                lastValue[element[0]] = `${element[1]()}`;
+                const value = element[1]();
+                if (value !== undefined) {
+                    lastValue[element[0]] = `${value}`;
+                }
                 return next(lastValue);
             });
             return new promiseRequest.PromiseRequest({
@@ -123,6 +146,7 @@ function createHttpClient(clientParams) {
                 predictedHeaderKey: config.predictedHeaderKey,
                 informationHeaderKey: config.informationHeaderKey,
                 disabledPredicateMode: config.disabledPredictedMode,
+                abortController: params.abortController ?? new AbortController(),
             });
         },
         get: ((path, params) => self.request({

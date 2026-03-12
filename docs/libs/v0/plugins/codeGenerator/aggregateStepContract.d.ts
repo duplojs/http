@@ -1,7 +1,7 @@
 import { type Steps } from "../../core/steps";
 import { DP } from "@duplojs/utils";
 import { type EntrypointKey } from "./types";
-import { type ResponseContract } from "../../core/response";
+import { ResponseContract } from "../../core/response";
 type EntrypointReduceResult = Record<EntrypointKey, DP.DataParser | Record<string, DP.DataParser>>;
 export interface StepsToDataParserParams {
     readonly defaultExtractContract: ResponseContract.Contract;

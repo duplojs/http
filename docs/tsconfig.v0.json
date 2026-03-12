@@ -8,7 +8,8 @@
 		"@duplojs/http/node": ["libs/v0/interfaces/node/index"],
 		"@duplojs/http/codeGenerator": ["libs/v0/plugins/codeGenerator/index"],
 		"@duplojs/http/openApiGenerator": ["libs/v0/plugins/openApiGenerator/index"],
-	}
+	},
+	"types": ["@types/web"]
   },
   "include": ["examples/v0/**/*.ts", "libs/v0/**/*.d.ts"],
 }

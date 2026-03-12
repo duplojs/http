@@ -1,4 +1,4 @@
-import { kindHeritage, createExternalPromise } from '@duplojs/utils';
+import { kindHeritage, createExternalPromise, E } from '@duplojs/utils';
 import { createCoreLibKind } from '../kind.mjs';
 import './bodyController/index.mjs';
 
@@ -42,6 +42,11 @@ class Request extends kindHeritage("request", createCoreLibKind("request")) {
             .then((result) => {
             externalPromise.resolve(result);
             this.bodyResult = result;
+            return result;
+        })
+            .catch((error) => {
+            const result = E.error(error);
+            externalPromise.resolve(result);
             return result;
         });
     }

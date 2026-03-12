@@ -2,6 +2,7 @@
 
 require('../../core/steps/index.cjs');
 var utils = require('@duplojs/utils');
+require('../../core/response/index.cjs');
 var metadata = require('./metadata.cjs');
 var identifier = require('../../core/steps/identifier.cjs');
 var process = require('../../core/steps/process.cjs');
@@ -10,6 +11,7 @@ var presetChecker = require('../../core/steps/presetChecker.cjs');
 var checker = require('../../core/steps/checker.cjs');
 var cut = require('../../core/steps/cut.cjs');
 var handler = require('../../core/steps/handler.cjs');
+var contract = require('../../core/response/contract.cjs');
 
 function aggregateStepContract(steps, params) {
     const filteredStep = utils.A.filter(steps, (step) => utils.A.find(step.definition.metadata, metadata.IgnoreByCodeGeneratorMetadata.is) === undefined);
@@ -55,11 +57,16 @@ function aggregateStepContract(steps, params) {
         cut.cutStepKind,
         handler.handlerStepKind,
     ]), ({ definition }) => definition.responseContract)
-        .exhaustive()), utils.A.map(({ code, information, body }) => utils.DP.object({
+        .exhaustive()), utils.A.map(utils.innerPipe(utils.P.when(contract.ResponseContract.contractKind.has, ({ code, information, body }) => utils.DP.object({
         code: utils.DP.literal(code),
         information: utils.DP.literal(information),
         body,
-    })), utils.A.concat(processContracts.endpointContract));
+    })), utils.P.when(contract.ResponseContract.serverSentEventsContractKind.has, ({ code, information, body, events }) => utils.DP.object({
+        code: utils.DP.literal(code),
+        information: utils.DP.literal(information),
+        body,
+        events: utils.DP.object(events),
+    })), utils.P.exhaustive)), utils.A.concat(processContracts.endpointContract));
     return {
         entrypointContract,
         endpointContract,

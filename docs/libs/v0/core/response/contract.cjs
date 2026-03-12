@@ -78,13 +78,26 @@ exports.ResponseContract = void 0;
     ResponseContract.loopDetected = createContractBuilder("508", { defaultSchema });
     ResponseContract.notExtended = createContractBuilder("510", { defaultSchema });
     ResponseContract.networkAuthenticationRequired = createContractBuilder("511", { defaultSchema });
+    ResponseContract.serverSentEventsContractKind = kind.createCoreLibKind("server-sent-events-response-contract");
+    function serverSentEvents(information, mainEventSchema, events = {}) {
+        return ResponseContract.serverSentEventsContractKind.setTo({
+            code: "200",
+            information,
+            events: {
+                ...events,
+                message: mainEventSchema,
+            },
+            body: defaultSchema,
+        });
+    }
+    ResponseContract.serverSentEvents = serverSentEvents;
     class Error extends utils.kindHeritage("contract-error", kind.createCoreLibKind("contract-error"), ErrorClass) {
         information;
-        dataParserError;
-        constructor(information, dataParserError) {
-            super({}, [`Error executing the response contract with the information: "${information}".`]);
+        detail;
+        constructor(information, detail) {
+            super({}, [`Error executing the response contract with the information: "${information}"`]);
             this.information = information;
-            this.dataParserError = dataParserError;
+            this.detail = detail;
         }
     }
     ResponseContract.Error = Error;

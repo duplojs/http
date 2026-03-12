@@ -21,6 +21,7 @@ var narrowingInput = require('./narrowingInput.cjs');
 require('./clean/index.cjs');
 var index$5 = require('./defaultHooks/index.cjs');
 require('./errors/index.cjs');
+var serverSentEvents = require('./serverSentEvents.cjs');
 var checker = require('./builders/checker.cjs');
 var builder = require('./builders/route/builder.cjs');
 var store = require('./builders/route/store.cjs');
@@ -30,6 +31,7 @@ var base = require('./response/base.cjs');
 var contract = require('./response/contract.cjs');
 var hook = require('./response/hook.cjs');
 var predicted = require('./response/predicted.cjs');
+var serverSentEventsPredicted = require('./response/serverSentEventsPredicted.cjs');
 var hooks = require('./route/hooks.cjs');
 var kind = require('./steps/kind.cjs');
 var identifier = require('./steps/identifier.cjs');
@@ -89,6 +91,10 @@ exports.createCoreLibStringIdentifier = stringIdentifier.createCoreLibStringIden
 exports.implementHttpServer = implementHttpServer.implementHttpServer;
 exports.createNarrowingInput = narrowingInput.createNarrowingInput;
 exports.initDefaultHook = index$5.initDefaultHook;
+Object.defineProperty(exports, "ServerSentEvents", {
+	enumerable: true,
+	get: function () { return serverSentEvents.ServerSentEvents; }
+});
 exports.checkerBuilder = checker.checkerBuilder;
 exports.useCheckerBuilder = checker.useCheckerBuilder;
 exports.routeBuilderHandler = builder.routeBuilderHandler;
@@ -105,6 +111,7 @@ Object.defineProperty(exports, "ResponseContract", {
 });
 exports.HookResponse = hook.HookResponse;
 exports.PredictedResponse = predicted.PredictedResponse;
+exports.ServerSentEventsPredictedResponse = serverSentEventsPredicted.ServerSentEventsPredictedResponse;
 exports.createHookRouteLifeCycle = hooks.createHookRouteLifeCycle;
 exports.hookRouteExitKind = hooks.hookRouteExitKind;
 exports.hookRouteNextKind = hooks.hookRouteNextKind;

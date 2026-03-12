@@ -1,5 +1,6 @@
 const regexUrlAnalyser = /^(?<path>[^?]*)(?:\?(?<query>[^#]*))?(?:#(?<fragment>[^]*))?$/;
 const regexQueryAnalyser = /(?<key>[^=&]+)=(?<value>[^&]*)/g;
+const invalidEntryRegex = /__proto__|constructor|prototype/;
 function decodeUrl(url) {
     try {
         const groups = regexUrlAnalyser.exec(url).groups;
@@ -15,6 +16,9 @@ function decodeUrl(url) {
         for (const result of queryString.matchAll(regexQueryAnalyser)) {
             const groups = result.groups;
             const key = decodeURIComponent(groups.key);
+            if (invalidEntryRegex.test(key)) {
+                continue;
+            }
             const value = decodeURIComponent(groups.value);
             const currentValue = query[key];
             if (typeof currentValue === "undefined") {

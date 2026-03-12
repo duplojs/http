@@ -25,7 +25,10 @@ function createHttpServer(hub, params) {
         index.createTextBodyReaderImplementation(httpServerParams),
         index$1.createFormDataBodyReaderImplementation(httpServerParams),
     ]);
-    hub.addRouteHooks([index$2.initDefaultHook(hub, httpServerParams), index$3.nodeHook]);
+    hub.addRouteHooks([
+        index$2.initDefaultHook(hub, httpServerParams),
+        index$3.initNodeHook(hub, httpServerParams),
+    ]);
     function whenUncaughtError(error, routerInitializationData) {
         const serverResponse = routerInitializationData.raw.response;
         if (!serverResponse.headersSent && !serverResponse.writableEnded) {

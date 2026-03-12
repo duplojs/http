@@ -1,16 +1,11 @@
 import { type Steps } from "../../core/steps";
 import { DP } from "@duplojs/utils";
-import type { ResponseCode, ResponseContract } from "../../core/response";
+import type { ResponseContract } from "../../core/response";
 import type { EntrypointKey } from "./types";
-export interface EndpointRouteResult {
-    code: ResponseCode;
-    information: string;
-    body: DP.DataParser;
-}
 export type EntrypointReduceResult = Record<EntrypointKey, DP.DataParser | Record<string, DP.DataParser>>;
 export interface AggregateStepsResult {
     entrypointContract: EntrypointReduceResult;
-    endpointContract: EndpointRouteResult[];
+    endpointContract: (ResponseContract.Contract | ResponseContract.ServerSentEventsContract)[];
 }
 export interface AggregateStepsParams {
     readonly defaultExtractContract: ResponseContract.Contract;

@@ -3,9 +3,9 @@ import { type Steps } from "../../steps/types";
 import { type Floor } from "../../floor";
 import { type HookRouteLifeCycle } from "../../route";
 import { type Request } from "../../request";
-import { type ResponseContract, type PredictedResponse } from "../../response";
+import { type ResponseContract, type Response } from "../../response";
 import { type Environment } from "../../types";
-export type BuildedStepFunction = (request: Request, floor: Floor) => MaybePromise<Floor | PredictedResponse>;
+export type BuildedStepFunction = (request: Request, floor: Floor) => MaybePromise<Floor | Response>;
 export interface BuildStepResult {
     readonly buildedFunction: BuildedStepFunction;
     readonly hooksRouteLifeCycle: readonly HookRouteLifeCycle[];

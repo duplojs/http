@@ -1,5 +1,6 @@
 import '../../core/steps/index.mjs';
-import { A, pipe, O, DP, P, hasSomeKinds } from '@duplojs/utils';
+import { A, pipe, O, DP, P, hasSomeKinds, innerPipe } from '@duplojs/utils';
+import '../../core/response/index.mjs';
 import { IgnoreByCodeGeneratorMetadata } from './metadata.mjs';
 import { stepIdentifier } from '../../core/steps/identifier.mjs';
 import { processStepKind } from '../../core/steps/process.mjs';
@@ -8,6 +9,7 @@ import { presetCheckerStepKind } from '../../core/steps/presetChecker.mjs';
 import { checkerStepKind } from '../../core/steps/checker.mjs';
 import { cutStepKind } from '../../core/steps/cut.mjs';
 import { handlerStepKind } from '../../core/steps/handler.mjs';
+import { ResponseContract } from '../../core/response/contract.mjs';
 
 function aggregateStepContract(steps, params) {
     const filteredStep = A.filter(steps, (step) => A.find(step.definition.metadata, IgnoreByCodeGeneratorMetadata.is) === undefined);
@@ -53,11 +55,16 @@ function aggregateStepContract(steps, params) {
         cutStepKind,
         handlerStepKind,
     ]), ({ definition }) => definition.responseContract)
-        .exhaustive()), A.map(({ code, information, body }) => DP.object({
+        .exhaustive()), A.map(innerPipe(P.when(ResponseContract.contractKind.has, ({ code, information, body }) => DP.object({
         code: DP.literal(code),
         information: DP.literal(information),
         body,
-    })), A.concat(processContracts.endpointContract));
+    })), P.when(ResponseContract.serverSentEventsContractKind.has, ({ code, information, body, events }) => DP.object({
+        code: DP.literal(code),
+        information: DP.literal(information),
+        body,
+        events: DP.object(events),
+    })), P.exhaustive)), A.concat(processContracts.endpointContract));
     return {
         entrypointContract,
         endpointContract,

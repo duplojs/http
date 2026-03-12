@@ -3,6 +3,7 @@ import '../route/index.mjs';
 import { SF } from '@duplojs/server-utils';
 import { createHookRouteLifeCycle } from '../route/hooks.mjs';
 import { PredictedResponse } from '../response/predicted.mjs';
+import { ServerSentEventsPredictedResponse } from '../response/serverSentEventsPredicted.mjs';
 import { HookResponse } from '../response/hook.mjs';
 
 function initDefaultHook(hub, serverParams) {
@@ -36,6 +37,13 @@ function initDefaultHook(hub, serverParams) {
             currentResponse.setHeader(informationHeaderKey, currentResponse.information);
             if (currentResponse instanceof PredictedResponse) {
                 currentResponse.setHeader(predictedHeaderKey, "1");
+            }
+            else if (currentResponse instanceof ServerSentEventsPredictedResponse) {
+                currentResponse.setHeader(predictedHeaderKey, "1");
+                currentResponse.setHeader("transfer-encoding", "chunked");
+                currentResponse.setHeader("content-type", "text/event-stream");
+                currentResponse.setHeader("cache-control", "no-cache");
+                currentResponse.setHeader("connection", "keep-alive");
             }
             else if (currentResponse instanceof HookResponse) {
                 currentResponse.setHeader(fromHookHeaderKey, currentResponse.fromHook);

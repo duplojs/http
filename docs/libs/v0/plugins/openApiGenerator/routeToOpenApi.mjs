@@ -1,9 +1,11 @@
 import { aggregateStepContract } from './aggregateStepContract.mjs';
 import { O, A, pipe, DP, when, justReturn, whenNot, P, isType, S } from '@duplojs/utils';
+import '../../core/response/index.mjs';
 import { render, defaultTransformers } from '@duplojs/data-parser-tools/toJsonSchema';
 import '../../core/request/index.mjs';
 import { IgnoreByOpenApiGeneratorMetadata } from './metadata.mjs';
 import { FormDataBodyController } from '../../core/request/bodyController/formData.mjs';
+import { ResponseContract } from '../../core/response/contract.mjs';
 
 function factoryJsonSchema(params) {
     const identifier = params.schema.definition.identifier
@@ -92,14 +94,8 @@ function routeToOpenApi(route, params) {
             },
         },
     })));
-    const responses = pipe(aggregateStepResult.endpointContract, A.reduce(A.reduceFrom({}), ({ lastValue, element: { information, body, code }, nextWithObject }) => {
-        const schemaResponse = !DP.identifier(body, DP.emptyKind)
-            ? factoryJsonSchema({
-                context: params.contextToJsonSchemaFactory,
-                resultSchemaContext: params.resultSchemaContext,
-                schema: body,
-            })
-            : undefined;
+    const responses = pipe(aggregateStepResult.endpointContract, A.reduce(A.reduceFrom({}), ({ lastValue, element: contract, nextWithObject, next }) => {
+        const { information, body, code } = contract;
         const headerInformation = {
             const: information,
             type: "string",
@@ -126,6 +122,48 @@ function routeToOpenApi(route, params) {
                 description: headerDescription,
             },
         };
+        if (ResponseContract.serverSentEventsContractKind.has(contract)) {
+            const eventNameList = O.keys(contract.events);
+            const eventDataList = O.values(contract.events);
+            if (!A.minElements(eventNameList, 1) || !A.minElements(eventDataList, 1)) {
+                return next(lastValue);
+            }
+            const schema = factoryJsonSchema({
+                context: params.contextToJsonSchemaFactory,
+                resultSchemaContext: params.resultSchemaContext,
+                schema: DP.object({
+                    event: DP.literal(eventNameList),
+                    data: DP.union(eventDataList),
+                    id: DP.optional(DP.string()),
+                    retry: DP.optional(DP.number()),
+                }),
+            });
+            const lastContent = lastValue[code]?.content;
+            const content = {
+                ...lastContent,
+                "text/event-stream": {
+                    itemSchema: lastContent?.["text/event-stream"]
+                        ? {
+                            anyOf: [
+                                lastContent["text/event-stream"].itemSchema,
+                                schema,
+                            ],
+                        }
+                        : schema,
+                },
+            };
+            return nextWithObject(lastValue, {
+                [code]: {
+                    headers,
+                    content,
+                },
+            });
+        }
+        const schemaResponse = factoryJsonSchema({
+            context: params.contextToJsonSchemaFactory,
+            resultSchemaContext: params.resultSchemaContext,
+            schema: body,
+        });
         const content = pipe(body, P.when(DP.identifier(DP.emptyKind), justReturn(lastValue[code]?.content)), P.otherwise((value) => {
             if (DP.identifier(value, DP.stringKind) && lastValue[code]?.content?.["plain/text"]) {
                 return lastValue[code].content;

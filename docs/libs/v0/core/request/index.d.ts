@@ -1,4 +1,4 @@
-import { type E, type MaybePromise } from "@duplojs/utils";
+import { E, type MaybePromise } from "@duplojs/utils";
 import { type GetPropsWithValue } from "@duplojs/utils/object";
 import { type BodyReader } from "./bodyController";
 export * from "./bodyController";
