@@ -168,10 +168,6 @@ export function makeClientEventsResponse(
 									},
 								);
 
-								if (fetchResponse.status === 204) {
-									return exit();
-								}
-
 								const fetchInformation = fetchResponse.headers.get(
 									response.requestParams.informationHeaderKey,
 								);
