@@ -6,7 +6,6 @@ import { type HttpServerParams } from "@core/types";
 import { SF } from "@duplojs/server-utils";
 import { A } from "@duplojs/utils";
 import { createReadStream } from "node:fs";
-import { resolve } from "node:path";
 
 export function initNodeHook(
 	hub: Hub,
