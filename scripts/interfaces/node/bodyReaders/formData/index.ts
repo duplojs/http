@@ -3,10 +3,9 @@ import { type HttpServerParams } from "@core/types";
 import { SF } from "@duplojs/server-utils";
 import { A, E, type MaybeArray, O, Path, stringToBytes, TheFormData, unwrap } from "@duplojs/utils";
 import { readRequestFormData } from "./readRequestFormData";
-import { createWriteStream } from "node:fs";
 import { randomUUID } from "node:crypto";
 import { WrongContentTypeError } from "@core/errors";
-import { once } from "node:events";
+import { open } from "node:fs/promises";
 
 export * from "./error";
 export * from "./readRequestFormData";
@@ -18,24 +17,21 @@ export function createFormDataBodyReaderImplementation(serverParams: HttpServerP
 		let remainingAttempts = 5;
 
 		do {
-			const filePath = Path.resolveRelative([
+			const path = Path.resolveRelative([
 				serverParams.uploadFolder,
 				`${randomUUID()}${extension}`,
 			]);
 
-			const stream = createWriteStream(
-				filePath,
-				{
-					flags: "wx",
-					autoClose: true,
-					highWaterMark,
-				},
-			);
-
 			try {
-				await once(stream, "open");
+				const handle = await open(path, "wx");
 
-				return stream;
+				return {
+					path,
+					writeStream: handle.createWriteStream({
+						highWaterMark,
+						autoClose: true,
+					}),
+				};
 			} catch (error) {
 				if ((error as NodeJS.ErrnoException).code !== "EEXIST" || --remainingAttempts === 0) {
 					throw error;
@@ -91,15 +87,15 @@ export function createFormDataBodyReaderImplementation(serverParams: HttpServerP
 					if (header.filename) {
 						const extension = Path.getExtensionName(header.filename);
 						const displayExtension = extension ? `.${extension}` : "";
-						const currentFile = await createUploadFile(
+						const { path, writeStream } = await createUploadFile(
 							displayExtension,
 							request.raw.request.readableHighWaterMark,
 						);
-						filesAttache.push(currentFile.path.toString());
+						filesAttache.push(path);
 
 						return {
 							onReceiveChunk: (chunk) => new Promise(
-								(resolve, reject) => void currentFile.write(
+								(resolve, reject) => void writeStream.write(
 									chunk,
 									(result) => {
 										if (result instanceof Error) {
@@ -111,17 +107,17 @@ export function createFormDataBodyReaderImplementation(serverParams: HttpServerP
 								),
 							),
 							onEndPart: (valueAccumulator) => {
-								currentFile.end();
+								writeStream.end();
 
 								addValue(
 									valueAccumulator,
 									fieldName,
-									SF.createFileInterface(currentFile.path.toString()),
+									SF.createFileInterface(path),
 								);
 
 								return valueAccumulator;
 							},
-							onError: () => void currentFile.end(),
+							onError: () => void writeStream.end(),
 						};
 					}
 
