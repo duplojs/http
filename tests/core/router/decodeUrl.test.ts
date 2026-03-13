@@ -42,13 +42,10 @@ describe("decodeUrl", () => {
 		});
 	});
 
-	it("returns safe defaults when decoding fails", () => {
+	it("returns null when decoding fails", () => {
 		const result = decodeUrl("/%E0%A4%A?value=%E0%A4");
 
-		expect(result).toStrictEqual({
-			path: "/",
-			query: {},
-		});
+		expect(result).toBeNull();
 	});
 
 	it("can be called multiple times without leaking state", () => {

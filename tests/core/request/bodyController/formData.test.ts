@@ -1,6 +1,9 @@
-import { controlBodyAsFormData } from "@core";
+import { controlBodyAsFormData, FormDataBodyController } from "@core";
 
 it("controlBodyAsFormData", () => {
+	expect(FormDataBodyController.is(controlBodyAsFormData({ maxFileQuantity: 10 })))
+		.toStrictEqual(true);
+
 	expect(
 		controlBodyAsFormData({
 			maxFileQuantity: 10,

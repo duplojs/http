@@ -1,4 +1,4 @@
-import { type HookRouteLifeCycle, defaultBodyController, createHub, defaultCheckerStepFunctionBuilder, defaultExtractContract, defaultNotfoundHandler, defaultRouteFunctionBuilder, hubKind, Request, ResponseContract, type HookHubLifeCycle, TextBodyController, controlBodyAsText } from "@core";
+import { type HookRouteLifeCycle, defaultBodyController, createHub, defaultCheckerStepFunctionBuilder, defaultExtractContract, defaultNotfoundHandler, defaultRouteFunctionBuilder, hubKind, Request, ResponseContract, type HookHubLifeCycle, TextBodyController, controlBodyAsText, defaultMalformedUrlHandler, defaultEmptyReaderImplementation } from "@core";
 import { testRoute } from "@test-utils/route";
 
 describe("hub", () => {
@@ -11,11 +11,12 @@ describe("hub", () => {
 		hooksRouteLifeCycle: [],
 		notfoundHandler: defaultNotfoundHandler,
 		defaultBodyController: defaultBodyController,
+		malformedUrlHandler: defaultMalformedUrlHandler,
 		plugins: [],
 		routeFunctionBuilders: [],
 		routes: new Set(),
 		stepFunctionBuilders: [],
-		bodyReaderImplementations: [],
+		bodyReaderImplementations: [defaultEmptyReaderImplementation],
 	};
 
 	it("hub shape", () => {
@@ -88,7 +89,10 @@ describe("hub", () => {
 			bodyReaderImplementations: [bodyReaderImplementation],
 		});
 
-		expect(hub.bodyReaderImplementations).toStrictEqual([bodyReaderImplementation]);
+		expect(hub.bodyReaderImplementations).toStrictEqual([
+			defaultEmptyReaderImplementation,
+			bodyReaderImplementation,
+		]);
 
 		hub.plug({
 			name: "1",
@@ -220,6 +224,27 @@ describe("hub", () => {
 		expect({ ...hub }).toStrictEqual({
 			...baseHub,
 			notfoundHandler: expect.objectContaining({
+				definition: expect.objectContaining({
+					responseContract: contract,
+				}),
+			}),
+		});
+	});
+
+	it("hub set malformed url handler", () => {
+		const contract = ResponseContract.badRequest("malformed");
+
+		const hub = createHub({
+			environment: "DEV",
+		})
+			.setMalformedUrlHandler(
+				contract,
+				({ response }) => response("malformed"),
+			);
+
+		expect({ ...hub }).toStrictEqual({
+			...baseHub,
+			malformedUrlHandler: expect.objectContaining({
 				definition: expect.objectContaining({
 					responseContract: contract,
 				}),

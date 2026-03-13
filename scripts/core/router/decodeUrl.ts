@@ -7,7 +7,7 @@ export interface DecodedUrl {
 	query: Record<string, string | string[]>;
 }
 
-export function decodeUrl(url: string): DecodedUrl {
+export function decodeUrl(url: string): DecodedUrl | null {
 	try {
 		const groups = regexUrlAnalyser.exec(url)!.groups!;
 
@@ -50,9 +50,6 @@ export function decodeUrl(url: string): DecodedUrl {
 			query,
 		};
 	} catch {
-		return {
-			path: "/",
-			query: {},
-		};
+		return null;
 	}
 }
