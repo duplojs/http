@@ -7,7 +7,7 @@ import { createFileToSend } from "@utils";
 import { resolve } from "path";
 import { SF } from "@duplojs/server-utils";
 
-describe("node server", async() => {
+describe("client", async() => {
 	const server = await createHttpServer(hub, {
 		host: "0.0.0.0",
 		port: 8946,

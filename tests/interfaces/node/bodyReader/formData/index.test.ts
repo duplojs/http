@@ -1,4 +1,4 @@
-import { fsSpy, fsSpyResetMock } from "@test-utils/fs";
+import { fspSpy, fspSpyResetMock } from "@test-utils/fs";
 import { WrongContentTypeError } from "@core/errors";
 import { createFormDataBodyReaderImplementation } from "@interface-node/bodyReaders/formData";
 import { E, unwrap } from "@duplojs/utils";
@@ -20,8 +20,18 @@ describe("createFormDataBodyReaderImplementation", () => {
 		uploadFolder: "./upload",
 	};
 
+	const spyStreamWrite = vi.fn();
+	const spyStreamEnd = vi.fn();
+	const spyCreateStream = vi.fn(() => ({
+		write: spyStreamWrite,
+		end: spyStreamEnd,
+	}));
+
 	beforeEach(() => {
-		fsSpyResetMock();
+		spyStreamWrite.mockReset();
+		spyStreamEnd.mockReset();
+		spyCreateStream.mockClear();
+		fspSpyResetMock();
 	});
 
 	it("returns WrongContentTypeError when content-type is unsupported", async() => {
@@ -172,23 +182,8 @@ describe("createFormDataBodyReaderImplementation", () => {
 	});
 
 	it("parses file field and writes file stream", async() => {
-		const nowSpy = vi.spyOn(Date, "now").mockReturnValue(1234567890);
-		const writeSpy = vi.fn((__: Buffer, cb?: (err?: Error | null) => void) => {
-			cb?.(null);
-		});
-		const endSpy = vi.fn();
-		const streamMock = {
-			path: "",
-			write: writeSpy,
-			end: endSpy,
-			on: vi.fn(),
-			once: vi.fn(),
-			emit: vi.fn(),
-		};
-		fsSpy.createWriteStream.mockImplementation((path: string) => {
-			streamMock.path = path;
-			return streamMock as any;
-		});
+		spyStreamWrite.mockImplementation((__: Buffer, cb?: (err?: Error | null) => void) => cb?.(null));
+		fspSpy.open.mockImplementation(() => ({ createWriteStream: spyCreateStream }));
 
 		const request = createFakeRequest({
 			headers: {
@@ -217,38 +212,21 @@ describe("createFormDataBodyReaderImplementation", () => {
 			maxIndexArray: 2500,
 		});
 
-		expect(fsSpy.createWriteStream).toHaveBeenCalledTimes(1);
-		const filePath = (fsSpy.createWriteStream.mock.calls[0] as [string])[0];
-		expect(request.filesAttache).toStrictEqual([filePath]);
-		expect(writeSpy).toHaveBeenCalled();
-		expect(endSpy).toHaveBeenCalled();
+		expect(fspSpy.open).toHaveBeenCalledTimes(1);
+		const filePath = (fspSpy.open.mock.calls[0] as [string])[0];
+		expect(fspSpy.open).toHaveBeenCalledWith(request.filesAttache?.[0], "wx");
+		expect(spyStreamWrite).toHaveBeenCalled();
+		expect(spyStreamEnd).toHaveBeenCalled();
 
 		expect(E.hasInformation(result, "success")).toBe(true);
 		const body = unwrap(result) as Record<string, unknown>;
 		expect(SF.isFileInterface(body.file)).toBe(true);
 		expect((body.file as SF.FileInterface).path).toBe(filePath);
-
-		nowSpy.mockRestore();
 	});
 
 	it("writes file stream without extension in filename", async() => {
-		const nowSpy = vi.spyOn(Date, "now").mockReturnValue(1234567890);
-		const writeSpy = vi.fn((__: Buffer, cb?: (err?: Error | null) => void) => {
-			cb?.(null);
-		});
-		const endSpy = vi.fn();
-		const streamMock = {
-			path: "",
-			write: writeSpy,
-			end: endSpy,
-			on: vi.fn(),
-			once: vi.fn(),
-			emit: vi.fn(),
-		};
-		fsSpy.createWriteStream.mockImplementation((path: string) => {
-			streamMock.path = path;
-			return streamMock as any;
-		});
+		spyStreamWrite.mockImplementation((__: Buffer, cb?: (err?: Error | null) => void) => cb?.(null));
+		fspSpy.open.mockImplementation(() => ({ createWriteStream: spyCreateStream }));
 
 		const request = createFakeRequest({
 			headers: {
@@ -277,30 +255,13 @@ describe("createFormDataBodyReaderImplementation", () => {
 			maxIndexArray: 2500,
 		});
 
-		const filePath = (fsSpy.createWriteStream.mock.calls.at(-1) as [string])[0];
-		expect(filePath.endsWith("1234567890")).toBe(true);
+		expect(fspSpy.open).toHaveBeenCalledWith(expect.not.stringContaining("."), "wx");
 		expect(E.hasInformation(result, "success")).toBe(true);
-
-		nowSpy.mockRestore();
 	});
 
 	it("returns error when file size exceeds limit and closes stream", async() => {
-		const writeSpy = vi.fn((__: Buffer, cb?: (err?: Error | null) => void) => {
-			cb?.(null);
-		});
-		const endSpy = vi.fn();
-		const streamMock = {
-			path: "",
-			write: writeSpy,
-			end: endSpy,
-			on: vi.fn(),
-			once: vi.fn(),
-			emit: vi.fn(),
-		};
-		fsSpy.createWriteStream.mockImplementation((path: string) => {
-			streamMock.path = path;
-			return streamMock as any;
-		});
+		spyStreamWrite.mockImplementation((__: Buffer, cb?: (err?: Error | null) => void) => cb?.(null));
+		fspSpy.open.mockImplementation(() => ({ createWriteStream: spyCreateStream }));
 
 		const request = createFakeRequest({
 			headers: {
@@ -330,26 +291,12 @@ describe("createFormDataBodyReaderImplementation", () => {
 		});
 
 		expect(E.hasInformation(result, "error")).toBe(true);
-		expect(endSpy).toHaveBeenCalled();
+		expect(spyStreamEnd).toHaveBeenCalled();
 	});
 
 	it("throws when file write callback returns error", async() => {
-		const writeSpy = vi.fn((__: Buffer, cb?: (err?: Error | null) => void) => {
-			cb?.(new Error("fail"));
-		});
-		const endSpy = vi.fn();
-		const streamMock = {
-			path: "",
-			write: writeSpy,
-			end: endSpy,
-			on: vi.fn(),
-			once: vi.fn(),
-			emit: vi.fn(),
-		};
-		fsSpy.createWriteStream.mockImplementation((path: string) => {
-			streamMock.path = path;
-			return streamMock as any;
-		});
+		spyStreamWrite.mockImplementation((__: Buffer, cb?: (err?: Error | null) => void) => cb?.(new Error("fail")));
+		fspSpy.open.mockImplementation(() => ({ createWriteStream: spyCreateStream }));
 
 		const request = createFakeRequest({
 			headers: {
@@ -377,7 +324,81 @@ describe("createFormDataBodyReaderImplementation", () => {
 			maxIndexArray: 2500,
 		})).rejects.toBeInstanceOf(Error);
 
-		expect(endSpy).toHaveBeenCalled();
+		expect(spyStreamEnd).toHaveBeenCalled();
+	});
+
+	it("retry file creation when path already exists", async() => {
+		spyStreamWrite.mockImplementation((__: Buffer, cb?: (err?: Error | null) => void) => cb?.(null));
+		fspSpy.open
+			.mockImplementationOnce(() => {
+				throw Object.assign(new Error("exists"), { code: "EEXIST" });
+			})
+			.mockImplementationOnce(() => ({ createWriteStream: spyCreateStream }));
+
+		const request = createFakeRequest({
+			headers: {
+				"content-type": contentType,
+			},
+			raw: {
+				request: {
+					headers: {
+						"content-type": contentType,
+					},
+					bodyChunks: [
+						Buffer.from(`--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="a.txt"\r\n\r\n`),
+						Buffer.from("DATA"),
+						Buffer.from(`\r\n--${boundary}--`),
+					],
+				},
+			},
+		});
+		const reader = createFormDataBodyReaderImplementation(serverParams);
+
+		const result = await reader.read(request, {
+			maxFileQuantity: 1,
+			maxBufferSize: 10000,
+			maxKeyLength: 100,
+			maxIndexArray: 2500,
+		});
+
+		expect(fspSpy.open).toHaveBeenCalledTimes(2);
+		expect(E.hasInformation(result, "success")).toBe(true);
+		expect(fspSpy.open).toHaveBeenNthCalledWith(2, expect.stringMatching(/\.txt$/), "wx");
+	});
+
+	it("throws when file creation fails", async() => {
+		const streamError = Object.assign(new Error("permission denied"), { code: "EACCES" });
+		fspSpy.open.mockImplementation(() => {
+			throw streamError;
+		});
+
+		const request = createFakeRequest({
+			headers: {
+				"content-type": contentType,
+			},
+			raw: {
+				request: {
+					headers: {
+						"content-type": contentType,
+					},
+					bodyChunks: [
+						Buffer.from(`--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="a.txt"\r\n\r\n`),
+						Buffer.from("DATA"),
+						Buffer.from(`\r\n--${boundary}--`),
+					],
+				},
+			},
+		});
+		const reader = createFormDataBodyReaderImplementation(serverParams);
+
+		await expect(reader.read(request, {
+			maxFileQuantity: 1,
+			maxBufferSize: 10000,
+			maxKeyLength: 100,
+			maxIndexArray: 2500,
+		})).rejects.toBe(streamError);
+
+		expect(fspSpy.open).toHaveBeenCalledTimes(1);
 	});
 
 	it("returns advanced object when content-type-options includes advanced", async() => {

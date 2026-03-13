@@ -3,14 +3,42 @@ import { type HttpServerParams } from "@core/types";
 import { SF } from "@duplojs/server-utils";
 import { A, E, type MaybeArray, O, Path, stringToBytes, TheFormData, unwrap } from "@duplojs/utils";
 import { readRequestFormData } from "./readRequestFormData";
-import { createWriteStream } from "node:fs";
+import { randomUUID } from "node:crypto";
 import { WrongContentTypeError } from "@core/errors";
+import { open } from "node:fs/promises";
 
 export * from "./error";
 export * from "./readRequestFormData";
 
 export function createFormDataBodyReaderImplementation(serverParams: HttpServerParams) {
 	const serverMaxBodySize = stringToBytes(serverParams.maxBodySize);
+
+	async function createUploadFile(extension: string, highWaterMark?: number) {
+		let remainingAttempts = 5;
+
+		do {
+			const path = Path.resolveRelative([
+				serverParams.uploadFolder,
+				`${randomUUID()}${extension}`,
+			]);
+
+			try {
+				const handle = await open(path, "wx");
+
+				return {
+					path,
+					writeStream: handle.createWriteStream({
+						highWaterMark,
+						autoClose: true,
+					}),
+				};
+			} catch (error) {
+				if ((error as NodeJS.ErrnoException).code !== "EEXIST" || --remainingAttempts === 0) {
+					throw error;
+				}
+			}
+		} while (true);
+	}
 
 	function addValue(
 		mapResult: Map<string, MaybeArray<SF.FileInterface | string>>,
@@ -54,27 +82,20 @@ export function createFormDataBodyReaderImplementation(serverParams: HttpServerP
 					maxBufferSize: params.maxBufferSize,
 					maxKeyLength: params.maxKeyLength,
 				},
-				(header) => {
+				async(header) => {
 					const fieldName = header.name;
 					if (header.filename) {
 						const extension = Path.getExtensionName(header.filename);
 						const displayExtension = extension ? `.${extension}` : "";
-						const filePath = Path.resolveRelative([
-							serverParams.uploadFolder,
-							`${Math.random().toString(36).slice(2, 10)}-${Date.now()}${displayExtension}`,
-						]);
-						filesAttache.push(filePath);
-
-						const currentFile = createWriteStream(
-							filePath,
-							{
-								highWaterMark: request.raw.request.readableHighWaterMark,
-							},
+						const { path, writeStream } = await createUploadFile(
+							displayExtension,
+							request.raw.request.readableHighWaterMark,
 						);
+						filesAttache.push(path);
 
 						return {
 							onReceiveChunk: (chunk) => new Promise(
-								(resolve, reject) => void currentFile.write(
+								(resolve, reject) => void writeStream.write(
 									chunk,
 									(result) => {
 										if (result instanceof Error) {
@@ -86,17 +107,17 @@ export function createFormDataBodyReaderImplementation(serverParams: HttpServerP
 								),
 							),
 							onEndPart: (valueAccumulator) => {
-								currentFile.end();
+								writeStream.end();
 
 								addValue(
 									valueAccumulator,
 									fieldName,
-									SF.createFileInterface(currentFile.path.toString()),
+									SF.createFileInterface(path),
 								);
 
 								return valueAccumulator;
 							},
-							onError: () => void currentFile.end(),
+							onError: () => void writeStream.end(),
 						};
 					}
 
