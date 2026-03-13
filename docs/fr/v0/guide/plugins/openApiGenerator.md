@@ -4,8 +4,8 @@ prev:
   text: "Génération de code"
   link: "/fr/v0/guide/plugins/codeGenerator"
 next:
-  text: ""
-  link: ""
+  text: "FormData avancés"
+  link: "/fr/v0/guide/features/formData"
 ---
 
 # Génération OpenAPI
@@ -14,12 +14,12 @@ next:
 <!--@include: @/examples/v0/guide/plugins/openApiGenerator/hub.ts-->
 ```
 
-Pour générer la configuration Swagger de toutes vos routes, il suffit d'utiliser la fonction `openApiGeneratorPlugin` depuis `@duplojs/http/openApiGenerator` dans le `Hub` et de démarrer avec la variable d'environnement sur `DEV` ou sur `BUILD`. 
+Pour générer la configuration Swagger de toutes vos routes, il suffit d'utiliser la fonction `openApiGeneratorPlugin` de `@duplojs/http/openApiGenerator` dans le `Hub`, puis de démarrer avec la variable d'environnement définie sur `DEV` ou `BUILD`.
 
 - Le paramètre `outputFile` vous permet de définir dans quel fichier sera écrite la configuration.
-- Le paramètre `routePath` vous permet de définir sur quel path vous pouvez accéder à l'UI Swagger.
-- `...` Le reste des paramètres permet de définir des options sur le fichier de configuration Swagger. 
+- Le paramètre `routePath` vous permet de définir à quel chemin l'interface Swagger UI sera accessible.
+- `...` Le reste des paramètres permet de définir des options pour le fichier de configuration Swagger.
 
 ::: warning
-Vous êtes obligé d'avoir une implémentation de serveur HTTP, car le plugin se lie au hook `beforeServerBuildRoutes` qui se lance uniquement via des fonctions d'interfaçage comme `createHttpServer`. Lancez avec le `Hub` configuré en mode `BUILD` pour que le serveur HTTP ne se lance pas. 
+Vous devez disposer d'une implémentation de serveur HTTP, car le plugin se branche sur le hook `beforeServerBuildRoutes`, qui ne se lance qu'au travers de fonctions d'interface comme `createHttpServer`. Démarrez avec un `Hub` configuré en mode `BUILD` pour éviter de lancer le serveur HTTP.
 :::

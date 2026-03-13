@@ -6,7 +6,7 @@ export function insertParamsInPath(path: string, params: ClientRequestParams["pa
 	}
 
 	return Object.entries(params).reduce(
-		(pv, [key, value]) => value
+		(pv, [key, value]) => value !== undefined
 			? pv.replace(`{${key}}`, value.toString())
 			: pv,
 		path,

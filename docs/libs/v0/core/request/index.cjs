@@ -45,6 +45,11 @@ class Request extends utils.kindHeritage("request", kind.createCoreLibKind("requ
             externalPromise.resolve(result);
             this.bodyResult = result;
             return result;
+        })
+            .catch((error) => {
+            const result = utils.E.error(error);
+            externalPromise.resolve(result);
+            return result;
         });
     }
 }

@@ -5,7 +5,7 @@ import { asserts, E, sleep, stringToBytes } from "@duplojs/utils";
 import { createFileToSend } from "@utils";
 import { resolve } from "path";
 
-describe("receive file", async() => {
+describe("file", async() => {
 	const server = await createHttpServer(hub, {
 		host: "0.0.0.0",
 		port: 8961,
@@ -21,6 +21,7 @@ describe("receive file", async() => {
 	it("send File", async() => {
 		const formData = new FormData();
 		formData.append("bool", "true");
+		formData.append("name", "node/nodeTest.generate");
 		formData.append(
 			"myFile/*\\[0]",
 			await createFileToSend("files/fakeFiles/1mb.jpg", "//😄.jpg"),
@@ -46,12 +47,12 @@ describe("receive file", async() => {
 
 		await sleep(500);
 
-		expect(await SF.stat("files/store/picture.jpg")).toStrictEqual(
+		expect(await SF.stat("files/store/node/nodeTest.generate.jpg")).toStrictEqual(
 			E.success(
 				expect.objectContaining({ sizeBytes: stringToBytes("1mb") }),
 			),
 		);
-		asserts(await SF.remove("files/store/picture.jpg"), E.isRight);
+		asserts(await SF.remove("files/store/node/nodeTest.generate.jpg"), E.isRight);
 		expect(await SF.readDirectory("files/upload")).toStrictEqual(
 			E.success([".gitkeep"]),
 		);
@@ -60,6 +61,7 @@ describe("receive file", async() => {
 	it("send File witch exceed limit", async() => {
 		const formData = new FormData();
 		formData.append("bool", "true");
+		formData.append("name", "nodeTest.generate");
 		formData.append(
 			"myFile/*\\[0]",
 			await createFileToSend("files/fakeFiles/2mb.jpg", "//😄.jpg"),

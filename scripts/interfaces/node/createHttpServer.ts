@@ -2,7 +2,7 @@ import { type Hub } from "@core/hub";
 import { type RouterInitializationData } from "@core/router";
 import http from "http";
 import https from "https";
-import { nodeHook } from "./hooks";
+import { initNodeHook } from "./hooks";
 import { implementHttpServer } from "@core/implementHttpServer";
 import { O } from "@duplojs/utils";
 import { type HttpServerParams } from "@core/types";
@@ -56,7 +56,10 @@ export function createHttpServer(
 		createTextBodyReaderImplementation(httpServerParams),
 		createFormDataBodyReaderImplementation(httpServerParams),
 	]);
-	hub.addRouteHooks([initDefaultHook(hub, httpServerParams), nodeHook]);
+	hub.addRouteHooks([
+		initDefaultHook(hub, httpServerParams),
+		initNodeHook(hub, httpServerParams),
+	]);
 
 	function whenUncaughtError(
 		error: unknown,

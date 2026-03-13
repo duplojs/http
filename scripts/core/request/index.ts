@@ -1,4 +1,4 @@
-import { createExternalPromise, type E, kindHeritage, type MaybePromise } from "@duplojs/utils";
+import { createExternalPromise, E, kindHeritage, type MaybePromise } from "@duplojs/utils";
 import { type GetPropsWithValue } from "@duplojs/utils/object";
 import { createCoreLibKind } from "../kind";
 import { type BodyReader } from "./bodyController";
@@ -112,6 +112,11 @@ export class Request extends kindHeritage(
 			.then((result) => {
 				externalPromise.resolve(result);
 				this.bodyResult = result;
+				return result;
+			})
+			.catch((error) => {
+				const result = E.error(error);
+				externalPromise.resolve(result);
 				return result;
 			});
 	}

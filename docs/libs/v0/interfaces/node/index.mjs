@@ -1,7 +1,7 @@
 import './types/index.mjs';
 export { createInterfacesNodeLibKind } from './kind.mjs';
 export { createHttpServer } from './createHttpServer.mjs';
-export { nodeHook } from './hooks/index.mjs';
+export { initNodeHook } from './hooks/index.mjs';
 import './bodyReaders/index.mjs';
 export { BodyParseFormDataError } from './bodyReaders/formData/error.mjs';
 export { readRequestFormData } from './bodyReaders/formData/readRequestFormData.mjs';

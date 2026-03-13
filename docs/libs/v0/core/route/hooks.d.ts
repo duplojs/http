@@ -45,9 +45,9 @@ export interface HookRouteLifeCycle<GenericRequest extends Request = Request> {
     sendResponse?: HookSendResponse<GenericRequest>;
     afterSendResponse?: HookAfterSendResponse<GenericRequest>;
 }
-export declare function createHookRouteLifeCycle<GenericHookLiveCycle extends Omit<HookRouteLifeCycle, "onConstructRequest">>(hookRouteLifeCycle: GenericHookLiveCycle): GenericHookLiveCycle;
-export declare function createHookRouteLifeCycle<GenericOnConstructRequest extends HookOnConstructRequest, GenericHookLiveCycle extends Omit<HookRouteLifeCycle<Awaited<ReturnType<GenericOnConstructRequest>>>, "onConstructRequest">>(onConstructRequest: GenericOnConstructRequest, hookRouteLifeCycle: GenericHookLiveCycle): SimplifyTopLevel<{
-    onConstructRequest: GenericOnConstructRequest;
+export declare function createHookRouteLifeCycle<const GenericHookLiveCycle extends Omit<HookRouteLifeCycle<Request>, "onConstructRequest">>(hookRouteLifeCycle: GenericHookLiveCycle): GenericHookLiveCycle;
+export declare function createHookRouteLifeCycle<GenericOnConstructRequest extends HookOnConstructRequest, const GenericHookLiveCycle extends Omit<HookRouteLifeCycle<Awaited<ReturnType<GenericOnConstructRequest>>>, "onConstructRequest">>(onConstructRequest: GenericOnConstructRequest, hookRouteLifeCycle: GenericHookLiveCycle): SimplifyTopLevel<{
+    readonly onConstructRequest: GenericOnConstructRequest;
 } & GenericHookLiveCycle>;
 export type ExtractRequestFromHooks<GenericHooks extends readonly HookRouteLifeCycle[]> = GenericHooks extends readonly [
     infer InferredFirst,

@@ -1,5 +1,5 @@
 import { processStepKind, type Steps } from "@core/steps";
-import { PredictedResponse } from "@core/response";
+import { Response } from "@core/response";
 import { type BuildStepResult, createStepFunctionBuilder, type StepFunctionBuilderParams } from "../create";
 import { A, E, forward, G, isType, or, P, pipe, unwrap } from "@duplojs/utils";
 import { type Floor } from "@core/floor";
@@ -69,9 +69,9 @@ export const defaultProcessStepFunctionBuilder = createStepFunctionBuilder(
 
 				// eslint-disable-next-line @typescript-eslint/prefer-for-of
 				for (let index = 0; index < buildedSteps.length; index++) {
-					const result = await buildedSteps[index]!.buildedFunction(request, floor);
+					const result = await buildedSteps[index]!.buildedFunction(request, processFloor);
 
-					if (result instanceof PredictedResponse) {
+					if (result instanceof Response) {
 						return result;
 					}
 

@@ -24,11 +24,11 @@ async function readRequestFormData(request, firstValueAccumulator, params, onRec
         return utils.E.error(new error.BodyParseFormDataError("Wrong boundary."));
     }
     let valueAccumulator = firstValueAccumulator;
-    const startPart = Buffer.from(`\r\n--${boundary}`);
-    const endMultiPart = Buffer.from(`\r\n--${boundary}--`);
+    const startPart = Buffer.from(`\r\n--${boundary}\r\n`);
+    const endMultiPart = Buffer.from(`\r\n--${boundary}--\r\n`);
     let currentBuffer = bufferStart;
     let size = 0;
-    const keep = endMultiPart.length - 1;
+    const keep = endMultiPart.length;
     let currentStream = undefined;
     let fileQuantity = 0;
     let currentFileSize = undefined;
@@ -114,11 +114,6 @@ async function readRequestFormData(request, firstValueAccumulator, params, onRec
                 return await treatError(new error.BodyParseFormDataError("Buffer size exceeds limit."));
             }
             while (true) {
-                const endMultiPartIndex = currentBuffer.indexOf(endMultiPart);
-                if (endMultiPartIndex !== -1) {
-                    // check if buffer contain end of transmissions
-                    currentBuffer = currentBuffer.subarray(0, endMultiPartIndex);
-                }
                 const startPartIndex = currentBuffer.indexOf(startPart);
                 const endHeaderPartIndex = currentBuffer.indexOf(endHeaderPart);
                 if (startPartIndex !== -1 && endHeaderPartIndex !== -1) {
@@ -156,9 +151,11 @@ async function readRequestFormData(request, firstValueAccumulator, params, onRec
                 }
             }
         }
-        const resultChunk = await flushReceiveChunk(currentBuffer);
-        if (resultChunk !== true) {
-            return await treatError(resultChunk);
+        if (currentBuffer.indexOf(endMultiPart) === -1) {
+            const resultChunk = await flushReceiveChunk(currentBuffer.subarray(0, 2));
+            if (resultChunk !== true) {
+                return await treatError(resultChunk);
+            }
         }
         valueAccumulator = await currentStream?.onEndPart(valueAccumulator) ?? valueAccumulator;
         return valueAccumulator;

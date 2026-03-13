@@ -60,6 +60,7 @@ export type Routes = {
 		myFile: [
 			File,
 		];
+		name: string;
 	}>;
 	responses: {
 		code: "422";
@@ -77,5 +78,30 @@ export type Routes = {
 		code: "200";
 		information: "file.send";
 		body: File;
+	};
+} | {
+	method: "GET";
+	path: "/sse";
+	query: {
+		close?: boolean | undefined;
+	};
+	responses: {
+		code: "422";
+		information: "extract-error";
+		body?: undefined;
+	} | {
+		code: "200";
+		information: "super-sse";
+		body?: undefined;
+		events: {
+			other: string;
+			message: {
+				test: string;
+			};
+		};
+	} | {
+		code: "204";
+		information: "close";
+		body?: undefined;
 	};
 };

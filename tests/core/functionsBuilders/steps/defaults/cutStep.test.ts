@@ -78,7 +78,7 @@ describe("cut step function builder", () => {
 
 		expect(spyResponse).toHaveBeenCalledWith(
 			expect.objectContaining({
-				currentResponse: new Response("500", "server-error", new ResponseContract.Error("wrongInfo")),
+				currentResponse: new Response("500", "server-error", new ResponseContract.Error("wrongInfo", "Contract not found.")),
 			}),
 		);
 	});

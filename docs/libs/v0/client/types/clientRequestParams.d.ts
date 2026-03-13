@@ -21,6 +21,7 @@ export interface ClientRequestParams<GenericHookParams extends Record<string, un
     params?: ClientRequestParamsParams;
     query?: ClientRequestParamsQuery;
     body?: ClientRequestParamsBody;
+    abortController?: AbortController;
     initParams?: ClientRequestInitParams;
     hookParams?: GenericHookParams;
 }
@@ -43,6 +44,7 @@ type MaybeParams<GenericParams extends object> = {
 export type ServerRouteToClientRequestParams<GenericServerRoute extends ServerRoute = ServerRoute, GenericHookParams extends Record<string, unknown> = Record<string, unknown>> = GenericServerRoute extends any ? SimplifyTopLevel<({
     method: GenericServerRoute["method"];
     path: GenericServerRoute["path"];
+    abortController?: AbortController;
     initParams?: ClientRequestInitParams;
     hookParams?: GenericHookParams;
 } & MaybeParams<(IsEqual<GenericServerRoute["headers"], unknown> extends true ? {} : {

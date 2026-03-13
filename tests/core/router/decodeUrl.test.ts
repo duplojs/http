@@ -64,4 +64,13 @@ describe("decodeUrl", () => {
 			query: { value: "2" },
 		});
 	});
+
+	it("prototype pollution", () => {
+		const firstResult = decodeUrl("/first?__proto__=1&constructor=5&prototype=rerer");
+
+		expect(firstResult).toStrictEqual({
+			path: "/first",
+			query: {},
+		});
+	});
 });

@@ -6,4 +6,5 @@ export interface PromiseRequestParams<GenericHookParams extends Record<string, u
     informationHeaderKey: string;
     predictedHeaderKey: string;
     disabledPredicateMode: boolean;
+    abortController: AbortController;
 }

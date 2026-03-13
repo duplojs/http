@@ -17,7 +17,7 @@ const defaultCutStepFunctionBuilder = create.createStepFunctionBuilder(cut.cutSt
     const response = (information, body) => {
         const currentContract = preparedContractResponse[information];
         if (!currentContract) {
-            throw new contract.ResponseContract.Error(information);
+            throw new contract.ResponseContract.Error(information, "Contract not found.");
         }
         return new predicted.PredictedResponse(currentContract.code, currentContract.information, body);
     };

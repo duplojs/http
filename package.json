@@ -65,9 +65,9 @@
     "README.md"
   ],
   "peerDependencies": {
-    "@duplojs/data-parser-tools": ">=0.2.8 <1.0.0",
+    "@duplojs/data-parser-tools": ">=0.2.9 <1.0.0",
     "@duplojs/server-utils": ">=0.2.0 <1.0.0",
-    "@duplojs/utils": ">=1.5.8 <2.0.0"
+    "@duplojs/utils": ">=1.5.12 <2.0.0"
   },
   "devDependencies": {
     "@commitlint/cli": "19.8.1",
@@ -80,6 +80,7 @@
     "@types/web": "^0.0.317",
     "@vitest/coverage-istanbul": "3.2.4",
     "eslint": "9.34.0",
+    "eventsource": "^4.1.0",
     "form-data": "^4.0.5",
     "husky": "9.1.7",
     "node-mocks-http": "^1.17.2",

@@ -39,7 +39,7 @@ exports[`openApiGenerator > correct generate file 1`] = `
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NotIdentified3"
+                "$ref": "#/components/schemas/NotIdentified4"
               }
             }
           }
@@ -58,7 +58,7 @@ exports[`openApiGenerator > correct generate file 1`] = `
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/NotIdentified4"
+                  "$ref": "#/components/schemas/NotIdentified6"
                 }
               }
             }
@@ -103,7 +103,7 @@ exports[`openApiGenerator > correct generate file 1`] = `
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/NotIdentified2"
+                  "$ref": "#/components/schemas/NotIdentified3"
                 }
               }
             }
@@ -130,7 +130,7 @@ exports[`openApiGenerator > correct generate file 1`] = `
           "content": {
             "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/NotIdentified5"
+                "$ref": "#/components/schemas/NotIdentified7"
               }
             }
           }
@@ -178,8 +178,64 @@ exports[`openApiGenerator > correct generate file 1`] = `
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/NotIdentified6"
+                  "$ref": "#/components/schemas/NotIdentified10"
                 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sse": {
+      "get": {
+        "parameters": [
+          {
+            "name": "close",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/NotIdentified11"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "headers": {
+              "information": {
+                "schema": {
+                  "const": "super-sse",
+                  "type": "string"
+                },
+                "description": "super-sse"
+              }
+            },
+            "content": {
+              "text/event-stream": {
+                "itemSchema": {
+                  "$ref": "#/components/schemas/NotIdentified13"
+                }
+              }
+            }
+          },
+          "204": {
+            "headers": {
+              "information": {
+                "schema": {
+                  "const": "close",
+                  "type": "string"
+                },
+                "description": "close"
+              }
+            }
+          },
+          "422": {
+            "headers": {
+              "information": {
+                "schema": {
+                  "const": "extract-error",
+                  "type": "string"
+                },
+                "description": "extract-error"
               }
             }
           }
@@ -221,25 +277,7 @@ exports[`openApiGenerator > correct generate file 1`] = `
           }
         ]
       },
-      "NotIdentified2": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "name": {
-            "type": "string"
-          },
-          "age": {
-            "type": "number"
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "age"
-        ]
-      },
+      "NotIdentified2": {},
       "NotIdentified3": {
         "type": "object",
         "properties": {
@@ -278,7 +316,27 @@ exports[`openApiGenerator > correct generate file 1`] = `
           "age"
         ]
       },
-      "NotIdentified5": {
+      "NotIdentified5": {},
+      "NotIdentified6": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "age": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "age"
+        ]
+      },
+      "NotIdentified7": {
         "type": "object",
         "properties": {
           "bool": {
@@ -315,17 +373,93 @@ exports[`openApiGenerator > correct generate file 1`] = `
             "minItems": 1,
             "additionalItems": false,
             "maxItems": 1
+          },
+          "name": {
+            "type": "string"
           }
         },
         "required": [
           "bool",
-          "myFile"
+          "myFile",
+          "name"
         ]
       },
-      "NotIdentified6": {
+      "NotIdentified8": {},
+      "NotIdentified9": {},
+      "NotIdentified10": {
         "type": "string",
         "format": "binary"
-      }
+      },
+      "NotIdentified11": {
+        "anyOf": [
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "string",
+            "enum": [
+              "true",
+              "false",
+              "0",
+              "1"
+            ]
+          },
+          {
+            "type": "number",
+            "enum": [
+              0,
+              1
+            ]
+          }
+        ]
+      },
+      "NotIdentified12": {},
+      "NotIdentified13": {
+        "type": "object",
+        "properties": {
+          "event": {
+            "anyOf": [
+              {
+                "const": "other",
+                "type": "string"
+              },
+              {
+                "const": "message",
+                "type": "string"
+              }
+            ]
+          },
+          "data": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "test": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "test"
+                ]
+              }
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "retry": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "event",
+          "data"
+        ]
+      },
+      "NotIdentified14": {}
     }
   }
 }"

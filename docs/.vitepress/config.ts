@@ -126,6 +126,7 @@ export default pipe(
 							module: ModuleKind.ESNext,
 							moduleResolution: ModuleResolutionKind.Bundler,
 							moduleDetection: ModuleDetectionKind.Force,
+							types: ["@types/web"],
 							paths: {
 								"@v0": ["libs/v0/core/index"],
 								"@v0/client": ["libs/v0/client/index"],
@@ -144,7 +145,7 @@ export default pipe(
 		},
 		locales: {
 			fr: {
-				description: "Créer et consulter des serveur HTTP de manier robuste et avec excellente expérience développeur.",
+				description: "Créer et consommer des serveurs HTTP de manière robuste, avec une excellente expérience développeur.",
 				label: "Français",
 				lang: "fr",
 				link: "/fr/",
@@ -256,12 +257,25 @@ export default pipe(
 										text: "Plugins",
 										items: [
 											{
-												text: "Generation de code",
+												text: "Génération de code",
 												link: "/fr/v0/guide/plugins/codeGenerator",
 											},
 											{
-												text: "Generation open API",
+												text: "Génération OpenAPI",
 												link: "/fr/v0/guide/plugins/openApiGenerator",
+											},
+										],
+									},
+									{
+										text: "Features",
+										items: [
+											{
+												text: "FormData avancés",
+												link: "/fr/v0/guide/features/formData",
+											},
+											{
+												text: "Server-Sent Events (SSE)",
+												link: "/fr/v0/guide/features/SSE",
 											},
 										],
 									},
@@ -393,6 +407,19 @@ export default pipe(
 											{
 												text: "OpenAPI generation",
 												link: "/en/v0/guide/plugins/openApiGenerator",
+											},
+										],
+									},
+									{
+										text: "Features",
+										items: [
+											{
+												text: "Advanced FormData",
+												link: "/en/v0/guide/features/formData",
+											},
+											{
+												text: "Server-Sent Events (SSE)",
+												link: "/en/v0/guide/features/SSE",
 											},
 										],
 									},

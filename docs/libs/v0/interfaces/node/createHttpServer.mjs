@@ -1,6 +1,6 @@
 import http from 'http';
 import https from 'https';
-import { nodeHook } from './hooks/index.mjs';
+import { initNodeHook } from './hooks/index.mjs';
 import { implementHttpServer } from '../../core/implementHttpServer.mjs';
 import { O } from '@duplojs/utils';
 import { initDefaultHook } from '../../core/defaultHooks/index.mjs';
@@ -23,7 +23,10 @@ function createHttpServer(hub, params) {
         createTextBodyReaderImplementation(httpServerParams),
         createFormDataBodyReaderImplementation(httpServerParams),
     ]);
-    hub.addRouteHooks([initDefaultHook(hub, httpServerParams), nodeHook]);
+    hub.addRouteHooks([
+        initDefaultHook(hub, httpServerParams),
+        initNodeHook(hub, httpServerParams),
+    ]);
     function whenUncaughtError(error, routerInitializationData) {
         const serverResponse = routerInitializationData.raw.response;
         if (!serverResponse.headersSent && !serverResponse.writableEnded) {

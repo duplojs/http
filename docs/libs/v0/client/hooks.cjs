@@ -68,12 +68,57 @@ async function launchErrorHook(clientHook, promiseRequestHook, error, requestPar
         await clientHook[index](error, requestParams);
     }
 }
+async function launchCloseServerEventHook(clientHook, promiseRequestHook, response) {
+    for (let index = 0; index < promiseRequestHook.length; index++) {
+        await promiseRequestHook[index](response);
+    }
+    for (let index = 0; index < clientHook.length; index++) {
+        await clientHook[index](response);
+    }
+}
+async function launchBeforeRetryServerEventHook(clientHook, promiseRequestHook, response) {
+    for (let index = 0; index < promiseRequestHook.length; index++) {
+        await promiseRequestHook[index](response);
+    }
+    for (let index = 0; index < clientHook.length; index++) {
+        await clientHook[index](response);
+    }
+}
+async function launchErrorServerEventHook(clientHook, promiseRequestHook, error, response) {
+    for (let index = 0; index < promiseRequestHook.length; index++) {
+        await promiseRequestHook[index](error, response);
+    }
+    for (let index = 0; index < clientHook.length; index++) {
+        await clientHook[index](error, response);
+    }
+}
+async function launchStartServerEventHook(clientHook, promiseRequestHook, response) {
+    for (let index = 0; index < promiseRequestHook.length; index++) {
+        await promiseRequestHook[index](response);
+    }
+    for (let index = 0; index < clientHook.length; index++) {
+        await clientHook[index](response);
+    }
+}
+async function launchReceiveEventServerEventHook(clientHook, promiseRequestHook, event, response) {
+    for (let index = 0; index < promiseRequestHook.length; index++) {
+        await promiseRequestHook[index](event, response);
+    }
+    for (let index = 0; index < clientHook.length; index++) {
+        await clientHook[index](event, response);
+    }
+}
 
+exports.launchBeforeRetryServerEventHook = launchBeforeRetryServerEventHook;
+exports.launchCloseServerEventHook = launchCloseServerEventHook;
 exports.launchCodeHook = launchCodeHook;
 exports.launchErrorHook = launchErrorHook;
+exports.launchErrorServerEventHook = launchErrorServerEventHook;
 exports.launchExpectedResponseHook = launchExpectedResponseHook;
 exports.launchInformationHook = launchInformationHook;
 exports.launchNotPredictedHook = launchNotPredictedHook;
+exports.launchReceiveEventServerEventHook = launchReceiveEventServerEventHook;
 exports.launchRequestHook = launchRequestHook;
 exports.launchResponseHook = launchResponseHook;
 exports.launchResponseTypeHook = launchResponseTypeHook;
+exports.launchStartServerEventHook = launchStartServerEventHook;

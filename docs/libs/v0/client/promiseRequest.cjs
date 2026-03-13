@@ -9,6 +9,7 @@ var EE = require('@duplojs/utils/either');
 var SS = require('@duplojs/utils/string');
 var AA = require('@duplojs/utils/array');
 var unexpectedResponseError = require('./unexpectedResponseError.cjs');
+var serverSentEvents = require('./serverSentEvents.cjs');
 
 function _interopNamespaceDefault(e) {
     var n = Object.create(null);
@@ -65,7 +66,7 @@ class PromiseRequest extends Promise {
             return EE__namespace.right("response", response);
         })
             .then(async (result) => {
-            if (EE__namespace.eitherFutureErrorKind.has(result)) {
+            if (EE__namespace.futureErrorKind.has(result)) {
                 const error = utils.unwrap(result);
                 await hooks.launchErrorHook(params.hooks.error, this.hooks.error ?? [], error, params);
                 return EE__namespace.left("request-error", {
@@ -146,10 +147,22 @@ class PromiseRequest extends Promise {
         this.hooks.error.push(callback);
         return this;
     }
+    whenReceiveServerEvent(eventName, callback) {
+        void this.then(EE__namespace.whenIsRight((response) => {
+            if ((response.predicted === true
+                || response.requestParams.disabledPredicateMode === true)
+                && Symbol.asyncIterator in response) {
+                response.onReceiveEvent(eventName, callback);
+            }
+        }));
+        return this;
+    }
     iWantInformation(information) {
         const formattedInformation = AA__namespace.coalescing(information);
         return this.then(EE__namespace.whenIsRight((response) => {
-            if (response.information !== undefined
+            if ((response.predicted === true
+                || response.requestParams.disabledPredicateMode === true)
+                && response.information !== undefined
                 && AA__namespace.includes(formattedInformation, response.information)) {
                 return EE__namespace.right("response", response);
             }
@@ -159,7 +172,9 @@ class PromiseRequest extends Promise {
     iWantCode(code) {
         const formattedCode = AA__namespace.coalescing(code);
         return this.then(EE__namespace.whenIsRight((response) => {
-            if (AA__namespace.includes(formattedCode, response.code)) {
+            if ((response.predicted === true
+                || response.requestParams.disabledPredicateMode === true)
+                && AA__namespace.includes(formattedCode, response.code)) {
                 return EE__namespace.right("response", response);
             }
             return EE__namespace.left("unexpect-response", response);
@@ -167,7 +182,9 @@ class PromiseRequest extends Promise {
     }
     iWantInformationalResponse() {
         return this.then(EE__namespace.whenIsRight((response) => {
-            if (SS__namespace.startsWith(response.code, "1")) {
+            if ((response.predicted === true
+                || response.requestParams.disabledPredicateMode === true)
+                && SS__namespace.startsWith(response.code, "1")) {
                 return EE__namespace.right("response", response);
             }
             return EE__namespace.left("unexpect-response", response);
@@ -175,7 +192,9 @@ class PromiseRequest extends Promise {
     }
     iWantSuccessfulResponse() {
         return this.then(EE__namespace.whenIsRight((response) => {
-            if (SS__namespace.startsWith(response.code, "2")) {
+            if ((response.predicted === true
+                || response.requestParams.disabledPredicateMode === true)
+                && SS__namespace.startsWith(response.code, "2")) {
                 return EE__namespace.right("response", response);
             }
             return EE__namespace.left("unexpect-response", response);
@@ -183,7 +202,9 @@ class PromiseRequest extends Promise {
     }
     iWantRedirectionResponse() {
         return this.then(EE__namespace.whenIsRight((response) => {
-            if (SS__namespace.startsWith(response.code, "3")) {
+            if ((response.predicted === true
+                || response.requestParams.disabledPredicateMode === true)
+                && SS__namespace.startsWith(response.code, "3")) {
                 return EE__namespace.right("response", response);
             }
             return EE__namespace.left("unexpect-response", response);
@@ -191,7 +212,9 @@ class PromiseRequest extends Promise {
     }
     iWantClientErrorResponse() {
         return this.then(EE__namespace.whenIsRight((response) => {
-            if (SS__namespace.startsWith(response.code, "4")) {
+            if ((response.predicted === true
+                || response.requestParams.disabledPredicateMode === true)
+                && SS__namespace.startsWith(response.code, "4")) {
                 return EE__namespace.right("response", response);
             }
             return EE__namespace.left("unexpect-response", response);
@@ -199,7 +222,9 @@ class PromiseRequest extends Promise {
     }
     iWantServerErrorResponse() {
         return this.then(EE__namespace.whenIsRight((response) => {
-            if (SS__namespace.startsWith(response.code, "5")) {
+            if ((response.predicted === true
+                || response.requestParams.disabledPredicateMode === true)
+                && SS__namespace.startsWith(response.code, "5")) {
                 return EE__namespace.right("response", response);
             }
             return EE__namespace.left("unexpect-response", response);
@@ -207,7 +232,20 @@ class PromiseRequest extends Promise {
     }
     iWantExpectedResponse() {
         return this.then(EE__namespace.whenIsRight((response) => {
-            if (SS__namespace.startsWith(response.code, "2") || SS__namespace.startsWith(response.code, "4")) {
+            if ((response.predicted === true
+                || response.requestParams.disabledPredicateMode === true)
+                && (SS__namespace.startsWith(response.code, "2")
+                    || SS__namespace.startsWith(response.code, "4"))) {
+                return EE__namespace.right("response", response);
+            }
+            return EE__namespace.left("unexpect-response", response);
+        }));
+    }
+    iSelectExpectedResponseByInformation(selector) {
+        return this.then(EE__namespace.whenIsRight((response) => {
+            if ((response.predicted === true
+                || response.requestParams.disabledPredicateMode === true)
+                && selector[(response.information ?? "")] === true) {
                 return EE__namespace.right("response", response);
             }
             return EE__namespace.left("unexpect-response", response);
@@ -293,6 +331,16 @@ class PromiseRequest extends Promise {
             throw new unexpectedResponseError.UnexpectedResponseError(utils.unwrap(maybeResponse));
         });
     }
+    iSelectExpectedResponseByInformationOrThrow(selector) {
+        return this
+            .iSelectExpectedResponseByInformation(selector)
+            .then((maybeResponse) => {
+            if (EE__namespace.isRight(maybeResponse)) {
+                return utils.unwrap(maybeResponse);
+            }
+            throw new unexpectedResponseError.UnexpectedResponseError(utils.unwrap(maybeResponse));
+        });
+    }
     static get [Symbol.species]() {
         return Promise;
     }
@@ -326,28 +374,37 @@ class PromiseRequest extends Promise {
                 }
             }
         }
-        return fetch(`${requestParams.baseUrl}${url}`, {
+        const fetchUrl = `${requestParams.baseUrl}${url}`;
+        const fetchInitParams = {
             ...requestParams.initParams,
             headers: headers,
             method: requestParams.method,
             body: body,
-        })
+            signal: requestParams.abortController.signal,
+        };
+        return fetch(fetchUrl, fetchInitParams)
             .then((response) => getBody.getBody(response)
-            .then((body) => EE__namespace.right("response", {
-            body,
-            information: response.headers.get(requestParams.informationHeaderKey) || undefined,
-            code: response.status.toString(),
-            ok: (response.status < 500)
-                ? response.ok
-                : null,
-            headers: response.headers,
-            type: response.type,
-            url: response.url,
-            redirected: response.redirected,
-            raw: response,
-            requestParams,
-            predicted: response.headers.get(requestParams.predictedHeaderKey) !== null,
-        })))
+            .then((body) => {
+            const clientResponse = {
+                body,
+                information: response.headers.get(requestParams.informationHeaderKey) ?? undefined,
+                code: response.status.toString(),
+                ok: (response.status < 500)
+                    ? response.ok
+                    : null,
+                headers: response.headers,
+                type: response.type,
+                url: response.url,
+                redirected: response.redirected,
+                raw: response,
+                requestParams,
+                predicted: response.headers.get(requestParams.predictedHeaderKey) !== null,
+            };
+            if (response.headers.get("content-type")?.includes("text/event-stream")) {
+                return EE__namespace.right("response", serverSentEvents.makeClientEventsResponse(clientResponse, fetchUrl, fetchInitParams));
+            }
+            return EE__namespace.right("response", clientResponse);
+        }))
             .catch((error) => EE__namespace.left("request-error", {
             error,
             requestParams,

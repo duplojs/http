@@ -15,7 +15,7 @@ var index$2 = require('./bodyReaders/text/index.cjs');
 
 exports.createInterfacesNodeLibKind = kind.createInterfacesNodeLibKind;
 exports.createHttpServer = createHttpServer.createHttpServer;
-exports.nodeHook = index.nodeHook;
+exports.initNodeHook = index.initNodeHook;
 exports.BodyParseFormDataError = error.BodyParseFormDataError;
 exports.readRequestFormData = readRequestFormData.readRequestFormData;
 exports.createFormDataBodyReaderImplementation = index$1.createFormDataBodyReaderImplementation;

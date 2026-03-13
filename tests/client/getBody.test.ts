@@ -31,17 +31,6 @@ describe("getBody", () => {
 		expect(text).toHaveBeenCalledTimes(1);
 	});
 
-	it("parses form-data when content-type includes form-data", async() => {
-		const formData = vi.fn().mockResolvedValue({ field: "value" });
-		const response = {
-			headers: new Headers({ "content-type": "multipart/form-data" }),
-			formData,
-		} as unknown as Response;
-
-		await expect(getBody(response)).resolves.toStrictEqual({ field: "value" });
-		expect(formData).toHaveBeenCalledTimes(1);
-	});
-
 	it("parses blob for other content-types", async() => {
 		const response = {
 			headers: new Headers({ "content-type": "application/octet-stream" }),

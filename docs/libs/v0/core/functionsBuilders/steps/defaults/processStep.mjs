@@ -3,7 +3,7 @@ import '../../../response/index.mjs';
 import { createStepFunctionBuilder } from '../create.mjs';
 import { G, E, A, unwrap, pipe, P, or, isType, forward } from '@duplojs/utils';
 import { processStepKind } from '../../../steps/process.mjs';
-import { PredictedResponse } from '../../../response/predicted.mjs';
+import { Response } from '../../../response/base.mjs';
 
 function buildStepsFunction(steps, buildStep) {
     return G.asyncReduce(steps, G.reduceFrom([]), async ({ lastValue, element: step, next, exit }) => {
@@ -31,8 +31,8 @@ const defaultProcessStepFunctionBuilder = createStepFunctionBuilder(processStepK
             let processFloor = { options: getOptions(floor) };
             // eslint-disable-next-line @typescript-eslint/prefer-for-of
             for (let index = 0; index < buildedSteps.length; index++) {
-                const result = await buildedSteps[index].buildedFunction(request, floor);
-                if (result instanceof PredictedResponse) {
+                const result = await buildedSteps[index].buildedFunction(request, processFloor);
+                if (result instanceof Response) {
                     return result;
                 }
                 processFloor = result;

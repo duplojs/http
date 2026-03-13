@@ -86,7 +86,10 @@ describe("readRequestFormData", () => {
 						Buffer.from("name.txt\r\nContent-Type: text/"),
 						Buffer.from("plain\r\n\r\n"),
 						Buffer.from("A".repeat(40)),
-						Buffer.from(`\r\n--${boundary}--`),
+						Buffer.from("\r\n--"),
+						Buffer.from(boundary),
+						Buffer.from("--\r\n"),
+
 					],
 				},
 			},
@@ -155,6 +158,44 @@ describe("readRequestFormData", () => {
 			],
 		});
 		expect(destroySpy).toHaveBeenCalled();
+	});
+
+	it("stream trailing CRLF after final boundary", async() => {
+		const request = createFakeRequest({
+			raw: {
+				request: {
+					headers: {
+						"content-type": contentType,
+					},
+					bodyChunks: [
+						Buffer.from(`--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="a.txt"\r\n\r\n`),
+						Buffer.from("DATA"),
+						Buffer.from(`\r\n--${boundary}--`),
+					],
+				},
+			},
+		});
+
+		let streamed = "";
+		const result = await readRequestFormData(
+			request.raw.request,
+			undefined,
+			{
+				maxBodySize: 1000,
+				maxBufferSize: 10000,
+				maxKeyLength: 100,
+				maxFileQuantity: 1,
+			},
+			() => ({
+				onReceiveChunk: (chunk) => {
+					streamed += chunk.toString("utf-8");
+				},
+				onEndPart: (value) => undefined,
+				onError: () => {},
+			}),
+		);
+
+		expect(streamed).toBe("DATA");
 	});
 
 	it("returns error for wrong chunk type and calls onError", async() => {
@@ -584,11 +625,10 @@ describe("readRequestFormData", () => {
 				},
 			},
 		});
-		const accumulator = { ok: true };
 
 		const result = await readRequestFormData(
 			request.raw.request,
-			accumulator,
+			{ ok: true },
 			{
 				maxBodySize: 1000,
 				maxBufferSize: 10000,
@@ -602,7 +642,7 @@ describe("readRequestFormData", () => {
 			}),
 		);
 
-		expect(result).toBe(accumulator);
+		expect(E.isLeft(result)).toBe(true);
 	});
 
 	it("returns error when onReceiveHeader returns Error", async() => {

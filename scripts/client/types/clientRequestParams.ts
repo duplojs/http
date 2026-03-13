@@ -35,6 +35,7 @@ export interface ClientRequestParams<
 	params?: ClientRequestParamsParams;
 	query?: ClientRequestParamsQuery;
 	body?: ClientRequestParamsBody;
+	abortController?: AbortController;
 	initParams?: ClientRequestInitParams;
 	hookParams?: GenericHookParams;
 }
@@ -124,6 +125,7 @@ export type ServerRouteToClientRequestParams<
 		& {
 			method: GenericServerRoute["method"];
 			path: GenericServerRoute["path"];
+			abortController?: AbortController;
 			initParams?: ClientRequestInitParams;
 			hookParams?: GenericHookParams;
 		}

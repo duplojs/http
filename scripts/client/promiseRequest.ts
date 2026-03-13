@@ -1,4 +1,4 @@
-import { type NeverCoalescing, type MaybePromise, unwrap, TheFormData, type O, type IsEqual } from "@duplojs/utils";
+import { type NeverCoalescing, type MaybePromise, unwrap, TheFormData, type O } from "@duplojs/utils";
 import { getBody } from "./getBody";
 import { insertParamsInPath } from "./insertParamsInPath";
 import { queryToString } from "./queryToString";
@@ -7,10 +7,11 @@ import * as EE from "@duplojs/utils/either";
 import * as SS from "@duplojs/utils/string";
 import * as AA from "@duplojs/utils/array";
 import { UnexpectedCodeResponseError, UnexpectedInformationResponseError, UnexpectedResponseError, UnexpectedResponseTypeError, type RequestErrorContent } from "./unexpectedResponseError";
-import { type NotPredictedClientResponse, type ClientResponse, type PromiseRequestParams, type Hooks, type NotPredictedResponseHook, type ErrorHook } from "./types";
+import { type PromiseRequestParams, type Hooks, type NotPredictedResponseHook, type ErrorHook, type ClientEventsResponse, type AllClientResponse, type AllNotPredictedClientResponse, type ClientResponse, type ClientEventsResponseHandler, type ServerEvent } from "./types";
+import { makeClientEventsResponse } from "./serverSentEvents";
 
 type MaybeResponse<
-	GenericClientResponse extends ClientResponse = ClientResponse,
+	GenericClientResponse extends AllClientResponse = AllClientResponse,
 > = (
 	| EE.Right<
 		"response",
@@ -23,8 +24,8 @@ type MaybeResponse<
 );
 
 type MaybeWantedResponse<
-	GenericWantedClientResponse extends ClientResponse = ClientResponse,
-	GenericUnexpectClientResponse extends ClientResponse = ClientResponse,
+	GenericWantedClientResponse extends AllClientResponse = AllClientResponse,
+	GenericUnexpectClientResponse extends AllClientResponse = AllClientResponse,
 > = (
 		| EE.Right<
 			"response",
@@ -42,11 +43,11 @@ type MaybeWantedResponse<
 
 export class PromiseRequest<
 	GenericHookParams extends Record<string, unknown> = Record<string, unknown>,
-	GenericClientResponse extends ClientResponse<GenericHookParams> = ClientResponse<GenericHookParams>,
+	GenericClientResponse extends AllClientResponse<GenericHookParams> = AllClientResponse<GenericHookParams>,
 > extends Promise<
 		MaybeResponse<
 			| GenericClientResponse
-			| NotPredictedClientResponse<GenericHookParams>
+			| AllNotPredictedClientResponse<GenericHookParams>
 		>
 	> {
 	public readonly hooks: Partial<Hooks> = {};
@@ -143,7 +144,7 @@ export class PromiseRequest<
 				)
 				.then(
 					async(result): Promise<MaybeResponse> => {
-						if (EE.eitherFutureErrorKind.has(result)) {
+						if (EE.futureErrorKind.has(result)) {
 							const error = unwrap(result);
 
 							await launchErrorHook(
@@ -213,7 +214,7 @@ export class PromiseRequest<
 						? { information: GenericInformation }
 						: never
 				>,
-				ClientResponse<GenericHookParams>
+				AllClientResponse<GenericHookParams>
 			>,
 		) => MaybePromise<void>,
 	) {
@@ -242,7 +243,7 @@ export class PromiseRequest<
 						? { code: GenericCode }
 						: never
 				>,
-				ClientResponse<GenericHookParams>
+				AllClientResponse<GenericHookParams>
 			>,
 		) => MaybePromise<void>,
 	) {
@@ -266,7 +267,7 @@ export class PromiseRequest<
 					GenericClientResponse,
 					{ code: `1${number}` }
 				>,
-				ClientResponse<GenericHookParams>
+				AllClientResponse<GenericHookParams>
 			>,
 		) => MaybePromise<void>,
 	) {
@@ -283,7 +284,7 @@ export class PromiseRequest<
 					GenericClientResponse,
 					{ code: `2${number}` }
 				>,
-				ClientResponse<GenericHookParams>
+				AllClientResponse<GenericHookParams>
 			>,
 		) => MaybePromise<void>,
 	) {
@@ -300,7 +301,7 @@ export class PromiseRequest<
 					GenericClientResponse,
 					{ code: `3${number}` }
 				>,
-				ClientResponse<GenericHookParams>
+				AllClientResponse<GenericHookParams>
 			>,
 		) => MaybePromise<void>,
 	) {
@@ -317,7 +318,7 @@ export class PromiseRequest<
 					GenericClientResponse,
 					{ code: `4${number}` }
 				>,
-				ClientResponse<GenericHookParams>
+				AllClientResponse<GenericHookParams>
 			>,
 		) => MaybePromise<void>,
 	) {
@@ -334,7 +335,7 @@ export class PromiseRequest<
 					GenericClientResponse,
 					{ code: `5${number}` }
 				>,
-				ClientResponse<GenericHookParams>
+				AllClientResponse<GenericHookParams>
 			>,
 		) => MaybePromise<void>,
 	) {
@@ -351,7 +352,7 @@ export class PromiseRequest<
 					GenericClientResponse,
 					{ code: `2${number}` | `4${number}` }
 				>,
-				ClientResponse<GenericHookParams>
+				AllClientResponse<GenericHookParams>
 			>,
 		) => MaybePromise<void>,
 	) {
@@ -368,6 +369,48 @@ export class PromiseRequest<
 		return this;
 	}
 
+	public whenReceiveServerEvent<
+		GenericEvent extends(
+			GenericClientResponse extends ClientEventsResponseHandler<infer InferredEvent>
+				? InferredEvent
+				: never
+		),
+		GenericEventName extends GenericEvent["event"],
+	>(
+		eventName: GenericEventName,
+		callback: (
+			event: NoInfer<
+				NeverCoalescing<
+					Extract<GenericEvent, { event: GenericEventName }>,
+					ServerEvent
+				>
+			>,
+			response: NeverCoalescing<
+				Extract<GenericClientResponse, ClientEventsResponseHandler<GenericEvent>>,
+				ClientEventsResponse
+			>
+		) => MaybePromise<void>,
+
+	) {
+		void this.then(
+			EE.whenIsRight(
+				(response) => {
+					if (
+						(
+							response.predicted === true
+							|| response.requestParams.disabledPredicateMode === true
+						)
+						&& Symbol.asyncIterator in response
+					) {
+						response.onReceiveEvent(eventName, callback as never);
+					}
+				},
+			),
+		);
+
+		return this;
+	}
+
 	public iWantInformation<
 		GenericInformation extends Extract<
 			GenericClientResponse["information"],
@@ -380,26 +423,31 @@ export class PromiseRequest<
 					? { information: GenericInformation }
 					: never
 			>,
-			ClientResponse<GenericHookParams>
+			AllClientResponse<GenericHookParams>
 		>,
 	>(
 		information: GenericInformation | GenericInformation[],
 	): Promise<
 			MaybeWantedResponse<
 				GenericResponse,
-				NeverCoalescing<
+				| NeverCoalescing<
 					Exclude<GenericClientResponse, GenericResponse>,
-					ClientResponse<GenericHookParams>
+					AllClientResponse<GenericHookParams>
 				>
+				| AllNotPredictedClientResponse<GenericHookParams>
 			>
 		> {
-		const formattedInformation = AA.coalescing(information);
+		const formattedInformation: readonly string[] = AA.coalescing(information);
 
 		return this.then(
 			EE.whenIsRight(
 				(response) => {
 					if (
-						response.information !== undefined
+						(
+							response.predicted === true
+							|| response.requestParams.disabledPredicateMode === true
+						)
+						&& response.information !== undefined
 						&& AA.includes(formattedInformation, response.information)
 					) {
 						return EE.right(
@@ -426,25 +474,32 @@ export class PromiseRequest<
 					? { code: GenericCode }
 					: never
 			>,
-			ClientResponse<GenericHookParams>
+			AllClientResponse<GenericHookParams>
 		>,
 	>(
 		code: GenericCode | GenericCode[],
 	): Promise<
 			MaybeWantedResponse<
 				GenericResponse,
-				NeverCoalescing<
+				| NeverCoalescing<
 					Exclude<GenericClientResponse, GenericResponse>,
-					ClientResponse<GenericHookParams>
+					AllClientResponse<GenericHookParams>
 				>
+				| AllNotPredictedClientResponse<GenericHookParams>
 			>
 		> {
-		const formattedCode = AA.coalescing(code);
+		const formattedCode: readonly SS.Number[] = AA.coalescing(code);
 
 		return this.then(
 			EE.whenIsRight(
 				(response) => {
-					if (AA.includes(formattedCode, response.code)) {
+					if (
+						(
+							response.predicted === true
+							|| response.requestParams.disabledPredicateMode === true
+						)
+						&& AA.includes(formattedCode, response.code)
+					) {
 						return EE.right(
 							"response",
 							response,
@@ -466,21 +521,28 @@ export class PromiseRequest<
 				GenericClientResponse,
 				{ code: `1${number}` }
 			>,
-			ClientResponse<GenericHookParams>
+			AllClientResponse<GenericHookParams>
 		>,
 	>(): Promise<
 		MaybeWantedResponse<
 			GenericResponse,
-			NeverCoalescing<
+			| NeverCoalescing<
 				Exclude<GenericClientResponse, GenericResponse>,
-				ClientResponse<GenericHookParams>
+				AllClientResponse<GenericHookParams>
 			>
+			| AllNotPredictedClientResponse<GenericHookParams>
 		>
 	> {
 		return this.then(
 			EE.whenIsRight(
 				(response) => {
-					if (SS.startsWith(response.code, "1")) {
+					if (
+						(
+							response.predicted === true
+							|| response.requestParams.disabledPredicateMode === true
+						)
+						&& SS.startsWith(response.code, "1")
+					) {
 						return EE.right(
 							"response",
 							response,
@@ -502,21 +564,28 @@ export class PromiseRequest<
 				GenericClientResponse,
 				{ code: `2${number}` }
 			>,
-			ClientResponse<GenericHookParams>
+			AllClientResponse<GenericHookParams>
 		>,
 	>(): Promise<
 		MaybeWantedResponse<
 			GenericResponse,
-			NeverCoalescing<
+			| NeverCoalescing<
 				Exclude<GenericClientResponse, GenericResponse>,
-				ClientResponse<GenericHookParams>
+				AllClientResponse<GenericHookParams>
 			>
+			| AllNotPredictedClientResponse<GenericHookParams>
 		>
 	> {
 		return this.then(
 			EE.whenIsRight(
 				(response) => {
-					if (SS.startsWith(response.code, "2")) {
+					if (
+						(
+							response.predicted === true
+							|| response.requestParams.disabledPredicateMode === true
+						)
+						&& SS.startsWith(response.code, "2")
+					) {
 						return EE.right(
 							"response",
 							response,
@@ -538,21 +607,28 @@ export class PromiseRequest<
 				GenericClientResponse,
 				{ code: `3${number}` }
 			>,
-			ClientResponse<GenericHookParams>
+			AllClientResponse<GenericHookParams>
 		>,
 	>(): Promise<
 		MaybeWantedResponse<
 			GenericResponse,
-			NeverCoalescing<
+			| NeverCoalescing<
 				Exclude<GenericClientResponse, GenericResponse>,
-				ClientResponse<GenericHookParams>
+				AllClientResponse<GenericHookParams>
 			>
+			| AllNotPredictedClientResponse<GenericHookParams>
 		>
 	> {
 		return this.then(
 			EE.whenIsRight(
 				(response) => {
-					if (SS.startsWith(response.code, "3")) {
+					if (
+						(
+							response.predicted === true
+							|| response.requestParams.disabledPredicateMode === true
+						)
+						&& SS.startsWith(response.code, "3")
+					) {
 						return EE.right(
 							"response",
 							response,
@@ -574,21 +650,28 @@ export class PromiseRequest<
 				GenericClientResponse,
 				{ code: `4${number}` }
 			>,
-			ClientResponse<GenericHookParams>
+			AllClientResponse<GenericHookParams>
 		>,
 	>(): Promise<
 		MaybeWantedResponse<
 			GenericResponse,
-			NeverCoalescing<
+			| NeverCoalescing<
 				Exclude<GenericClientResponse, GenericResponse>,
-				ClientResponse<GenericHookParams>
+				AllClientResponse<GenericHookParams>
 			>
+			| AllNotPredictedClientResponse<GenericHookParams>
 		>
 	> {
 		return this.then(
 			EE.whenIsRight(
 				(response) => {
-					if (SS.startsWith(response.code, "4")) {
+					if (
+						(
+							response.predicted === true
+							|| response.requestParams.disabledPredicateMode === true
+						)
+						&& SS.startsWith(response.code, "4")
+					) {
 						return EE.right(
 							"response",
 							response,
@@ -610,21 +693,28 @@ export class PromiseRequest<
 				GenericClientResponse,
 				{ code: `5${number}` }
 			>,
-			ClientResponse<GenericHookParams>
+			AllClientResponse<GenericHookParams>
 		>,
 	>(): Promise<
 		MaybeWantedResponse<
 			GenericResponse,
-			NeverCoalescing<
+			| NeverCoalescing<
 				Exclude<GenericClientResponse, GenericResponse>,
-				ClientResponse<GenericHookParams>
+				AllClientResponse<GenericHookParams>
 			>
+			| AllNotPredictedClientResponse<GenericHookParams>
 		>
 	> {
 		return this.then(
 			EE.whenIsRight(
 				(response) => {
-					if (SS.startsWith(response.code, "5")) {
+					if (
+						(
+							response.predicted === true
+							|| response.requestParams.disabledPredicateMode === true
+						)
+						&& SS.startsWith(response.code, "5")
+					) {
 						return EE.right(
 							"response",
 							response,
@@ -646,21 +736,31 @@ export class PromiseRequest<
 				GenericClientResponse,
 				{ code: `2${number}` | `4${number}` }
 			>,
-			ClientResponse<GenericHookParams>
+			AllClientResponse<GenericHookParams>
 		>,
 	>(): Promise<
 		MaybeWantedResponse<
 			GenericResponse,
-			NeverCoalescing<
+			| NeverCoalescing<
 				Exclude<GenericClientResponse, GenericResponse>,
-				ClientResponse<GenericHookParams>
+				AllClientResponse<GenericHookParams>
 			>
+			| AllNotPredictedClientResponse<GenericHookParams>
 		>
 	> {
 		return this.then(
 			EE.whenIsRight(
 				(response) => {
-					if (SS.startsWith(response.code, "2") || SS.startsWith(response.code, "4")) {
+					if (
+						(
+							response.predicted === true
+							|| response.requestParams.disabledPredicateMode === true
+						)
+						&& (
+							SS.startsWith(response.code, "2")
+							|| SS.startsWith(response.code, "4")
+						)
+					) {
 						return EE.right(
 							"response",
 							response,
@@ -697,18 +797,25 @@ export class PromiseRequest<
 			MaybeWantedResponse<
 				NeverCoalescing<
 					GenericResponse,
-					ClientResponse<GenericHookParams>
+					AllClientResponse<GenericHookParams>
 				>,
-				NeverCoalescing<
+				| NeverCoalescing<
 					GenericUnexpectedResponse,
-					ClientResponse<GenericHookParams>
+					AllClientResponse<GenericHookParams>
 				>
+				| AllNotPredictedClientResponse<GenericHookParams>
 			>
 		> {
 		return this.then(
 			EE.whenIsRight(
 				(response) => {
-					if (selector[(response.information ?? "") as never] === true) {
+					if (
+						(
+							response.predicted === true
+							|| response.requestParams.disabledPredicateMode === true
+						)
+						&& selector[(response.information ?? "") as never] === true
+					) {
 						return EE.right(
 							"response",
 							response,
@@ -739,7 +846,7 @@ export class PromiseRequest<
 						? { information: GenericInformation }
 						: never
 				>,
-				ClientResponse<GenericHookParams>
+				AllClientResponse<GenericHookParams>
 			>
 		> {
 		return this
@@ -770,7 +877,7 @@ export class PromiseRequest<
 						? { code: GenericCode }
 						: never
 				>,
-				ClientResponse<GenericHookParams>
+				AllClientResponse<GenericHookParams>
 			>
 		> {
 		return this
@@ -795,7 +902,7 @@ export class PromiseRequest<
 				GenericClientResponse,
 				{ code: `1${number}` }
 			>,
-			ClientResponse<GenericHookParams>
+			AllClientResponse<GenericHookParams>
 		>
 	> {
 		return this
@@ -820,7 +927,7 @@ export class PromiseRequest<
 				GenericClientResponse,
 				{ code: `2${number}` }
 			>,
-			ClientResponse<GenericHookParams>
+			AllClientResponse<GenericHookParams>
 		>
 	> {
 		return this
@@ -845,7 +952,7 @@ export class PromiseRequest<
 				GenericClientResponse,
 				{ code: `3${number}` }
 			>,
-			ClientResponse<GenericHookParams>
+			AllClientResponse<GenericHookParams>
 		>
 	> {
 		return this
@@ -870,7 +977,7 @@ export class PromiseRequest<
 				GenericClientResponse,
 				{ code: `4${number}` }
 			>,
-			ClientResponse<GenericHookParams>
+			AllClientResponse<GenericHookParams>
 		>
 	> {
 		return this
@@ -895,7 +1002,7 @@ export class PromiseRequest<
 				GenericClientResponse,
 				{ code: `5${number}` }
 			>,
-			ClientResponse<GenericHookParams>
+			AllClientResponse<GenericHookParams>
 		>
 	> {
 		return this
@@ -920,7 +1027,7 @@ export class PromiseRequest<
 				GenericClientResponse,
 				{ code: `2${number}` | `4${number}` }
 			>,
-			ClientResponse<GenericHookParams>
+			AllClientResponse<GenericHookParams>
 		>
 	> {
 		return this
@@ -953,7 +1060,7 @@ export class PromiseRequest<
 	): Promise<
 			NeverCoalescing<
 				GenericResponse,
-				ClientResponse<GenericHookParams>
+				AllClientResponse<GenericHookParams>
 			>
 		> {
 		return this
@@ -1016,23 +1123,26 @@ export class PromiseRequest<
 			}
 		}
 
+		const fetchUrl = `${requestParams.baseUrl}${url}`;
+		const fetchInitParams: RequestInit = {
+			...requestParams.initParams,
+			headers: <never>headers,
+			method: requestParams.method,
+			body: <never>body,
+			signal: requestParams.abortController.signal,
+		};
+
 		return fetch(
-			`${requestParams.baseUrl}${url}`,
-			{
-				...requestParams.initParams,
-				headers: <never>headers,
-				method: requestParams.method,
-				body: <never>body,
-			},
+			fetchUrl,
+			fetchInitParams,
 		)
 			.then(
 				(response) => getBody(response)
 					.then(
-						(body) => EE.right(
-							"response",
-							{
+						(body) => {
+							const clientResponse: ClientResponse = {
 								body,
-								information: response.headers.get(requestParams.informationHeaderKey) || undefined,
+								information: response.headers.get(requestParams.informationHeaderKey) ?? undefined,
 								code: response.status.toString() as SS.Number,
 								ok: (response.status < 500)
 									? response.ok
@@ -1044,8 +1154,24 @@ export class PromiseRequest<
 								raw: response,
 								requestParams,
 								predicted: response.headers.get(requestParams.predictedHeaderKey) !== null,
-							} satisfies ClientResponse,
-						),
+							};
+
+							if (response.headers.get("content-type")?.includes("text/event-stream")) {
+								return EE.right(
+									"response",
+									makeClientEventsResponse(
+										clientResponse,
+										fetchUrl,
+										fetchInitParams,
+									),
+								);
+							}
+
+							return EE.right(
+								"response",
+								clientResponse,
+							);
+						},
 					),
 			)
 			.catch(

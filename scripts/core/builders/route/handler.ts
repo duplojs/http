@@ -2,7 +2,7 @@ import { type Floor } from "@core/floor";
 import { type ResponseContract } from "@core/response";
 import { createRoute, type Route, type RouteDefinition } from "@core/route";
 import { createHandlerStep, type HandlerStep, type HandlerStepFunctionParams } from "@core/steps";
-import { type MaybePromise, type AnyTuple, type O, A } from "@duplojs/utils";
+import { type MaybePromise, type O, A } from "@duplojs/utils";
 import { routeBuilderHandler } from "./builder";
 import { type Request } from "@core/request";
 import { routeStore } from "./store";
@@ -17,10 +17,20 @@ declare module "./builder" {
 		handler<
 			GenericResponseContract extends (
 				| ResponseContract.Contract
-				| readonly [ResponseContract.Contract, ...ResponseContract.Contract[]]
+				| ResponseContract.ServerSentEventsContract
+				| readonly [
+					(
+						| ResponseContract.Contract
+						| ResponseContract.ServerSentEventsContract
+					),
+					...(
+						| ResponseContract.Contract
+						| ResponseContract.ServerSentEventsContract
+					)[],
+				]
 			),
 			GenericResponse extends ResponseContract.Convert<
-				GenericResponseContract extends AnyTuple
+				GenericResponseContract extends readonly any[]
 					? GenericResponseContract[number]
 					: GenericResponseContract
 			>,

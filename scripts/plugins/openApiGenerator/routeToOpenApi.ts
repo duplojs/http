@@ -1,10 +1,10 @@
 import type { Route } from "@core/route";
 import { aggregateStepContract } from "./aggregateStepContract";
 import { A, DP, isType, justReturn, O, P, pipe, S, when, whenNot } from "@duplojs/utils";
-import type { ResponseCode, ResponseContract } from "@core/response";
+import { ResponseContract } from "@core/response";
 import { type MapContext, type JsonSchema, render, defaultTransformers } from "@duplojs/data-parser-tools/toJsonSchema";
 import { FormDataBodyController, type RequestMethods } from "@core/request";
-import type { EndpointResponse, EntrypointParameter, OpenApiMethod } from "./types";
+import type { EndpointResponse, EndpointResponseContent, EntrypointParameter, OpenApiMethod } from "./types";
 import { IgnoreByOpenApiGeneratorMetadata } from "./metadata";
 
 export type ResultSchemaContext = Map<string, Record<string, JsonSchema>>;
@@ -177,19 +177,13 @@ export function routeToOpenApi(
 			A.reduceFrom<
 				Partial<
 					Record<
-						ResponseCode,
+						string,
 						EndpointResponse
 					>
 				>
 			>({}),
-			({ lastValue, element: { information, body, code }, nextWithObject }) => {
-				const schemaResponse = !DP.identifier(body, DP.emptyKind)
-					? factoryJsonSchema({
-						context: params.contextToJsonSchemaFactory,
-						resultSchemaContext: params.resultSchemaContext,
-						schema: body,
-					})
-					: undefined;
+			({ lastValue, element: contract, nextWithObject, next }) => {
+				const { information, body, code } = contract;
 
 				const headerInformation = {
 					const: information,
@@ -229,6 +223,56 @@ export function routeToOpenApi(
 						description: headerDescription,
 					},
 				};
+
+				if (ResponseContract.serverSentEventsContractKind.has(contract)) {
+					const eventNameList = O.keys(contract.events);
+					const eventDataList = O.values(contract.events);
+					if (!A.minElements(eventNameList, 1) || !A.minElements(eventDataList, 1)) {
+						return next(lastValue);
+					}
+
+					const schema = factoryJsonSchema({
+						context: params.contextToJsonSchemaFactory,
+						resultSchemaContext: params.resultSchemaContext,
+						schema: DP.object({
+							event: DP.literal(eventNameList),
+							data: DP.union(eventDataList),
+							id: DP.optional(DP.string()),
+							retry: DP.optional(DP.number()),
+						}),
+					});
+
+					const lastContent = lastValue[code]?.content;
+					const content: EndpointResponseContent = {
+						...lastContent,
+						"text/event-stream": {
+							itemSchema: lastContent?.["text/event-stream"]
+								? {
+									anyOf: [
+										lastContent["text/event-stream"].itemSchema,
+										schema,
+									],
+								}
+								: schema,
+						},
+					};
+
+					return nextWithObject(
+						lastValue,
+						{
+							[code]: {
+								headers,
+								content,
+							},
+						},
+					);
+				}
+
+				const schemaResponse = factoryJsonSchema({
+					context: params.contextToJsonSchemaFactory,
+					resultSchemaContext: params.resultSchemaContext,
+					schema: body,
+				});
 
 				const content = pipe(
 					body,

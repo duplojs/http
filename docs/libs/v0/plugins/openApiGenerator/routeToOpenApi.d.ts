@@ -1,5 +1,5 @@
 import type { Route } from "../../core/route";
-import type { ResponseCode, ResponseContract } from "../../core/response";
+import { ResponseContract } from "../../core/response";
 import { type MapContext, type JsonSchema } from "@duplojs/data-parser-tools/toJsonSchema";
 import type { EndpointResponse, EntrypointParameter } from "./types";
 export type ResultSchemaContext = Map<string, Record<string, JsonSchema>>;
@@ -40,5 +40,5 @@ export declare function routeToOpenApi(route: Route, params: RouteToOpenApiParam
             };
         };
     } | undefined;
-    responses: Partial<Record<ResponseCode, EndpointResponse>>;
+    responses: Partial<Record<string, EndpointResponse>>;
 }[];

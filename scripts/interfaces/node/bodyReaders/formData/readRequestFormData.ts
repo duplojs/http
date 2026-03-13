@@ -67,12 +67,12 @@ export async function readRequestFormData<
 
 	let valueAccumulator: GenericValueAccumulator = firstValueAccumulator;
 
-	const startPart = Buffer.from(`\r\n--${boundary}`);
-	const endMultiPart = Buffer.from(`\r\n--${boundary}--`);
+	const startPart = Buffer.from(`\r\n--${boundary}\r\n`);
+	const endMultiPart = Buffer.from(`\r\n--${boundary}--\r\n`);
 
 	let currentBuffer = bufferStart;
 	let size = 0;
-	const keep = endMultiPart.length - 1;
+	const keep = endMultiPart.length;
 
 	let currentStream = undefined as ReadRequestFormDataStreamChunkEvent<GenericValueAccumulator> | undefined;
 	let fileQuantity = 0;
@@ -188,12 +188,6 @@ export async function readRequestFormData<
 			}
 
 			while (true) {
-				const endMultiPartIndex = currentBuffer.indexOf(endMultiPart);
-				if (endMultiPartIndex !== -1) {
-					// check if buffer contain end of transmissions
-					currentBuffer = currentBuffer.subarray(0, endMultiPartIndex);
-				}
-
 				const startPartIndex = currentBuffer.indexOf(startPart);
 				const endHeaderPartIndex = currentBuffer.indexOf(endHeaderPart);
 				if (startPartIndex !== -1 && endHeaderPartIndex !== -1) {
@@ -242,10 +236,14 @@ export async function readRequestFormData<
 			}
 		}
 
-		const resultChunk = await flushReceiveChunk(currentBuffer);
+		if (currentBuffer.indexOf(endMultiPart) === -1) {
+			const resultChunk = await flushReceiveChunk(
+				currentBuffer.subarray(0, 2),
+			);
 
-		if (resultChunk !== true) {
-			return await treatError(resultChunk);
+			if (resultChunk !== true) {
+				return await treatError(resultChunk);
+			}
 		}
 
 		valueAccumulator = await currentStream?.onEndPart(valueAccumulator) ?? valueAccumulator;

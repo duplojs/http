@@ -1,7 +1,7 @@
 import { checkerStepKind, cutStepKind, extractStepKind, handlerStepKind, presetCheckerStepKind, processStepKind, stepIdentifier, type Steps } from "@core/steps";
-import { A, DP, hasSomeKinds, O, P, pipe } from "@duplojs/utils";
+import { A, DP, hasSomeKinds, innerPipe, O, P, pipe } from "@duplojs/utils";
 import { type EntrypointKey } from "./types";
-import { type ResponseContract } from "@core/response";
+import { ResponseContract } from "@core/response";
 import { IgnoreByCodeGeneratorMetadata } from "./metadata";
 
 type EntrypointReduceResult = Record<
@@ -139,11 +139,26 @@ export function aggregateStepContract(
 				.exhaustive(),
 		),
 		A.map(
-			({ code, information, body }) => DP.object({
-				code: DP.literal(code),
-				information: DP.literal(information),
-				body,
-			}),
+			innerPipe(
+				P.when(
+					ResponseContract.contractKind.has,
+					({ code, information, body }) => DP.object({
+						code: DP.literal(code),
+						information: DP.literal(information),
+						body,
+					}),
+				),
+				P.when(
+					ResponseContract.serverSentEventsContractKind.has,
+					({ code, information, body, events }) => DP.object({
+						code: DP.literal(code),
+						information: DP.literal(information),
+						body,
+						events: DP.object(events),
+					}),
+				),
+				P.exhaustive,
+			),
 		),
 		A.concat(processContracts.endpointContract),
 	);

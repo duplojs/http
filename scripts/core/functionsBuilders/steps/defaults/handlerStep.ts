@@ -1,7 +1,7 @@
 import { type HandlerStepFunctionParams, handlerStepKind } from "@core/steps";
 import { createStepFunctionBuilder } from "../create";
 import { A, E, unwrap } from "@duplojs/utils";
-import { PredictedResponse, ResponseContract } from "@core/response";
+import { PredictedResponse, ResponseContract, ServerSentEventsPredictedResponse } from "@core/response";
 
 export const defaultHandlerStepFunctionBuilder = createStepFunctionBuilder(
 	handlerStepKind.has,
@@ -13,7 +13,12 @@ export const defaultHandlerStepFunctionBuilder = createStepFunctionBuilder(
 
 		const preparedContractResponse = A.reduce(
 			A.coalescing(responseContract),
-			A.reduceFrom<Record<string, ResponseContract.Contract>>({}),
+			A.reduceFrom<
+				Record<
+					string,
+					ResponseContract.Contract | ResponseContract.ServerSentEventsContract
+				>
+			>({}),
 			({ element, lastValue, nextWithObject }) => nextWithObject(
 				lastValue,
 				{
@@ -28,41 +33,76 @@ export const defaultHandlerStepFunctionBuilder = createStepFunctionBuilder(
 		) => {
 			const currentContract = preparedContractResponse[information];
 
-			if (!currentContract) {
-				throw new ResponseContract.Error(information);
+			if (
+				!currentContract
+				|| !ResponseContract.contractKind.has(currentContract)
+			) {
+				throw new ResponseContract.Error(information, "Contract not found.");
+			}
+
+			const result = currentContract.body.parse(body);
+			if (E.isLeft(result)) {
+				throw new ResponseContract.Error(
+					information,
+					unwrap(result),
+				);
 			}
 
 			return new PredictedResponse(
 				currentContract.code,
-				currentContract.information,
+				information,
 				body,
 			) as never;
 		};
 
-		return success({
-			buildedFunction: async(request, floor) => {
-				const predictedResponse = await handlerFunction(
-					floor,
-					{
-						request,
-						response,
+		const serverSentEventsResponse: HandlerStepFunctionParams["serverSentEventsResponse"] = (
+			information,
+			startSendingEvents,
+		) => {
+			const currentContract = preparedContractResponse[information];
+
+			if (
+				!currentContract
+				|| !ResponseContract.serverSentEventsContractKind.has(currentContract)
+			) {
+				throw new ResponseContract.Error(information, "Contract not found.");
+			}
+
+			return new ServerSentEventsPredictedResponse(
+				currentContract.code,
+				information,
+				(params) => startSendingEvents({
+					...params,
+					send: (event, data, sendParams) => {
+						const dataParser = currentContract.events[event];
+
+						if (!dataParser) {
+							console.error(new ResponseContract.Error(information, `Event '${event}' not found.`));
+							return Promise.resolve();
+						}
+
+						const result = dataParser.parse(data);
+
+						if (E.isLeft(result)) {
+							console.error(new ResponseContract.Error(information, unwrap(result)));
+							return Promise.resolve();
+						}
+
+						return params.send(event, data, sendParams);
 					},
-				);
+				}),
+			) as never;
+		};
 
-				const currentContract = preparedContractResponse[predictedResponse.information]!;
-				const result = currentContract.body.isAsynchronous()
-					? await currentContract.body.asyncParse(predictedResponse.body)
-					: currentContract.body.parse(predictedResponse.body);
-
-				if (E.isLeft(result)) {
-					throw new ResponseContract.Error(
-						predictedResponse.information,
-						unwrap(result),
-					);
-				}
-
-				return predictedResponse;
-			},
+		return success({
+			buildedFunction: async(request, floor) => handlerFunction(
+				floor,
+				{
+					request,
+					response,
+					serverSentEventsResponse,
+				},
+			),
 			hooksRouteLifeCycle: [],
 		});
 	},

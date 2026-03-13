@@ -2,7 +2,7 @@ import { type RemoveKind, type Kind, type MayBeGetter, type SimplifyTopLevel, ty
 import * as OO from "@duplojs/utils/object";
 import * as GG from "@duplojs/utils/generator";
 import { createClientKind } from "./kind";
-import { type ClientRequestInitParams, type ServerRoute, type ServerRouteToClientRequestParams, type ServerRouteToClientResponse, type ClientRequestParamsHeaders, type ClientRequestParams, type ClientResponse, type Hooks, type RequestHook, type ResponseHook, type InformationHook, type CodeHook, type ResponseTypeHook, type ExpectedResponseHook, type NotPredictedResponseHook, type ErrorHook, type GetServerRoutePath } from "./types";
+import { type ClientRequestInitParams, type ServerRoute, type ServerRouteToClientRequestParams, type ServerRouteToClientResponse, type ClientRequestParamsHeaders, type ClientRequestParams, type Hooks, type RequestHook, type ResponseHook, type InformationHook, type CodeHook, type ResponseTypeHook, type ExpectedResponseHook, type NotPredictedResponseHook, type ErrorHook, type GetServerRoutePath, type AllClientResponse, type BeforeRetryServerEventHook, type CloseServerEventHook, type ErrorServerEventHook, type StartServerEventHook, type ReceiveEventServerEventHook } from "./types";
 import { PromiseRequest } from "./promiseRequest";
 
 export const httpClientKind = createClientKind("http-client");
@@ -28,7 +28,7 @@ type HttpClientRequestMethod<
 		>
 	) => PromiseRequest<
 		GenericHookParams,
-		ClientResponse<GenericHookParams>
+		AllClientResponse<GenericHookParams>
 	>
 	: <
 		GenericPath extends Extract<GenericServerRoute, { method: GenericMethod }>["path"],
@@ -109,6 +109,11 @@ export interface HttpClient<
 	addExpectedResponseHook(hook: ExpectedResponseHook<GenericHookParams>): void;
 	addNotPredictedResponseHook(hook: NotPredictedResponseHook<GenericHookParams>): void;
 	addErrorHook(hook: ErrorHook<GenericHookParams>): void;
+	addBeforeRetryServerEventHook(hook: BeforeRetryServerEventHook<GenericHookParams>): void;
+	addCloseServerEventHook(hook: CloseServerEventHook<GenericHookParams>): void;
+	addErrorServerEventHook(hook: ErrorServerEventHook<GenericHookParams>): void;
+	addStartServerEventHook(hook: StartServerEventHook<GenericHookParams>): void;
+	addReceiveEventServerEventHook(hook: ReceiveEventServerEventHook<GenericHookParams>): void;
 
 	request<
 		GenericClientRequestParams extends ServerRouteToClientRequestParams<
@@ -123,16 +128,18 @@ export interface HttpClient<
 		params: GenericClientRequestParams
 	): PromiseRequest<
 		GenericHookParams,
-		ServerRouteToClientResponse<
-			Extract<
-				GenericServerRoute,
-				{
-					method: GenericClientRequestParams["method"];
-					path: GenericMatchedPath;
-				}
-			>,
-			GenericHookParams
-		>
+		IsEqual<GenericServerRoute, ServerRoute> extends true
+			? AllClientResponse<GenericHookParams>
+			: ServerRouteToClientResponse<
+				Extract<
+					GenericServerRoute,
+					{
+						method: GenericClientRequestParams["method"];
+						path: GenericMatchedPath;
+					}
+				>,
+				GenericHookParams
+			>
 	>;
 
 	get: HttpClientRequestMethod<
@@ -199,6 +206,11 @@ export function createHttpClient<
 			expectedResponse: [],
 			error: [],
 			notPredictedResponse: [],
+			beforeRetryServerEvent: [],
+			closeServerEvent: [],
+			errorServerEvent: [],
+			receiveEventServerEvent: [],
+			startServerEvent: [],
 		},
 		clientParams.hooks ?? {},
 	);
@@ -270,12 +282,30 @@ export function createHttpClient<
 			addErrorHook(hook) {
 				hooks.error.push(hook);
 			},
+			addBeforeRetryServerEventHook(hook) {
+				hooks.beforeRetryServerEvent.push(hook);
+			},
+			addCloseServerEventHook(hook) {
+				hooks.closeServerEvent.push(hook);
+			},
+			addErrorServerEventHook(hook) {
+				hooks.errorServerEvent.push(hook);
+			},
+			addReceiveEventServerEventHook(hook) {
+				hooks.receiveEventServerEvent.push(hook);
+			},
+			addStartServerEventHook(hook) {
+				hooks.startServerEvent.push(hook);
+			},
 			request(params) {
 				const headers = GG.reduce(
 					defaultHeaders.entries(),
 					GG.reduceFrom<ClientRequestParamsHeaders>({}),
 					({ element, lastValue, next }) => {
-						lastValue[element[0]] = `${element[1]()}`;
+						const value = element[1]();
+						if (value !== undefined) {
+							lastValue[element[0]] = `${value}`;
+						}
 
 						return next(lastValue);
 					},
@@ -297,6 +327,7 @@ export function createHttpClient<
 					predictedHeaderKey: config.predictedHeaderKey,
 					informationHeaderKey: config.informationHeaderKey,
 					disabledPredicateMode: config.disabledPredictedMode,
+					abortController: params.abortController ?? new AbortController(),
 				});
 			},
 			get: ((path: string, params?: object) => self.request({
