@@ -37,17 +37,20 @@ describe("implementHttpServer", () => {
 		});
 
 		const server = { id: "server" };
+		const hub = createHub({ environment: "DEV" })
+			.register(route)
+			.addHubHooks({
+				beforeServerBuildRoutes: beforeServerBuildRoutesHook,
+				beforeStartServer: beforeStartServerHook,
+				afterStartServer: afterStartServerHook,
+			})
+			.addBodyReaderImplementation(bodyReaderImplementation);
+		const getInterfaceHooks = vi.fn(() => [1] as never);
 		const result = await implementHttpServer(
 			{
-				hub: createHub({ environment: "DEV" })
-					.register(route)
-					.addHubHooks({
-						beforeServerBuildRoutes: beforeServerBuildRoutesHook,
-						beforeStartServer: beforeStartServerHook,
-						afterStartServer: afterStartServerHook,
-					})
-					.addBodyReaderImplementation(bodyReaderImplementation),
+				hub,
 				httpServerParams,
+				getInterfaceHooks,
 			},
 			async({ execRouteSystem, httpServerParams: receivedParams }) => {
 				calls.push("initHttpServer");
@@ -79,6 +82,7 @@ describe("implementHttpServer", () => {
 			"initHttpServer",
 			"afterStartServer",
 		]);
+		expect(hub.hooksRouteLifeCycle[1]).toBe(1);
 	});
 
 	it("calls serverError hooks and whenUncaughtError when router execution fails", async() => {
@@ -115,6 +119,7 @@ describe("implementHttpServer", () => {
 					})
 					.addBodyReaderImplementation(bodyReaderImplementation),
 				httpServerParams: {} as HttpServerParams,
+				getInterfaceHooks: () => [] as never,
 			},
 			({ execRouteSystem: receivedExecRouteSystem }) => {
 				execRouteSystem = receivedExecRouteSystem;

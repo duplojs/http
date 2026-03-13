@@ -30,16 +30,6 @@ describe("cacheController", () => {
 			port: 8947,
 		});
 
-		interface Routes {
-			method: "GET";
-			path: "/";
-			responses: {
-				code: "200";
-				information: "test";
-				body: boolean;
-			};
-		}
-
 		await expect(
 			fetch("http://localhost:8947/", {
 				method: "GET",

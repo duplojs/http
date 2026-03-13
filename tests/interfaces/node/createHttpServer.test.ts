@@ -1,5 +1,5 @@
 import { createHub, type Hub, type HttpServerParams } from "@core";
-import { implementHttpServer } from "@core/implementHttpServer";
+import { implementHttpServer, type ImplementHttpServerParams } from "@core/implementHttpServer";
 import { type AnyFunction } from "@duplojs/utils";
 import { testHub } from "@test-utils/hub";
 import { createFakeRequest } from "@test-utils/request";
@@ -53,11 +53,13 @@ describe("createHttpServer", () => {
 		const execRouteSystem = vi.fn().mockResolvedValue(undefined);
 		let receivedHub = undefined as Hub | undefined;
 		let receivedHttpServerParams = undefined as HttpServerParams | undefined;
+		let receivedGetInterfaceHooks = undefined as ImplementHttpServerParams["getInterfaceHooks"] | undefined;
 
 		vi.mocked(implementHttpServer).mockImplementation(
-			async({ hub, httpServerParams }, initHttpServer) => {
+			async({ hub, httpServerParams, getInterfaceHooks }, initHttpServer) => {
 				receivedHub = hub;
 				receivedHttpServerParams = httpServerParams;
+				receivedGetInterfaceHooks = getInterfaceHooks;
 				return await initHttpServer({
 					execRouteSystem,
 					httpServerParams,
@@ -74,6 +76,10 @@ describe("createHttpServer", () => {
 			},
 		);
 
+		expect(receivedGetInterfaceHooks!({
+			hub: baseHub,
+			httpServerParams: {} as never,
+		})).toStrictEqual([expect.any(Object)]);
 		expect(receivedHttpServerParams).toStrictEqual({
 			host: "localhost",
 			port: 3000,
