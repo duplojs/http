@@ -257,6 +257,7 @@ describe("hub", () => {
 			response: ((information: string) => ({
 				information,
 			})) as never,
+			serverSentEventsResponse: () => ({}) as never,
 		};
 
 		expect(
