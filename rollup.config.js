@@ -56,31 +56,6 @@ export default defineConfig([
 		],
 	},
 	{
-		input: "scripts/plugins/cacheController/index.ts",
-		output: [
-			{
-				dir: "dist",
-				format: "esm",
-				preserveModules: true,
-				preserveModulesRoot: "scripts",
-				entryFileNames: "[name].mjs"
-			},
-			{
-				dir: "dist",
-				format: "cjs",
-				preserveModules: true,
-				preserveModulesRoot: "scripts",
-				entryFileNames: "[name].cjs"
-			},
-		],
-		treeshake: false,
-		plugins: [
-			del({ targets: "dist/plugins/cacheController" }),
-			typescript({ tsconfig: "scripts/plugins/cacheController/tsconfig.build.json" }),
-			tscAlias({ configFile: "scripts/plugins/cacheController/tsconfig.build.json" }),
-		],
-	},
-	{
 		input: "scripts/plugins/static/index.ts",
 		output: [
 			{
@@ -103,6 +78,31 @@ export default defineConfig([
 			del({ targets: "dist/plugins/static" }),
 			typescript({ tsconfig: "scripts/plugins/static/tsconfig.build.json" }),
 			tscAlias({ configFile: "scripts/plugins/static/tsconfig.build.json" }),
+		],
+	},
+	{
+		input: "scripts/plugins/cacheController/index.ts",
+		output: [
+			{
+				dir: "dist",
+				format: "esm",
+				preserveModules: true,
+				preserveModulesRoot: "scripts",
+				entryFileNames: "[name].mjs"
+			},
+			{
+				dir: "dist",
+				format: "cjs",
+				preserveModules: true,
+				preserveModulesRoot: "scripts",
+				entryFileNames: "[name].cjs"
+			},
+		],
+		treeshake: false,
+		plugins: [
+			del({ targets: "dist/plugins/cacheController" }),
+			typescript({ tsconfig: "scripts/plugins/cacheController/tsconfig.build.json" }),
+			tscAlias({ configFile: "scripts/plugins/cacheController/tsconfig.build.json" }),
 		],
 	},
 

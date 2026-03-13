@@ -84,7 +84,6 @@ export type Routes = {
     };
 } | {
     method: "GET";
-<<<<<<< HEAD
     path: "/sse";
     query: {
         close?: boolean | undefined;
@@ -106,7 +105,10 @@ export type Routes = {
     } | {
         code: "204";
         information: "close";
-=======
+        body?: undefined;
+    };
+} | {
+    method: "GET";
     path: "/static-file";
     responses: {
         code: "200";
@@ -135,7 +137,6 @@ export type Routes = {
     } | {
         code: "304";
         information: "resource.notModified";
->>>>>>> 35f4071 (feat(18): add plugin static and cacheController)
         body?: undefined;
     };
 };"

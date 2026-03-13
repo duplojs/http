@@ -1,4 +1,4 @@
-import { stringToBytes, toRegExp, type BytesInString } from "@duplojs/utils";
+import { type AnyTuple, stringToBytes, toRegExp, type BytesInString } from "@duplojs/utils";
 import { type BodyControllerParams, createBodyController } from "./base";
 
 export interface FormDataBodyReaderParams extends BodyControllerParams {
@@ -18,7 +18,7 @@ export type FormDataBodyController = typeof FormDataBodyController;
 
 export interface ControlBodyAsFormDataParams {
 	maxFileQuantity: number;
-	mimeType?: string | string[] | RegExp;
+	mimeType?: string | AnyTuple<string> | RegExp;
 	bodyMaxSize?: number | BytesInString;
 	fileMaxSize?: number | BytesInString;
 	maxBufferSize?: number | BytesInString;

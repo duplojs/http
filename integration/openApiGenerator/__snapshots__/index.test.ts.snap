@@ -186,7 +186,6 @@ exports[`openApiGenerator > correct generate file 1`] = `
         }
       }
     },
-<<<<<<< HEAD
     "/sse": {
       "get": {
         "parameters": [
@@ -199,17 +198,11 @@ exports[`openApiGenerator > correct generate file 1`] = `
             }
           }
         ],
-=======
-    "/static-file": {
-      "get": {
-        "parameters": [],
->>>>>>> 35f4071 (feat(18): add plugin static and cacheController)
         "responses": {
           "200": {
             "headers": {
               "information": {
                 "schema": {
-<<<<<<< HEAD
                   "const": "super-sse",
                   "type": "string"
                 },
@@ -220,23 +213,10 @@ exports[`openApiGenerator > correct generate file 1`] = `
               "text/event-stream": {
                 "itemSchema": {
                   "$ref": "#/components/schemas/NotIdentified13"
-=======
-                  "const": "resource.found",
-                  "type": "string"
-                },
-                "description": "resource.found"
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/NotIdentified7"
->>>>>>> 35f4071 (feat(18): add plugin static and cacheController)
                 }
               }
             }
           },
-<<<<<<< HEAD
           "204": {
             "headers": {
               "information": {
@@ -256,7 +236,34 @@ exports[`openApiGenerator > correct generate file 1`] = `
                   "type": "string"
                 },
                 "description": "extract-error"
-=======
+              }
+            }
+          }
+        }
+      }
+    },
+    "/static-file": {
+      "get": {
+        "parameters": [],
+        "responses": {
+          "200": {
+            "headers": {
+              "information": {
+                "schema": {
+                  "const": "resource.found",
+                  "type": "string"
+                },
+                "description": "resource.found"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotIdentified15"
+                }
+              }
+            }
+          },
           "304": {
             "headers": {
               "information": {
@@ -299,7 +306,7 @@ exports[`openApiGenerator > correct generate file 1`] = `
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/NotIdentified8"
+                  "$ref": "#/components/schemas/NotIdentified18"
                 }
               }
             }
@@ -323,7 +330,6 @@ exports[`openApiGenerator > correct generate file 1`] = `
                   "type": "string"
                 },
                 "description": "resource.notfound"
->>>>>>> 35f4071 (feat(18): add plugin static and cacheController)
               }
             }
           }
@@ -478,7 +484,6 @@ exports[`openApiGenerator > correct generate file 1`] = `
         "type": "string",
         "format": "binary"
       },
-<<<<<<< HEAD
       "NotIdentified11": {
         "anyOf": [
           {
@@ -548,17 +553,19 @@ exports[`openApiGenerator > correct generate file 1`] = `
           "data"
         ]
       },
-      "NotIdentified14": {}
-=======
-      "NotIdentified7": {
+      "NotIdentified14": {},
+      "NotIdentified15": {
         "type": "string",
         "format": "binary"
       },
-      "NotIdentified8": {
+      "NotIdentified16": {},
+      "NotIdentified17": {},
+      "NotIdentified18": {
         "type": "string",
         "format": "binary"
-      }
->>>>>>> 35f4071 (feat(18): add plugin static and cacheController)
+      },
+      "NotIdentified19": {},
+      "NotIdentified20": {}
     }
   }
 }"
