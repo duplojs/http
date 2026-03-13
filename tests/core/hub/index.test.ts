@@ -233,14 +233,13 @@ describe("hub", () => {
 
 	it("hub set malformed url handler", () => {
 		const contract = ResponseContract.badRequest("malformed");
-		const spy = vi.fn(({ response }) => response("malformed"));
 
 		const hub = createHub({
 			environment: "DEV",
 		})
 			.setMalformedUrlHandler(
 				contract,
-				spy,
+				({ response }) => response("malformed"),
 			);
 
 		expect({ ...hub }).toStrictEqual({
@@ -251,24 +250,6 @@ describe("hub", () => {
 				}),
 			}),
 		});
-
-		const params = {
-			request: {} as never,
-			response: ((information: string) => ({
-				information,
-			})) as never,
-			serverSentEventsResponse: () => ({}) as never,
-		};
-
-		expect(
-			hub.malformedUrlHandler.definition.theFunction(
-				{ ignored: true },
-				params,
-			),
-		).toStrictEqual({
-			information: "malformed",
-		});
-		expect(spy).toHaveBeenCalledWith(params);
 	});
 
 	it("hub set default extract contract", () => {

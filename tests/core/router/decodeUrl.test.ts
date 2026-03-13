@@ -22,7 +22,7 @@ describe("decodeUrl", () => {
 		});
 	});
 
-	it("returns null for an empty path", () => {
+	it("decodes paths with empty path", () => {
 		const result = decodeUrl("");
 
 		expect(result).toStrictEqual({
