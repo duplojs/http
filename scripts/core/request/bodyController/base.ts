@@ -1,6 +1,6 @@
 import { createCoreLibKind } from "@core/kind";
 import { type Request } from "@core/request";
-import { E, type RemoveKind, type Kind } from "@duplojs/utils";
+import { E, type RemoveKind, type Kind, unwrap, kindHeritage } from "@duplojs/utils";
 
 export interface BodyControllerParams {
 	bodyMaxSize?: number;
@@ -42,6 +42,9 @@ export interface BodyController<
 	tryToCreateReader(
 		readerImplementation: BodyReaderImplementation
 	): E.Success<BodyReader<GenericName>> | E.Fail;
+	createReaderOrThrow(
+		readerImplementation: BodyReaderImplementation
+	): BodyReader<GenericName>;
 }
 
 const bodyControllerHandlerKind = createCoreLibKind("body-controller-handler");
@@ -58,6 +61,19 @@ export interface BodyControllerHandler<
 	is(input: unknown): input is BodyController<GenericName, GenericParams>;
 }
 
+export class WrongBodyReaderImplementationError extends kindHeritage(
+	"wrong-body-reader-implementation",
+	createCoreLibKind("wrong-body-reader-implementation"),
+	Error,
+) {
+	public constructor(
+		public controllerName: string,
+		public bodyReaderImplementation: BodyReaderImplementation,
+	) {
+		super({}, ["Received wrong body reader implementation."]);
+	}
+}
+
 export function createBodyController<
 	GenericName extends string,
 	GenericParams extends BodyControllerParams,
@@ -66,6 +82,19 @@ export function createBodyController<
 		{
 			name,
 			create(params) {
+				function tryToCreateReader(readerImplementation: BodyReaderImplementation) {
+					if (bodyReaderImplementationKind.getValue(readerImplementation) !== name) {
+						return E.fail();
+					}
+					return E.success(
+						bodyReaderKind.setTo(
+							{
+								read: (request) => readerImplementation.read(request, params),
+							} satisfies RemoveKind<BodyReader<GenericName>>,
+							name,
+						),
+					);
+				}
 				return bodyControllerKind.setTo<
 					RemoveKind<BodyController<GenericName, GenericParams>>,
 					GenericName
@@ -73,18 +102,15 @@ export function createBodyController<
 					{
 						name,
 						params,
-						tryToCreateReader(readerImplementation) {
-							if (bodyReaderImplementationKind.getValue(readerImplementation) !== name) {
-								return E.fail();
+						tryToCreateReader,
+						createReaderOrThrow(readerImplementation) {
+							const result = tryToCreateReader(readerImplementation);
+
+							if (E.isLeft(result)) {
+								throw new WrongBodyReaderImplementationError(name, readerImplementation);
 							}
-							return E.success(
-								bodyReaderKind.setTo(
-									{
-										read: (request) => readerImplementation.read(request, params),
-									} satisfies RemoveKind<BodyReader<GenericName>>,
-									name,
-								),
-							);
+
+							return unwrap(result);
 						},
 					},
 					name,

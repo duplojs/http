@@ -1,4 +1,4 @@
-import { type BodyControllerParams, controlBodyAsText, createBodyController } from "@core";
+import { type BodyControllerParams, controlBodyAsText, createBodyController, WrongBodyReaderImplementationError } from "@core";
 import { asserts, E, unwrap } from "@duplojs/utils";
 
 describe("createBodyController", () => {
@@ -29,6 +29,17 @@ describe("createBodyController", () => {
 		expect(bodyController.tryToCreateReader({} as never)).toStrictEqual(E.fail());
 		const bodyReaderImplementation = BodyController.createReaderImplementation(vi.fn());
 		expect(bodyController.tryToCreateReader(bodyReaderImplementation)).toStrictEqual(E.success(expect.any(Object)));
+	});
+
+	it("bodyController createReaderOrThrow", () => {
+		const bodyController = BodyController.create({ test: "" });
+		expect(() => bodyController.createReaderOrThrow({} as never)).toThrowError(WrongBodyReaderImplementationError);
+		const bodyReaderImplementation = BodyController.createReaderImplementation(vi.fn());
+		expect(bodyController.tryToCreateReader(bodyReaderImplementation)).toStrictEqual(expect.any(Object));
+	});
+
+	it("WrongBodyReaderImplementationError", () => {
+		expect(new WrongBodyReaderImplementationError("test", {} as never)).instanceOf(Error);
 	});
 
 	it("reader", async() => {

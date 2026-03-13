@@ -9,13 +9,14 @@ import { decodeUrl } from "./decodeUrl";
 import { type BodyReader } from "@core/request";
 import { NotFoundBodyReaderImplementationError } from "./notFoundBodyReaderImplementationError";
 import { type createStepFunctionBuilder, defaultCheckerStepFunctionBuilder, defaultCutStepFunctionBuilder, defaultExtractStepFunctionBuilder, defaultHandlerStepFunctionBuilder, defaultProcessStepFunctionBuilder } from "@core/functionsBuilders";
-import { createDefaultMalformedUrlRoute, createDefaultNotfoundRoute } from "./defaultRoutes";
+import { buildSystemRoute } from "./buildSystemRoute";
 
 export * from "./types";
 export * from "./pathToRegExp";
 export * from "./buildError";
 export * from "./decodeUrl";
 export * from "./notFoundBodyReaderImplementationError";
+export * from "./buildSystemRoute";
 
 interface RouterElement {
 	pattern: RegExp;
@@ -132,13 +133,13 @@ export async function buildRouter(hub: Hub): Promise<BuildedRouter> {
 		},
 	);
 
-	const defaultNotfoundRoute = await createDefaultNotfoundRoute({
-		hub,
+	const defaultNotfoundRoute = await buildSystemRoute({
+		handlerStep: hub.notfoundHandler,
 		buildParams,
 	});
 
-	const defaultMalformedUrlRoute = await createDefaultMalformedUrlRoute({
-		hub,
+	const defaultMalformedUrlRoute = await buildSystemRoute({
+		handlerStep: hub.malformedUrlHandler,
 		buildParams,
 	});
 

@@ -12,12 +12,14 @@ import { type createStepFunctionBuilder } from "@core/functionsBuilders/steps";
 import { type createRouteFunctionBuilder } from "@core/functionsBuilders/route";
 import { defaultBodyController } from "./defaultBodyController";
 import { defaultMalformedUrlHandler } from "./defaultMalformedUrlHandler";
+import { defaultEmptyReaderImplementation } from "./defaultEmptyReaderImplementation";
 
 export * from "./hooks";
 export * from "./defaultNotfoundHandler";
 export * from "./defaultExtractContract";
 export * from "./defaultBodyController";
 export * from "./defaultMalformedUrlHandler";
+export * from "./defaultEmptyReaderImplementation";
 
 export const hubKind = createCoreLibKind("hub");
 
@@ -53,7 +55,7 @@ export class Hub<
 
 	public stepFunctionBuilders: ReturnType<typeof createStepFunctionBuilder>[] = [];
 
-	public bodyReaderImplementations: BodyReaderImplementation[] = [];
+	public bodyReaderImplementations: BodyReaderImplementation[] = [defaultEmptyReaderImplementation];
 
 	public classRequest = Request;
 
