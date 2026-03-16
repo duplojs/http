@@ -11,7 +11,7 @@ next:
 # Server-Sent Events (SSE)
 You can handle an `SSE` stream by using the appropriate response contract.
 
-```ts twoslash {6,13}
+```ts twoslash
 // @version: 0
 <!--@include: @/examples/v0/guide/features/SSE/route.ts-->
 ```

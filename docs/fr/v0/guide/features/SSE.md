@@ -11,7 +11,7 @@ next:
 # Server-Sent Events (SSE)
 Vous pouvez gérer un flux `SSE` en utilisant le contrat de réponse approprié.
 
-```ts twoslash {6,13}
+```ts twoslash
 // @version: 0
 <!--@include: @/examples/v0/guide/features/SSE/route.ts-->
 ```
