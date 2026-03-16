@@ -5,7 +5,7 @@ import { useRouteBuilder } from "@core/builders";
 import { IgnoreByRouteStoreMetadata } from "@core/metadata";
 import { ResponseContract } from "@core/response";
 import type { RoutePath } from "@core/route";
-import { createCacheControllerHook } from "@plugin-cacheController/hooks";
+import { createCacheControllerHooks } from "@plugin-cacheController/hooks";
 import { type CacheControlDirectives } from "@plugin-cacheController/types";
 import { createStaticPluginKind } from "./kind";
 
@@ -47,11 +47,7 @@ export function makeRouteFile(params: MakeRouteFileParams) {
 		localPath,
 		{
 			metadata: [IgnoreByRouteStoreMetadata()],
-			hooks: [
-				createCacheControllerHook(
-					params.cacheControlConfig,
-				),
-			],
+			hooks: [createCacheControllerHooks(params.cacheControlConfig)],
 		},
 	)
 		.handler(

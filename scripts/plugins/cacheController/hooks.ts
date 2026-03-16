@@ -1,10 +1,10 @@
-import type { CacheControlDirectives } from "../types";
+import type { CacheControlDirectives } from "./types";
 import { createCacheControlResponseHeader } from "./createResponseHeader";
 import { createHookRouteLifeCycle } from "@core/route";
 
 const eligibleCodeRegex = /^(?:2|3)/;
 
-export function createCacheControllerHook(
+export function createCacheControllerHooks(
 	params?: CacheControlDirectives,
 ) {
 	const cacheControl = params

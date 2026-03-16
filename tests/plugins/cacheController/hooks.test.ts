@@ -1,8 +1,8 @@
 import { PredictedResponse } from "@core";
-import { createCacheControllerHook } from "@plugin-cacheController/hooks";
+import { createCacheControllerHooks } from "@plugin-cacheController/hooks";
 
 describe("createCacheControllerHook", () => {
-	const hook = createCacheControllerHook({
+	const hook = createCacheControllerHooks({
 		maxAge: 120.9,
 		sMaxAge: 30,
 		public: true,

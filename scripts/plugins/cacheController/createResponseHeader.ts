@@ -1,5 +1,5 @@
 import { A, O, pipe } from "@duplojs/utils";
-import type { CacheControlDirectives } from "../types";
+import type { CacheControlDirectives } from "./types";
 
 export function createCacheControlResponseHeader(
 	directives: CacheControlDirectives,

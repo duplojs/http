@@ -31,7 +31,7 @@ export class StaticPluginError extends kindHeritage(
 		public information: string,
 		public error: unknown,
 	) {
-		super({}, ["Error during registration static route."]);
+		super({}, [`Error during registration static route: ${information}`]);
 	}
 }
 
@@ -77,8 +77,8 @@ export function staticPlugin(
 
 					if (E.isLeft(statResult)) {
 						throw new StaticPluginError(
-							"source does not exit.",
-							statResult,
+							`source does not exit (${args[0].path}).`,
+							unwrap(statResult),
 						);
 					}
 
@@ -86,19 +86,13 @@ export function staticPlugin(
 
 					if (SF.isFileInterface(args[0]) && !stat.isFile) {
 						throw new StaticPluginError(
-							"source does not file (consistency).",
-							{
-								source: args[0],
-								stat,
-							},
+							`source does not file (${args[0].path}).`,
+							stat,
 						);
 					} else if (SF.isFolderInterface(args[0]) && stat.isFile) {
 						throw new StaticPluginError(
-							"source does not folder (consistency).",
-							{
-								source: args[0],
-								stat,
-							},
+							`source does not folder (${args[0].path}).`,
+							stat,
 						);
 					}
 				},

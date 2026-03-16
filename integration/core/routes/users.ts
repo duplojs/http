@@ -1,5 +1,5 @@
 import { ResponseContract, useRouteBuilder } from "@duplojs/http";
-import { createCacheControllerHook } from "@duplojs/http/cacheController";
+import { createCacheControllerHooks } from "@duplojs/http/cacheController";
 import { DPE } from "@duplojs/utils";
 
 const user = DPE.object({
@@ -10,7 +10,7 @@ const user = DPE.object({
 
 useRouteBuilder("GET", "/users", {
 	hooks: [
-		createCacheControllerHook({
+		createCacheControllerHooks({
 			private: ["authorization", "cookie"],
 			noCache: ["set-cookie"],
 			maxAge: 200,
