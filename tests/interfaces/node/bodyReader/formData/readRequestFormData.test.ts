@@ -27,6 +27,8 @@ describe("readRequestFormData", () => {
 				maxBufferSize: 10000,
 				maxKeyLength: 100,
 				maxFileQuantity: 1,
+				fileMaxSize: Infinity,
+				textFieldMaxSize: Infinity,
 			},
 			() => ({
 				onReceiveChunk: () => {},
@@ -56,6 +58,8 @@ describe("readRequestFormData", () => {
 				maxBufferSize: 10000,
 				maxKeyLength: 100,
 				maxFileQuantity: 1,
+				fileMaxSize: Infinity,
+				textFieldMaxSize: Infinity,
 			},
 			() => ({
 				onReceiveChunk: () => {},
@@ -113,6 +117,8 @@ describe("readRequestFormData", () => {
 				maxKeyLength: 100,
 				maxFileQuantity: 2,
 				mimeType: /txt/,
+				fileMaxSize: Infinity,
+				textFieldMaxSize: Infinity,
 			},
 			(header) => {
 				if (header.filename) {
@@ -185,6 +191,8 @@ describe("readRequestFormData", () => {
 				maxBufferSize: 10000,
 				maxKeyLength: 100,
 				maxFileQuantity: 1,
+				fileMaxSize: Infinity,
+				textFieldMaxSize: Infinity,
 			},
 			() => ({
 				onReceiveChunk: (chunk) => {
@@ -224,6 +232,8 @@ describe("readRequestFormData", () => {
 				maxBufferSize: 10000,
 				maxKeyLength: 100,
 				maxFileQuantity: 1,
+				fileMaxSize: Infinity,
+				textFieldMaxSize: Infinity,
 			},
 			() => ({
 				onReceiveChunk: () => {},
@@ -264,6 +274,8 @@ describe("readRequestFormData", () => {
 				maxBufferSize: 10000,
 				maxKeyLength: 100,
 				maxFileQuantity: 1,
+				fileMaxSize: Infinity,
+				textFieldMaxSize: Infinity,
 			},
 			() => ({
 				onReceiveChunk: () => {},
@@ -300,6 +312,8 @@ describe("readRequestFormData", () => {
 				maxBufferSize: 2000,
 				maxKeyLength: 100,
 				maxFileQuantity: 1,
+				fileMaxSize: Infinity,
+				textFieldMaxSize: Infinity,
 			},
 			() => ({
 				onReceiveChunk: () => {},
@@ -333,6 +347,8 @@ describe("readRequestFormData", () => {
 				maxBufferSize: 5,
 				maxKeyLength: 100,
 				maxFileQuantity: 1,
+				fileMaxSize: Infinity,
+				textFieldMaxSize: Infinity,
 			},
 			() => ({
 				onReceiveChunk: () => {},
@@ -371,6 +387,8 @@ describe("readRequestFormData", () => {
 				maxBufferSize: 10000,
 				maxKeyLength: 100,
 				maxFileQuantity: 1,
+				fileMaxSize: Infinity,
+				textFieldMaxSize: Infinity,
 			},
 			() => ({
 				onReceiveChunk: () => {},
@@ -409,6 +427,8 @@ describe("readRequestFormData", () => {
 				maxBufferSize: 10000,
 				maxFileQuantity: 1,
 				maxKeyLength: 5,
+				fileMaxSize: Infinity,
+				textFieldMaxSize: Infinity,
 			},
 			() => ({
 				onReceiveChunk: () => {},
@@ -448,6 +468,8 @@ describe("readRequestFormData", () => {
 				maxBufferSize: 10000,
 				maxKeyLength: 100,
 				maxFileQuantity: 1,
+				fileMaxSize: Infinity,
+				textFieldMaxSize: Infinity,
 			},
 			() => ({
 				onReceiveChunk: () => {},
@@ -487,6 +509,8 @@ describe("readRequestFormData", () => {
 				maxKeyLength: 100,
 				maxFileQuantity: 1,
 				mimeType: /txt/,
+				fileMaxSize: Infinity,
+				textFieldMaxSize: Infinity,
 			},
 			() => ({
 				onReceiveChunk: () => {},
@@ -529,6 +553,51 @@ describe("readRequestFormData", () => {
 				maxKeyLength: 100,
 				maxFileQuantity: 1,
 				fileMaxSize: 3,
+				textFieldMaxSize: Infinity,
+			},
+			() => ({
+				onReceiveChunk: () => {},
+				onEndPart: (value) => value,
+				onError,
+			}),
+		);
+
+		expect(E.hasInformation(result, "error")).toBe(true);
+		expect(unwrap(result)).toBeInstanceOf(BodyParseFormDataError);
+		expect(onError).toHaveBeenCalled();
+	});
+
+	it("returns error when text field size exceeds limit and calls onError", async() => {
+		const onError = vi.fn();
+		const request = createFakeRequest({
+			raw: {
+				request: {
+					headers: {
+						"content-type": contentType,
+					},
+					bodyChunks: [
+						Buffer.from(`--${boundary}\r\nContent-`),
+						Buffer.from("Disposition: form-data; name=\"file\";"),
+						Buffer.from("\r\n\r\n"),
+						Buffer.from("AB"),
+						Buffer.from("CDE"),
+						Buffer.from(`\r\n--${boundary}`),
+						Buffer.from("--"),
+					],
+				},
+			},
+		});
+
+		const result = await readRequestFormData(
+			request.raw.request,
+			{},
+			{
+				maxBodySize: 1000,
+				maxBufferSize: 10000,
+				maxKeyLength: 100,
+				maxFileQuantity: 1,
+				fileMaxSize: Infinity,
+				textFieldMaxSize: 3,
 			},
 			() => ({
 				onReceiveChunk: () => {},
@@ -568,6 +637,8 @@ describe("readRequestFormData", () => {
 				maxBufferSize: 10000,
 				maxKeyLength: 100,
 				maxFileQuantity: 1,
+				fileMaxSize: Infinity,
+				textFieldMaxSize: Infinity,
 			},
 			() => ({
 				onReceiveChunk: () => {},
@@ -600,6 +671,8 @@ describe("readRequestFormData", () => {
 				maxBufferSize: 10000,
 				maxKeyLength: 100,
 				maxFileQuantity: 1,
+				fileMaxSize: Infinity,
+				textFieldMaxSize: Infinity,
 			},
 			() => ({
 				onReceiveChunk: () => {},
@@ -634,6 +707,8 @@ describe("readRequestFormData", () => {
 				maxBufferSize: 10000,
 				maxKeyLength: 100,
 				maxFileQuantity: 1,
+				fileMaxSize: Infinity,
+				textFieldMaxSize: Infinity,
 			},
 			() => ({
 				onReceiveChunk: () => {},
@@ -670,6 +745,8 @@ describe("readRequestFormData", () => {
 				maxBufferSize: 10000,
 				maxKeyLength: 100,
 				maxFileQuantity: 1,
+				fileMaxSize: Infinity,
+				textFieldMaxSize: Infinity,
 			},
 			() => new Error("nope"),
 		);
@@ -705,6 +782,8 @@ describe("readRequestFormData", () => {
 				maxBufferSize: 10000,
 				maxKeyLength: 100,
 				maxFileQuantity: 1,
+				fileMaxSize: Infinity,
+				textFieldMaxSize: Infinity,
 			},
 			() => ({
 				onReceiveChunk: () => {

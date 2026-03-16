@@ -77,6 +77,7 @@ export function createFormDataBodyReaderImplementation(serverParams: HttpServerP
 				{
 					maxBodySize: params.bodyMaxSize ?? serverMaxBodySize,
 					fileMaxSize: params.fileMaxSize ?? Infinity,
+					textFieldMaxSize: params.textFieldMaxSize ?? Infinity,
 					maxFileQuantity: params.maxFileQuantity,
 					mimeType: params.mimeType,
 					maxBufferSize: params.maxBufferSize,

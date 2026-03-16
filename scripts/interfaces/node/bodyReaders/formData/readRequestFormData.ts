@@ -35,7 +35,8 @@ export interface ReadRequestFormDataParams {
 	maxFileQuantity: number;
 	maxBufferSize: number;
 	maxKeyLength: number;
-	fileMaxSize?: number;
+	fileMaxSize: number;
+	textFieldMaxSize: number;
 	mimeType?: RegExp;
 }
 
@@ -77,6 +78,7 @@ export async function readRequestFormData<
 	let currentStream = undefined as ReadRequestFormDataStreamChunkEvent<GenericValueAccumulator> | undefined;
 	let fileQuantity = 0;
 	let currentFileSize = undefined as undefined | number;
+	let currentTextFieldSize = undefined as undefined | number;
 
 	const checkSize = (receivedChunk: Buffer): true | Error => {
 		size += receivedChunk.length;
@@ -120,6 +122,7 @@ export async function readRequestFormData<
 
 		if (header.filename !== undefined) {
 			currentFileSize = 0;
+			currentTextFieldSize = undefined;
 			fileQuantity++;
 			if (fileQuantity > params.maxFileQuantity) {
 				return new BodyParseFormDataError("File quantity exceeds limit.");
@@ -131,6 +134,7 @@ export async function readRequestFormData<
 			}
 		} else {
 			currentFileSize = undefined;
+			currentTextFieldSize = 0;
 		}
 
 		const newStream = await onReceiveHeader(header);
@@ -160,8 +164,15 @@ export async function readRequestFormData<
 
 		if (typeof currentFileSize === "number") {
 			currentFileSize += chunk.length;
-			if (params.fileMaxSize !== undefined && currentFileSize > params.fileMaxSize) {
+			if (currentFileSize > params.fileMaxSize) {
 				return new BodyParseFormDataError("File size exceeds limit.");
+			}
+		}
+
+		if (typeof currentTextFieldSize === "number") {
+			currentTextFieldSize += chunk.length;
+			if (currentTextFieldSize > params.textFieldMaxSize) {
+				return new BodyParseFormDataError("Text field size exceeds limit.");
 			}
 		}
 

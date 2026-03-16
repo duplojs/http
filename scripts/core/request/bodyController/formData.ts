@@ -5,6 +5,7 @@ export interface FormDataBodyReaderParams extends BodyControllerParams {
 	maxFileQuantity: number;
 	mimeType?: RegExp;
 	fileMaxSize?: number;
+	textFieldMaxSize?: number;
 	maxBufferSize: number;
 	maxIndexArray: number;
 	maxKeyLength: number;
@@ -21,6 +22,7 @@ export interface ControlBodyAsFormDataParams {
 	mimeType?: string | AnyTuple<string> | RegExp;
 	bodyMaxSize?: number | BytesInString;
 	fileMaxSize?: number | BytesInString;
+	textFieldMaxSize?: number | BytesInString;
 	maxBufferSize?: number | BytesInString;
 	maxIndexArray?: number;
 	maxKeyLength?: number;
@@ -33,6 +35,7 @@ export function controlBodyAsFormData(
 		maxFileQuantity: params.maxFileQuantity,
 		bodyMaxSize: params.bodyMaxSize && stringToBytes(params.bodyMaxSize),
 		fileMaxSize: params.fileMaxSize && stringToBytes(params.fileMaxSize),
+		textFieldMaxSize: params.textFieldMaxSize && stringToBytes(params.textFieldMaxSize),
 		mimeType: params.mimeType !== undefined
 			? toRegExp(params.mimeType)
 			: undefined,
