@@ -1,4 +1,5 @@
-import { type RouteBuilder, useRouteBuilder, type Request, type HookParamsOnConstructRequest, type Metadata, IgnoreByRouteStoreMetadata, controlBodyAsFormData, type BodyController, type FormDataBodyReaderParams, createHookRouteLifeCycle, type RouteHookParamsAfter, type RouteHookNext } from "@core";
+
+import { type RouteBuilder, useRouteBuilder, type Request, type HookParamsOnConstructRequest, type Metadata, IgnoreByRouteStoreMetadata, controlBodyAsFormData, type BodyController, type FormDataBodyReaderParams, createHookRouteLifeCycle } from "@core";
 import { builderKind, type ExpectType } from "@duplojs/utils";
 
 describe("route builder", () => {
@@ -131,6 +132,62 @@ describe("route builder", () => {
 			>,
 			"strict"
 		>;
+	});
+
+	it("useRouteBuilder with createHookRouteLifeCycle factory", () => {
+		const hookWithRequestModifier = createHookRouteLifeCycle(
+			({ addRequestProperties }) => addRequestProperties({ aa: 1 }),
+			{
+				beforeRouteExecution: ({ request, next }) => {
+					type Check = ExpectType<
+						typeof request,
+						Request & { aa: number },
+						"strict"
+					>;
+
+					return next();
+				},
+			},
+		);
+
+		const routeBuilder = useRouteBuilder("GET", "/test", {
+			hooks: [
+				hookWithRequestModifier,
+				{
+					beforeRouteExecution: ({ request, next }) => {
+						type Check = ExpectType<
+							typeof request,
+							Request,
+							"strict"
+						>;
+
+						return next();
+					},
+				},
+			],
+		});
+
+		expect({ ...routeBuilder }).toStrictEqual(
+			expect.objectContaining({
+				[builderKind.runTimeKey]: {
+					hooks: [
+						{
+							onConstructRequest: expect.any(Function),
+							beforeRouteExecution: expect.any(Function),
+						},
+						{
+							beforeRouteExecution: expect.any(Function),
+						},
+					],
+					method: "GET",
+					paths: ["/test"],
+					preflightSteps: [],
+					steps: [],
+					metadata: [],
+					bodyController: null,
+				},
+			}),
+		);
 	});
 
 	it("useRouteBuilder with Custom bodyController", () => {

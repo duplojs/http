@@ -241,6 +241,89 @@ exports[`openApiGenerator > correct generate file 1`] = `
           }
         }
       }
+    },
+    "/static-file": {
+      "get": {
+        "parameters": [],
+        "responses": {
+          "200": {
+            "headers": {
+              "information": {
+                "schema": {
+                  "const": "resource.found",
+                  "type": "string"
+                },
+                "description": "resource.found"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotIdentified15"
+                }
+              }
+            }
+          },
+          "304": {
+            "headers": {
+              "information": {
+                "schema": {
+                  "const": "resource.notModified",
+                  "type": "string"
+                },
+                "description": "resource.notModified"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/static-folder/*": {
+      "get": {
+        "parameters": [],
+        "responses": {
+          "200": {
+            "headers": {
+              "information": {
+                "schema": {
+                  "const": "resource.found",
+                  "type": "string"
+                },
+                "description": "resource.found"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotIdentified17"
+                }
+              }
+            }
+          },
+          "304": {
+            "headers": {
+              "information": {
+                "schema": {
+                  "const": "resource.notModified",
+                  "type": "string"
+                },
+                "description": "resource.notModified"
+              }
+            }
+          },
+          "404": {
+            "headers": {
+              "information": {
+                "schema": {
+                  "const": "resource.notfound",
+                  "type": "string"
+                },
+                "description": "resource.notfound"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -459,7 +542,18 @@ exports[`openApiGenerator > correct generate file 1`] = `
           "data"
         ]
       },
-      "NotIdentified14": {}
+      "NotIdentified14": {},
+      "NotIdentified15": {
+        "type": "string",
+        "format": "binary"
+      },
+      "NotIdentified16": {},
+      "NotIdentified17": {
+        "type": "string",
+        "format": "binary"
+      },
+      "NotIdentified18": {},
+      "NotIdentified19": {}
     }
   }
 }"

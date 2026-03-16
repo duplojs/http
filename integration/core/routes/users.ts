@@ -1,4 +1,5 @@
 import { ResponseContract, useRouteBuilder } from "@duplojs/http";
+import { createCacheControllerHooks } from "@duplojs/http/cacheController";
 import { DPE } from "@duplojs/utils";
 
 const user = DPE.object({
@@ -7,7 +8,15 @@ const user = DPE.object({
 	age: DPE.number(),
 });
 
-useRouteBuilder("GET", "/users")
+useRouteBuilder("GET", "/users", {
+	hooks: [
+		createCacheControllerHooks({
+			private: ["authorization", "cookie"],
+			noCache: ["set-cookie"],
+			maxAge: 200,
+		}),
+	],
+})
 	.handler(
 		ResponseContract.ok("users.findMany", user.array()),
 		(floor, { response }) => response("users.findMany", [

@@ -5,7 +5,7 @@ import { omitFunctions } from "@test-utils/omitFunction";
 import { bodyAsFormData, convertRoutePath, IgnoreByCodeGeneratorMetadata, routeToDataParser } from "@plugin-codeGenerator";
 import { SDPE } from "@duplojs/server-utils";
 import { defaultTransformers, render } from "@duplojs/data-parser-tools/toTypescript";
-import { fileTransformer } from "@plugin-codeGenerator/typescriptTransfomer";
+import { fileTransformer } from "@plugin-codeGenerator/typescriptTransformer";
 
 describe("routeToDataParser", () => {
 	const process1 = useProcessBuilder()

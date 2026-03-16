@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/prefer-for-of */
-import { type HookAfterSendResponse, type HookBeforeRouteExecution, type HookBeforeSendResponse, type HookError, type HookOnConstructRequest, type HookRouteLifeCycle, type HookSendResponse, routeKind } from "@core/route";
+import { type HookAfterSendResponse, type HookBeforeRouteExecution, type HookBeforeSendResponse, type HookError, type HookOnConstructRequest, type HookRouteLifeCycle, hookRouteLifeCycleAddRequestProperties, type HookSendResponse, routeKind } from "@core/route";
 import { A, E, forward, isType, pipe } from "@duplojs/utils";
 import { HookResponse, Response } from "@core/response";
 import { type Request } from "@core/request";
@@ -182,13 +182,7 @@ export const defaultRouteFunctionBuilder = createRouteFunctionBuilder(
 			async(request) => {
 				const currentRequest = await hooks.onConstructRequest({
 					request,
-					addRequestProperties: (newProperties) => {
-						for (const key in newProperties) {
-							request[key as never] = newProperties[key] as never;
-						}
-
-						return request as never;
-					},
+					addRequestProperties: hookRouteLifeCycleAddRequestProperties(request),
 				});
 
 				const currentResponse = await routeExecution(currentRequest);

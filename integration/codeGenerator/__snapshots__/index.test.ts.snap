@@ -107,5 +107,33 @@ export type Routes = {
         information: "close";
         body?: undefined;
     };
+} | {
+    method: "GET";
+    path: "/static-file";
+    responses: {
+        code: "200";
+        information: "resource.found";
+        body: File;
+    } | {
+        code: "304";
+        information: "resource.notModified";
+        body?: undefined;
+    };
+} | {
+    method: "GET";
+    path: \`/static-folder/\${string}\`;
+    responses: {
+        code: "200";
+        information: "resource.found";
+        body: File;
+    } | {
+        code: "404";
+        information: "resource.notfound";
+        body?: undefined;
+    } | {
+        code: "304";
+        information: "resource.notModified";
+        body?: undefined;
+    };
 };"
 `;

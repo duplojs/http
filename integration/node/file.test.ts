@@ -12,8 +12,6 @@ describe("file", async() => {
 		uploadFolder: resolve(import.meta.dirname, "../files/upload"),
 	});
 
-	process.chdir(resolve(import.meta.dirname, "../"));
-
 	afterAll(() => {
 		server.close();
 	});

@@ -6,7 +6,6 @@ import { initNodeHook } from "./hooks";
 import { implementHttpServer } from "@core/implementHttpServer";
 import { O } from "@duplojs/utils";
 import { type HttpServerParams } from "@core/types";
-import { initDefaultHook } from "@core/defaultHooks";
 import { createFormDataBodyReaderImplementation, createTextBodyReaderImplementation } from "./bodyReaders";
 
 declare module "@core/types" {
@@ -56,10 +55,6 @@ export function createHttpServer(
 		createTextBodyReaderImplementation(httpServerParams),
 		createFormDataBodyReaderImplementation(httpServerParams),
 	]);
-	hub.addRouteHooks([
-		initDefaultHook(hub, httpServerParams),
-		initNodeHook(hub, httpServerParams),
-	]);
 
 	function whenUncaughtError(
 		error: unknown,
@@ -90,6 +85,7 @@ export function createHttpServer(
 		{
 			hub,
 			httpServerParams,
+			getInterfaceHooks: ({ hub, httpServerParams }) => [initNodeHook(hub, httpServerParams)],
 		},
 		({ httpServerParams, execRouteSystem }) => {
 			const server = httpServerParams.https

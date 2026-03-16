@@ -1,0 +1,19 @@
+{
+  "extends": "../../../tsconfig.test.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+	  "@core": ["../../../scripts/core/index.ts"],
+	  "@core/*": ["../../../scripts/core/*"],
+	  "@plugin-static": ["../../../scripts/plugins/static/index.ts"],
+	  "@plugin-static/*": ["../../../scripts/plugins/static/*"],
+	  "@test-utils/*": ["../../_utils/*"],
+	  "@plugin-cacheController": ["../../../scripts/plugins/cacheController/index.ts"],
+	  "@plugin-cacheController/*": ["../../../scripts/plugins/cacheController/*"],
+    },
+  },
+  "include": [
+	"**/*.ts",
+	"../../../scripts/plugins/static/**/*.ts",
+  ],
+}
