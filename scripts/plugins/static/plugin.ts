@@ -3,14 +3,14 @@ import { SF } from "@duplojs/server-utils";
 
 import type { HubPlugin } from "@core/hub";
 import type { RoutePath } from "@core/route";
-import type { CacheControlResponseDirectives } from "@plugin-cacheController/hooks/createCacheController/types";
 
 import { createStaticPluginKind } from "./kind";
 import { makeRouteFile } from "./makeRouteFile";
 import { makeRouteFolder } from "./makeRouteFolder";
+import { type CacheControlDirectives } from "@plugin-cacheController/types";
 
 export interface BaseStaticPluginParams {
-	readonly cacheControlConfig?: CacheControlResponseDirectives;
+	readonly cacheControlConfig?: CacheControlDirectives;
 }
 
 export interface StaticPluginFileParams extends BaseStaticPluginParams {
@@ -18,14 +18,13 @@ export interface StaticPluginFileParams extends BaseStaticPluginParams {
 }
 
 export interface StaticPluginFolderParams extends BaseStaticPluginParams {
-
 	readonly prefix: RoutePath | AnyTuple<RoutePath>;
 	readonly directoryIndexFilePrefix?: string;
 }
 
 export class StaticPluginError extends kindHeritage(
-	"StaticPluginError",
-	createStaticPluginKind("static-plugin-error"),
+	"static-plugin",
+	createStaticPluginKind("static-plugin"),
 	Error,
 ) {
 	public constructor(

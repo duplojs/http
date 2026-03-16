@@ -1,4 +1,4 @@
-import { createCacheControlResponseHeader } from "@plugin-cacheController/hooks/createCacheController/createResponseHeader";
+import { createCacheControlResponseHeader } from "@plugin-cacheController/hooks";
 
 describe("createCacheControlResponseHeader", () => {
 	it("serializes boolean and numeric directives", () => {

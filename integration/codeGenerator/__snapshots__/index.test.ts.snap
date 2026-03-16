@@ -115,10 +115,6 @@ export type Routes = {
         information: "resource.found";
         body: File;
     } | {
-        code: "404";
-        information: "resource.notfound";
-        body?: undefined;
-    } | {
         code: "304";
         information: "resource.notModified";
         body?: undefined;

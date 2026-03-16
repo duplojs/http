@@ -1,8 +1,8 @@
 import { D, E } from "@duplojs/utils";
 import { setEnvironment, SF, TESTImplementation } from "@duplojs/server-utils";
-import { PredictedResponse, Request } from "@core";
+import { PredictedResponse, Request, Response } from "@core";
 import "@plugin-cacheController";
-import { makeRouteFile } from "@plugin-static";
+import { makeRouteFile, MissingSelectedStaticFileError, SelectedStaticFileIsNotFileError } from "@plugin-static";
 import { useTestRouteFunctionBuilder } from "@test-utils/useTestRouteFunctionBuilder";
 import { createBodyReader } from "@test-utils/bodyReader";
 
@@ -163,7 +163,7 @@ describe("makeRouteFile", async() => {
 
 		expect(spyResponse).toHaveBeenCalledWith(
 			expect.objectContaining({
-				currentResponse: new PredictedResponse("404", "resource.notfound", undefined),
+				currentResponse: new Response("500", "server-error", expect.any(SelectedStaticFileIsNotFileError)),
 			}),
 		);
 	});
@@ -189,8 +189,16 @@ describe("makeRouteFile", async() => {
 
 		expect(spyResponse).toHaveBeenCalledWith(
 			expect.objectContaining({
-				currentResponse: new PredictedResponse("404", "resource.notfound", undefined),
+				currentResponse: new Response("500", "server-error", expect.any(MissingSelectedStaticFileError)),
 			}),
 		);
+	});
+
+	it("MissingSelectedStaticFileError", () => {
+		expect(new MissingSelectedStaticFileError({} as any)).instanceOf(Error);
+	});
+
+	it("SelectedStaticFileIsNotFileError", () => {
+		expect(new SelectedStaticFileIsNotFileError({} as any)).instanceOf(Error);
 	});
 });

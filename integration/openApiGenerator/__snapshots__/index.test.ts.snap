@@ -274,17 +274,6 @@ exports[`openApiGenerator > correct generate file 1`] = `
                 "description": "resource.notModified"
               }
             }
-          },
-          "404": {
-            "headers": {
-              "information": {
-                "schema": {
-                  "const": "resource.notfound",
-                  "type": "string"
-                },
-                "description": "resource.notfound"
-              }
-            }
           }
         }
       }
@@ -306,7 +295,7 @@ exports[`openApiGenerator > correct generate file 1`] = `
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/NotIdentified18"
+                  "$ref": "#/components/schemas/NotIdentified17"
                 }
               }
             }
@@ -559,13 +548,12 @@ exports[`openApiGenerator > correct generate file 1`] = `
         "format": "binary"
       },
       "NotIdentified16": {},
-      "NotIdentified17": {},
-      "NotIdentified18": {
+      "NotIdentified17": {
         "type": "string",
         "format": "binary"
       },
-      "NotIdentified19": {},
-      "NotIdentified20": {}
+      "NotIdentified18": {},
+      "NotIdentified19": {}
     }
   }
 }"

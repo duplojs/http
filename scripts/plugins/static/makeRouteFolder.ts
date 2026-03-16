@@ -1,17 +1,18 @@
 import { SDP, SF } from "@duplojs/server-utils";
-import { A, type AnyTuple, type D, E, escapeRegExp, Path, pipe, S, unwrap, whenNot } from "@duplojs/utils";
+import { A, type AnyTuple, type D, E, escapeRegExp, innerPipe, Path, pipe, S, unwrap, whenNot } from "@duplojs/utils";
 
 import { useRouteBuilder } from "@core/builders";
 import { IgnoreByRouteStoreMetadata } from "@core/metadata";
 import { ResponseContract } from "@core/response";
 import type { RoutePath } from "@core/route";
-import { createCacheControllerHook, type CacheControlResponseDirectives } from "@plugin-cacheController/hooks";
+import { createCacheControllerHook } from "@plugin-cacheController/hooks";
+import { type CacheControlDirectives } from "@plugin-cacheController/types";
 
 interface MakeRouteFolderParams {
 	readonly source: SF.FolderInterface;
 	readonly prefix: RoutePath | AnyTuple<RoutePath>;
-	readonly cacheControlConfig?: CacheControlResponseDirectives;
-	readonly directoryIndexFilePrefix?: string;
+	readonly cacheControlConfig?: CacheControlDirectives;
+	readonly directoryFallBackFile?: string;
 }
 
 export function makeRouteFolder(params: MakeRouteFolderParams) {
@@ -35,16 +36,17 @@ export function makeRouteFolder(params: MakeRouteFolderParams) {
 		(value) => new RegExp(`^(?:${value})(?:/|$)`),
 	);
 
+	const getResourcePath = innerPipe(
+		S.replace(prefixRegex, ""),
+		S.prepend(sourcePath),
+	);
+
 	return useRouteBuilder(
 		"GET",
 		routePath,
 		{
 			metadata: [IgnoreByRouteStoreMetadata()],
-			hooks: [
-				createCacheControllerHook({
-					response: params.cacheControlConfig,
-				}),
-			],
+			hooks: [createCacheControllerHook(params.cacheControlConfig)],
 		},
 	)
 		.handler(
@@ -58,65 +60,54 @@ export function makeRouteFolder(params: MakeRouteFolderParams) {
 					return response("resource.notfound");
 				}
 
-				const resourcePath = pipe(
-					request.path,
-					S.replace(prefixRegex, ""),
-					S.prepend(sourcePath),
+				const resourcePath = getResourcePath(request.path);
+
+				const resultStat = await SF.stat(resourcePath);
+
+				if (E.isLeft(resultStat)) {
+					return response("resource.notfound");
+				}
+
+				const stat = unwrap(resultStat);
+
+				if (stat.isDirectory && !params.directoryFallBackFile) {
+					return response("resource.notfound");
+				}
+
+				const resource = SF.createFileInterface(
+					stat.isDirectory && params.directoryFallBackFile
+						? `${resourcePath}/${params.directoryFallBackFile}`
+						: resourcePath,
 				);
 
-				const replyFile = (
-					file: SF.FileInterface,
-					modifiedAt: D.TheDate | null,
-				) => {
-					if (
-						request.headers["if-modified-since"]
-						&& typeof request.headers["if-modified-since"] === "string"
-						&& modifiedAt
-						&& new Date(request.headers["if-modified-since"]).getTime() >= modifiedAt.getTime()
-					) {
-						return response("resource.notModified")
-							.setHeader("last-modified", modifiedAt.toISOString());
-					}
+				const resultResourceStat = stat.isFile
+					? stat
+					: await resource.stat();
 
-					return modifiedAt
-						? response("resource.found", file)
-							.setHeader("last-modified", modifiedAt.toISOString())
-						: response("resource.found", file);
-				};
-
-				const resource = SF.createFileInterface(resourcePath);
-				const resourceStatResult = await resource.stat();
-
-				if (E.isLeft(resourceStatResult)) {
+				if (E.isLeft(resultResourceStat)) {
 					return response("resource.notfound");
 				}
 
-				const resourceStat = unwrap(resourceStatResult);
+				const resourceStat = unwrap(resultResourceStat);
 
-				if (resourceStat.isFile) {
-					return replyFile(resource, resourceStat.modifiedAt);
-				}
-
-				if (!params.directoryIndexFilePrefix) {
+				if (!resourceStat.isFile) {
 					return response("resource.notfound");
 				}
 
-				const indexResource = SF.createFileInterface(
-					`${resourcePath}/${params.directoryIndexFilePrefix}`,
-				);
-				const indexStatResult = await indexResource.stat();
-
-				if (E.isLeft(indexStatResult)) {
-					return response("resource.notfound");
+				if (
+					request.headers["if-modified-since"]
+					&& typeof request.headers["if-modified-since"] === "string"
+					&& resourceStat.modifiedAt
+					&& new Date(request.headers["if-modified-since"]).getTime() >= resourceStat.modifiedAt.getTime()
+				) {
+					return response("resource.notModified")
+						.setHeader("last-modified", resourceStat.modifiedAt.toISOString());
 				}
 
-				const indexStat = unwrap(indexStatResult);
-
-				if (!indexStat.isFile) {
-					return response("resource.notfound");
-				}
-
-				return replyFile(indexResource, indexStat.modifiedAt);
+				return resourceStat.modifiedAt
+					? response("resource.found", resource)
+						.setHeader("last-modified", resourceStat.modifiedAt.toISOString())
+					: response("resource.found", resource);
 			},
 		);
 }

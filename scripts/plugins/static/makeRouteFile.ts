@@ -1,16 +1,42 @@
 import { SDP, type SF } from "@duplojs/server-utils";
-import { A, type AnyTuple, E, unwrap } from "@duplojs/utils";
+import { A, type AnyTuple, E, kindHeritage, unwrap } from "@duplojs/utils";
 
 import { useRouteBuilder } from "@core/builders";
 import { IgnoreByRouteStoreMetadata } from "@core/metadata";
 import { ResponseContract } from "@core/response";
 import type { RoutePath } from "@core/route";
-import { createCacheControllerHook, type CacheControlResponseDirectives } from "@plugin-cacheController/hooks";
+import { createCacheControllerHook } from "@plugin-cacheController/hooks";
+import { type CacheControlDirectives } from "@plugin-cacheController/types";
+import { createStaticPluginKind } from "./kind";
 
 interface MakeRouteFileParams {
 	readonly source: SF.FileInterface;
 	readonly path: RoutePath | AnyTuple<RoutePath>;
-	readonly cacheControlConfig?: CacheControlResponseDirectives;
+	readonly cacheControlConfig?: CacheControlDirectives;
+}
+
+export class MissingSelectedStaticFileError extends kindHeritage(
+	"missing-selected-static-file",
+	createStaticPluginKind("missing-selected-static-file"),
+	Error,
+) {
+	public constructor(
+		public source: SF.FileInterface,
+	) {
+		super({}, [`Missing selected static file: ${source.path}.`]);
+	}
+}
+
+export class SelectedStaticFileIsNotFileError extends kindHeritage(
+	"selected-static-file-is-not-file",
+	createStaticPluginKind("selected-static-file-is-not-file"),
+	Error,
+) {
+	public constructor(
+		public source: SF.FileInterface,
+	) {
+		super({}, [`Selected static file is not file: ${source.path}.`]);
+	}
 }
 
 export function makeRouteFile(params: MakeRouteFileParams) {
@@ -22,29 +48,28 @@ export function makeRouteFile(params: MakeRouteFileParams) {
 		{
 			metadata: [IgnoreByRouteStoreMetadata()],
 			hooks: [
-				createCacheControllerHook({
-					response: params.cacheControlConfig,
-				}),
+				createCacheControllerHook(
+					params.cacheControlConfig,
+				),
 			],
 		},
 	)
 		.handler(
 			[
 				ResponseContract.ok("resource.found", SDP.file()),
-				ResponseContract.notFound("resource.notfound"),
 				ResponseContract.notModified("resource.notModified"),
 			],
 			async(__, { response, request }) => {
 				const sourceStatResult = await params.source.stat();
 
 				if (E.isLeft(sourceStatResult)) {
-					return response("resource.notfound");
+					throw new MissingSelectedStaticFileError(params.source);
 				}
 
 				const resourceStat = unwrap(sourceStatResult);
 
 				if (!resourceStat.isFile) {
-					return response("resource.notfound");
+					throw new SelectedStaticFileIsNotFileError(params.source);
 				}
 
 				if (

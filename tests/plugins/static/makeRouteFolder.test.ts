@@ -15,7 +15,6 @@ describe("makeRouteFolder", async() => {
 	});
 
 	const source = SF.createFolderInterface("/tmp/folder");
-	const source2 = SF.createFolderInterface("/tmp/folder");
 
 	const route = makeRouteFolder({
 		prefix: "/folder",
@@ -28,7 +27,7 @@ describe("makeRouteFolder", async() => {
 			maxAge: 100,
 			public: true,
 		},
-		directoryIndexFilePrefix: "index.txt",
+		directoryFallBackFile: "index.txt",
 	});
 
 	const buildedRoute = await useTestRouteFunctionBuilder(
@@ -238,6 +237,7 @@ describe("makeRouteFolder", async() => {
 			.mockResolvedValueOnce(
 				E.success(
 					{
+						isDirectory: true,
 						isFile: false,
 					} as SF.StatInfo,
 				),
@@ -320,12 +320,47 @@ describe("makeRouteFolder", async() => {
 		);
 	});
 
+	it("resource is not a file", async() => {
+		const spyStat = vi.fn()
+			.mockResolvedValueOnce(
+				E.success(
+					{
+						isFile: false,
+						isDirectory: true,
+					} as SF.StatInfo,
+				),
+			);
+		TESTImplementation.set("stat", spyStat);
+
+		await buildedRoute(
+			new Request({
+				headers: {},
+				host: "",
+				matchedPath: "",
+				method: "",
+				origin: "",
+				path: "/folder/childrenFolder",
+				params: {},
+				query: {},
+				url: "",
+				bodyReader: createBodyReader(),
+			}),
+		);
+
+		expect(spyResponse).toHaveBeenCalledWith(
+			expect.objectContaining({
+				currentResponse: new PredictedResponse("404", "resource.notfound", undefined),
+			}),
+		);
+	});
+
 	it("index resource is not a file", async() => {
 		const spyStat = vi.fn()
 			.mockResolvedValueOnce(
 				E.success(
 					{
 						isFile: false,
+						isDirectory: true,
 					} as SF.StatInfo,
 				),
 			)
@@ -333,6 +368,7 @@ describe("makeRouteFolder", async() => {
 				E.success(
 					{
 						isFile: false,
+						isDirectory: true,
 					} as SF.StatInfo,
 				),
 			);

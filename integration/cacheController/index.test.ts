@@ -1,49 +1,37 @@
-import { createCacheControllerHook } from "@duplojs/http/cacheController";
-import { createHub, ResponseContract, useRouteBuilder } from "@duplojs/http";
 import { createHttpServer } from "@duplojs/http/node";
-import { DP } from "@duplojs/utils";
+import { hub } from "@core";
 
-describe("cacheController", () => {
+describe("cacheController", async() => {
+	const server = await createHttpServer(hub, {
+		host: "0.0.0.0",
+		port: 8947,
+	});
+
+	afterAll(() => {
+		server.close();
+	});
+
 	it("route is good", async() => {
-		const route = useRouteBuilder("GET", "/", {
-			hooks: [
-				createCacheControllerHook({
-					response: {
-						private: ["authorization", "cookie"],
-						noCache: ["set-cookie"],
-						maxAge: 200,
-					},
-				}),
-			],
-		})
-			.handler(
-				ResponseContract.ok("test", DP.boolean()),
-				(__, { response, request }) => response(
-					"test",
-					request.getCacheControlDirective("noStore"),
-				),
-			);
-
-		const hub = createHub({ environment: "DEV" }).register(route);
-		const server = await createHttpServer(hub, {
-			host: "0.0.0.0",
-			port: 8947,
-		});
-
 		await expect(
-			fetch("http://localhost:8947/", {
+			fetch("http://localhost:8947/users", {
 				method: "GET",
 			})
 				.then(async(response) => ({
-					body: await response.text(),
+					body: await response.json(),
 					headers: [...response.headers.entries()],
 				})),
 		).resolves.toStrictEqual({
-			body: "false",
+			body: [
+				{
+					age: 28,
+					id: 23,
+					name: "",
+				},
+			],
 			headers: expect.arrayContaining([
 				[
 					"information",
-					"test",
+					"users.findMany",
 				],
 				[
 					"cache-control",
