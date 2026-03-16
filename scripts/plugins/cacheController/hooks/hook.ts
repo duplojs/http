@@ -1,4 +1,3 @@
-import { S } from "@duplojs/utils";
 import type { CacheControlDirectives } from "../types";
 import { createCacheControlResponseHeader } from "./createResponseHeader";
 import { createHookRouteLifeCycle } from "@core/route";
@@ -17,7 +16,7 @@ export function createCacheControllerHook(
 			beforeSendResponse: ({ currentResponse, next }) => {
 				if (
 					cacheControl
-					&& S.test(currentResponse.code, eligibleCodeRegex)
+					&& eligibleCodeRegex.test(currentResponse.code)
 				) {
 					currentResponse.setHeader("cache-control", cacheControl);
 				}

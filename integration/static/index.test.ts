@@ -15,6 +15,7 @@ describe("static plugin", async() => {
 		if (path === "files/fakeFiles") {
 			return E.success({
 				isFile: false,
+				isDirectory: true,
 				modifiedAt: null,
 			} as SF.StatInfo);
 		}
@@ -22,6 +23,7 @@ describe("static plugin", async() => {
 		if (path === "files/fakeFiles/superTextFile.txt") {
 			return E.success({
 				isFile: true,
+				isDirectory: false,
 				modifiedAt: mockedModifiedAt,
 			} as SF.StatInfo);
 		}
