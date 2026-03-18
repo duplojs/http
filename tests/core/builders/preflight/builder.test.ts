@@ -1,4 +1,4 @@
-import { type PreflightBuilder, usePreflightBuilder, type Request, type HookParamsOnConstructRequest, IgnoreByRouteStoreMetadata, type Metadata } from "@core";
+import { type PreflightBuilder, usePreflightBuilder, type Request, IgnoreByRouteStoreMetadata, type Metadata, type RouteHookParamsAfter, type RouteHookNext } from "@core";
 import { builderKind, type ExpectType } from "@duplojs/utils";
 
 describe("preflight builder", () => {
@@ -23,8 +23,7 @@ describe("preflight builder", () => {
 					readonly hooks: readonly [];
 					readonly metadata: readonly [];
 				},
-				{},
-				Request
+				{}
 			>,
 			"strict"
 		>;
@@ -33,8 +32,8 @@ describe("preflight builder", () => {
 	it("usePreflightBuilder with hook", () => {
 		const preflightBuilder = usePreflightBuilder({
 			hooks: [
-				{ onConstructRequest: ({ addRequestProperties }) => addRequestProperties({ aa: 1 }) },
-				{ onConstructRequest: ({ addRequestProperties }) => addRequestProperties({ bb: 1 }) },
+				{ afterSendResponse: ({ next }) => next() },
+				{ afterSendResponse: ({ next }) => next() },
 			],
 		});
 
@@ -42,8 +41,8 @@ describe("preflight builder", () => {
 			expect.objectContaining({
 				[builderKind.runTimeKey]: {
 					hooks: [
-						{ onConstructRequest: expect.any(Function) },
-						{ onConstructRequest: expect.any(Function) },
+						{ afterSendResponse: expect.any(Function) },
+						{ afterSendResponse: expect.any(Function) },
 					],
 					preflightSteps: [],
 					metadata: [],
@@ -59,23 +58,16 @@ describe("preflight builder", () => {
 					readonly hooks: readonly [
 						{
 							// eslint-disable-next-line @typescript-eslint/method-signature-style
-							readonly onConstructRequest: (params: HookParamsOnConstructRequest) => Request & {
-								aa: number;
-							};
+							readonly afterSendResponse: (param: RouteHookParamsAfter) => RouteHookNext;
 						},
 						{
 							// eslint-disable-next-line @typescript-eslint/method-signature-style
-							readonly onConstructRequest: (params: HookParamsOnConstructRequest) => Request & {
-								bb: number;
-							};
+							readonly afterSendResponse: (param: RouteHookParamsAfter) => RouteHookNext;
 						},
 					];
 					readonly metadata: readonly [];
 				},
-				{},
-				& Request
-				& { aa: number }
-				& { bb: number }
+				{}
 			>,
 			"strict"
 		>;
@@ -104,8 +96,7 @@ describe("preflight builder", () => {
 					readonly hooks: readonly [];
 					readonly metadata: readonly [Metadata<"ignore-by-route-store", unknown>];
 				},
-				{},
-				Request
+				{}
 			>,
 			"strict"
 		>;

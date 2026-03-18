@@ -88,7 +88,6 @@ describe("route builder cut method", () => {
 							theFunction(
 								floor: { body: string },
 								param: CutStepFunctionParams<
-									Request,
 									PredictedResponse<"403", "test", undefined>
 								>
 							): MaybePromise<
@@ -100,8 +99,7 @@ describe("route builder cut method", () => {
 					];
 					readonly metadata: readonly [];
 				},
-				{ body: string },
-				Request
+				{ body: string }
 			>,
 			"strict"
 		>;
@@ -189,7 +187,6 @@ describe("route builder cut method", () => {
 							theFunction(
 								floor: {},
 								param: CutStepFunctionParams<
-									Request,
 									| PredictedResponse<"403", "test", undefined>
 									| PredictedResponse<"404", "notF", string>
 								>
@@ -203,8 +200,7 @@ describe("route builder cut method", () => {
 					];
 					readonly metadata: readonly [];
 				},
-				{},
-				Request
+				{}
 			>,
 			"strict"
 		>;
@@ -288,7 +284,6 @@ describe("route builder cut method", () => {
 							theFunction(
 								floor: { body: string },
 								param: CutStepFunctionParams<
-									Request,
 									| PredictedResponse<"403", "test", undefined>
 								>
 							): MaybePromise<
@@ -303,8 +298,7 @@ describe("route builder cut method", () => {
 				{
 					test: boolean;
 					body: string;
-				},
-				Request
+				}
 			>,
 			"strict"
 		>;
@@ -390,7 +384,6 @@ describe("route builder cut method", () => {
 							theFunction(
 								floor: { body: string },
 								param: CutStepFunctionParams<
-									Request,
 									| PredictedResponse<"403", "test", undefined>
 								>
 							): MaybePromise<
@@ -409,8 +402,7 @@ describe("route builder cut method", () => {
 				} | {
 					body: string;
 					toto: string;
-				},
-				Request
+				}
 			>,
 			"strict"
 		>;
@@ -488,7 +480,6 @@ describe("route builder cut method", () => {
 							theFunction(
 								floor: { body: string },
 								param: CutStepFunctionParams<
-									Request,
 									| PredictedResponse<"403", "test", undefined>
 								>
 							): MaybePromise<
@@ -499,8 +490,7 @@ describe("route builder cut method", () => {
 					];
 					readonly metadata: readonly [];
 				},
-				{ body: string },
-				Request
+				{ body: string }
 			>,
 			"strict"
 		>;

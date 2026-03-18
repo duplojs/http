@@ -1,14 +1,12 @@
 import { type Floor } from "@core/floor";
 import { type SimplifyTopLevel, type IsEqual, type Or } from "@duplojs/utils";
 import { processBuilder } from "./builder";
-import { type Process, type ProcessExportValue, type ProcessDefinition, createProcess, type ProcessRequest } from "@core/process";
-import { type Request } from "@core/request";
+import { type Process, type ProcessExportValue, type ProcessDefinition, createProcess } from "@core/process";
 
 declare module "./builder" {
 	interface ProcessBuilder<
 		GenericDefinition extends ProcessDefinition = ProcessDefinition,
 		GenericFloor extends Floor = {},
-		GenericRequest extends Request = Request,
 	> {
 		exports<
 			GenericExportation extends (keyof GenericFloor)[] = never,
@@ -31,11 +29,6 @@ declare module "./builder" {
 								>
 							>
 						>
-				)
-				& (
-					IsEqual<GenericRequest, Request> extends true
-						? {}
-						: ProcessRequest<GenericRequest>
 				)
 			>
 		>;

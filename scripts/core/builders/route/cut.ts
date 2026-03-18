@@ -4,14 +4,12 @@ import { type RouteDefinition } from "@core/route";
 import { type CutStepFunctionOutput, type CutStep, type CutStepFunctionParams, createCutStep } from "@core/steps";
 import { type Unwrap, type O, type MaybePromise, type IsEqual, type A } from "@duplojs/utils";
 import { routeBuilderHandler } from "./builder";
-import { type Request } from "@core/request";
 import { type Metadata } from "@core/metadata";
 
 declare module "./builder" {
 	interface RouteBuilder<
 		GenericDefinition extends RouteDefinition = RouteDefinition,
 		GenericFloor extends Floor = {},
-		GenericRequest extends Request = Request,
 	> {
 		cut<
 			const GenericResponseContract extends (
@@ -28,7 +26,6 @@ declare module "./builder" {
 			theFunction: (
 				floor: GenericFloor,
 				params: CutStepFunctionParams<
-					GenericRequest,
 					GenericResponse
 				>,
 			) => MaybePromise<GenericOutput>,
@@ -45,7 +42,6 @@ declare module "./builder" {
 								theFunction(
 									floor: GenericFloor,
 									param: CutStepFunctionParams<
-										GenericRequest,
 										GenericResponse
 									>
 								): MaybePromise<GenericOutput>;
@@ -67,8 +63,7 @@ declare module "./builder" {
 							Unwrap<InferredOutputData>
 						>
 						: never
-				),
-			GenericRequest
+				)
 		>;
 	}
 }

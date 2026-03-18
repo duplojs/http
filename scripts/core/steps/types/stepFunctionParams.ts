@@ -3,10 +3,9 @@ import { type PredictedResponse } from "@core/response";
 import { type IsEqual, type Or } from "@duplojs/utils";
 
 export interface StepFunctionParams<
-	GenericRequest extends Request = Request,
 	GenericResponse extends PredictedResponse = PredictedResponse,
 > {
-	request: GenericRequest;
+	request: Request;
 	response<
 		GenericInformation extends GenericResponse["information"],
 		GenericFilteredResponse extends Extract<

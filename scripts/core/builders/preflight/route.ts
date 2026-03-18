@@ -1,16 +1,15 @@
 import { type Floor } from "@core/floor";
-import { type RequestMethods, type Request, type BodyController } from "@core/request";
+import { type RequestMethods, type BodyController } from "@core/request";
 import { preflightBuilder } from "./builder";
-import { type MakeRequestFromHooks, type HookRouteLifeCycle, type RoutePath } from "@core/route";
+import { type HookRouteLifeCycle, type RoutePath } from "@core/route";
 import { routeBuilderHandler, type RouteBuilder } from "../route";
-import { A, type NeverCoalescing } from "@duplojs/utils";
+import { A } from "@duplojs/utils";
 import { type Metadata } from "@core/metadata";
 
 declare module "./builder" {
 	interface PreflightBuilder<
 		GenericDefinition extends PreflightBuilderDefinition = PreflightBuilderDefinition,
 		GenericFloor extends Floor = {},
-		GenericRequest extends Request = Request,
 	> {
 		useRouteBuilder<
 			GenericMethod extends RequestMethods,
@@ -44,14 +43,7 @@ declare module "./builder" {
 				];
 				readonly bodyController: GenericBodyController;
 			},
-			GenericFloor,
-			(
-				& GenericRequest
-				& NeverCoalescing<
-					MakeRequestFromHooks<GenericHooks>,
-					Request
-				>
-			)
+			GenericFloor
 		>;
 	}
 }

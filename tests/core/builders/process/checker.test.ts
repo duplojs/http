@@ -94,8 +94,7 @@ describe("process builder checker method", () => {
 					];
 					readonly metadata: readonly [];
 				},
-				{ body: string },
-				Request
+				{ body: string }
 			>,
 			"strict"
 		>;
@@ -193,8 +192,7 @@ describe("process builder checker method", () => {
 					];
 					readonly metadata: readonly [];
 				},
-				{ body: string },
-				Request
+				{ body: string }
 			>,
 			"strict"
 		>;
@@ -297,8 +295,7 @@ describe("process builder checker method", () => {
 					];
 					readonly metadata: readonly [];
 				},
-				{ body: string },
-				Request
+				{ body: string }
 			>,
 			"strict"
 		>;
@@ -393,8 +390,7 @@ describe("process builder checker method", () => {
 				{
 					body: string;
 					myValueCheck: boolean;
-				},
-				Request
+				}
 			>,
 			"strict"
 		>;
@@ -487,8 +483,7 @@ describe("process builder checker method", () => {
 				},
 				{
 					body: string;
-				},
-				Request
+				}
 			>,
 			"strict"
 		>;

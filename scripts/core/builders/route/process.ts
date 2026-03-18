@@ -3,15 +3,13 @@ import { type RouteDefinition } from "@core/route";
 import { createProcessStep, type ProcessStep } from "@core/steps";
 import { type O, type NeverCoalescing, type FixDeepFunctionInfer, type Adaptor, type AnyFunction } from "@duplojs/utils";
 import { routeBuilderHandler } from "./builder";
-import { type GetProcessRequest, type GetProcessExportValue, type Process } from "@core/process";
-import { type Request } from "@core/request";
+import { type GetProcessExportValue, type Process } from "@core/process";
 import { type Metadata } from "@core/metadata";
 
 declare module "./builder" {
 	interface RouteBuilder<
 		GenericDefinition extends RouteDefinition = RouteDefinition,
 		GenericFloor extends Floor = {},
-		GenericRequest extends Request = Request,
 	> {
 		exec<
 			GenericProcess extends Process,
@@ -59,10 +57,6 @@ declare module "./builder" {
 					GenericProcessExportValue,
 					GenericImportation[number]
 				>
-			>,
-			GenericRequest & NeverCoalescing<
-				GetProcessRequest<GenericProcess>,
-				Request
 			>
 		>;
 	}

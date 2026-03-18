@@ -2,15 +2,13 @@ import { type Floor } from "@core/floor";
 import { createProcessStep, type ProcessStep } from "@core/steps";
 import { type O, type NeverCoalescing, type FixDeepFunctionInfer, type Adaptor, type AnyFunction } from "@duplojs/utils";
 import { processBuilder } from "./builder";
-import { type ProcessDefinition, type GetProcessExportValue, type Process, type GetProcessRequest } from "@core/process";
-import { type Request } from "@core/request";
+import { type ProcessDefinition, type GetProcessExportValue, type Process } from "@core/process";
 import { type Metadata } from "@core/metadata";
 
 declare module "./builder" {
 	interface ProcessBuilder<
 		GenericDefinition extends ProcessDefinition = ProcessDefinition,
 		GenericFloor extends Floor = {},
-		GenericRequest extends Request = Request,
 	> {
 		exec<
 			GenericProcess extends Process,
@@ -58,10 +56,6 @@ declare module "./builder" {
 					GenericProcessExportValue,
 					GenericImportation[number]
 				>
-			>,
-			GenericRequest & NeverCoalescing<
-				GetProcessRequest<GenericProcess>,
-				Request
 			>
 		>;
 	}

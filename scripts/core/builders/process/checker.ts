@@ -5,14 +5,12 @@ import { processBuilder } from "./builder";
 import { type GetCheckerResult, type Checker, type GetCheckerInput, type GetCheckerOptions } from "@core/checker";
 import { type ClientErrorResponseCode, type ResponseContract } from "@core/response";
 import { type ProcessDefinition } from "@core/process";
-import { type Request } from "@core/request";
 import { type Metadata } from "@core/metadata";
 
 declare module "./builder" {
 	interface ProcessBuilder<
 		GenericDefinition extends ProcessDefinition = ProcessDefinition,
 		GenericFloor extends Floor = {},
-		GenericRequest extends Request = Request,
 	> {
 		check<
 			GenericChecker extends Checker,
@@ -78,8 +76,7 @@ declare module "./builder" {
 						}
 					>["value"]
 				}
-			>,
-			GenericRequest
+			>
 		>;
 	}
 }

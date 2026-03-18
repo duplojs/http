@@ -154,46 +154,6 @@ describe("route function builder", () => {
 	});
 
 	describe("test hooks", () => {
-		it("onConstructRequest ", async() => {
-			const route = useRouteBuilder("GET", "/test", {
-				hooks: [
-					{
-						afterSendResponse: spyResponse,
-						onConstructRequest: ({ addRequestProperties }) => addRequestProperties({
-							myProps: "superValueAddOnHooks",
-						}),
-					},
-				],
-			})
-				.handler(
-					ResponseContract.ok("good", DPE.string()),
-					(floor, { response, request }) => response("good", request.myProps),
-				);
-
-			const buildedRoute = await useTestRouteFunctionBuilder(route);
-
-			await buildedRoute(
-				new Request({
-					headers: {},
-					host: "",
-					matchedPath: "",
-					method: "",
-					origin: "",
-					path: "",
-					params: { },
-					query: {},
-					url: "",
-					bodyReader: createBodyReader(),
-				}),
-			);
-
-			expect(spyResponse).toHaveBeenCalledWith(
-				expect.objectContaining({
-					currentResponse: new PredictedResponse("200", "good", "superValueAddOnHooks"),
-				}),
-			);
-		});
-
 		it("beforeRouteExecution ", async() => {
 			const route = useRouteBuilder("GET", "/test", {
 				hooks: [
@@ -279,7 +239,7 @@ describe("route function builder", () => {
 						beforeRouteExecution: ({ next }) => next(),
 						afterSendResponse: spyResponse,
 						sendResponse: ({ exit }) => exit(),
-						error: ({ next }) => next(),
+						error: ({ next }) => Promise.resolve(next()),
 					},
 				],
 			})
@@ -335,10 +295,6 @@ describe("route function builder", () => {
 						checkpoint.push(`error ${value}`);
 						return next();
 					},
-					onConstructRequest: ({ request }) => {
-						checkpoint.push(`onConstructRequest ${value}`);
-						return request;
-					},
 					sendResponse: ({ next }) => {
 						checkpoint.push(`sendResponse ${value}`);
 						return next();
@@ -370,7 +326,23 @@ describe("route function builder", () => {
 				);
 
 			const buildedRoute = await useTestRouteFunctionBuilder(route, {
-				globalHooksRouteLifeCycle: [createCheckpointHook("global")],
+				globalHooksRouteLifeCycle: [
+					createCheckpointHook("global"),
+					{
+						beforeRouteExecution: ({ next }) => {
+							checkpoint.push("beforeRouteExecution async");
+							return Promise.resolve(next());
+						},
+						beforeSendResponse: ({ next }) => {
+							checkpoint.push("beforeSendResponse async");
+							return Promise.resolve(next());
+						},
+						error: ({ next }) => {
+							checkpoint.push("error async");
+							return Promise.resolve(next());
+						},
+					},
+				],
 			});
 
 			await buildedRoute(
@@ -389,14 +361,6 @@ describe("route function builder", () => {
 			);
 
 			expect(checkpoint).toStrictEqual([
-				"onConstructRequest route",
-				"onConstructRequest builder preflight process",
-				"onConstructRequest preflight process",
-				"onConstructRequest preflight deep process",
-				"onConstructRequest process",
-				"onConstructRequest deep process",
-				"onConstructRequest global",
-
 				"beforeRouteExecution route",
 				"beforeRouteExecution builder preflight process",
 				"beforeRouteExecution preflight process",
@@ -404,6 +368,7 @@ describe("route function builder", () => {
 				"beforeRouteExecution process",
 				"beforeRouteExecution deep process",
 				"beforeRouteExecution global",
+				"beforeRouteExecution async",
 
 				"beforeSendResponse route",
 				"beforeSendResponse builder preflight process",
@@ -412,6 +377,7 @@ describe("route function builder", () => {
 				"beforeSendResponse process",
 				"beforeSendResponse deep process",
 				"beforeSendResponse global",
+				"beforeSendResponse async",
 
 				"sendResponse route",
 				"sendResponse builder preflight process",

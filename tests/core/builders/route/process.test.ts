@@ -51,8 +51,7 @@ describe("route builder process method", () => {
 					];
 					readonly metadata: readonly [];
 				},
-				{},
-				Request
+				{}
 			>,
 			"strict"
 		>;
@@ -112,8 +111,7 @@ describe("route builder process method", () => {
 					];
 					readonly metadata: readonly [];
 				},
-				{},
-				Request
+				{}
 			>,
 			"strict"
 		>;
@@ -206,8 +204,7 @@ describe("route builder process method", () => {
 					];
 					readonly metadata: readonly [];
 				},
-				{ body: string },
-				Request
+				{ body: string }
 			>,
 			"strict"
 		>;
@@ -267,8 +264,7 @@ describe("route builder process method", () => {
 					];
 					readonly metadata: readonly [];
 				},
-				{ body: string },
-				Request
+				{ body: string }
 			>,
 			"strict"
 		>;
@@ -331,67 +327,6 @@ describe("route builder process method", () => {
 				{
 					body: string;
 					query: number;
-				},
-				Request
-			>,
-			"strict"
-		>;
-	});
-
-	it("exec with process with hook", () => {
-		const process = useProcessBuilder({
-			hooks: [{ onConstructRequest: ({ addRequestProperties }) => addRequestProperties({ prop: 1 }) }],
-		})
-			.exports();
-
-		const routeBuilder = useRouteBuilder("GET", "/test")
-			.exec(process);
-
-		expect({ ...routeBuilder }).toStrictEqual(
-			expect.objectContaining({
-				[builderKind.runTimeKey]: {
-					hooks: [],
-					method: "GET",
-					paths: ["/test"],
-					bodyController: null,
-					preflightSteps: [],
-					steps: [
-						{
-							[processStepKind.runTimeKey]: null,
-							[stepKind.runTimeKey]: null,
-							definition: {
-								process,
-								metadata: [],
-							},
-						},
-					],
-					metadata: [],
-				},
-			}),
-		);
-
-		type Check = ExpectType<
-			typeof routeBuilder,
-			RouteBuilder<
-				{
-					readonly hooks: readonly [];
-					readonly paths: readonly ["/test"];
-					readonly bodyController: null;
-					readonly method: "GET";
-					readonly preflightSteps: readonly [];
-					readonly steps: readonly [
-						ProcessStep<{
-							readonly process: typeof process;
-							readonly options: undefined;
-							readonly imports: undefined;
-							readonly metadata: readonly [];
-						}>,
-					];
-					readonly metadata: readonly [];
-				},
-				{},
-				Request & {
-					prop: number;
 				}
 			>,
 			"strict"

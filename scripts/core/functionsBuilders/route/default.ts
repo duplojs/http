@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/prefer-for-of */
-import { type HookAfterSendResponse, type HookBeforeRouteExecution, type HookBeforeSendResponse, type HookError, type HookOnConstructRequest, type HookRouteLifeCycle, hookRouteLifeCycleAddRequestProperties, type HookSendResponse, routeKind } from "@core/route";
+import { type HookAfterSendResponse, type HookBeforeRouteExecution, type HookBeforeSendResponse, type HookError, type HookRouteLifeCycle, type HookSendResponse, routeKind } from "@core/route";
 import { A, E, forward, isType, pipe } from "@duplojs/utils";
 import { HookResponse, Response } from "@core/response";
 import { type Request } from "@core/request";
@@ -76,12 +76,6 @@ export const defaultRouteFunctionBuilder = createRouteFunctionBuilder(
 			A.filter(isType("function")),
 			forward,
 		);
-		const hookOnConstructRequest: HookOnConstructRequest[] = pipe(
-			allHooks,
-			A.map(({ onConstructRequest }) => onConstructRequest),
-			A.filter(isType("function")),
-			forward,
-		);
 		const hookError: HookError[] = pipe(
 			allHooks,
 			A.map(({ error }) => error),
@@ -96,23 +90,9 @@ export const defaultRouteFunctionBuilder = createRouteFunctionBuilder(
 		);
 
 		const hooks: Required<HookRouteLifeCycle> = {
-			afterSendResponse: buildHookAfter(hookAfterSendResponse),
 			beforeRouteExecution: buildHookBefore(hookBeforeRouteExecution),
+			afterSendResponse: buildHookAfter(hookAfterSendResponse),
 			beforeSendResponse: buildHookAfter(hookBeforeSendResponse),
-			onConstructRequest: hookOnConstructRequest.length
-				? async(params) => {
-					let newRequest = params.request;
-
-					for (let index = 0; index < hookOnConstructRequest.length; index++) {
-						newRequest = await hookOnConstructRequest[index]!({
-							...params,
-							request: newRequest,
-						});
-					}
-
-					return newRequest;
-				}
-				: (params) => params.request,
 			error: buildHookErrorBefore(hookError),
 			sendResponse: buildHookAfter(hookSendResponse),
 		};
@@ -180,15 +160,10 @@ export const defaultRouteFunctionBuilder = createRouteFunctionBuilder(
 
 		return success(
 			async(request) => {
-				const currentRequest = await hooks.onConstructRequest({
-					request,
-					addRequestProperties: hookRouteLifeCycleAddRequestProperties(request),
-				});
-
-				const currentResponse = await routeExecution(currentRequest);
+				const currentResponse = await routeExecution(request);
 
 				const afterHookParams = {
-					request: currentRequest,
+					request,
 					currentResponse,
 					exit: exitHookFunction,
 					next: nextHookFunction,

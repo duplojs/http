@@ -177,7 +177,6 @@ export class Hub<
 		responseContract: GenericResponseContract,
 		theFunction: (
 			param: HandlerStepFunctionParams<
-				Request,
 				GenericResponse
 			>
 		) => MaybePromise<GenericResponse>,
@@ -232,7 +231,6 @@ export class Hub<
 		responseContract: GenericResponseContract,
 		theFunction: (
 			param: HandlerStepFunctionParams<
-				Request,
 				GenericResponse
 			>
 		) => MaybePromise<GenericResponse>,

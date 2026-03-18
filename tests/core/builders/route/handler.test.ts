@@ -1,4 +1,4 @@
-import { type ExtractStep, extractStepKind, type HandlerStep, handlerStepKind, ResponseContract, type Route, routeKind, stepKind, useRouteBuilder, type PredictedResponse, type HandlerStepFunctionParams, type Request, type HookParamsOnConstructRequest, routeStore, IgnoreByRouteStoreMetadata, type Metadata } from "@core";
+import { type ExtractStep, extractStepKind, type HandlerStep, handlerStepKind, ResponseContract, type Route, routeKind, stepKind, useRouteBuilder, type PredictedResponse, type HandlerStepFunctionParams, type Request, routeStore, IgnoreByRouteStoreMetadata, type Metadata, type RouteHookParamsAfter, type RouteHookNext } from "@core";
 import { type DP, DPE, type ExpectType } from "@duplojs/utils";
 import { type MaybePromise } from "rollup";
 
@@ -85,7 +85,6 @@ describe("route builder handler method", () => {
 							theFunction(
 								floor: { body: string },
 								param: HandlerStepFunctionParams<
-									Request,
 									PredictedResponse<"200", "test", string>
 								>
 							): MaybePromise<PredictedResponse<"200", "test", string>>;
@@ -170,7 +169,6 @@ describe("route builder handler method", () => {
 							theFunction(
 								floor: {},
 								param: HandlerStepFunctionParams<
-									Request,
 									| PredictedResponse<"200", "test", string>
 									| PredictedResponse<"204", "toto", undefined>
 								>
@@ -190,27 +188,17 @@ describe("route builder handler method", () => {
 
 	it("handler with hooks", () => {
 		const routeBuilder = useRouteBuilder("GET", "/test", {
-			hooks: [{ onConstructRequest: ({ addRequestProperties }) => addRequestProperties({ prop: 1 }) }],
+			hooks: [{ afterSendResponse: ({ next }) => next() }],
 		})
 			.handler(
 				ResponseContract.noContent("toto"),
-				(floor, { response, request }) => {
-					type Check = ExpectType<
-						typeof request,
-						Request & {
-							prop: number;
-						},
-						"strict"
-					>;
-
-					return response("toto");
-				},
+				(floor, { response, request }) => response("toto"),
 			);
 
 		expect({ ...routeBuilder }).toStrictEqual({
 			[routeKind.runTimeKey]: null,
 			definition: {
-				hooks: [{ onConstructRequest: expect.any(Function) }],
+				hooks: [{ afterSendResponse: expect.any(Function) }],
 				method: "GET",
 				paths: ["/test"],
 				preflightSteps: [],
@@ -244,9 +232,7 @@ describe("route builder handler method", () => {
 					readonly hooks: readonly [
 						{
 							// eslint-disable-next-line @typescript-eslint/method-signature-style
-							readonly onConstructRequest: (params: HookParamsOnConstructRequest) => Request & {
-								prop: number;
-							};
+							readonly afterSendResponse: (param: RouteHookParamsAfter) => RouteHookNext;
 						},
 					];
 					readonly steps: readonly [
@@ -259,9 +245,6 @@ describe("route builder handler method", () => {
 							theFunction(
 								floor: {},
 								param: HandlerStepFunctionParams<
-									Request & {
-										prop: number;
-									},
 									PredictedResponse<"204", "toto", undefined>
 								>
 							): MaybePromise<PredictedResponse<"204", "toto", undefined>>;

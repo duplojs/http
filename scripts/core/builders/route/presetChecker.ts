@@ -3,7 +3,6 @@ import { type RouteDefinition } from "@core/route";
 import { createPresetCheckerStep, type PresetCheckerStep } from "@core/steps";
 import { type O, type A } from "@duplojs/utils";
 import { routeBuilderHandler } from "./builder";
-import { type Request } from "@core/request";
 import { type GetPresetCheckerIndex, type GetPresetCheckerInformation, type GetPresetCheckerResult, type GetPresetCheckerInput, type PresetChecker } from "@core/presetChecker";
 import { type Metadata } from "@core/metadata";
 
@@ -11,7 +10,6 @@ declare module "./builder" {
 	interface RouteBuilder<
 		GenericDefinition extends RouteDefinition = RouteDefinition,
 		GenericFloor extends Floor = {},
-		GenericRequest extends Request = Request,
 	> {
 		presetCheck<
 			GenericPresetChecker extends PresetChecker,
@@ -49,8 +47,7 @@ declare module "./builder" {
 						}
 					>["value"]
 				}
-			>,
-			GenericRequest
+			>
 		>;
 	}
 }

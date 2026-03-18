@@ -11,10 +11,9 @@ declare module "./builder" {
 	interface RouteBuilder<
 		GenericDefinition extends RouteDefinition = RouteDefinition,
 		GenericFloor extends Floor = {},
-		GenericRequest extends Request = Request,
 	> {
 		extract<
-			GenericShape extends ExtractShape<GenericRequest>,
+			GenericShape extends ExtractShape<Request>,
 			GenericResponseContract extends (
 				| ResponseContract.Contract<ClientErrorResponseCode, string, DP.DataParserEmpty>
 				| undefined
@@ -55,8 +54,7 @@ declare module "./builder" {
 						[Entry in InferredEntry as Entry[0]]: Entry[1]
 					}>
 					: never
-			>,
-			GenericRequest
+			>
 		>;
 	}
 }

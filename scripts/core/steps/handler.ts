@@ -23,11 +23,9 @@ interface HandlerStepFunctionParamsServerSentEventsResponse<
 }
 
 export interface HandlerStepFunctionParams<
-	GenericRequest extends Request = Request,
 	GenericResponse extends PredictedResponse | ServerSentEventsPredictedResponse
 	= PredictedResponse | ServerSentEventsPredictedResponse,
 > extends StepFunctionParams<
-		GenericRequest,
 		Extract<
 			GenericResponse,
 			PredictedResponse

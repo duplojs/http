@@ -12,7 +12,6 @@ declare module "./builder" {
 	interface RouteBuilder<
 		GenericDefinition extends RouteDefinition = RouteDefinition,
 		GenericFloor extends Floor = {},
-		GenericRequest extends Request = Request,
 	> {
 		check<
 			GenericChecker extends Checker,
@@ -78,8 +77,7 @@ declare module "./builder" {
 						}
 					>["value"]
 				}
-			>,
-			GenericRequest
+			>
 		>;
 	}
 }
