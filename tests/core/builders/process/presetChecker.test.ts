@@ -82,8 +82,7 @@ describe("process builder preset checker method", () => {
 					];
 					readonly metadata: readonly [];
 				},
-				{ body: string },
-				Request
+				{ body: string }
 			>,
 			"strict"
 		>;
@@ -164,8 +163,7 @@ describe("process builder preset checker method", () => {
 				{
 					body: string;
 					superValue: boolean;
-				},
-				Request
+				}
 			>,
 			"strict"
 		>;

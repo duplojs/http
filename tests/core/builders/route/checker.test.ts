@@ -101,8 +101,7 @@ describe("route builder checker method", () => {
 					];
 					readonly metadata: readonly [];
 				},
-				{ body: string },
-				Request
+				{ body: string }
 			>,
 			"strict"
 		>;
@@ -206,8 +205,7 @@ describe("route builder checker method", () => {
 					];
 					readonly metadata: readonly [];
 				},
-				{ body: string },
-				Request
+				{ body: string }
 			>,
 			"strict"
 		>;
@@ -316,8 +314,7 @@ describe("route builder checker method", () => {
 					];
 					readonly metadata: readonly [];
 				},
-				{ body: string },
-				Request
+				{ body: string }
 			>,
 			"strict"
 		>;
@@ -418,8 +415,7 @@ describe("route builder checker method", () => {
 				{
 					body: string;
 					myValueCheck: boolean;
-				},
-				Request
+				}
 			>,
 			"strict"
 		>;

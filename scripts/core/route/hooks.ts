@@ -1,23 +1,8 @@
 import { type Request } from "../request";
 import { createCoreLibKind } from "../kind";
-import { type UnionToIntersection, type AnyFunction, type Kind, type MaybePromise, type SimplifyTopLevel, type IsEqual, type BivariantFunction } from "@duplojs/utils";
+import { type Kind, type MaybePromise } from "@duplojs/utils";
 import { type HookResponse } from "../response";
 import { type ResponseCode, type Response } from "@core/response";
-
-export interface HookParamsOnConstructRequest {
-	request: Request;
-	addRequestProperties<
-		GenericNewProperties extends Record<string, unknown>,
-	>(
-		newProperties: GenericNewProperties
-	): Request & GenericNewProperties;
-}
-
-export type HookOnConstructRequest<
-	GenericRequest extends Request = Request,
-> = (
-	params: HookParamsOnConstructRequest
-) => MaybePromise<GenericRequest>;
 
 export const hookRouteExitKind = createCoreLibKind("route-hook-exit");
 
@@ -31,10 +16,8 @@ export interface RouteHookNext extends Kind<typeof hookRouteNextKind.definition>
 
 }
 
-export interface RouteHookParams<
-	GenericRequest extends Request = Request,
-> {
-	readonly request: GenericRequest;
+export interface RouteHookParams {
+	readonly request: Request;
 	next(): RouteHookNext;
 	exit(): RouteHookExit;
 	response<
@@ -52,10 +35,8 @@ export interface RouteHookParams<
 	>;
 }
 
-export type HookBeforeRouteExecution<
-	GenericRequest extends Request = Request,
-> = (
-	params: RouteHookParams<GenericRequest>
+export type HookBeforeRouteExecution = (
+	params: RouteHookParams,
 ) => MaybePromise<HookResponse | RouteHookExit | RouteHookNext>;
 
 export interface RouteHookErrorParams<
@@ -84,122 +65,37 @@ export type HookError = (
 	params: RouteHookErrorParams<Request>
 ) => MaybePromise<HookResponse | RouteHookExit | RouteHookNext>;
 
-export interface RouteHookParamsAfter<
-	GenericRequest extends Request = Request,
-> {
-	readonly request: GenericRequest;
+export interface RouteHookParamsAfter {
+	readonly request: Request;
 	readonly currentResponse: Response;
 	next(): RouteHookNext;
 	exit(): RouteHookExit;
 }
 
-export type HookBeforeSendResponse<
-	GenericRequest extends Request = Request,
-> = (
-	params: RouteHookParamsAfter<GenericRequest>
+export type HookBeforeSendResponse = (
+	params: RouteHookParamsAfter
 ) => MaybePromise<RouteHookExit | RouteHookNext>;
 
-export type HookSendResponse<
-	GenericRequest extends Request = Request,
-> = (
-	params: RouteHookParamsAfter<GenericRequest>
+export type HookSendResponse = (
+	params: RouteHookParamsAfter
 ) => MaybePromise<RouteHookExit | RouteHookNext>;
 
-export type HookAfterSendResponse<
-	GenericRequest extends Request = Request,
-> = (
-	params: RouteHookParamsAfter<GenericRequest>
+export type HookAfterSendResponse = (
+	params: RouteHookParamsAfter
 ) => MaybePromise<RouteHookExit | RouteHookNext>;
 
-export interface HookRouteLifeCycle<
-	GenericRequest extends Request = Request,
-> {
-	onConstructRequest?: BivariantFunction<HookOnConstructRequest<GenericRequest>>;
-	beforeRouteExecution?: BivariantFunction<HookBeforeRouteExecution<GenericRequest>>;
+export interface HookRouteLifeCycle {
+	beforeRouteExecution?: HookBeforeRouteExecution;
 	error?: HookError;
-	beforeSendResponse?: BivariantFunction<HookBeforeSendResponse<GenericRequest>>;
-	sendResponse?: BivariantFunction<HookSendResponse<GenericRequest>>;
-	afterSendResponse?: BivariantFunction<HookAfterSendResponse<GenericRequest>>;
+	beforeSendResponse?: HookBeforeSendResponse;
+	sendResponse?: HookSendResponse;
+	afterSendResponse?: HookAfterSendResponse;
 }
 
 export function createHookRouteLifeCycle<
-	const GenericHookLiveCycle extends Omit<
-		HookRouteLifeCycle,
-		"onConstructRequest"
-	>,
+	const GenericHookLiveCycle extends HookRouteLifeCycle,
 >(
 	hookRouteLifeCycle: GenericHookLiveCycle,
-): GenericHookLiveCycle;
-
-export function createHookRouteLifeCycle<
-	GenericOnConstructRequest extends HookOnConstructRequest,
-	const GenericHookLiveCycle extends Omit<
-		HookRouteLifeCycle<
-			Awaited<ReturnType<GenericOnConstructRequest>>
-		>,
-		"onConstructRequest"
-	>,
->(
-	onConstructRequest: GenericOnConstructRequest,
-	hookRouteLifeCycle: GenericHookLiveCycle,
-): SimplifyTopLevel<
-	& { readonly onConstructRequest: GenericOnConstructRequest }
-	& GenericHookLiveCycle
->;
-
-export function createHookRouteLifeCycle(
-	...args: [HookOnConstructRequest, HookRouteLifeCycle]
-		| [HookRouteLifeCycle]
 ) {
-	if (args.length === 1) {
-		return args[0];
-	}
-
-	return {
-		...args[1],
-		onConstructRequest: args[0],
-	};
+	return hookRouteLifeCycle;
 }
-
-export function hookRouteLifeCycleAddRequestProperties<
-	GenericRequest extends Request = Request,
->(
-	request: GenericRequest,
-) {
-	return <
-		GenericNewProperties extends Record<string, unknown> = Record<string, unknown>,
-	>(newProperties: GenericNewProperties) => {
-		for (const key in newProperties) {
-			request[key as never] = newProperties[key] as never;
-		}
-
-		return request as never;
-	};
-}
-
-export type ExtractRequestFromHooks<
-	GenericHooks extends readonly HookRouteLifeCycle[],
-> = GenericHooks extends readonly [
-	infer InferredFirst,
-	...infer InferredRest extends HookRouteLifeCycle[],
-]
-	? (
-		InferredFirst extends { onConstructRequest: AnyFunction }
-			? Awaited<ReturnType<InferredFirst["onConstructRequest"]>>
-			: never
-	) extends infer InferredResultFirst
-		? InferredRest extends readonly []
-			? InferredResultFirst
-			: ExtractRequestFromHooks<InferredRest> extends infer InferredResultRest
-				? InferredResultFirst | InferredResultRest
-				: never
-		: never
-	: never;
-
-export type MakeRequestFromHooks<
-	GenericHooks extends readonly HookRouteLifeCycle[],
-> = ExtractRequestFromHooks<GenericHooks> extends infer InferredResult extends Request
-	? IsEqual<InferredResult, never> extends true
-		? never
-		: UnionToIntersection<InferredResult>
-	: never;

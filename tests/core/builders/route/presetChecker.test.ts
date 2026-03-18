@@ -88,8 +88,7 @@ describe("route builder preset checker method", () => {
 					readonly metadata: readonly [];
 					readonly bodyController: null;
 				},
-				{ body: string },
-				Request
+				{ body: string }
 			>,
 			"strict"
 		>;
@@ -176,8 +175,7 @@ describe("route builder preset checker method", () => {
 				{
 					body: string;
 					superValue: boolean;
-				},
-				Request
+				}
 			>,
 			"strict"
 		>;

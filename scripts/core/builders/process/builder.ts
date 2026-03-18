@@ -1,15 +1,13 @@
 import { type ProcessDefinition } from "@core/process";
 import { type Floor } from "@core/floor";
 import { type Builder, createBuilder, type IsEqual, type NeverCoalescing } from "@duplojs/utils";
-import { type MakeRequestFromHooks, type HookRouteLifeCycle } from "@core/route";
-import { type Request } from "@core/request";
+import { type HookRouteLifeCycle } from "@core/route";
 import { createCoreLibStringIdentifier } from "@core/stringIdentifier";
 import { type Metadata } from "@core/metadata";
 
 export interface ProcessBuilder<
 	GenericDefinition extends ProcessDefinition = ProcessDefinition,
 	GenericFloor extends Floor = {},
-	GenericRequest extends Request = Request,
 > extends Builder<ProcessDefinition> {
 
 }
@@ -37,11 +35,7 @@ export function useProcessBuilder<
 		},
 		IsEqual<GenericOptions, never> extends true
 			? {}
-			: { options: GenericOptions },
-		NeverCoalescing<
-			MakeRequestFromHooks<GenericHooks>,
-			Request
-		>
+			: { options: GenericOptions }
 	> {
 	return processBuilder.use({
 		options: undefined,

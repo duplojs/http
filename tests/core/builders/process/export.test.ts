@@ -1,4 +1,4 @@
-import { type ExtractStep, extractStepKind, type Process, type ProcessExportValue, processKind, type ProcessRequest, stepKind, useProcessBuilder, type Request, type HookParamsOnConstructRequest } from "@core";
+import { type ExtractStep, extractStepKind, type Process, type ProcessExportValue, processKind, stepKind, useProcessBuilder, type RouteHookParamsAfter, type RouteHookNext } from "@core";
 import { DP, DPE, type SimplifyTopLevel, type ExpectType } from "@duplojs/utils";
 
 describe("process builder export method", () => {
@@ -177,7 +177,7 @@ describe("process builder export method", () => {
 	it("export with options and hook", () => {
 		const processBuilder = useProcessBuilder({
 			options: { test: true },
-			hooks: [{ onConstructRequest: ({ addRequestProperties }) => addRequestProperties({ prop: 1 }) }],
+			hooks: [{ afterSendResponse: ({ next }) => next() }],
 		})
 			.exports();
 
@@ -185,7 +185,7 @@ describe("process builder export method", () => {
 			.toStrictEqual({
 				[processKind.runTimeKey]: null,
 				definition: {
-					hooks: [{ onConstructRequest: expect.any(Function) }],
+					hooks: [{ afterSendResponse: expect.any(Function) }],
 					options: { test: true },
 					steps: [],
 					metadata: [],
@@ -204,14 +204,11 @@ describe("process builder export method", () => {
 						readonly hooks: readonly [
 							{
 								// eslint-disable-next-line @typescript-eslint/method-signature-style
-								readonly onConstructRequest: (params: HookParamsOnConstructRequest) => Request & {
-									prop: number;
-								};
+								readonly afterSendResponse: (param: RouteHookParamsAfter) => RouteHookNext;
 							},
 						];
 						readonly metadata: readonly [];
 					}
-					& ProcessRequest<Request & { prop: number }>
 				>
 			>,
 			"strict"

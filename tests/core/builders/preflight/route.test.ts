@@ -1,4 +1,4 @@
-import { type RouteBuilder, usePreflightBuilder, type Request, type HookParamsOnConstructRequest, useProcessBuilder, type ProcessStep, processStepKind, stepKind, IgnoreByRouteStoreMetadata, type Metadata } from "@core";
+import { type RouteBuilder, usePreflightBuilder, useProcessBuilder, type ProcessStep, processStepKind, stepKind, IgnoreByRouteStoreMetadata, type Metadata, type RouteHookParamsAfter, type RouteHookNext } from "@core";
 import { builderKind, DPE, type ExpectType } from "@duplojs/utils";
 
 describe("preflight builder use route builder", () => {
@@ -35,8 +35,7 @@ describe("preflight builder use route builder", () => {
 						Metadata<"ignore-by-route-store", unknown>,
 					];
 				},
-				{},
-				Request
+				{}
 			>,
 			"strict"
 		>;
@@ -72,8 +71,7 @@ describe("preflight builder use route builder", () => {
 					readonly hooks: readonly [];
 					readonly metadata: readonly [];
 				},
-				{},
-				Request
+				{}
 			>,
 			"strict"
 		>;
@@ -83,8 +81,8 @@ describe("preflight builder use route builder", () => {
 		const routeBuilder = usePreflightBuilder()
 			.useRouteBuilder("GET", "/test", {
 				hooks: [
-					{ onConstructRequest: ({ addRequestProperties }) => addRequestProperties({ aa: 1 }) },
-					{ onConstructRequest: ({ addRequestProperties }) => addRequestProperties({ bb: 1 }) },
+					{ afterSendResponse: ({ next }) => next() },
+					{ afterSendResponse: ({ next }) => next() },
 				],
 			});
 
@@ -92,8 +90,8 @@ describe("preflight builder use route builder", () => {
 			expect.objectContaining({
 				[builderKind.runTimeKey]: {
 					hooks: [
-						{ onConstructRequest: expect.any(Function) },
-						{ onConstructRequest: expect.any(Function) },
+						{ afterSendResponse: expect.any(Function) },
+						{ afterSendResponse: expect.any(Function) },
 					],
 					method: "GET",
 					paths: ["/test"],
@@ -117,23 +115,16 @@ describe("preflight builder use route builder", () => {
 					readonly hooks: readonly [
 						{
 							// eslint-disable-next-line @typescript-eslint/method-signature-style
-							readonly onConstructRequest: (params: HookParamsOnConstructRequest) => Request & {
-								aa: number;
-							};
+							readonly afterSendResponse: (param: RouteHookParamsAfter) => RouteHookNext;
 						},
 						{
 							// eslint-disable-next-line @typescript-eslint/method-signature-style
-							readonly onConstructRequest: (params: HookParamsOnConstructRequest) => Request & {
-								bb: number;
-							};
+							readonly afterSendResponse: (param: RouteHookParamsAfter) => RouteHookNext;
 						},
 					];
 					readonly metadata: readonly [];
 				},
-				{},
-				& Request
-				& { aa: number }
-				& { bb: number }
+				{}
 			>,
 			"strict"
 		>;
@@ -194,8 +185,7 @@ describe("preflight builder use route builder", () => {
 					readonly steps: readonly [];
 					readonly hooks: readonly [];
 				},
-				{ body: string },
-				Request
+				{ body: string }
 			>,
 			"strict"
 		>;
@@ -204,8 +194,8 @@ describe("preflight builder use route builder", () => {
 	it("useRouteBuilder with hooks on preflight builder", () => {
 		const routeBuilder = usePreflightBuilder({
 			hooks: [
-				{ onConstructRequest: ({ addRequestProperties }) => addRequestProperties({ aa: 1 }) },
-				{ onConstructRequest: ({ addRequestProperties }) => addRequestProperties({ bb: 1 }) },
+				{ afterSendResponse: ({ next }) => next() },
+				{ afterSendResponse: ({ next }) => next() },
 			],
 		})
 			.useRouteBuilder("GET", "/toto");
@@ -214,8 +204,8 @@ describe("preflight builder use route builder", () => {
 			expect.objectContaining({
 				[builderKind.runTimeKey]: {
 					hooks: [
-						{ onConstructRequest: expect.any(Function) },
-						{ onConstructRequest: expect.any(Function) },
+						{ afterSendResponse: expect.any(Function) },
+						{ afterSendResponse: expect.any(Function) },
 					],
 					method: "GET",
 					bodyController: null,
@@ -239,23 +229,16 @@ describe("preflight builder use route builder", () => {
 					readonly hooks: readonly [
 						{
 							// eslint-disable-next-line @typescript-eslint/method-signature-style
-							readonly onConstructRequest: (params: HookParamsOnConstructRequest) => Request & {
-								aa: number;
-							};
+							readonly afterSendResponse: (param: RouteHookParamsAfter) => RouteHookNext;
 						},
 						{
 							// eslint-disable-next-line @typescript-eslint/method-signature-style
-							readonly onConstructRequest: (params: HookParamsOnConstructRequest) => Request & {
-								bb: number;
-							};
+							readonly afterSendResponse: (param: RouteHookParamsAfter) => RouteHookNext;
 						},
 					];
 					readonly metadata: readonly [];
 				},
-				{ },
-				& Request
-				& { aa: number }
-				& { bb: number }
+				{ }
 			>,
 			"strict"
 		>;

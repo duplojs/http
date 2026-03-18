@@ -11,26 +11,4 @@ describe("hookRouteLifeCycle", () => {
 			afterSendResponse: expect.any(Function),
 		});
 	});
-
-	it("createHookRouteLifeCycle with request modifier", () => {
-		expect(
-			createHookRouteLifeCycle(
-				({ addRequestProperties }) => addRequestProperties({ yy: 123 }),
-				{
-					afterSendResponse: ({ exit, request }) => {
-						type Check = ExpectType<
-							typeof request,
-							Request & { yy: number },
-							"strict"
-						>;
-
-						return exit();
-					},
-				},
-			),
-		).toStrictEqual({
-			onConstructRequest: expect.any(Function),
-			afterSendResponse: expect.any(Function),
-		});
-	});
 });

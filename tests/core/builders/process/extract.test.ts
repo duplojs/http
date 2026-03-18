@@ -57,8 +57,7 @@ describe("process builder extract method", () => {
 					];
 					readonly metadata: readonly [];
 				},
-				{ body: string },
-				Request
+				{ body: string }
 			>,
 			"strict"
 		>;
@@ -129,8 +128,7 @@ describe("process builder extract method", () => {
 					];
 					readonly metadata: readonly [];
 				},
-				{ body: string },
-				Request
+				{ body: string }
 			>,
 			"strict"
 		>;
@@ -191,8 +189,7 @@ describe("process builder extract method", () => {
 					];
 					readonly metadata: readonly [];
 				},
-				{ test: string },
-				Request
+				{ test: string }
 			>,
 			"strict"
 		>;

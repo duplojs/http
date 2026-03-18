@@ -4,7 +4,6 @@ import { createRoute, type Route, type RouteDefinition } from "@core/route";
 import { createHandlerStep, type HandlerStep, type HandlerStepFunctionParams } from "@core/steps";
 import { type MaybePromise, type O, A } from "@duplojs/utils";
 import { routeBuilderHandler } from "./builder";
-import { type Request } from "@core/request";
 import { routeStore } from "./store";
 import { type Metadata, IgnoreByRouteStoreMetadata } from "@core/metadata";
 
@@ -12,7 +11,6 @@ declare module "./builder" {
 	interface RouteBuilder<
 		GenericDefinition extends RouteDefinition = RouteDefinition,
 		GenericFloor extends Floor = {},
-		GenericRequest extends Request = Request,
 	> {
 		handler<
 			GenericResponseContract extends (
@@ -40,7 +38,6 @@ declare module "./builder" {
 			theFunction: (
 				floor: GenericFloor,
 				param: HandlerStepFunctionParams<
-					GenericRequest,
 					GenericResponse
 				>
 			) => MaybePromise<GenericResponse>,
@@ -57,7 +54,6 @@ declare module "./builder" {
 								theFunction(
 									floor: GenericFloor,
 									param: HandlerStepFunctionParams<
-										GenericRequest,
 										GenericResponse
 									>
 								): MaybePromise<GenericResponse>;

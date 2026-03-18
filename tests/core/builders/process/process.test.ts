@@ -45,8 +45,7 @@ describe("process builder process method", () => {
 					];
 					readonly metadata: readonly [];
 				},
-				{},
-				Request
+				{}
 			>,
 			"strict"
 		>;
@@ -100,8 +99,7 @@ describe("process builder process method", () => {
 					];
 					readonly metadata: readonly [];
 				},
-				{},
-				Request
+				{}
 			>,
 			"strict"
 		>;
@@ -188,8 +186,7 @@ describe("process builder process method", () => {
 					];
 					readonly metadata: readonly [];
 				},
-				{ body: string },
-				Request
+				{ body: string }
 			>,
 			"strict"
 		>;
@@ -243,8 +240,7 @@ describe("process builder process method", () => {
 					];
 					readonly metadata: readonly [];
 				},
-				{ body: string },
-				Request
+				{ body: string }
 			>,
 			"strict"
 		>;
@@ -301,61 +297,6 @@ describe("process builder process method", () => {
 				{
 					body: string;
 					query: number;
-				},
-				Request
-			>,
-			"strict"
-		>;
-	});
-
-	it("exec with process with hook", () => {
-		const process = useProcessBuilder({
-			hooks: [{ onConstructRequest: ({ addRequestProperties }) => addRequestProperties({ prop: 1 }) }],
-		})
-			.exports();
-
-		const processBuilder = useProcessBuilder()
-			.exec(process);
-
-		expect({ ...processBuilder }).toStrictEqual(
-			expect.objectContaining({
-				[builderKind.runTimeKey]: {
-					hooks: [],
-					options: undefined,
-					steps: [
-						{
-							[processStepKind.runTimeKey]: null,
-							[stepKind.runTimeKey]: null,
-							definition: {
-								process,
-								metadata: [],
-							},
-						},
-					],
-					metadata: [],
-				},
-			}),
-		);
-
-		type Check = ExpectType<
-			typeof processBuilder,
-			ProcessBuilder<
-				{
-					readonly hooks: readonly [];
-					readonly options: undefined;
-					readonly steps: readonly [
-						ProcessStep<{
-							readonly process: typeof process;
-							readonly options: undefined;
-							readonly imports: undefined;
-							readonly metadata: readonly [];
-						}>,
-					];
-					readonly metadata: readonly [];
-				},
-				{},
-				Request & {
-					prop: number;
 				}
 			>,
 			"strict"

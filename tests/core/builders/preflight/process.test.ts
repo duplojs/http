@@ -43,8 +43,7 @@ describe("preflight builder process method", () => {
 					readonly hooks: readonly [];
 					readonly metadata: readonly [];
 				},
-				{},
-				Request
+				{}
 			>,
 			"strict"
 		>;
@@ -96,8 +95,7 @@ describe("preflight builder process method", () => {
 					readonly hooks: readonly [];
 					readonly metadata: readonly [];
 				},
-				{},
-				Request
+				{}
 			>,
 			"strict"
 		>;
@@ -149,8 +147,7 @@ describe("preflight builder process method", () => {
 					readonly hooks: readonly [];
 					readonly metadata: readonly [];
 				},
-				{ body: string },
-				Request
+				{ body: string }
 			>,
 			"strict"
 		>;
@@ -248,8 +245,7 @@ describe("preflight builder process method", () => {
 					readonly hooks: readonly [];
 					readonly metadata: readonly [];
 				},
-				{ body: string },
-				Request
+				{ body: string }
 			>,
 			"strict"
 		>;
@@ -304,59 +300,6 @@ describe("preflight builder process method", () => {
 				{
 					body: string;
 					query: number;
-				},
-				Request
-			>,
-			"strict"
-		>;
-	});
-
-	it("exec with process with hook", () => {
-		const process = useProcessBuilder({
-			hooks: [{ onConstructRequest: ({ addRequestProperties }) => addRequestProperties({ prop: 1 }) }],
-		})
-			.exports();
-
-		const routeBuilder = usePreflightBuilder()
-			.exec(process);
-
-		expect({ ...routeBuilder }).toStrictEqual(
-			expect.objectContaining({
-				[builderKind.runTimeKey]: {
-					hooks: [],
-					preflightSteps: [
-						{
-							[processStepKind.runTimeKey]: null,
-							[stepKind.runTimeKey]: null,
-							definition: {
-								process,
-								metadata: [],
-							},
-						},
-					],
-					metadata: [],
-				},
-			}),
-		);
-
-		type Check = ExpectType<
-			typeof routeBuilder,
-			PreflightBuilder<
-				{
-					readonly preflightSteps: readonly [
-						ProcessStep<{
-							readonly process: typeof process;
-							readonly options: undefined;
-							readonly imports: undefined;
-							readonly metadata: readonly [];
-						}>,
-					];
-					readonly hooks: readonly [];
-					readonly metadata: readonly [];
-				},
-				{},
-				Request & {
-					prop: number;
 				}
 			>,
 			"strict"

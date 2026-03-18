@@ -1,7 +1,6 @@
 import { type Floor } from "@core/floor";
-import { type MakeRequestFromHooks, type HookRouteLifeCycle, type RoutePreFlightSteps } from "@core/route";
-import { type Builder, createBuilder, type NeverCoalescing } from "@duplojs/utils";
-import { type Request } from "@core/request";
+import { type HookRouteLifeCycle, type RoutePreFlightSteps } from "@core/route";
+import { type Builder, createBuilder } from "@duplojs/utils";
 import { createCoreLibStringIdentifier } from "@core/stringIdentifier";
 import { type Metadata } from "@core/metadata";
 
@@ -14,7 +13,6 @@ export interface PreflightBuilderDefinition {
 export interface PreflightBuilder<
 	GenericDefinition extends PreflightBuilderDefinition = PreflightBuilderDefinition,
 	GenericFloor extends Floor = {},
-	GenericRequest extends Request = Request,
 > extends Builder<PreflightBuilderDefinition> {
 
 }
@@ -37,11 +35,7 @@ export function usePreflightBuilder<
 			readonly hooks: GenericHooks;
 			readonly metadata: GenericMetadata;
 		},
-		{},
-		NeverCoalescing<
-			MakeRequestFromHooks<GenericHooks>,
-			Request
-		>
+		{}
 	> {
 	return preflightBuilder.use({
 		preflightSteps: [],

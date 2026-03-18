@@ -1,14 +1,13 @@
-import { type MakeRequestFromHooks, type HookRouteLifeCycle, type RouteDefinition, type RoutePath } from "@core/route";
+import { type HookRouteLifeCycle, type RouteDefinition, type RoutePath } from "@core/route";
 import { type Floor } from "@core/floor";
-import { type RequestMethods, type Request, type BodyController } from "@core/request";
-import { A, type Builder, createBuilder, type NeverCoalescing } from "@duplojs/utils";
+import { type RequestMethods, type BodyController } from "@core/request";
+import { A, type Builder, createBuilder } from "@duplojs/utils";
 import { createCoreLibStringIdentifier } from "@core/stringIdentifier";
 import { type Metadata } from "@core/metadata";
 
 export interface RouteBuilder<
 	GenericDefinition extends RouteDefinition = RouteDefinition,
 	GenericFloor extends Floor = {},
-	GenericRequest extends Request = Request,
 > extends Builder<RouteDefinition> {
 
 }
@@ -41,11 +40,7 @@ export function useRouteBuilder<
 			readonly metadata: GenericMetadata;
 			readonly bodyController: GenericBodyController;
 		},
-		{},
-		NeverCoalescing<
-			MakeRequestFromHooks<GenericHooks>,
-			Request
-		>
+		{}
 	> {
 	return routeBuilderHandler.use({
 		method,

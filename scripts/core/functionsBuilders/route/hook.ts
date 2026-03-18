@@ -23,7 +23,11 @@ export function buildHookBefore(
 	}
 	return async(params: RouteHookParams) => {
 		for (let index = 0; index < hooks.length; index++) {
-			const result = await hooks[index]!(params);
+			let result = hooks[index]!(params);
+
+			if (result instanceof Promise) {
+				result = await result;
+			}
 
 			if (
 				hookRouteExitKind.has(result)
@@ -45,7 +49,11 @@ export function buildHookErrorBefore(
 	}
 	return async(params: RouteHookErrorParams) => {
 		for (let index = 0; index < hooks.length; index++) {
-			const result = await hooks[index]!(params);
+			let result = hooks[index]!(params);
+
+			if (result instanceof Promise) {
+				result = await result;
+			}
 
 			if (
 				hookRouteExitKind.has(result)
@@ -71,7 +79,11 @@ export function buildHookAfter(
 	}
 	return async(params: RouteHookParamsAfter) => {
 		for (let index = 0; index < hooks.length; index++) {
-			const result = await hooks[index]!(params);
+			let result = hooks[index]!(params);
+
+			if (result instanceof Promise) {
+				result = await result;
+			}
 
 			if (hookRouteExitKind.has(result)) {
 				return result;

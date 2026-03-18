@@ -4,7 +4,6 @@ import { type StepKind, stepKind } from "./kind";
 import { type Floor } from "@core/floor";
 import { type StepFunctionParams } from "./types";
 import { type PredictedResponse, type ResponseContract } from "@core/response";
-import { type Request } from "@core/request";
 import { type Metadata } from "@core/metadata";
 
 export const cutStepOutputKind = createCoreLibKind("cut-output");
@@ -16,9 +15,8 @@ export interface CutStepFunctionOutput<
 }
 
 export interface CutStepFunctionParams<
-	GenericRequest extends Request = Request,
 	GenericResponse extends PredictedResponse = PredictedResponse,
-> extends StepFunctionParams<GenericRequest, GenericResponse> {
+> extends StepFunctionParams<GenericResponse> {
 	output<
 		GenericData extends Record<string, unknown> = never,
 	>(

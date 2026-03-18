@@ -1,5 +1,5 @@
 
-import { type RouteBuilder, useRouteBuilder, type Request, type HookParamsOnConstructRequest, type Metadata, IgnoreByRouteStoreMetadata, controlBodyAsFormData, type BodyController, type FormDataBodyReaderParams, createHookRouteLifeCycle } from "@core";
+import { type RouteBuilder, useRouteBuilder, type Request, type Metadata, IgnoreByRouteStoreMetadata, controlBodyAsFormData, type BodyController, type FormDataBodyReaderParams, createHookRouteLifeCycle, type RouteHookParamsAfter, type RouteHookNext } from "@core";
 import { builderKind, type ExpectType } from "@duplojs/utils";
 
 describe("route builder", () => {
@@ -32,8 +32,7 @@ describe("route builder", () => {
 					readonly metadata: readonly [Metadata<"ignore-by-route-store", unknown>];
 					readonly bodyController: null;
 				},
-				{},
-				Request
+				{}
 			>,
 			"strict"
 		>;
@@ -68,8 +67,7 @@ describe("route builder", () => {
 					readonly metadata: readonly [];
 					readonly bodyController: null;
 				},
-				{},
-				Request
+				{}
 			>,
 			"strict"
 		>;
@@ -78,8 +76,8 @@ describe("route builder", () => {
 	it("useRouteBuilder with hook", () => {
 		const routeBuilder = useRouteBuilder("GET", "/test", {
 			hooks: [
-				{ onConstructRequest: ({ addRequestProperties }) => addRequestProperties({ aa: 1 }) },
-				{ onConstructRequest: ({ addRequestProperties }) => addRequestProperties({ bb: 1 }) },
+				{ afterSendResponse: ({ next }) => next() },
+				{ afterSendResponse: ({ next }) => next() },
 			],
 		});
 
@@ -87,8 +85,8 @@ describe("route builder", () => {
 			expect.objectContaining({
 				[builderKind.runTimeKey]: {
 					hooks: [
-						{ onConstructRequest: expect.any(Function) },
-						{ onConstructRequest: expect.any(Function) },
+						{ afterSendResponse: expect.any(Function) },
+						{ afterSendResponse: expect.any(Function) },
 					],
 					method: "GET",
 					paths: ["/test"],
@@ -111,83 +109,20 @@ describe("route builder", () => {
 					readonly hooks: readonly [
 						{
 							// eslint-disable-next-line @typescript-eslint/method-signature-style
-							readonly onConstructRequest: (params: HookParamsOnConstructRequest) => Request & {
-								aa: number;
-							};
+							readonly afterSendResponse: (param: RouteHookParamsAfter) => RouteHookNext;
 						},
 						{
 							// eslint-disable-next-line @typescript-eslint/method-signature-style
-							readonly onConstructRequest: (params: HookParamsOnConstructRequest) => Request & {
-								bb: number;
-							};
+							readonly afterSendResponse: (param: RouteHookParamsAfter) => RouteHookNext;
 						},
 					];
 					readonly metadata: readonly [];
 					readonly bodyController: null;
 				},
-				{},
-				& Request
-				& { aa: number }
-				& { bb: number }
+				{}
 			>,
 			"strict"
 		>;
-	});
-
-	it("useRouteBuilder with createHookRouteLifeCycle factory", () => {
-		const hookWithRequestModifier = createHookRouteLifeCycle(
-			({ addRequestProperties }) => addRequestProperties({ aa: 1 }),
-			{
-				beforeRouteExecution: ({ request, next }) => {
-					type Check = ExpectType<
-						typeof request,
-						Request & { aa: number },
-						"strict"
-					>;
-
-					return next();
-				},
-			},
-		);
-
-		const routeBuilder = useRouteBuilder("GET", "/test", {
-			hooks: [
-				hookWithRequestModifier,
-				{
-					beforeRouteExecution: ({ request, next }) => {
-						type Check = ExpectType<
-							typeof request,
-							Request,
-							"strict"
-						>;
-
-						return next();
-					},
-				},
-			],
-		});
-
-		expect({ ...routeBuilder }).toStrictEqual(
-			expect.objectContaining({
-				[builderKind.runTimeKey]: {
-					hooks: [
-						{
-							onConstructRequest: expect.any(Function),
-							beforeRouteExecution: expect.any(Function),
-						},
-						{
-							beforeRouteExecution: expect.any(Function),
-						},
-					],
-					method: "GET",
-					paths: ["/test"],
-					preflightSteps: [],
-					steps: [],
-					metadata: [],
-					bodyController: null,
-				},
-			}),
-		);
 	});
 
 	it("useRouteBuilder with Custom bodyController", () => {
@@ -220,8 +155,7 @@ describe("route builder", () => {
 					readonly metadata: readonly [];
 					readonly bodyController: BodyController<"formData", FormDataBodyReaderParams>;
 				},
-				{},
-				Request
+				{}
 			>,
 			"strict"
 		>;
