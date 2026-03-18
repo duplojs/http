@@ -32,25 +32,12 @@ const defaultRouteFunctionBuilder = create.createRouteFunctionBuilder(index.rout
     const hookAfterSendResponse = utils.pipe(allHooks, utils.A.map(({ afterSendResponse }) => afterSendResponse), utils.A.filter(utils.isType("function")), utils.forward);
     const hookBeforeRouteExecution = utils.pipe(allHooks, utils.A.map(({ beforeRouteExecution }) => beforeRouteExecution), utils.A.filter(utils.isType("function")), utils.forward);
     const hookBeforeSendResponse = utils.pipe(allHooks, utils.A.map(({ beforeSendResponse }) => beforeSendResponse), utils.A.filter(utils.isType("function")), utils.forward);
-    const hookOnConstructRequest = utils.pipe(allHooks, utils.A.map(({ onConstructRequest }) => onConstructRequest), utils.A.filter(utils.isType("function")), utils.forward);
     const hookError = utils.pipe(allHooks, utils.A.map(({ error }) => error), utils.A.filter(utils.isType("function")), utils.forward);
     const hookSendResponse = utils.pipe(allHooks, utils.A.map(({ sendResponse }) => sendResponse), utils.A.filter(utils.isType("function")), utils.forward);
     const hooks = {
-        afterSendResponse: hook.buildHookAfter(hookAfterSendResponse),
         beforeRouteExecution: hook.buildHookBefore(hookBeforeRouteExecution),
+        afterSendResponse: hook.buildHookAfter(hookAfterSendResponse),
         beforeSendResponse: hook.buildHookAfter(hookBeforeSendResponse),
-        onConstructRequest: hookOnConstructRequest.length
-            ? async (params) => {
-                let newRequest = params.request;
-                for (let index = 0; index < hookOnConstructRequest.length; index++) {
-                    newRequest = await hookOnConstructRequest[index]({
-                        ...params,
-                        request: newRequest,
-                    });
-                }
-                return newRequest;
-            }
-            : (params) => params.request,
         error: hook.buildHookErrorBefore(hookError),
         sendResponse: hook.buildHookAfter(hookSendResponse),
     };
@@ -97,18 +84,9 @@ const defaultRouteFunctionBuilder = create.createRouteFunctionBuilder(index.rout
         }
     }
     return success(async (request) => {
-        const currentRequest = await hooks.onConstructRequest({
-            request,
-            addRequestProperties: (newProperties) => {
-                for (const key in newProperties) {
-                    request[key] = newProperties[key];
-                }
-                return request;
-            },
-        });
-        const currentResponse = await routeExecution(currentRequest);
+        const currentResponse = await routeExecution(request);
         const afterHookParams = {
-            request: currentRequest,
+            request,
             currentResponse,
             exit: hook.exitHookFunction,
             next: hook.nextHookFunction,

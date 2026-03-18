@@ -56,6 +56,21 @@ export type Routes = {
         };
     };
 } | {
+    method: "DELETE";
+    path: "/users";
+    body: {
+        id: number;
+    };
+    responses: {
+        code: "422";
+        information: "extract-error";
+        body?: undefined;
+    } | {
+        code: "204";
+        information: "users.deleted";
+        body?: undefined;
+    };
+} | {
     method: "POST";
     path: "/documents";
     body: TheFormData<{

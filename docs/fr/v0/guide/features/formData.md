@@ -1,8 +1,8 @@
 ---
 description: "Gérer des FormData à structure complexe."
 prev:
-  text: "Génération OpenAPI"
-  link: "/fr/v0/guide/plugins/openApiGenerator"
+  text: "Contrôle du cache"
+  link: "/fr/v0/guide/plugins/cacheController"
 next:
   text: "Server-Sent Events (SSE)"
   link: "/fr/v0/guide/features/SSE"

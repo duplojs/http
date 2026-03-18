@@ -1,0 +1,12 @@
+{
+  "extends": "../../../tsconfig.app.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+	  "@core/*": ["../../core/*"],
+	  "@plugin-cors/*": ["./*"],
+    },
+	"types": ["node"],
+  },
+  "include": ["**/*.ts", "../../core/**/*.ts"],
+}

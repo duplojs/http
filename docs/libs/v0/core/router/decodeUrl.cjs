@@ -39,10 +39,7 @@ function decodeUrl(url) {
         };
     }
     catch {
-        return {
-            path: "/",
-            query: {},
-        };
+        return null;
     }
 }
 

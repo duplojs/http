@@ -8,6 +8,8 @@ var index = require('../request/index.cjs');
 var defaultNotfoundHandler = require('./defaultNotfoundHandler.cjs');
 var defaultExtractContract = require('./defaultExtractContract.cjs');
 var defaultBodyController = require('./defaultBodyController.cjs');
+var defaultMalformedUrlHandler = require('./defaultMalformedUrlHandler.cjs');
+var defaultEmptyReaderImplementation = require('./defaultEmptyReaderImplementation.cjs');
 var hooks = require('./hooks.cjs');
 var handler = require('../steps/handler.cjs');
 
@@ -20,11 +22,12 @@ class Hub extends utils.kindHeritage("hub", kind.createCoreLibKind("hub")) {
     routes = new Set();
     routeFunctionBuilders = [];
     stepFunctionBuilders = [];
-    bodyReaderImplementations = [];
+    bodyReaderImplementations = [defaultEmptyReaderImplementation.defaultEmptyReaderImplementation];
     classRequest = index.Request;
     notfoundHandler = defaultNotfoundHandler.defaultNotfoundHandler;
     defaultExtractContract = defaultExtractContract.defaultExtractContract;
     defaultBodyController = defaultBodyController.defaultBodyController;
+    malformedUrlHandler = defaultMalformedUrlHandler.defaultMalformedUrlHandler;
     constructor(config) {
         super({});
         this.config = config;
@@ -100,6 +103,14 @@ class Hub extends utils.kindHeritage("hub", kind.createCoreLibKind("hub")) {
     aggregatesHooksRouteLifeCycle(hookName) {
         return utils.A.flatMap(this.hooksRouteLifeCycle, (hooks) => hooks[hookName] ?? []);
     }
+    setMalformedUrlHandler(responseContract, theFunction) {
+        this.malformedUrlHandler = handler.createHandlerStep({
+            responseContract,
+            theFunction: (__, params) => theFunction(params),
+            metadata: [],
+        });
+        return this;
+    }
     /**
      * @internal
      */
@@ -114,6 +125,8 @@ function createHub(config) {
 exports.defaultNotfoundHandler = defaultNotfoundHandler.defaultNotfoundHandler;
 exports.defaultExtractContract = defaultExtractContract.defaultExtractContract;
 exports.defaultBodyController = defaultBodyController.defaultBodyController;
+exports.defaultMalformedUrlHandler = defaultMalformedUrlHandler.defaultMalformedUrlHandler;
+exports.defaultEmptyReaderImplementation = defaultEmptyReaderImplementation.defaultEmptyReaderImplementation;
 exports.createHookHubLifeCycle = hooks.createHookHubLifeCycle;
 exports.hookServerExitKind = hooks.hookServerExitKind;
 exports.hookServerNextKind = hooks.hookServerNextKind;

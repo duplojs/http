@@ -6,6 +6,8 @@ import { Request } from '../request/index.mjs';
 import { defaultNotfoundHandler } from './defaultNotfoundHandler.mjs';
 import { defaultExtractContract } from './defaultExtractContract.mjs';
 import { defaultBodyController } from './defaultBodyController.mjs';
+import { defaultMalformedUrlHandler } from './defaultMalformedUrlHandler.mjs';
+import { defaultEmptyReaderImplementation } from './defaultEmptyReaderImplementation.mjs';
 export { createHookHubLifeCycle, hookServerExitKind, hookServerNextKind, launchHookBeforeBuildRoute, launchHookServer, launchHookServerError, serverErrorExitHookFunction, serverErrorNextHookFunction } from './hooks.mjs';
 import { createHandlerStep } from '../steps/handler.mjs';
 
@@ -18,11 +20,12 @@ class Hub extends kindHeritage("hub", createCoreLibKind("hub")) {
     routes = new Set();
     routeFunctionBuilders = [];
     stepFunctionBuilders = [];
-    bodyReaderImplementations = [];
+    bodyReaderImplementations = [defaultEmptyReaderImplementation];
     classRequest = Request;
     notfoundHandler = defaultNotfoundHandler;
     defaultExtractContract = defaultExtractContract;
     defaultBodyController = defaultBodyController;
+    malformedUrlHandler = defaultMalformedUrlHandler;
     constructor(config) {
         super({});
         this.config = config;
@@ -98,6 +101,14 @@ class Hub extends kindHeritage("hub", createCoreLibKind("hub")) {
     aggregatesHooksRouteLifeCycle(hookName) {
         return A.flatMap(this.hooksRouteLifeCycle, (hooks) => hooks[hookName] ?? []);
     }
+    setMalformedUrlHandler(responseContract, theFunction) {
+        this.malformedUrlHandler = createHandlerStep({
+            responseContract,
+            theFunction: (__, params) => theFunction(params),
+            metadata: [],
+        });
+        return this;
+    }
     /**
      * @internal
      */
@@ -109,4 +120,4 @@ function createHub(config) {
     return Hub.new(config);
 }
 
-export { Hub, createHub, defaultBodyController, defaultExtractContract, defaultNotfoundHandler, hubKind };
+export { Hub, createHub, defaultBodyController, defaultEmptyReaderImplementation, defaultExtractContract, defaultMalformedUrlHandler, defaultNotfoundHandler, hubKind };

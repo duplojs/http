@@ -4,4 +4,4 @@ export interface DecodedUrl {
     path: string;
     query: Record<string, string | string[]>;
 }
-export declare function decodeUrl(url: string): DecodedUrl;
+export declare function decodeUrl(url: string): DecodedUrl | null;

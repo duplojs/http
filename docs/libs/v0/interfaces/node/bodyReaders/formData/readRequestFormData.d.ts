@@ -14,7 +14,8 @@ export interface ReadRequestFormDataParams {
     maxFileQuantity: number;
     maxBufferSize: number;
     maxKeyLength: number;
-    fileMaxSize?: number;
+    fileMaxSize: number;
+    textFieldMaxSize: number;
     mimeType?: RegExp;
 }
 export declare function readRequestFormData<GenericValueAccumulator extends unknown, GenericOutputHeader extends E.Left = never>(request: http.IncomingMessage, firstValueAccumulator: GenericValueAccumulator, params: ReadRequestFormDataParams, onReceiveHeader: (header: HeaderPartInformation) => MaybePromise<ReadRequestFormDataStreamChunkEvent<GenericValueAccumulator> | Error>): Promise<E.Left<"server-error", unknown> | GenericOutputHeader | E.Error<Error> | GenericValueAccumulator>;

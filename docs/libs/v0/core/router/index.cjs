@@ -3,13 +3,12 @@
 require('../hub/index.cjs');
 var utils = require('@duplojs/utils');
 var pathToRegExp = require('./pathToRegExp.cjs');
-var index = require('../route/index.cjs');
 var buildError = require('./buildError.cjs');
 require('../functionsBuilders/route/index.cjs');
 var decodeUrl = require('./decodeUrl.cjs');
-var text = require('../request/bodyController/text.cjs');
 var notFoundBodyReaderImplementationError = require('./notFoundBodyReaderImplementationError.cjs');
 require('../functionsBuilders/index.cjs');
+var buildSystemRoute = require('./buildSystemRoute.cjs');
 require('./types/index.cjs');
 var _default = require('../functionsBuilders/route/default.cjs');
 var checkerStep = require('../functionsBuilders/steps/defaults/checkerStep.cjs');
@@ -63,35 +62,36 @@ async function buildRouter(hub) {
             }))),
         });
     });
-    const bodyControllerNotfoundRoute = text.controlBodyAsText();
-    const bodyReaderNotFoundRoute = utils.unwrap(bodyControllerNotfoundRoute.tryToCreateReader(text.TextBodyController.createReaderImplementation(() => Promise.resolve(utils.E.error(new Error("Inaccessible body in not found route."))))));
-    utils.asserts(bodyReaderNotFoundRoute, utils.isType("object"));
-    const buildedNotfoundRoute = await utils.asyncPipe(index.createRoute({
-        method: "GET",
-        paths: ["/"],
-        hooks: [],
-        preflightSteps: [],
-        steps: [hub.notfoundHandler],
-        metadata: [],
-        bodyController: bodyControllerNotfoundRoute,
-    }), async (route) => {
-        const result = await build.buildRouteFunction(route, buildParams);
-        return utils.E.whenIsLeft(result, (element) => {
-            throw new buildError.RouterBuildError(route, element);
-        });
-    }, utils.unwrap);
+    const defaultNotfoundRoute = await buildSystemRoute.buildSystemRoute({
+        handlerStep: hub.notfoundHandler,
+        buildParams,
+    });
+    const defaultMalformedUrlRoute = await buildSystemRoute.buildSystemRoute({
+        handlerStep: hub.malformedUrlHandler,
+        buildParams,
+    });
     const Request = hub.classRequest;
     return {
         exec: (initializationData) => {
             const routerElements = groupedRoute[initializationData.method];
             const decodedUrl = decodeUrl.decodeUrl(initializationData.url);
+            if (!decodedUrl) {
+                return defaultMalformedUrlRoute.buildedRoute(new Request({
+                    ...initializationData,
+                    params: {},
+                    path: "",
+                    query: {},
+                    matchedPath: null,
+                    bodyReader: defaultMalformedUrlRoute.bodyReader,
+                }));
+            }
             if (!routerElements) {
-                return buildedNotfoundRoute(new Request({
+                return defaultNotfoundRoute.buildedRoute(new Request({
                     ...initializationData,
                     ...decodedUrl,
                     params: {},
                     matchedPath: null,
-                    bodyReader: bodyReaderNotFoundRoute,
+                    bodyReader: defaultNotfoundRoute.bodyReader,
                 }));
             }
             // eslint-disable-next-line @typescript-eslint/prefer-for-of
@@ -109,12 +109,12 @@ async function buildRouter(hub) {
                     bodyReader: routerElement.bodyReader,
                 }));
             }
-            return buildedNotfoundRoute(new Request({
+            return defaultNotfoundRoute.buildedRoute(new Request({
                 ...initializationData,
                 ...decodedUrl,
                 params: {},
                 matchedPath: null,
-                bodyReader: bodyReaderNotFoundRoute,
+                bodyReader: defaultNotfoundRoute.bodyReader,
             }));
         },
         hooksRouteLifeCycle,
@@ -131,4 +131,5 @@ exports.decodeUrl = decodeUrl.decodeUrl;
 exports.regexQueryAnalyser = decodeUrl.regexQueryAnalyser;
 exports.regexUrlAnalyser = decodeUrl.regexUrlAnalyser;
 exports.NotFoundBodyReaderImplementationError = notFoundBodyReaderImplementationError.NotFoundBodyReaderImplementationError;
+exports.buildSystemRoute = buildSystemRoute.buildSystemRoute;
 exports.buildRouter = buildRouter;

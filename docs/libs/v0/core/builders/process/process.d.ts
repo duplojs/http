@@ -1,11 +1,10 @@
 import { type Floor } from "../../floor";
 import { type ProcessStep } from "../../steps";
 import { type O, type NeverCoalescing, type FixDeepFunctionInfer, type Adaptor, type AnyFunction } from "@duplojs/utils";
-import { type ProcessDefinition, type GetProcessExportValue, type Process, type GetProcessRequest } from "../../process";
-import { type Request } from "../../request";
+import { type ProcessDefinition, type GetProcessExportValue, type Process } from "../../process";
 import { type Metadata } from "../../metadata";
 declare module "./builder" {
-    interface ProcessBuilder<GenericDefinition extends ProcessDefinition = ProcessDefinition, GenericFloor extends Floor = {}, GenericRequest extends Request = Request> {
+    interface ProcessBuilder<GenericDefinition extends ProcessDefinition = ProcessDefinition, GenericFloor extends Floor = {}> {
         exec<GenericProcess extends Process, GenericProcessExportValue extends GetProcessExportValue<GenericProcess>, const GenericImportation extends readonly Extract<keyof GenericProcessExportValue, string>[] = never, GenericOptions extends (GenericProcess["definition"]["options"] | ((floor: GenericFloor) => Exclude<GenericProcess["definition"]["options"], undefined>)) = never, const GenericMetadata extends readonly Metadata[] = readonly []>(process: GenericProcess, params?: {
             readonly imports?: GenericImportation;
             readonly options?: FixDeepFunctionInfer<GenericProcess["definition"]["options"] | ((floor: GenericFloor) => GenericProcess["definition"]["options"]), GenericOptions>;
@@ -19,6 +18,6 @@ declare module "./builder" {
                     readonly metadata: GenericMetadata;
                 }>
             ];
-        }>, O.AssignObjects<GenericFloor, Pick<GenericProcessExportValue, GenericImportation[number]>>, GenericRequest & NeverCoalescing<GetProcessRequest<GenericProcess>, Request>>;
+        }>, O.AssignObjects<GenericFloor, Pick<GenericProcessExportValue, GenericImportation[number]>>>;
     }
 }

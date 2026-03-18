@@ -8,6 +8,9 @@
 		"@duplojs/http/node": ["libs/v0/interfaces/node/index"],
 		"@duplojs/http/codeGenerator": ["libs/v0/plugins/codeGenerator/index"],
 		"@duplojs/http/openApiGenerator": ["libs/v0/plugins/openApiGenerator/index"],
+		"@duplojs/http/static": ["libs/v0/plugins/static/index"],
+		"@duplojs/http/cors": ["libs/v0/plugins/cors/index"],
+		"@duplojs/http/cacheController": ["libs/v0/plugins/cacheController/index"],
 	},
 	"types": ["@types/web"]
   },

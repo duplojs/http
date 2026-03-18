@@ -4,14 +4,39 @@ require('../../../../core/request/index.cjs');
 var serverUtils = require('@duplojs/server-utils');
 var utils = require('@duplojs/utils');
 var readRequestFormData = require('./readRequestFormData.cjs');
-var node_fs = require('node:fs');
+var node_crypto = require('node:crypto');
 require('../../../../core/errors/index.cjs');
+var promises = require('node:fs/promises');
 var error = require('./error.cjs');
 var formData = require('../../../../core/request/bodyController/formData.cjs');
 var wrongContentTypeError = require('../../../../core/errors/wrongContentTypeError.cjs');
 
 function createFormDataBodyReaderImplementation(serverParams) {
     const serverMaxBodySize = utils.stringToBytes(serverParams.maxBodySize);
+    async function createUploadFile(extension, highWaterMark) {
+        let remainingAttempts = 5;
+        do {
+            const path = utils.Path.resolveRelative([
+                serverParams.uploadFolder,
+                `${node_crypto.randomUUID()}${extension}`,
+            ]);
+            try {
+                const handle = await promises.open(path, "wx");
+                return {
+                    path,
+                    writeStream: handle.createWriteStream({
+                        highWaterMark,
+                        autoClose: true,
+                    }),
+                };
+            }
+            catch (error) {
+                if (error.code !== "EEXIST" || --remainingAttempts === 0) {
+                    throw error;
+                }
+            }
+        } while (true);
+    }
     function addValue(mapResult, fieldName, newValue) {
         const value = mapResult.get(fieldName);
         if (value === undefined) {
@@ -30,37 +55,31 @@ function createFormDataBodyReaderImplementation(serverParams) {
         const result = await readRequestFormData.readRequestFormData(request.raw.request, new Map(), {
             maxBodySize: params.bodyMaxSize ?? serverMaxBodySize,
             fileMaxSize: params.fileMaxSize ?? Infinity,
+            textFieldMaxSize: params.textFieldMaxSize ?? Infinity,
             maxFileQuantity: params.maxFileQuantity,
             mimeType: params.mimeType,
             maxBufferSize: params.maxBufferSize,
             maxKeyLength: params.maxKeyLength,
-        }, (header) => {
+        }, async (header) => {
             const fieldName = header.name;
             if (header.filename) {
                 const extension = utils.Path.getExtensionName(header.filename);
                 const displayExtension = extension ? `.${extension}` : "";
-                const filePath = utils.Path.resolveRelative([
-                    serverParams.uploadFolder,
-                    `${Math.random().toString(36).slice(2, 10)}-${Date.now()}${displayExtension}`,
-                ]);
-                filesAttache.push(filePath);
-                const currentFile = node_fs.createWriteStream(filePath, {
-                    highWaterMark: request.raw.request.readableHighWaterMark,
-                    flags: "wx",
-                });
+                const { path, writeStream } = await createUploadFile(displayExtension, request.raw.request.readableHighWaterMark);
+                filesAttache.push(path);
                 return {
-                    onReceiveChunk: (chunk) => new Promise((resolve, reject) => void currentFile.write(chunk, (result) => {
+                    onReceiveChunk: (chunk) => new Promise((resolve, reject) => void writeStream.write(chunk, (result) => {
                         if (result instanceof Error) {
                             return void reject(result);
                         }
                         return void resolve();
                     })),
                     onEndPart: (valueAccumulator) => {
-                        currentFile.end();
-                        addValue(valueAccumulator, fieldName, serverUtils.SF.createFileInterface(currentFile.path.toString()));
+                        writeStream.end();
+                        addValue(valueAccumulator, fieldName, serverUtils.SF.createFileInterface(path));
                         return valueAccumulator;
                     },
-                    onError: () => void currentFile.end(),
+                    onError: () => void writeStream.end(),
                 };
             }
             let currentValue = "";

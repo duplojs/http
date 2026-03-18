@@ -108,6 +108,15 @@ export default pipe(
 									"// @filename: @duplojs/http/openApiGenerator.ts",
 									`export * from "@v${namedGroups?.version ?? ""}/openApiGenerator";`,
 
+									"// @filename: @duplojs/http/static.ts",
+									`export * from "@v${namedGroups?.version ?? ""}/static";`,
+
+									"// @filename: @duplojs/http/cors.ts",
+									`export * from "@v${namedGroups?.version ?? ""}/cors";`,
+
+									"// @filename: @duplojs/http/cacheController.ts",
+									`export * from "@v${namedGroups?.version ?? ""}/cacheController";`,
+
 									"// @filename: index.ts",
 									"// ---cut---",
 								],
@@ -133,6 +142,9 @@ export default pipe(
 								"@v0/node": ["libs/v0/interfaces/node/index"],
 								"@v0/codeGenerator": ["libs/v0/plugins/codeGenerator/index"],
 								"@v0/openApiGenerator": ["libs/v0/plugins/openApiGenerator/index"],
+								"@v0/static": ["libs/v0/plugins/static/index"],
+								"@v0/cors": ["libs/v0/plugins/cors/index"],
+								"@v0/cacheController": ["libs/v0/plugins/cacheController/index"],
 							},
 						},
 					},
@@ -263,6 +275,18 @@ export default pipe(
 											{
 												text: "Génération OpenAPI",
 												link: "/fr/v0/guide/plugins/openApiGenerator",
+											},
+											{
+												text: "Créer un point d'entrée static",
+												link: "/fr/v0/guide/plugins/static",
+											},
+											{
+												text: "Gestion CORS",
+												link: "/fr/v0/guide/plugins/cors",
+											},
+											{
+												text: "Contrôle du cache",
+												link: "/fr/v0/guide/plugins/cacheController",
 											},
 										],
 									},
@@ -407,6 +431,18 @@ export default pipe(
 											{
 												text: "OpenAPI generation",
 												link: "/en/v0/guide/plugins/openApiGenerator",
+											},
+											{
+												text: "Create a static entry point",
+												link: "/fr/v0/guide/plugins/static",
+											},
+											{
+												text: "CORS Management",
+												link: "/fr/v0/guide/plugins/cors",
+											},
+											{
+												text: "Cache Control",
+												link: "/fr/v0/guide/plugins/cacheController",
 											},
 										],
 									},

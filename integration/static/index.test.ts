@@ -1,5 +1,5 @@
 import { type SF, TESTImplementation, setEnvironment } from "@duplojs/server-utils";
-import { E, D } from "@duplojs/utils";
+import { E, D, mimeType } from "@duplojs/utils";
 import { createHttpServer } from "@duplojs/http/node";
 
 import { hub } from "@core";
@@ -21,6 +21,14 @@ describe("static plugin", async() => {
 		}
 
 		if (path === "files/fakeFiles/superTextFile.txt") {
+			return E.success({
+				isFile: true,
+				isDirectory: false,
+				modifiedAt: mockedModifiedAt,
+			} as SF.StatInfo);
+		}
+
+		if (path === "files/fakeFiles/1mb.jpg") {
 			return E.success({
 				isFile: true,
 				isDirectory: false,
@@ -180,6 +188,38 @@ describe("static plugin", async() => {
 				[
 					"information",
 					"resource.notfound",
+				],
+			]),
+		});
+	});
+
+	it("default file in folder", async() => {
+		await expect(
+			fetch("http://localhost:8980/static-folder/", {
+				method: "GET",
+			})
+				.then((response) => ({
+					code: response.status,
+					headers: [...response.headers.entries()],
+				})),
+		).resolves.toStrictEqual({
+			code: 200,
+			headers: expect.arrayContaining([
+				[
+					"information",
+					"resource.found",
+				],
+				[
+					"last-modified",
+					mockedModifiedAt.toISOString(),
+				],
+				[
+					"content-type",
+					"image/jpeg",
+				],
+				[
+					"content-disposition",
+					"attachment; filename=\"1mb.jpg\"",
 				],
 			]),
 		});

@@ -30,25 +30,12 @@ const defaultRouteFunctionBuilder = createRouteFunctionBuilder(routeKind.has, as
     const hookAfterSendResponse = pipe(allHooks, A.map(({ afterSendResponse }) => afterSendResponse), A.filter(isType("function")), forward);
     const hookBeforeRouteExecution = pipe(allHooks, A.map(({ beforeRouteExecution }) => beforeRouteExecution), A.filter(isType("function")), forward);
     const hookBeforeSendResponse = pipe(allHooks, A.map(({ beforeSendResponse }) => beforeSendResponse), A.filter(isType("function")), forward);
-    const hookOnConstructRequest = pipe(allHooks, A.map(({ onConstructRequest }) => onConstructRequest), A.filter(isType("function")), forward);
     const hookError = pipe(allHooks, A.map(({ error }) => error), A.filter(isType("function")), forward);
     const hookSendResponse = pipe(allHooks, A.map(({ sendResponse }) => sendResponse), A.filter(isType("function")), forward);
     const hooks = {
-        afterSendResponse: buildHookAfter(hookAfterSendResponse),
         beforeRouteExecution: buildHookBefore(hookBeforeRouteExecution),
+        afterSendResponse: buildHookAfter(hookAfterSendResponse),
         beforeSendResponse: buildHookAfter(hookBeforeSendResponse),
-        onConstructRequest: hookOnConstructRequest.length
-            ? async (params) => {
-                let newRequest = params.request;
-                for (let index = 0; index < hookOnConstructRequest.length; index++) {
-                    newRequest = await hookOnConstructRequest[index]({
-                        ...params,
-                        request: newRequest,
-                    });
-                }
-                return newRequest;
-            }
-            : (params) => params.request,
         error: buildHookErrorBefore(hookError),
         sendResponse: buildHookAfter(hookSendResponse),
     };
@@ -95,18 +82,9 @@ const defaultRouteFunctionBuilder = createRouteFunctionBuilder(routeKind.has, as
         }
     }
     return success(async (request) => {
-        const currentRequest = await hooks.onConstructRequest({
-            request,
-            addRequestProperties: (newProperties) => {
-                for (const key in newProperties) {
-                    request[key] = newProperties[key];
-                }
-                return request;
-            },
-        });
-        const currentResponse = await routeExecution(currentRequest);
+        const currentResponse = await routeExecution(request);
         const afterHookParams = {
-            request: currentRequest,
+            request,
             currentResponse,
             exit: exitHookFunction,
             next: nextHookFunction,

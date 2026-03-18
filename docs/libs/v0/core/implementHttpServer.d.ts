@@ -1,10 +1,16 @@
 import { type Hub } from "./hub";
 import { type RouterInitializationData } from "./router";
-import { type MaybePromise } from "@duplojs/utils";
+import { type AnyTuple, type MaybePromise } from "@duplojs/utils";
 import { type HttpServerParams } from "./types";
+import { type HookRouteLifeCycle } from "./route";
+export interface GetInterfaceHooksParams {
+    readonly hub: Hub;
+    readonly httpServerParams: HttpServerParams;
+}
 export interface ImplementHttpServerParams {
     readonly hub: Hub;
     readonly httpServerParams: HttpServerParams;
+    getInterfaceHooks(params: GetInterfaceHooksParams): AnyTuple<HookRouteLifeCycle>;
 }
 export type ExecRouteSystem = (routerInitializationData: RouterInitializationData, whenUncaughtError: (error: unknown, routerInitializationData: RouterInitializationData) => MaybePromise<void>) => Promise<void>;
 export interface InitHttpServerParams {

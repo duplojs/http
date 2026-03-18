@@ -39,6 +39,7 @@ export function makeRouteFolder(params: MakeRouteFolderParams) {
 	const getResourcePath = innerPipe(
 		S.replace(prefixRegex, ""),
 		S.prepend(sourcePath),
+		S.replace(/\/+$/, ""),
 	);
 
 	return useRouteBuilder(

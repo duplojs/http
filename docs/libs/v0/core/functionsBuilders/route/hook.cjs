@@ -20,7 +20,10 @@ function buildHookBefore(hooks$1) {
     }
     return async (params) => {
         for (let index = 0; index < hooks$1.length; index++) {
-            const result = await hooks$1[index](params);
+            let result = hooks$1[index](params);
+            if (result instanceof Promise) {
+                result = await result;
+            }
             if (hooks.hookRouteExitKind.has(result)
                 || result instanceof hook.HookResponse) {
                 return result;
@@ -35,7 +38,10 @@ function buildHookErrorBefore(hooks$1) {
     }
     return async (params) => {
         for (let index = 0; index < hooks$1.length; index++) {
-            const result = await hooks$1[index](params);
+            let result = hooks$1[index](params);
+            if (result instanceof Promise) {
+                result = await result;
+            }
             if (hooks.hookRouteExitKind.has(result)
                 || result instanceof hook.HookResponse) {
                 return result;
@@ -50,7 +56,10 @@ function buildHookAfter(hooks$1) {
     }
     return async (params) => {
         for (let index = 0; index < hooks$1.length; index++) {
-            const result = await hooks$1[index](params);
+            let result = hooks$1[index](params);
+            if (result instanceof Promise) {
+                result = await result;
+            }
             if (hooks.hookRouteExitKind.has(result)) {
                 return result;
             }

@@ -4,7 +4,7 @@ var DataParserToTypescript = require('@duplojs/data-parser-tools/toTypescript');
 var utils = require('@duplojs/utils');
 var routeToDataParser = require('./routeToDataParser.cjs');
 var serverUtils = require('@duplojs/server-utils');
-var typescriptTransfomer = require('./typescriptTransfomer.cjs');
+var typescriptTransformer = require('./typescriptTransformer.cjs');
 
 function _interopNamespaceDefault(e) {
     var n = Object.create(null);
@@ -45,9 +45,9 @@ function codeGeneratorPlugin(pluginParams) {
                         identifier: "Routes",
                         mode: "in",
                         transformers: [
-                            typescriptTransfomer.fileTransformer,
-                            typescriptTransfomer.dateTransformer,
-                            typescriptTransfomer.timeTransformer,
+                            typescriptTransformer.fileTransformer,
+                            typescriptTransformer.dateTransformer,
+                            typescriptTransformer.timeTransformer,
                             ...DataParserToTypescript__namespace.defaultTransformers,
                         ],
                     });

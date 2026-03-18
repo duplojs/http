@@ -2,7 +2,7 @@ import * as DataParserToTypescript from '@duplojs/data-parser-tools/toTypescript
 import { equal, A, DP, asserts, E } from '@duplojs/utils';
 import { routeToDataParser } from './routeToDataParser.mjs';
 import { SF } from '@duplojs/server-utils';
-import { fileTransformer, dateTransformer, timeTransformer } from './typescriptTransfomer.mjs';
+import { fileTransformer, dateTransformer, timeTransformer } from './typescriptTransformer.mjs';
 
 function codeGeneratorPlugin(pluginParams) {
     return () => ({

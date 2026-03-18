@@ -75,6 +75,43 @@ exports[`openApiGenerator > correct generate file 1`] = `
             }
           }
         }
+      },
+      "delete": {
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NotIdentified7"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "headers": {
+              "information": {
+                "schema": {
+                  "const": "users.deleted",
+                  "type": "string"
+                },
+                "description": "users.deleted"
+              }
+            }
+          },
+          "422": {
+            "headers": {
+              "information": {
+                "schema": {
+                  "const": "extract-error",
+                  "type": "string"
+                },
+                "description": "extract-error"
+              }
+            }
+          }
+        }
       }
     },
     "/users/{userId}": {
@@ -130,7 +167,7 @@ exports[`openApiGenerator > correct generate file 1`] = `
           "content": {
             "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/NotIdentified7"
+                "$ref": "#/components/schemas/NotIdentified10"
               }
             }
           }
@@ -178,7 +215,7 @@ exports[`openApiGenerator > correct generate file 1`] = `
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/NotIdentified10"
+                  "$ref": "#/components/schemas/NotIdentified13"
                 }
               }
             }
@@ -194,7 +231,7 @@ exports[`openApiGenerator > correct generate file 1`] = `
             "in": "query",
             "required": false,
             "schema": {
-              "$ref": "#/components/schemas/NotIdentified11"
+              "$ref": "#/components/schemas/NotIdentified14"
             }
           }
         ],
@@ -212,7 +249,7 @@ exports[`openApiGenerator > correct generate file 1`] = `
             "content": {
               "text/event-stream": {
                 "itemSchema": {
-                  "$ref": "#/components/schemas/NotIdentified13"
+                  "$ref": "#/components/schemas/NotIdentified16"
                 }
               }
             }
@@ -259,7 +296,7 @@ exports[`openApiGenerator > correct generate file 1`] = `
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/NotIdentified15"
+                  "$ref": "#/components/schemas/NotIdentified18"
                 }
               }
             }
@@ -295,7 +332,7 @@ exports[`openApiGenerator > correct generate file 1`] = `
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/NotIdentified17"
+                  "$ref": "#/components/schemas/NotIdentified20"
                 }
               }
             }
@@ -422,6 +459,26 @@ exports[`openApiGenerator > correct generate file 1`] = `
       "NotIdentified7": {
         "type": "object",
         "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "NotIdentified8": {},
+      "NotIdentified9": {},
+      "NotIdentified10": {
+        "type": "object",
+        "properties": {
           "bool": {
             "anyOf": [
               {
@@ -467,13 +524,13 @@ exports[`openApiGenerator > correct generate file 1`] = `
           "name"
         ]
       },
-      "NotIdentified8": {},
-      "NotIdentified9": {},
-      "NotIdentified10": {
+      "NotIdentified11": {},
+      "NotIdentified12": {},
+      "NotIdentified13": {
         "type": "string",
         "format": "binary"
       },
-      "NotIdentified11": {
+      "NotIdentified14": {
         "anyOf": [
           {
             "type": "boolean"
@@ -496,8 +553,8 @@ exports[`openApiGenerator > correct generate file 1`] = `
           }
         ]
       },
-      "NotIdentified12": {},
-      "NotIdentified13": {
+      "NotIdentified15": {},
+      "NotIdentified16": {
         "type": "object",
         "properties": {
           "event": {
@@ -542,18 +599,18 @@ exports[`openApiGenerator > correct generate file 1`] = `
           "data"
         ]
       },
-      "NotIdentified14": {},
-      "NotIdentified15": {
+      "NotIdentified17": {},
+      "NotIdentified18": {
         "type": "string",
         "format": "binary"
       },
-      "NotIdentified16": {},
-      "NotIdentified17": {
+      "NotIdentified19": {},
+      "NotIdentified20": {
         "type": "string",
         "format": "binary"
       },
-      "NotIdentified18": {},
-      "NotIdentified19": {}
+      "NotIdentified21": {},
+      "NotIdentified22": {}
     }
   }
 }"

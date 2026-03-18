@@ -51,3 +51,14 @@ useRouteBuilder("POST", "/users")
 		ResponseContract.ok("users.create", user),
 		(floor, { response }) => response("users.create", floor.body),
 	);
+
+useRouteBuilder("DELETE", "/users")
+	.extract({
+		body: {
+			id: DPE.coerce.number(),
+		},
+	})
+	.handler(
+		ResponseContract.noContent("users.deleted"),
+		(__, { response }) => response("users.deleted"),
+	);
