@@ -13,6 +13,7 @@ import { type createRouteFunctionBuilder } from "@core/functionsBuilders/route";
 import { defaultBodyController } from "./defaultBodyController";
 import { defaultMalformedUrlHandler } from "./defaultMalformedUrlHandler";
 import { defaultEmptyReaderImplementation } from "./defaultEmptyReaderImplementation";
+import { type createRouterFunctionBuilder } from "@core/functionsBuilders/router";
 
 export * from "./hooks";
 export * from "./defaultNotfoundHandler";
@@ -50,6 +51,8 @@ export class Hub<
 	public hooksHubLifeCycle: HookHubLifeCycle[] = [];
 
 	public routes = new Set<Route>();
+
+	public routerFunctionBuilder: ReturnType<typeof createRouterFunctionBuilder> | undefined = undefined;
 
 	public routeFunctionBuilders: ReturnType<typeof createRouteFunctionBuilder>[] = [];
 
@@ -94,6 +97,13 @@ export class Hub<
 			A.map((route) => this.routes.add(route)),
 		);
 
+		return this;
+	}
+
+	public setRouterFunctionBuilder(
+		functionBuilder: ReturnType<typeof createRouterFunctionBuilder>,
+	) {
+		this.routerFunctionBuilder = functionBuilder;
 		return this;
 	}
 

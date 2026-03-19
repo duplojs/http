@@ -1,17 +1,12 @@
 import { E, type MaybePromise } from "@duplojs/utils";
-import { type HookRouteLifeCycle, type Route } from "@core/route";
-import { type Request } from "@core/request";
+import { type BuildedRoute, type HookRouteLifeCycle, type Route } from "@core/route";
 import { type Environment } from "@core/types";
 import { type BuildStepSuccessEither, type BuildStepNotSupportEither } from "../steps";
 import { type Steps } from "@core/steps";
 import { type ResponseContract } from "@core/response";
 
-export type BuildedRouteFunction = (
-	request: Request,
-) => Promise<void>;
-
 export type BuildRouteSuccessEither<
-> = E.Right<"buildSuccess", BuildedRouteFunction>;
+> = E.Right<"buildSuccess", BuildedRoute>;
 
 export type BuildRouteNotSupportEither = E.Left<"routeNotSupport", Route>;
 
@@ -28,7 +23,7 @@ export interface RouteFunctionBuilderParams {
 	>;
 
 	success(
-		result: BuildedRouteFunction
+		result: BuildedRoute
 	): BuildRouteSuccessEither;
 
 	readonly defaultExtractContract: ResponseContract.Contract;

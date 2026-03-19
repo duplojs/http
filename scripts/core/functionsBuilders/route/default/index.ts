@@ -4,8 +4,10 @@ import { A, E, forward, isType, pipe } from "@duplojs/utils";
 import { HookResponse, Response } from "@core/response";
 import { type Request } from "@core/request";
 import { buildHookAfter, buildHookBefore, buildHookErrorBefore, createHookResponse, exitHookFunction, nextHookFunction } from "./hook";
-import { createRouteFunctionBuilder } from "./create";
-import { buildStepsFunction } from "../steps";
+import { createRouteFunctionBuilder } from "../create";
+import { buildStepsFunction } from "../../steps";
+
+export * from "./hook";
 
 export const defaultRouteFunctionBuilder = createRouteFunctionBuilder(
 	routeKind.has,

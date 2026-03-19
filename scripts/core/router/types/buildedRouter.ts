@@ -1,9 +1,7 @@
-import { type createStepFunctionBuilder, type createRouteFunctionBuilder } from "@core/functionsBuilders";
-import { type HookHubLifeCycle } from "@core/hub";
 import { type RequestInitializationData } from "@core/request";
-import { type HookRouteLifeCycle, type Route } from "@core/route";
 
-export type RouterInitializationData = Omit<
+// need omit to correct override
+export type RouterParams = Omit<
 	RequestInitializationData,
 	| "matchedPath"
 	| "bodyReader"
@@ -12,15 +10,6 @@ export type RouterInitializationData = Omit<
 	| "query"
 >;
 
-export interface BuildedRouter {
-	exec(
-		initializationData: RouterInitializationData
-	): Promise<void>;
-	readonly routes: ReadonlySet<Route>;
-	readonly hooksRouteLifeCycle: readonly HookRouteLifeCycle[];
-	readonly routeFunctionBuilders: readonly ReturnType<typeof createRouteFunctionBuilder>[];
-	readonly stepFunctionBuilders: readonly ReturnType<typeof createStepFunctionBuilder>[];
-	readonly hooksHubLifeCycle: readonly HookHubLifeCycle[];
-
-}
-
+export type BuildedRouter = (
+	params: RouterParams
+) => Promise<void>;

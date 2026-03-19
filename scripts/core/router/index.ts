@@ -1,36 +1,19 @@
 import { type Hub, launchHookBeforeBuildRoute } from "@core/hub";
-import { type BuildedRouter } from "./types";
 import { A, E, forward, G, isType, justReturn, O, pipe, unwrap } from "@duplojs/utils";
-import { type BuildedRoute } from "@core/route/types";
 import { pathToRegExp } from "./pathToRegExp";
 import { RouterBuildError } from "./buildError";
-import { buildRouteFunction, type createRouteFunctionBuilder, defaultRouteFunctionBuilder, type BuildRouteFunctionParams } from "@core/functionsBuilders/route";
-import { decodeUrl } from "./decodeUrl";
-import { type BodyReader } from "@core/request";
 import { NotFoundBodyReaderImplementationError } from "./notFoundBodyReaderImplementationError";
-import { type createStepFunctionBuilder, defaultCheckerStepFunctionBuilder, defaultCutStepFunctionBuilder, defaultExtractStepFunctionBuilder, defaultHandlerStepFunctionBuilder, defaultProcessStepFunctionBuilder } from "@core/functionsBuilders";
-import { buildSystemRoute } from "./buildSystemRoute";
+import { buildRouteFunction, type BuildRouteFunctionParams, buildRouterFunction, type createRouteFunctionBuilder, type createStepFunctionBuilder, defaultCheckerStepFunctionBuilder, defaultCutStepFunctionBuilder, defaultExtractStepFunctionBuilder, defaultHandlerStepFunctionBuilder, defaultProcessStepFunctionBuilder, defaultRouteFunctionBuilder, defaultRouterFunctionBuilder } from "@core/functionsBuilders";
+import { createRouterElementSystem } from "./createRouterElementSystem";
+import { type RouterElementWrapper, type Router } from "./types";
 
 export * from "./types";
 export * from "./pathToRegExp";
 export * from "./buildError";
-export * from "./decodeUrl";
 export * from "./notFoundBodyReaderImplementationError";
-export * from "./buildSystemRoute";
+export * from "./createRouterElementSystem";
 
-interface RouterElement {
-	pattern: RegExp;
-	matchedPath: string;
-	bodyReader: BodyReader;
-	buildedRoute: BuildedRoute;
-}
-
-type GroupedRoute = Record<
-	string,
-	RouterElement[]
->;
-
-export async function buildRouter(hub: Hub): Promise<BuildedRouter> {
+export async function createRouter(hub: Hub): Promise<Router> {
 	const { environment } = hub.config;
 	const {
 		hooksRouteLifeCycle,
@@ -66,9 +49,9 @@ export async function buildRouter(hub: Hub): Promise<BuildedRouter> {
 		defaultExtractContract: hub.defaultExtractContract,
 	};
 
-	const groupedRoute = await G.asyncReduce(
+	const routerElementWrapper = await G.asyncReduce(
 		routes,
-		G.reduceFrom<GroupedRoute>({}),
+		G.reduceFrom<RouterElementWrapper>({}),
 		async({
 			lastValue,
 			element: route,
@@ -133,78 +116,25 @@ export async function buildRouter(hub: Hub): Promise<BuildedRouter> {
 		},
 	);
 
-	const defaultNotfoundRoute = await buildSystemRoute({
+	const notfoundRouterElement = await createRouterElementSystem({
 		handlerStep: hub.notfoundHandler,
 		buildParams,
 	});
 
-	const defaultMalformedUrlRoute = await buildSystemRoute({
+	const malformedUrlRouterElement = await createRouterElementSystem({
 		handlerStep: hub.malformedUrlHandler,
 		buildParams,
 	});
 
-	const Request = hub.classRequest;
-
 	return {
-		exec: (initializationData) => {
-			const routerElements = groupedRoute[initializationData.method];
-			const decodedUrl = decodeUrl(initializationData.url);
-
-			if (!decodedUrl) {
-				return defaultMalformedUrlRoute.buildedRoute(
-					new Request({
-						...initializationData,
-						params: {},
-						path: "",
-						query: {},
-						matchedPath: null,
-						bodyReader: defaultMalformedUrlRoute.bodyReader,
-					}),
-				);
-			}
-
-			if (!routerElements) {
-				return defaultNotfoundRoute.buildedRoute(
-					new Request({
-						...initializationData,
-						...decodedUrl,
-						params: {},
-						matchedPath: null,
-						bodyReader: defaultNotfoundRoute.bodyReader,
-					}),
-				);
-			}
-
-			// eslint-disable-next-line @typescript-eslint/prefer-for-of
-			for (let index = 0; index < routerElements.length; index++) {
-				const routerElement = routerElements[index]!;
-				const result = routerElement.pattern.exec(decodedUrl.path);
-
-				if (!result) {
-					continue;
-				}
-
-				return routerElement.buildedRoute(
-					new Request({
-						...initializationData,
-						...decodedUrl,
-						params: result.groups ?? {},
-						matchedPath: routerElement.matchedPath,
-						bodyReader: routerElement.bodyReader,
-					}),
-				);
-			}
-
-			return defaultNotfoundRoute.buildedRoute(
-				new Request({
-					...initializationData,
-					...decodedUrl,
-					params: {},
-					matchedPath: null,
-					bodyReader: defaultNotfoundRoute.bodyReader,
-				}),
-			);
-		},
+		exec: await buildRouterFunction({
+			environment: hub.config.environment,
+			routerElementWrapper,
+			notfoundRouterElement: notfoundRouterElement,
+			malformedUrlRouterElement: malformedUrlRouterElement,
+			classRequest: hub.classRequest,
+			routerFunctionBuilder: hub.routerFunctionBuilder ?? defaultRouterFunctionBuilder,
+		}),
 		hooksRouteLifeCycle,
 		routeFunctionBuilders,
 		routes,

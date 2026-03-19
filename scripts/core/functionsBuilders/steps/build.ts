@@ -6,9 +6,7 @@ import { type ResponseContract } from "@core/response";
 
 export interface BuildStepFunctionParams {
 	readonly stepFunctionBuilders: readonly ReturnType<typeof createStepFunctionBuilder>[];
-
 	readonly environment: Environment;
-
 	readonly defaultExtractContract: ResponseContract.Contract;
 }
 

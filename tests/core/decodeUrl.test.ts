@@ -1,4 +1,4 @@
-import { decodeUrl } from "@core/router";
+import { decodeUrl } from "@core/decodeUrl";
 
 describe("decodeUrl", () => {
 	it("decodes paths and query parameters", () => {

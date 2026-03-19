@@ -17,6 +17,7 @@ describe("hub", () => {
 		routes: new Set(),
 		stepFunctionBuilders: [],
 		bodyReaderImplementations: [defaultEmptyReaderImplementation],
+		routerFunctionBuilder: undefined,
 	};
 
 	it("hub shape", () => {
@@ -167,6 +168,19 @@ describe("hub", () => {
 		});
 	});
 
+	it("hub set route hooks", () => {
+		const routerFunctionBuilder = vi.fn();
+		const hub = createHub({
+			environment: "DEV",
+		})
+			.setRouterFunctionBuilder(routerFunctionBuilder);
+
+		expect({ ...hub }).toStrictEqual({
+			...baseHub,
+			routerFunctionBuilder,
+		});
+	});
+
 	it("hub add hub hooks", () => {
 		const hubHook: HookHubLifeCycle = {};
 		const hub = createHub({
@@ -210,7 +224,7 @@ describe("hub", () => {
 		]);
 	});
 
-	it("hub set not found handler", () => {
+	it("hub set not found handler", async() => {
 		const contract = ResponseContract.notFound("test");
 
 		const hub = createHub({
@@ -229,9 +243,15 @@ describe("hub", () => {
 				}),
 			}),
 		});
+
+		const spyNotfound = vi.fn(() => true as never);
+		const result = await hub.notfoundHandler.definition.theFunction({}, { response: spyNotfound } as never);
+
+		expect(result).toBe(true);
+		expect(spyNotfound).toHaveBeenCalledWith("test");
 	});
 
-	it("hub set malformed url handler", () => {
+	it("hub set malformed url handler", async() => {
 		const contract = ResponseContract.badRequest("malformed");
 
 		const hub = createHub({
@@ -250,6 +270,12 @@ describe("hub", () => {
 				}),
 			}),
 		});
+
+		const spyMalformed = vi.fn(() => true as never);
+		const result = await hub.malformedUrlHandler.definition.theFunction({}, { response: spyMalformed } as never);
+
+		expect(result).toBe(true);
+		expect(spyMalformed).toHaveBeenCalledWith("malformed");
 	});
 
 	it("hub set default extract contract", () => {
