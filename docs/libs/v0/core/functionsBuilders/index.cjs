@@ -2,4 +2,5 @@
 
 require('./route/index.cjs');
 require('./steps/index.cjs');
+require('./router/index.cjs');
 

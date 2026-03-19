@@ -1,13 +1,18 @@
 'use strict';
 
 require('./hub/index.cjs');
-var index = require('./router/index.cjs');
+var index$1 = require('./router/index.cjs');
 var utils = require('@duplojs/utils');
+var index = require('./defaultHooks/index.cjs');
 var hooks = require('./hub/hooks.cjs');
 
 async function implementHttpServer(params, initHttpServer) {
     await hooks.launchHookServer(params.hub.aggregatesHooksHubLifeCycle("beforeServerBuildRoutes"), params.hub, params.httpServerParams);
-    const router = await index.buildRouter(params.hub);
+    params.hub.addRouteHooks([
+        index.initDefaultHook(params.hub, params.httpServerParams),
+        ...params.getInterfaceHooks(params),
+    ]);
+    const router = await index$1.createRouter(params.hub);
     await hooks.launchHookServer(params.hub.aggregatesHooksHubLifeCycle("beforeStartServer"), params.hub, params.httpServerParams);
     const serverErrorHooks = params.hub.aggregatesHooksHubLifeCycle("serverError");
     function catchCriticalError(error) {

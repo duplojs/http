@@ -1,8 +1,8 @@
 import { type Hub } from "../hub";
-import { type BuildedRouter } from "./types";
+import { type Router } from "./types";
 export * from "./types";
 export * from "./pathToRegExp";
 export * from "./buildError";
-export * from "./decodeUrl";
 export * from "./notFoundBodyReaderImplementationError";
-export declare function buildRouter(hub: Hub): Promise<BuildedRouter>;
+export * from "./createRouterElementSystem";
+export declare function createRouter(hub: Hub): Promise<Router>;

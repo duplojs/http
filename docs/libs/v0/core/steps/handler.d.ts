@@ -2,7 +2,6 @@ import { type MaybePromise, type Kind, type MaybeArray } from "@duplojs/utils";
 import { type StepKind } from "./kind";
 import { type Floor } from "../floor";
 import { type ServerSentEventsPredictedResponse, type PredictedResponse, type ResponseContract } from "../response";
-import { type Request } from "../request";
 import { type StepFunctionParams } from "./types";
 import { type Metadata } from "../metadata";
 interface HandlerStepFunctionParamsServerSentEventsResponse<GenericResponse extends ServerSentEventsPredictedResponse> {
@@ -10,7 +9,7 @@ interface HandlerStepFunctionParamsServerSentEventsResponse<GenericResponse exte
         information: GenericInformation;
     }>>(information: GenericInformation, startSendingEvents: GenericFilteredResponse["startSendingEvents"]): GenericFilteredResponse;
 }
-export interface HandlerStepFunctionParams<GenericRequest extends Request = Request, GenericResponse extends PredictedResponse | ServerSentEventsPredictedResponse = PredictedResponse | ServerSentEventsPredictedResponse> extends StepFunctionParams<GenericRequest, Extract<GenericResponse, PredictedResponse>>, HandlerStepFunctionParamsServerSentEventsResponse<Extract<GenericResponse, ServerSentEventsPredictedResponse>> {
+export interface HandlerStepFunctionParams<GenericResponse extends PredictedResponse | ServerSentEventsPredictedResponse = PredictedResponse | ServerSentEventsPredictedResponse> extends StepFunctionParams<Extract<GenericResponse, PredictedResponse>>, HandlerStepFunctionParamsServerSentEventsResponse<Extract<GenericResponse, ServerSentEventsPredictedResponse>> {
 }
 export interface HandlerStepDefinition {
     theFunction(floor: Floor, params: HandlerStepFunctionParams): MaybePromise<PredictedResponse | ServerSentEventsPredictedResponse>;

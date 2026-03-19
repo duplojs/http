@@ -105,9 +105,6 @@ function makeClientEventsResponse(response, fetchUrl, fetchInitParams) {
                         },
                         signal: abortController.signal,
                     });
-                    if (fetchResponse.status === 204) {
-                        return exit();
-                    }
                     const fetchInformation = fetchResponse.headers.get(response.requestParams.informationHeaderKey);
                     if (fetchResponse.status !== 204
                         && fetchResponse.headers.get("content-type")?.includes("text/event-stream")

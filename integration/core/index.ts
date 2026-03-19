@@ -1,7 +1,9 @@
+import { asserts, E, Path } from "@duplojs/utils";
 import { setCurrentWorkingDirectory, SF } from "@duplojs/server-utils";
 import { createHub, routeStore } from "@duplojs/http";
 import { staticPlugin } from "@duplojs/http/static";
-import { asserts, E, Path } from "@duplojs/utils";
+import { corsPlugin } from "@duplojs/http/cors";
+
 import "./routes";
 
 const sourceFile = SF.createFileInterface("files/fakeFiles/superTextFile.txt");
@@ -18,5 +20,18 @@ export const hub = createHub({ environment: "DEV" })
 		staticPlugin(sourceFile, { path: "/static-file" }),
 	)
 	.plug(
-		staticPlugin(sourceFolder, { prefix: "/static-folder" }),
+		staticPlugin(sourceFolder, {
+			prefix: "/static-folder",
+			directoryFallBackFile: "1mb.jpg",
+		}),
+	)
+	.plug(
+		corsPlugin({
+			allowOrigin: "localhost",
+			allowHeaders: ["content-type", "accept"],
+			allowMethods: true,
+			credentials: true,
+			exposeHeaders: ["info"],
+			maxAge: 0,
+		}),
 	);

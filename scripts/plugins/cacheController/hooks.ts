@@ -17,6 +17,7 @@ export function createCacheControllerHooks(
 				if (
 					cacheControl
 					&& eligibleCodeRegex.test(currentResponse.code)
+					&& currentResponse.headers?.["cache-control"] === undefined
 				) {
 					currentResponse.setHeader("cache-control", cacheControl);
 				}

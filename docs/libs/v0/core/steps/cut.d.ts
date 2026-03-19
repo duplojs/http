@@ -3,12 +3,11 @@ import { type StepKind } from "./kind";
 import { type Floor } from "../floor";
 import { type StepFunctionParams } from "./types";
 import { type PredictedResponse, type ResponseContract } from "../response";
-import { type Request } from "../request";
 import { type Metadata } from "../metadata";
 export declare const cutStepOutputKind: import("@duplojs/utils").KindHandler<import("@duplojs/utils").KindDefinition<"@DuplojsHttpCore/cut-output", unknown>>;
 export interface CutStepFunctionOutput<GenericData extends Record<string, unknown> = Record<string, unknown>> extends Kind<typeof cutStepOutputKind.definition>, WrappedValue<GenericData> {
 }
-export interface CutStepFunctionParams<GenericRequest extends Request = Request, GenericResponse extends PredictedResponse = PredictedResponse> extends StepFunctionParams<GenericRequest, GenericResponse> {
+export interface CutStepFunctionParams<GenericResponse extends PredictedResponse = PredictedResponse> extends StepFunctionParams<GenericResponse> {
     output<GenericData extends Record<string, unknown> = never>(data?: GenericData): CutStepFunctionOutput<NeverCoalescing<GenericData, {}>>;
 }
 export interface CutStepDefinition {

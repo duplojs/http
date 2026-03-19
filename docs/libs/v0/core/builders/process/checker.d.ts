@@ -4,10 +4,9 @@ import { type O, type MaybeArray, type NeverCoalescing, type FixDeepFunctionInfe
 import { type GetCheckerResult, type Checker, type GetCheckerInput, type GetCheckerOptions } from "../../checker";
 import { type ClientErrorResponseCode, type ResponseContract } from "../../response";
 import { type ProcessDefinition } from "../../process";
-import { type Request } from "../../request";
 import { type Metadata } from "../../metadata";
 declare module "./builder" {
-    interface ProcessBuilder<GenericDefinition extends ProcessDefinition = ProcessDefinition, GenericFloor extends Floor = {}, GenericRequest extends Request = Request> {
+    interface ProcessBuilder<GenericDefinition extends ProcessDefinition = ProcessDefinition, GenericFloor extends Floor = {}> {
         check<GenericChecker extends Checker, GenericResultInformation extends MaybeArray<Awaited<GetCheckerResult<GenericChecker>>["information"]>, GenericInput extends GetCheckerInput<GenericChecker>, GenericResponseContract extends ResponseContract.Contract<ClientErrorResponseCode, string, DP.DataParserEmpty>, GenericIndex extends string = never, GenericOptions extends (GetCheckerOptions<GenericChecker> | ((floor: GenericFloor) => Exclude<GetCheckerOptions<GenericChecker>, undefined>)) = never, const GenericMetadata extends readonly Metadata[] = readonly []>(checker: GenericChecker, params: {
             input(floor: GenericFloor): GenericInput;
             readonly result: GenericResultInformation;
@@ -31,6 +30,6 @@ declare module "./builder" {
             [Prop in GenericIndex]: Extract<Awaited<GetCheckerResult<GenericChecker>>, {
                 information: A.ArrayCoalescing<GenericResultInformation>[number];
             }>["value"];
-        }>, GenericRequest>;
+        }>>;
     }
 }

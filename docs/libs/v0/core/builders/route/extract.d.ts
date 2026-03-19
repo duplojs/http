@@ -6,8 +6,8 @@ import { type ClientErrorResponseCode, type ResponseContract } from "../../respo
 import { type Request } from "../../request";
 import { type Metadata } from "../../metadata";
 declare module "./builder" {
-    interface RouteBuilder<GenericDefinition extends RouteDefinition = RouteDefinition, GenericFloor extends Floor = {}, GenericRequest extends Request = Request> {
-        extract<GenericShape extends ExtractShape<GenericRequest>, GenericResponseContract extends (ResponseContract.Contract<ClientErrorResponseCode, string, DP.DataParserEmpty> | undefined) = never, const GenericMetadata extends readonly Metadata[] = readonly []>(shape: GenericShape, responseContract?: GenericResponseContract, ...metadata: GenericMetadata): RouteBuilder<O.AssignObjects<GenericDefinition, {
+    interface RouteBuilder<GenericDefinition extends RouteDefinition = RouteDefinition, GenericFloor extends Floor = {}> {
+        extract<GenericShape extends ExtractShape<Request>, GenericResponseContract extends (ResponseContract.Contract<ClientErrorResponseCode, string, DP.DataParserEmpty> | undefined) = never, const GenericMetadata extends readonly Metadata[] = readonly []>(shape: GenericShape, responseContract?: GenericResponseContract, ...metadata: GenericMetadata): RouteBuilder<O.AssignObjects<GenericDefinition, {
             readonly steps: readonly [
                 ...GenericDefinition["steps"],
                 ExtractStep<{
@@ -22,6 +22,6 @@ declare module "./builder" {
             }[keyof InferredSubShape] : never;
         }[keyof GenericShape] extends infer InferredEntry extends ObjectEntry ? SimplifyTopLevel<{
             [Entry in InferredEntry as Entry[0]]: Entry[1];
-        }> : never>, GenericRequest>;
+        }> : never>>;
     }
 }

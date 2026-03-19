@@ -1,13 +1,10 @@
 import { E, type MaybePromise } from "@duplojs/utils";
-import { type Steps } from "../../steps/types";
-import { type Floor } from "../../floor";
+import { type BuildedStep, type Steps } from "../../steps/types";
 import { type HookRouteLifeCycle } from "../../route";
-import { type Request } from "../../request";
-import { type ResponseContract, type Response } from "../../response";
+import { type ResponseContract } from "../../response";
 import { type Environment } from "../../types";
-export type BuildedStepFunction = (request: Request, floor: Floor) => MaybePromise<Floor | Response>;
 export interface BuildStepResult {
-    readonly buildedFunction: BuildedStepFunction;
+    readonly buildedFunction: BuildedStep;
     readonly hooksRouteLifeCycle: readonly HookRouteLifeCycle[];
 }
 export type BuildStepSuccessEither = E.Right<"buildSuccess", BuildStepResult>;

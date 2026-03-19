@@ -9,6 +9,7 @@ function controlBodyAsFormData(params) {
         maxFileQuantity: params.maxFileQuantity,
         bodyMaxSize: params.bodyMaxSize && utils.stringToBytes(params.bodyMaxSize),
         fileMaxSize: params.fileMaxSize && utils.stringToBytes(params.fileMaxSize),
+        textFieldMaxSize: params.textFieldMaxSize && utils.stringToBytes(params.textFieldMaxSize),
         mimeType: params.mimeType !== undefined
             ? utils.toRegExp(params.mimeType)
             : undefined,

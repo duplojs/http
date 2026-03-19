@@ -4,8 +4,8 @@ prev:
   text: "Code generation"
   link: "/en/v0/guide/plugins/codeGenerator"
 next:
-  text: "Advanced FormData"
-  link: "/en/v0/guide/features/formData"
+  text: "Create a static entry point"
+  link: "/en/v0/guide/plugins/static"
 ---
 
 # OpenAPI generation

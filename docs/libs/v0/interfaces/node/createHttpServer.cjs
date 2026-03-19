@@ -2,10 +2,9 @@
 
 var http = require('http');
 var https = require('https');
-var index$3 = require('./hooks/index.cjs');
+var index$2 = require('./hooks/index.cjs');
 var implementHttpServer = require('../../core/implementHttpServer.cjs');
 var utils = require('@duplojs/utils');
-var index$2 = require('../../core/defaultHooks/index.cjs');
 require('./bodyReaders/index.cjs');
 var index = require('./bodyReaders/text/index.cjs');
 var index$1 = require('./bodyReaders/formData/index.cjs');
@@ -25,12 +24,8 @@ function createHttpServer(hub, params) {
         index.createTextBodyReaderImplementation(httpServerParams),
         index$1.createFormDataBodyReaderImplementation(httpServerParams),
     ]);
-    hub.addRouteHooks([
-        index$2.initDefaultHook(hub, httpServerParams),
-        index$3.initNodeHook(hub, httpServerParams),
-    ]);
-    function whenUncaughtError(error, routerInitializationData) {
-        const serverResponse = routerInitializationData.raw.response;
+    function whenUncaughtError(error, routerParams) {
+        const serverResponse = routerParams.raw.response;
         if (!serverResponse.headersSent && !serverResponse.writableEnded) {
             serverResponse.writeHead(500, {
                 [httpServerParams.informationHeaderKey]: "critical-server-error",
@@ -47,6 +42,7 @@ function createHttpServer(hub, params) {
     return implementHttpServer.implementHttpServer({
         hub,
         httpServerParams,
+        getInterfaceHooks: ({ hub, httpServerParams }) => [index$2.initNodeHook(hub, httpServerParams)],
     }, ({ httpServerParams, execRouteSystem }) => {
         const server = httpServerParams.https
             ? https.createServer(httpServerParams.https)

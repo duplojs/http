@@ -1,8 +1,8 @@
 ---
 description: "Handle complex FormData payloads."
 prev:
-  text: "OpenAPI generation"
-  link: "/en/v0/guide/plugins/openApiGenerator"
+  text: "Cache control"
+  link: "/en/v0/guide/plugins/cacheController"
 next:
   text: "Server-Sent Events (SSE)"
   link: "/en/v0/guide/features/SSE"

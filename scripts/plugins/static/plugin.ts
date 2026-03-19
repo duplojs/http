@@ -19,7 +19,7 @@ export interface StaticPluginFileParams extends BaseStaticPluginParams {
 
 export interface StaticPluginFolderParams extends BaseStaticPluginParams {
 	readonly prefix: RoutePath | AnyTuple<RoutePath>;
-	readonly directoryIndexFilePrefix?: string;
+	readonly directoryFallBackFile?: string;
 }
 
 export class StaticPluginError extends kindHeritage(

@@ -3,15 +3,12 @@
 require('../hub/index.cjs');
 var utils = require('@duplojs/utils');
 var pathToRegExp = require('./pathToRegExp.cjs');
-var index = require('../route/index.cjs');
 var buildError = require('./buildError.cjs');
-require('../functionsBuilders/route/index.cjs');
-var decodeUrl = require('./decodeUrl.cjs');
-var text = require('../request/bodyController/text.cjs');
 var notFoundBodyReaderImplementationError = require('./notFoundBodyReaderImplementationError.cjs');
 require('../functionsBuilders/index.cjs');
+var createRouterElementSystem = require('./createRouterElementSystem.cjs');
 require('./types/index.cjs');
-var _default = require('../functionsBuilders/route/default.cjs');
+var index = require('../functionsBuilders/route/default/index.cjs');
 var checkerStep = require('../functionsBuilders/steps/defaults/checkerStep.cjs');
 var cutStep = require('../functionsBuilders/steps/defaults/cutStep.cjs');
 var handlerStep = require('../functionsBuilders/steps/defaults/handlerStep.cjs');
@@ -19,13 +16,15 @@ var extractStep = require('../functionsBuilders/steps/defaults/extractStep.cjs')
 var processStep = require('../functionsBuilders/steps/defaults/processStep.cjs');
 var hooks = require('../hub/hooks.cjs');
 var build = require('../functionsBuilders/route/build.cjs');
+var build$1 = require('../functionsBuilders/router/build.cjs');
+var index$1 = require('../functionsBuilders/router/default/index.cjs');
 
-async function buildRouter(hub) {
+async function createRouter(hub) {
     const { environment } = hub.config;
     const { hooksRouteLifeCycle, routes, hooksHubLifeCycle, bodyReaderImplementations, } = hub;
     const routeFunctionBuilders = [
         ...hub.routeFunctionBuilders,
-        _default.defaultRouteFunctionBuilder,
+        index.defaultRouteFunctionBuilder,
     ];
     const stepFunctionBuilders = [
         ...hub.stepFunctionBuilders,
@@ -43,7 +42,7 @@ async function buildRouter(hub) {
         routeFunctionBuilders,
         defaultExtractContract: hub.defaultExtractContract,
     };
-    const groupedRoute = await utils.G.asyncReduce(routes, utils.G.reduceFrom({}), async ({ lastValue, element: route, nextWithObject, }) => {
+    const routerElementWrapper = await utils.G.asyncReduce(routes, utils.G.reduceFrom({}), async ({ lastValue, element: route, nextWithObject, }) => {
         const routeAfterHook = await hooks.launchHookBeforeBuildRoute(hooksBeforeBuildRoute, route);
         const buildedRoute = await build.buildRouteFunction(routeAfterHook, buildParams);
         if (utils.E.isLeft(buildedRoute)) {
@@ -63,60 +62,23 @@ async function buildRouter(hub) {
             }))),
         });
     });
-    const bodyControllerNotfoundRoute = text.controlBodyAsText();
-    const bodyReaderNotFoundRoute = utils.unwrap(bodyControllerNotfoundRoute.tryToCreateReader(text.TextBodyController.createReaderImplementation(() => Promise.resolve(utils.E.error(new Error("Inaccessible body in not found route."))))));
-    utils.asserts(bodyReaderNotFoundRoute, utils.isType("object"));
-    const buildedNotfoundRoute = await utils.asyncPipe(index.createRoute({
-        method: "GET",
-        paths: ["/"],
-        hooks: [],
-        preflightSteps: [],
-        steps: [hub.notfoundHandler],
-        metadata: [],
-        bodyController: bodyControllerNotfoundRoute,
-    }), async (route) => {
-        const result = await build.buildRouteFunction(route, buildParams);
-        return utils.E.whenIsLeft(result, (element) => {
-            throw new buildError.RouterBuildError(route, element);
-        });
-    }, utils.unwrap);
-    const Request = hub.classRequest;
+    const notfoundRouterElement = await createRouterElementSystem.createRouterElementSystem({
+        handlerStep: hub.notfoundHandler,
+        buildParams,
+    });
+    const malformedUrlRouterElement = await createRouterElementSystem.createRouterElementSystem({
+        handlerStep: hub.malformedUrlHandler,
+        buildParams,
+    });
     return {
-        exec: (initializationData) => {
-            const routerElements = groupedRoute[initializationData.method];
-            const decodedUrl = decodeUrl.decodeUrl(initializationData.url);
-            if (!routerElements) {
-                return buildedNotfoundRoute(new Request({
-                    ...initializationData,
-                    ...decodedUrl,
-                    params: {},
-                    matchedPath: null,
-                    bodyReader: bodyReaderNotFoundRoute,
-                }));
-            }
-            // eslint-disable-next-line @typescript-eslint/prefer-for-of
-            for (let index = 0; index < routerElements.length; index++) {
-                const routerElement = routerElements[index];
-                const result = routerElement.pattern.exec(decodedUrl.path);
-                if (!result) {
-                    continue;
-                }
-                return routerElement.buildedRoute(new Request({
-                    ...initializationData,
-                    ...decodedUrl,
-                    params: result.groups ?? {},
-                    matchedPath: routerElement.matchedPath,
-                    bodyReader: routerElement.bodyReader,
-                }));
-            }
-            return buildedNotfoundRoute(new Request({
-                ...initializationData,
-                ...decodedUrl,
-                params: {},
-                matchedPath: null,
-                bodyReader: bodyReaderNotFoundRoute,
-            }));
-        },
+        exec: await build$1.buildRouterFunction({
+            environment: hub.config.environment,
+            routerElementWrapper,
+            notfoundRouterElement: notfoundRouterElement,
+            malformedUrlRouterElement: malformedUrlRouterElement,
+            classRequest: hub.classRequest,
+            routerFunctionBuilder: hub.routerFunctionBuilder ?? index$1.defaultRouterFunctionBuilder,
+        }),
         hooksRouteLifeCycle,
         routeFunctionBuilders,
         routes,
@@ -127,8 +89,6 @@ async function buildRouter(hub) {
 
 exports.pathToRegExp = pathToRegExp.pathToRegExp;
 exports.RouterBuildError = buildError.RouterBuildError;
-exports.decodeUrl = decodeUrl.decodeUrl;
-exports.regexQueryAnalyser = decodeUrl.regexQueryAnalyser;
-exports.regexUrlAnalyser = decodeUrl.regexUrlAnalyser;
 exports.NotFoundBodyReaderImplementationError = notFoundBodyReaderImplementationError.NotFoundBodyReaderImplementationError;
-exports.buildRouter = buildRouter;
+exports.createRouterElementSystem = createRouterElementSystem.createRouterElementSystem;
+exports.createRouter = createRouter;

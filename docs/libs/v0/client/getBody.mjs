@@ -12,9 +12,6 @@ function getBody(response) {
     else if (responseContentType.includes("text")) {
         return response.text();
     }
-    else if (responseContentType.includes("form-data")) {
-        return response.formData();
-    }
     else {
         return Promise.resolve(undefined);
     }

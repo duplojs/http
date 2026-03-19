@@ -3,7 +3,7 @@ import { type BuildedRouter } from "@core/router";
 import { type RouterElementSystem } from "@core/router/types/routerElementSystem";
 import { type RouterElementWrapper } from "@core/router/types/routerElementWrapper";
 import { type Environment } from "@core/types";
-import { type MaybePromise } from "bun";
+import { type MaybePromise } from "@duplojs/utils";
 
 export interface RouterFunctionBuilderParams {
 	readonly environment: Environment;

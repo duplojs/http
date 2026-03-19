@@ -105,6 +105,31 @@ export default defineConfig([
 			tscAlias({ configFile: "scripts/plugins/cacheController/tsconfig.build.json" }),
 		],
 	},
+	{
+		input: "scripts/plugins/cors/index.ts",
+		output: [
+			{
+				dir: "dist",
+				format: "esm",
+				preserveModules: true,
+				preserveModulesRoot: "scripts",
+				entryFileNames: "[name].mjs"
+			},
+			{
+				dir: "dist",
+				format: "cjs",
+				preserveModules: true,
+				preserveModulesRoot: "scripts",
+				entryFileNames: "[name].cjs"
+			},
+		],
+		treeshake: false,
+		plugins: [
+			del({ targets: "dist/plugins/cors" }),
+			typescript({ tsconfig: "scripts/plugins/cors/tsconfig.build.json" }),
+			tscAlias({ configFile: "scripts/plugins/cors/tsconfig.build.json" }),
+		],
+	},
 
 	// interfaces
 	{
