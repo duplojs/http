@@ -69,24 +69,13 @@ export function corsPlugin<
 		name: "cors",
 		hooksHubLifeCycle: [
 			{
-				beforeBuildRoute: (route) => {
-					if (route.definition.metadata.some(IgnoreRouteCorsMetadata.is)) {
-						return route;
-					}
-					return {
-						...route,
-						definition: {
-							...route.definition,
-							hooks: [hookOtherRoute, ...route.definition.hooks],
-						},
-					};
-				},
 				beforeServerBuildRoutes: (hub) => {
 					const headerFunctionRouteOptions: ((request: Request, response: Response) => void)[] = [];
 
 					if (params.allowMethods === true) {
 						const allowMethodsFunctionIsBool = pipe(
 							hub.routes,
+							G.filter((route) => !A.some(route.definition.metadata, IgnoreRouteCorsMetadata.is)),
 							G.map(
 								(route) => A.map(
 									route.definition.paths,
@@ -161,9 +150,21 @@ export function corsPlugin<
 						bodyController: null,
 					});
 
-					hub.routes.add(routeOptions);
+					hub.register(routeOptions);
 
 					return hub;
+				},
+				beforeBuildRoute: (route) => {
+					if (route.definition.method === "OPTIONS" || A.some(route.definition.metadata, IgnoreRouteCorsMetadata.is)) {
+						return route;
+					}
+					return {
+						...route,
+						definition: {
+							...route.definition,
+							hooks: [...route.definition.hooks, hookOtherRoute],
+						},
+					};
 				},
 			},
 		],
