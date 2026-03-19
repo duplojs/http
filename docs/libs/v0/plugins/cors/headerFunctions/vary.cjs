@@ -9,7 +9,7 @@ const varyFunction = {
         return (request, response) => {
             const cachedVary = store.get(request.origin);
             if (cachedVary) {
-                response.setHeader("Vary", cachedVary);
+                response.setHeader("vary", cachedVary);
                 return;
             }
             let varyValue = Array.isArray(response.headers?.Vary)
@@ -27,7 +27,7 @@ const varyFunction = {
             if (store.size < maxStoreSize) {
                 store.set(request.origin, varyValue);
             }
-            response.setHeader("Vary", varyValue);
+            response.setHeader("vary", varyValue);
         };
     },
 };

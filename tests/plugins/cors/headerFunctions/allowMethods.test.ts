@@ -31,7 +31,7 @@ describe("allowMethodsFunction", () => {
 
 		allowMethodsFunction.default("GET,POST")(createTestRequest(), response);
 
-		expect(response.headers!["Access-Control-Allow-Methods"]).toStrictEqual("GET,POST");
+		expect(response.headers!["access-control-allow-methods"]).toStrictEqual("GET,POST");
 	});
 
 	it("sets the allow methods header from the request path when matchedPath is set", () => {
@@ -41,6 +41,6 @@ describe("allowMethodsFunction", () => {
 			"/test": "GET,POST,PUT",
 		})(createTestRequest(), response);
 
-		expect(response.headers!["Access-Control-Allow-Methods"]).toStrictEqual("GET,POST,PUT");
+		expect(response.headers!["access-control-allow-methods"]).toStrictEqual("GET,POST,PUT");
 	});
 });

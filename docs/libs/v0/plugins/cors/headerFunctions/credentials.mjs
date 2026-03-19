@@ -1,7 +1,7 @@
 const credentialsFunction = {
     default() {
         return (request, response) => {
-            response.setHeader("Access-Control-Allow-Credentials", "true");
+            response.setHeader("access-control-allow-credentials", "true");
         };
     },
 };

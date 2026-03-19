@@ -7,6 +7,6 @@ describe("allowHeadersFunction", () => {
 
 		allowHeadersFunction.default("Authorization,ETag")(undefined as never, response);
 
-		expect(response.headers!["Access-Control-Allow-Headers"]).toStrictEqual("Authorization,ETag");
+		expect(response.headers!["access-control-allow-headers"]).toStrictEqual("Authorization,ETag");
 	});
 });

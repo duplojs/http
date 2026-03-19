@@ -4,7 +4,7 @@ import type { Response } from "@core/response";
 export const maxAgeFunction = {
 	default(maxAge: string) {
 		return (request: Request, response: Response) => {
-			response.setHeader("Access-Control-Max-Age", maxAge);
+			response.setHeader("access-control-max-age", maxAge);
 		};
 	},
 };

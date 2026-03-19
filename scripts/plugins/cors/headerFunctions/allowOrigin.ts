@@ -6,7 +6,7 @@ export const allowOriginFunction = {
 	default(allowOrigin: RegExp) {
 		return (request: Request, response: Response) => {
 			if (allowOrigin.test(request.origin)) {
-				response.setHeader("Access-Control-Allow-Origin", request.origin);
+				response.setHeader("access-control-allow-origin", request.origin);
 			}
 		};
 	},
@@ -19,7 +19,7 @@ export const allowOriginFunction = {
 			}
 
 			if (result === true) {
-				response.setHeader("Access-Control-Allow-Origin", request.origin);
+				response.setHeader("access-control-allow-origin", request.origin);
 			}
 		};
 	},

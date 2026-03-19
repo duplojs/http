@@ -13,7 +13,7 @@ export const varyFunction = {
 			const cachedVary = store.get(request.origin);
 
 			if (cachedVary) {
-				response.setHeader("Vary", cachedVary);
+				response.setHeader("vary", cachedVary);
 				return;
 			}
 
@@ -33,7 +33,7 @@ export const varyFunction = {
 				store.set(request.origin, varyValue);
 			}
 
-			response.setHeader("Vary", varyValue);
+			response.setHeader("vary", varyValue);
 		};
 	},
 };

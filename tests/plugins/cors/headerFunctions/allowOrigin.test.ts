@@ -34,7 +34,7 @@ describe("allowOriginFunction", () => {
 
 		allowOriginFunction.default(/^https:\/\/api\.example\.com$/)(request, response);
 
-		expect(response.headers!["Access-Control-Allow-Origin"]).toStrictEqual("https://api.example.com");
+		expect(response.headers!["access-control-allow-origin"]).toStrictEqual("https://api.example.com");
 	});
 
 	it("does not set allow origin header when regexp does not match", () => {
@@ -42,7 +42,7 @@ describe("allowOriginFunction", () => {
 
 		allowOriginFunction.default(/^https:\/\/api\.example\.com$/)(createTestRequest(), response);
 
-		expect(response.headers?.["Access-Control-Allow-Origin"]).toBeUndefined();
+		expect(response.headers?.["access-control-allow-origin"]).toBeUndefined();
 	});
 
 	it("set allow origin header when async function returns true", async() => {
@@ -53,7 +53,7 @@ describe("allowOriginFunction", () => {
 
 		await allowOriginFunction.isFunction((origin) => origin === "https://app.example.com")(request, response);
 
-		expect(response.headers!["Access-Control-Allow-Origin"]).toStrictEqual("https://app.example.com");
+		expect(response.headers!["access-control-allow-origin"]).toStrictEqual("https://app.example.com");
 	});
 
 	it("does not set allow origin header when async function returns false", async() => {
@@ -61,6 +61,6 @@ describe("allowOriginFunction", () => {
 
 		await allowOriginFunction.isFunction(() => false)(createTestRequest(), response);
 
-		expect(response.headers?.["Access-Control-Allow-Origin"]).toBeUndefined();
+		expect(response.headers?.["access-control-allow-origin"]).toBeUndefined();
 	});
 });

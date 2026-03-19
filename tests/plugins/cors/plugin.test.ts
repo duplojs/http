@@ -114,9 +114,9 @@ describe("cors plugin", () => {
 		expect(result).toBe(nextResult);
 		expect(response.headers).toStrictEqual({
 			Vary: "Origin",
-			"Access-Control-Allow-Origin": "https://example.com",
-			"Access-Control-Expose-Headers": "x-test,x-other",
-			"Access-Control-Allow-Credentials": "true",
+			"access-control-allow-origin": "https://example.com",
+			"access-control-expose-headers": "x-test,x-other",
+			"access-control-allow-credentials": "true",
 		});
 	});
 
@@ -147,7 +147,7 @@ describe("cors plugin", () => {
 		expect(result).toBe(nextResult);
 		expect(response.headers).toStrictEqual({
 			Vary: "Origin",
-			"Access-Control-Allow-Origin": "https://example.com",
+			"access-control-allow-origin": "https://example.com",
 		});
 	});
 
@@ -205,9 +205,9 @@ describe("cors plugin", () => {
 		}) as HookResponse<ResponseCode, string, unknown>;
 
 		expect(response.headers).toStrictEqual({
-			"Access-Control-Allow-Methods": "GET,POST",
-			"Access-Control-Allow-Headers": "content-type,authorization",
-			"Access-Control-Max-Age": "60",
+			"access-control-allow-methods": "GET,POST",
+			"access-control-allow-headers": "content-type,authorization",
+			"access-control-max-age": "60",
 		});
 	});
 
@@ -243,7 +243,7 @@ describe("cors plugin", () => {
 		}) as HookResponse<ResponseCode, string, unknown>;
 
 		expect(response.headers).toStrictEqual({
-			"Access-Control-Allow-Methods": "GET,POST,PUT",
+			"access-control-allow-methods": "GET,POST,PUT",
 		});
 	});
 
@@ -276,7 +276,7 @@ describe("cors plugin", () => {
 		}) as HookResponse<ResponseCode, string, unknown>;
 
 		expect(response.headers).toStrictEqual({
-			"Access-Control-Allow-Headers": "*",
+			"access-control-allow-headers": "*",
 		});
 	});
 });

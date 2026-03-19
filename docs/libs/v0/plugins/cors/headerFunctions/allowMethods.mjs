@@ -1,12 +1,12 @@
 const allowMethodsFunction = {
     default(methods) {
         return (request, response) => {
-            response.setHeader("Access-Control-Allow-Methods", methods);
+            response.setHeader("access-control-allow-methods", methods);
         };
     },
     isBool(allowMethods) {
         return (request, response) => {
-            response.setHeader("Access-Control-Allow-Methods", allowMethods[request.path]);
+            response.setHeader("access-control-allow-methods", allowMethods[request.path]);
         };
     },
 };

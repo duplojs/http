@@ -7,6 +7,6 @@ describe("credentialsFunction", () => {
 
 		credentialsFunction.default()(undefined as never, response);
 
-		expect(response.headers!["Access-Control-Allow-Credentials"]).toStrictEqual("true");
+		expect(response.headers!["access-control-allow-credentials"]).toStrictEqual("true");
 	});
 });

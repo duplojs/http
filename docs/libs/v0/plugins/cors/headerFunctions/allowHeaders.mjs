@@ -1,7 +1,7 @@
 const allowHeadersFunction = {
     default(allowHeaders) {
         return (request, response) => {
-            response.setHeader("Access-Control-Allow-Headers", allowHeaders);
+            response.setHeader("access-control-allow-headers", allowHeaders);
         };
     },
 };

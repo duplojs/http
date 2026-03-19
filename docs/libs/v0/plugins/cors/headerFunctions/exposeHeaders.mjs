@@ -1,7 +1,7 @@
 const exposeHeadersFunction = {
     default(exposeHeaders) {
         return (request, response) => {
-            response.setHeader("Access-Control-Expose-Headers", exposeHeaders);
+            response.setHeader("access-control-expose-headers", exposeHeaders);
         };
     },
 };

@@ -1,7 +1,7 @@
 const maxAgeFunction = {
     default(maxAge) {
         return (request, response) => {
-            response.setHeader("Access-Control-Max-Age", maxAge);
+            response.setHeader("access-control-max-age", maxAge);
         };
     },
 };

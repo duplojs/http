@@ -7,6 +7,6 @@ describe("maxAgeFunction", () => {
 
 		maxAgeFunction.default("600")(undefined as never, response);
 
-		expect(response.headers!["Access-Control-Max-Age"]).toStrictEqual("600");
+		expect(response.headers!["access-control-max-age"]).toStrictEqual("600");
 	});
 });
