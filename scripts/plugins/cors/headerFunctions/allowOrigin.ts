@@ -13,7 +13,12 @@ export const allowOriginFunction = {
 
 	isFunction(allowOrigin: (origin: string) => MaybePromise<boolean>) {
 		return async(request: Request, response: Response) => {
-			if (await allowOrigin(request.origin) === true) {
+			let result = allowOrigin(request.origin);
+			if (result instanceof Promise) {
+				result = await result;
+			}
+
+			if (result === true) {
 				response.setHeader("Access-Control-Allow-Origin", request.origin);
 			}
 		};
