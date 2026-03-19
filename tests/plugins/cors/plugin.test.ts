@@ -113,7 +113,7 @@ describe("cors plugin", () => {
 
 		expect(result).toBe(nextResult);
 		expect(response.headers).toStrictEqual({
-			Vary: "Origin",
+			vary: "Origin",
 			"access-control-allow-origin": "https://example.com",
 			"access-control-expose-headers": "x-test,x-other",
 			"access-control-allow-credentials": "true",
@@ -146,7 +146,7 @@ describe("cors plugin", () => {
 
 		expect(result).toBe(nextResult);
 		expect(response.headers).toStrictEqual({
-			Vary: "Origin",
+			vary: "Origin",
 			"access-control-allow-origin": "https://example.com",
 		});
 	});

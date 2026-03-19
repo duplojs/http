@@ -12,7 +12,7 @@
 		"@duplojs/http/cors": ["libs/v0/plugins/cors/index"],
 		"@duplojs/http/cacheController": ["libs/v0/plugins/cacheController/index"],
 	},
-	"types": ["@types/web"]
+	"types": ["web"]
   },
   "include": ["examples/v0/**/*.ts", "libs/v0/**/*.d.ts"],
 }

@@ -4,13 +4,11 @@ require('../hub/index.cjs');
 var utils = require('@duplojs/utils');
 var pathToRegExp = require('./pathToRegExp.cjs');
 var buildError = require('./buildError.cjs');
-require('../functionsBuilders/route/index.cjs');
-var decodeUrl = require('./decodeUrl.cjs');
 var notFoundBodyReaderImplementationError = require('./notFoundBodyReaderImplementationError.cjs');
 require('../functionsBuilders/index.cjs');
-var buildSystemRoute = require('./buildSystemRoute.cjs');
+var createRouterElementSystem = require('./createRouterElementSystem.cjs');
 require('./types/index.cjs');
-var _default = require('../functionsBuilders/route/default.cjs');
+var index = require('../functionsBuilders/route/default/index.cjs');
 var checkerStep = require('../functionsBuilders/steps/defaults/checkerStep.cjs');
 var cutStep = require('../functionsBuilders/steps/defaults/cutStep.cjs');
 var handlerStep = require('../functionsBuilders/steps/defaults/handlerStep.cjs');
@@ -18,13 +16,15 @@ var extractStep = require('../functionsBuilders/steps/defaults/extractStep.cjs')
 var processStep = require('../functionsBuilders/steps/defaults/processStep.cjs');
 var hooks = require('../hub/hooks.cjs');
 var build = require('../functionsBuilders/route/build.cjs');
+var build$1 = require('../functionsBuilders/router/build.cjs');
+var index$1 = require('../functionsBuilders/router/default/index.cjs');
 
-async function buildRouter(hub) {
+async function createRouter(hub) {
     const { environment } = hub.config;
     const { hooksRouteLifeCycle, routes, hooksHubLifeCycle, bodyReaderImplementations, } = hub;
     const routeFunctionBuilders = [
         ...hub.routeFunctionBuilders,
-        _default.defaultRouteFunctionBuilder,
+        index.defaultRouteFunctionBuilder,
     ];
     const stepFunctionBuilders = [
         ...hub.stepFunctionBuilders,
@@ -42,7 +42,7 @@ async function buildRouter(hub) {
         routeFunctionBuilders,
         defaultExtractContract: hub.defaultExtractContract,
     };
-    const groupedRoute = await utils.G.asyncReduce(routes, utils.G.reduceFrom({}), async ({ lastValue, element: route, nextWithObject, }) => {
+    const routerElementWrapper = await utils.G.asyncReduce(routes, utils.G.reduceFrom({}), async ({ lastValue, element: route, nextWithObject, }) => {
         const routeAfterHook = await hooks.launchHookBeforeBuildRoute(hooksBeforeBuildRoute, route);
         const buildedRoute = await build.buildRouteFunction(routeAfterHook, buildParams);
         if (utils.E.isLeft(buildedRoute)) {
@@ -62,61 +62,23 @@ async function buildRouter(hub) {
             }))),
         });
     });
-    const defaultNotfoundRoute = await buildSystemRoute.buildSystemRoute({
+    const notfoundRouterElement = await createRouterElementSystem.createRouterElementSystem({
         handlerStep: hub.notfoundHandler,
         buildParams,
     });
-    const defaultMalformedUrlRoute = await buildSystemRoute.buildSystemRoute({
+    const malformedUrlRouterElement = await createRouterElementSystem.createRouterElementSystem({
         handlerStep: hub.malformedUrlHandler,
         buildParams,
     });
-    const Request = hub.classRequest;
     return {
-        exec: (initializationData) => {
-            const routerElements = groupedRoute[initializationData.method];
-            const decodedUrl = decodeUrl.decodeUrl(initializationData.url);
-            if (!decodedUrl) {
-                return defaultMalformedUrlRoute.buildedRoute(new Request({
-                    ...initializationData,
-                    params: {},
-                    path: "",
-                    query: {},
-                    matchedPath: null,
-                    bodyReader: defaultMalformedUrlRoute.bodyReader,
-                }));
-            }
-            if (!routerElements) {
-                return defaultNotfoundRoute.buildedRoute(new Request({
-                    ...initializationData,
-                    ...decodedUrl,
-                    params: {},
-                    matchedPath: null,
-                    bodyReader: defaultNotfoundRoute.bodyReader,
-                }));
-            }
-            // eslint-disable-next-line @typescript-eslint/prefer-for-of
-            for (let index = 0; index < routerElements.length; index++) {
-                const routerElement = routerElements[index];
-                const result = routerElement.pattern.exec(decodedUrl.path);
-                if (!result) {
-                    continue;
-                }
-                return routerElement.buildedRoute(new Request({
-                    ...initializationData,
-                    ...decodedUrl,
-                    params: result.groups ?? {},
-                    matchedPath: routerElement.matchedPath,
-                    bodyReader: routerElement.bodyReader,
-                }));
-            }
-            return defaultNotfoundRoute.buildedRoute(new Request({
-                ...initializationData,
-                ...decodedUrl,
-                params: {},
-                matchedPath: null,
-                bodyReader: defaultNotfoundRoute.bodyReader,
-            }));
-        },
+        exec: await build$1.buildRouterFunction({
+            environment: hub.config.environment,
+            routerElementWrapper,
+            notfoundRouterElement: notfoundRouterElement,
+            malformedUrlRouterElement: malformedUrlRouterElement,
+            classRequest: hub.classRequest,
+            routerFunctionBuilder: hub.routerFunctionBuilder ?? index$1.defaultRouterFunctionBuilder,
+        }),
         hooksRouteLifeCycle,
         routeFunctionBuilders,
         routes,
@@ -127,9 +89,6 @@ async function buildRouter(hub) {
 
 exports.pathToRegExp = pathToRegExp.pathToRegExp;
 exports.RouterBuildError = buildError.RouterBuildError;
-exports.decodeUrl = decodeUrl.decodeUrl;
-exports.regexQueryAnalyser = decodeUrl.regexQueryAnalyser;
-exports.regexUrlAnalyser = decodeUrl.regexUrlAnalyser;
 exports.NotFoundBodyReaderImplementationError = notFoundBodyReaderImplementationError.NotFoundBodyReaderImplementationError;
-exports.buildSystemRoute = buildSystemRoute.buildSystemRoute;
-exports.buildRouter = buildRouter;
+exports.createRouterElementSystem = createRouterElementSystem.createRouterElementSystem;
+exports.createRouter = createRouter;

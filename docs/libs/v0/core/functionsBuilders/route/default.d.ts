@@ -1,1 +1,0 @@
-export declare const defaultRouteFunctionBuilder: (route: import("../../route").Route, params: import("./create").RouteFunctionBuilderParams) => import("@duplojs/utils").MaybePromise<import("./create").BuildRouteNotSupportEither | import("./create").BuildRouteSuccessEither | import("..").BuildStepNotSupportEither>;

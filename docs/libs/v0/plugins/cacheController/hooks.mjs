@@ -10,7 +10,8 @@ function createCacheControllerHooks(params) {
     return createHookRouteLifeCycle({
         beforeSendResponse: ({ currentResponse, next }) => {
             if (cacheControl
-                && eligibleCodeRegex.test(currentResponse.code)) {
+                && eligibleCodeRegex.test(currentResponse.code)
+                && currentResponse.headers?.["cache-control"] === undefined) {
                 currentResponse.setHeader("cache-control", cacheControl);
             }
             return next();

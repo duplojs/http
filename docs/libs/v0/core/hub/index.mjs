@@ -18,6 +18,7 @@ class Hub extends kindHeritage("hub", createCoreLibKind("hub")) {
     hooksRouteLifeCycle = [];
     hooksHubLifeCycle = [];
     routes = new Set();
+    routerFunctionBuilder = undefined;
     routeFunctionBuilders = [];
     stepFunctionBuilders = [];
     bodyReaderImplementations = [defaultEmptyReaderImplementation];
@@ -32,6 +33,10 @@ class Hub extends kindHeritage("hub", createCoreLibKind("hub")) {
     }
     register(routes) {
         pipe(routes, P.when(routeKind.has, A.coalescing), P.when(isType("iterable"), A.from), P.otherwise(O.values), A.map((route) => this.routes.add(route)));
+        return this;
+    }
+    setRouterFunctionBuilder(functionBuilder) {
+        this.routerFunctionBuilder = functionBuilder;
         return this;
     }
     addRouteFunctionBuilder(functionBuilder) {

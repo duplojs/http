@@ -1,14 +1,14 @@
 'use strict';
 
-var index = require('../../route/index.cjs');
+var index = require('../../../route/index.cjs');
 var utils = require('@duplojs/utils');
-require('../../response/index.cjs');
+require('../../../response/index.cjs');
 var hook = require('./hook.cjs');
-var create = require('./create.cjs');
-require('../steps/index.cjs');
-var processStep = require('../steps/defaults/processStep.cjs');
-var base = require('../../response/base.cjs');
-var hook$1 = require('../../response/hook.cjs');
+var create = require('../create.cjs');
+require('../../steps/index.cjs');
+var processStep = require('../../steps/defaults/processStep.cjs');
+var base = require('../../../response/base.cjs');
+var hook$1 = require('../../../response/hook.cjs');
 
 /* eslint-disable @typescript-eslint/prefer-for-of */
 const defaultRouteFunctionBuilder = create.createRouteFunctionBuilder(index.routeKind.has, async (route, { success, buildStep, globalHooksRouteLifeCycle, }) => {
@@ -97,4 +97,10 @@ const defaultRouteFunctionBuilder = create.createRouteFunctionBuilder(index.rout
     });
 });
 
+exports.buildHookAfter = hook.buildHookAfter;
+exports.buildHookBefore = hook.buildHookBefore;
+exports.buildHookErrorBefore = hook.buildHookErrorBefore;
+exports.createHookResponse = hook.createHookResponse;
+exports.exitHookFunction = hook.exitHookFunction;
+exports.nextHookFunction = hook.nextHookFunction;
 exports.defaultRouteFunctionBuilder = defaultRouteFunctionBuilder;

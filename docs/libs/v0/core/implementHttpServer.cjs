@@ -12,7 +12,7 @@ async function implementHttpServer(params, initHttpServer) {
         index.initDefaultHook(params.hub, params.httpServerParams),
         ...params.getInterfaceHooks(params),
     ]);
-    const router = await index$1.buildRouter(params.hub);
+    const router = await index$1.createRouter(params.hub);
     await hooks.launchHookServer(params.hub.aggregatesHooksHubLifeCycle("beforeStartServer"), params.hub, params.httpServerParams);
     const serverErrorHooks = params.hub.aggregatesHooksHubLifeCycle("serverError");
     function catchCriticalError(error) {

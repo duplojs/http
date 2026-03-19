@@ -24,8 +24,8 @@ function createHttpServer(hub, params) {
         index.createTextBodyReaderImplementation(httpServerParams),
         index$1.createFormDataBodyReaderImplementation(httpServerParams),
     ]);
-    function whenUncaughtError(error, routerInitializationData) {
-        const serverResponse = routerInitializationData.raw.response;
+    function whenUncaughtError(error, routerParams) {
+        const serverResponse = routerParams.raw.response;
         if (!serverResponse.headersSent && !serverResponse.writableEnded) {
             serverResponse.writeHead(500, {
                 [httpServerParams.informationHeaderKey]: "critical-server-error",

@@ -42,22 +42,10 @@ function corsPlugin(params) {
         name: "cors",
         hooksHubLifeCycle: [
             {
-                beforeBuildRoute: (route) => {
-                    if (route.definition.metadata.some(metadata.IgnoreRouteCorsMetadata.is)) {
-                        return route;
-                    }
-                    return {
-                        ...route,
-                        definition: {
-                            ...route.definition,
-                            hooks: [hookOtherRoute, ...route.definition.hooks],
-                        },
-                    };
-                },
                 beforeServerBuildRoutes: (hub) => {
                     const headerFunctionRouteOptions = [];
                     if (params.allowMethods === true) {
-                        const allowMethodsFunctionIsBool = utils.pipe(hub.routes, utils.G.map((route) => utils.A.map(route.definition.paths, (path) => ({
+                        const allowMethodsFunctionIsBool = utils.pipe(hub.routes, utils.G.filter((route) => !utils.A.some(route.definition.metadata, metadata.IgnoreRouteCorsMetadata.is)), utils.G.map((route) => utils.A.map(route.definition.paths, (path) => ({
                             path,
                             method: route.definition.method,
                         }))), utils.G.flat, utils.G.reduce(utils.G.reduceFrom({}), ({ element, lastValue, next }) => {
@@ -97,8 +85,20 @@ function corsPlugin(params) {
                         preflightSteps: [],
                         bodyController: null,
                     });
-                    hub.routes.add(routeOptions);
+                    hub.register(routeOptions);
                     return hub;
+                },
+                beforeBuildRoute: (route) => {
+                    if (route.definition.method === "OPTIONS" || utils.A.some(route.definition.metadata, metadata.IgnoreRouteCorsMetadata.is)) {
+                        return route;
+                    }
+                    return {
+                        ...route,
+                        definition: {
+                            ...route.definition,
+                            hooks: [...route.definition.hooks, hookOtherRoute],
+                        },
+                    };
                 },
             },
         ],

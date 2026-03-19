@@ -17,9 +17,9 @@ export const varyFunction = {
 				return;
 			}
 
-			let varyValue = Array.isArray(response.headers?.Vary)
-				? response.headers.Vary.join(", ")
-				: response.headers?.Vary;
+			let varyValue = Array.isArray(response.headers?.vary)
+				? response.headers.vary.join(", ")
+				: response.headers?.vary;
 
 			if (varyValue === undefined) {
 				varyValue = "Origin";

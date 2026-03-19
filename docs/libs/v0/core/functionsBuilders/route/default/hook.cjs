@@ -1,9 +1,9 @@
 'use strict';
 
-require('../../response/index.cjs');
-require('../../route/index.cjs');
-var hooks = require('../../route/hooks.cjs');
-var hook = require('../../response/hook.cjs');
+require('../../../response/index.cjs');
+require('../../../route/index.cjs');
+var hooks = require('../../../route/hooks.cjs');
+var hook = require('../../../response/hook.cjs');
 
 /* eslint-disable @typescript-eslint/prefer-for-of */
 const hookExit = hooks.hookRouteExitKind.setTo({});

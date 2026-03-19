@@ -8,7 +8,11 @@ const allowOriginFunction = {
     },
     isFunction(allowOrigin) {
         return async (request, response) => {
-            if (await allowOrigin(request.origin) === true) {
+            let result = allowOrigin(request.origin);
+            if (result instanceof Promise) {
+                result = await result;
+            }
+            if (result === true) {
                 response.setHeader("access-control-allow-origin", request.origin);
             }
         };

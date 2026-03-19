@@ -59,7 +59,7 @@ describe("allowOriginFunction", () => {
 	it("does not set allow origin header when async function returns false", async() => {
 		const response = createTestResponse();
 
-		await allowOriginFunction.isFunction(() => false)(createTestRequest(), response);
+		await allowOriginFunction.isFunction(() => Promise.resolve(false))(createTestRequest(), response);
 
 		expect(response.headers?.["access-control-allow-origin"]).toBeUndefined();
 	});

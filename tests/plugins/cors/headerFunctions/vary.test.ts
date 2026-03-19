@@ -7,7 +7,7 @@ describe("varyFunction", () => {
 
 		varyFunction.default()({ origin: "https://basic.example.com" } as never, response);
 
-		expect(response.headers!.Vary).toStrictEqual("Origin");
+		expect(response.headers!.vary).toStrictEqual("Origin");
 	});
 
 	it("reuses cached vary", () => {
@@ -20,8 +20,8 @@ describe("varyFunction", () => {
 		vary({ origin: "https://cache.example.com" } as never, firstResponse);
 		vary({ origin: "https://cache.example.com" } as never, secondResponse);
 
-		expect(firstResponse.headers!.Vary).toStrictEqual("Accept-Encoding, Origin");
-		expect(secondResponse.headers!.Vary).toStrictEqual("Accept-Encoding, Origin");
+		expect(firstResponse.headers!.vary).toStrictEqual("Accept-Encoding, Origin");
+		expect(secondResponse.headers!.vary).toStrictEqual("Accept-Encoding, Origin");
 	});
 
 	it("with array vary", () => {
@@ -30,7 +30,7 @@ describe("varyFunction", () => {
 
 		varyFunction.default()({ origin: "https://array.example.com" } as never, response);
 
-		expect(response.headers!.Vary).toStrictEqual("Accept-Encoding, Accept-Language, Origin");
+		expect(response.headers!.vary).toStrictEqual("Accept-Encoding, Accept-Language, Origin");
 	});
 
 	it("keeps star vary header", () => {
@@ -39,7 +39,7 @@ describe("varyFunction", () => {
 
 		varyFunction.default()({ origin: "https://star.example.com" } as never, response);
 
-		expect(response.headers!.Vary).toStrictEqual("*");
+		expect(response.headers!.vary).toStrictEqual("*");
 	});
 
 	it("not duplicate", () => {
@@ -48,7 +48,7 @@ describe("varyFunction", () => {
 
 		varyFunction.default()({ origin: "https://origin.example.com" } as never, response);
 
-		expect(response.headers!.Vary).toStrictEqual("Accept-Encoding, Origin");
+		expect(response.headers!.vary).toStrictEqual("Accept-Encoding, Origin");
 	});
 
 	it("does not cache new origin when store is full", () => {
@@ -69,7 +69,7 @@ describe("varyFunction", () => {
 		vary({ origin: "https://overflow.example.com" } as never, firstOverflowResponse);
 		vary({ origin: "https://overflow.example.com" } as never, secondOverflowResponse);
 
-		expect(firstOverflowResponse.headers!.Vary).toStrictEqual("Accept-Encoding, Origin");
-		expect(secondOverflowResponse.headers!.Vary).toStrictEqual("X-Second, Origin");
+		expect(firstOverflowResponse.headers!.vary).toStrictEqual("Accept-Encoding, Origin");
+		expect(secondOverflowResponse.headers!.vary).toStrictEqual("X-Second, Origin");
 	});
 });

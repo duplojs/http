@@ -7,6 +7,7 @@ import { type ClientErrorResponseCode, type ResponseContract } from "../response
 import { type Environment } from "../types";
 import { type createStepFunctionBuilder } from "../functionsBuilders/steps";
 import { type createRouteFunctionBuilder } from "../functionsBuilders/route";
+import { type createRouterFunctionBuilder } from "../functionsBuilders/router";
 export * from "./hooks";
 export * from "./defaultNotfoundHandler";
 export * from "./defaultExtractContract";
@@ -35,6 +36,7 @@ export declare class Hub<GenericConfig extends HubConfig = HubConfig> extends Hu
     hooksRouteLifeCycle: HookRouteLifeCycle[];
     hooksHubLifeCycle: HookHubLifeCycle[];
     routes: Set<Route<import("../route").RouteDefinition>>;
+    routerFunctionBuilder: ReturnType<typeof createRouterFunctionBuilder> | undefined;
     routeFunctionBuilders: ReturnType<typeof createRouteFunctionBuilder>[];
     stepFunctionBuilders: ReturnType<typeof createStepFunctionBuilder>[];
     bodyReaderImplementations: BodyReaderImplementation[];
@@ -45,6 +47,7 @@ export declare class Hub<GenericConfig extends HubConfig = HubConfig> extends Hu
     malformedUrlHandler: HandlerStep;
     private constructor();
     register(routes: Route | Iterable<Route> | Record<string, Route>): this;
+    setRouterFunctionBuilder(functionBuilder: ReturnType<typeof createRouterFunctionBuilder>): this;
     addRouteFunctionBuilder(functionBuilder: MaybeArray<ReturnType<typeof createRouteFunctionBuilder>>): this;
     addStepFunctionBuilder(functionBuilder: MaybeArray<ReturnType<typeof createStepFunctionBuilder>>): this;
     addRouteHooks(hook: MaybeArray<HookRouteLifeCycle>): this;
