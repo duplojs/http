@@ -1,6 +1,5 @@
-
 import { type Hub, launchHookServer, launchHookServerError, serverErrorExitHookFunction, serverErrorNextHookFunction } from "./hub";
-import { buildRouter, type RouterInitializationData } from "./router";
+import { createRouter, type RouterParams } from "./router";
 import { type AnyTuple, forward, type MaybePromise } from "@duplojs/utils";
 import { type HttpServerParams } from "./types";
 import { type HookRouteLifeCycle } from "./route";
@@ -18,10 +17,10 @@ export interface ImplementHttpServerParams {
 }
 
 export type ExecRouteSystem = (
-	routerInitializationData: RouterInitializationData,
+	routerInitializationData: RouterParams,
 	whenUncaughtError: (
 		error: unknown,
-		routerInitializationData: RouterInitializationData
+		routerInitializationData: RouterParams
 	) => MaybePromise<void>
 ) => Promise<void>;
 
@@ -47,7 +46,7 @@ export async function implementHttpServer<
 		...params.getInterfaceHooks(params),
 	]);
 
-	const router = await buildRouter(
+	const router = await createRouter(
 		params.hub,
 	);
 

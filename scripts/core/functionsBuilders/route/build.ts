@@ -1,12 +1,15 @@
 import { E, G, unwrap } from "@duplojs/utils";
-import { buildStepFunction, type BuildStepFunctionParams } from "../steps";
+import { buildStepFunction, type createStepFunctionBuilder } from "../steps";
 import { type RouteFunctionBuilderParams, type BuildRouteNotSupportEither, type createRouteFunctionBuilder } from "./create";
 import { type HookRouteLifeCycle, type Route } from "@core/route";
 import { type ResponseContract } from "@core/response";
+import { type Environment } from "@core/types";
 
-export interface BuildRouteFunctionParams extends BuildStepFunctionParams {
+export interface BuildRouteFunctionParams {
 	readonly routeFunctionBuilders: readonly ReturnType<typeof createRouteFunctionBuilder>[];
 	readonly globalHooksRouteLifeCycle: readonly HookRouteLifeCycle[];
+	readonly stepFunctionBuilders: readonly ReturnType<typeof createStepFunctionBuilder>[];
+	readonly environment: Environment;
 	readonly defaultExtractContract: ResponseContract.Contract;
 }
 

@@ -1,4 +1,4 @@
-import { buildRouter, createHub, defaultCheckerStepFunctionBuilder, defaultCutStepFunctionBuilder, defaultExtractStepFunctionBuilder, defaultHandlerStepFunctionBuilder, defaultProcessStepFunctionBuilder, defaultRouteFunctionBuilder, NotFoundBodyReaderImplementationError, ResponseContract, RouterBuildError, stepKind, TextBodyController, useRouteBuilder } from "@core";
+import { createRouter, createHub, defaultCheckerStepFunctionBuilder, defaultCutStepFunctionBuilder, defaultExtractStepFunctionBuilder, defaultHandlerStepFunctionBuilder, defaultProcessStepFunctionBuilder, defaultRouteFunctionBuilder, NotFoundBodyReaderImplementationError, ResponseContract, RouterBuildError, stepKind, TextBodyController, useRouteBuilder, Request } from "@core";
 import { DP, E } from "@duplojs/utils";
 import { testRoute } from "@test-utils/route";
 
@@ -8,7 +8,8 @@ describe("buildRouter", () => {
 
 	it("correct build router", async() => {
 		const otherRoute = { ...testRoute };
-		const router = await buildRouter(
+		const spyRouterBuilder = vi.fn(() => Promise.resolve(true) as never);
+		const router = await createRouter(
 			createHub({
 				environment: "DEV",
 			})
@@ -25,11 +26,12 @@ describe("buildRouter", () => {
 					stepFunctionBuilders: [defaultCutStepFunctionBuilder],
 					routes: [otherRoute],
 				})
+				.setRouterFunctionBuilder(spyRouterBuilder)
 				.addBodyReaderImplementation(textBodyReaderImplementation),
 		);
 
 		expect(router).toStrictEqual({
-			exec: expect.any(Function),
+			exec: true,
 			hooksHubLifeCycle: [{}, {}],
 			hooksRouteLifeCycle: [{}, {}],
 			routeFunctionBuilders: [
@@ -48,11 +50,28 @@ describe("buildRouter", () => {
 				defaultProcessStepFunctionBuilder,
 			],
 		});
+
+		expect(spyRouterBuilder).toHaveBeenCalledWith({
+			classRequest: Request,
+			environment: "DEV",
+			malformedUrlRouterElement: expect.any(Object),
+			notfoundRouterElement: expect.any(Object),
+			routerElementWrapper: {
+				GET: [
+					expect.objectContaining({
+						matchedPath: "/test",
+					}),
+					expect.objectContaining({
+						matchedPath: "/test",
+					}),
+				],
+			},
+		});
 	});
 
 	it("throw error when build route", async() => {
 		await expect(
-			buildRouter(
+			createRouter(
 				createHub({
 					environment: "DEV",
 				})
@@ -64,7 +83,7 @@ describe("buildRouter", () => {
 
 	it("throw error when not found body reader implementation", async() => {
 		await expect(
-			buildRouter(
+			createRouter(
 				createHub({
 					environment: "DEV",
 				})
@@ -80,220 +99,9 @@ describe("buildRouter", () => {
 		(hub as any).notfoundHandler = stepKind.setTo({}) as any;
 
 		await expect(
-			buildRouter(
+			createRouter(
 				hub,
 			),
 		).rejects.instanceof(RouterBuildError);
-	});
-
-	it("buildedRouter use malformed url route with fallback request values", async() => {
-		const spy = vi.fn();
-		const buildedRouter = await buildRouter(
-			createHub({ environment: "DEV" })
-				.setMalformedUrlHandler(
-					ResponseContract.badRequest("malformed"),
-					async({ request, response }) => {
-						spy({
-							matchedPath: request.matchedPath,
-							params: request.params,
-							path: request.path,
-							query: request.query,
-							body: await request.getBody(),
-						});
-						return response("malformed");
-					},
-				)
-				.addBodyReaderImplementation(textBodyReaderImplementation),
-		);
-
-		await buildedRouter.exec({
-			headers: {},
-			host: "",
-			method: "GET",
-			origin: "",
-			url: "/%E0%A4%A",
-		});
-
-		expect(spy).toHaveBeenCalledWith({
-			matchedPath: null,
-			params: {},
-			path: "",
-			query: {},
-			body: E.success(undefined),
-		});
-	});
-
-	it("buildedRouter use notfound route when method group does not exist", async() => {
-		const spy = vi.fn();
-		const route = useRouteBuilder("GET", "/users")
-			.handler(
-				ResponseContract.ok("users.find", DP.empty()),
-				(__, { response }) => response("users.find"),
-			);
-
-		const buildedRouter = await buildRouter(
-			createHub({ environment: "DEV" })
-				.register(route)
-				.setNotfoundHandler(
-					ResponseContract.notFound("notfound"),
-					async({ request, response }) => {
-						spy({
-							matchedPath: request.matchedPath,
-							params: request.params,
-							path: request.path,
-							query: request.query,
-							body: await request.getBody(),
-						});
-						return response("notfound");
-					},
-				)
-				.addBodyReaderImplementation(textBodyReaderImplementation),
-		);
-
-		await buildedRouter.exec({
-			headers: {},
-			host: "",
-			method: "POST",
-			origin: "",
-			url: "/users?role=admin",
-		});
-
-		expect(spy).toHaveBeenCalledWith({
-			matchedPath: null,
-			params: {},
-			path: "/users",
-			query: {
-				role: "admin",
-			},
-			body: E.success(undefined),
-		});
-	});
-
-	it("buildedRouter use notfound route after search route", async() => {
-		const spyRoute = vi.fn();
-		const route = useRouteBuilder("GET", "/users")
-			.handler(
-				ResponseContract.ok("users.find", DP.empty()),
-				(floor, { response }) => {
-					spyRoute();
-					return response("users.find");
-				},
-			);
-
-		const spy = vi.fn();
-		const buildedRouter = await buildRouter(
-			createHub({
-				environment: "DEV",
-			})
-				.register(route)
-				.setNotfoundHandler(
-					ResponseContract.notFound("notfound"),
-					({ response }) => {
-						spy();
-						return response("notfound");
-					},
-				)
-				.addBodyReaderImplementation(textBodyReaderImplementation),
-		);
-
-		await buildedRouter.exec({
-			headers: {},
-			host: "",
-			method: "GET",
-			origin: "",
-			url: "/admins",
-		});
-
-		expect(spyRoute).not.toHaveBeenCalled();
-		expect(spy).toHaveBeenCalled();
-	});
-
-	it("buildedRouter exec route", async() => {
-		const spyRoute = vi.fn();
-		const route = useRouteBuilder("GET", "/users")
-			.handler(
-				ResponseContract.ok("users.find", DP.empty()),
-				(floor, { response }) => {
-					spyRoute();
-					return response("users.find");
-				},
-			);
-
-		const spyNotfound = vi.fn();
-		const buildedRouter = await buildRouter(
-			createHub({
-				environment: "DEV",
-			})
-				.register(route)
-				.setNotfoundHandler(
-					ResponseContract.notFound("notfound"),
-					({ response }) => {
-						spyNotfound();
-						return response("notfound");
-					},
-				)
-				.addBodyReaderImplementation(textBodyReaderImplementation),
-		);
-
-		await buildedRouter.exec({
-			headers: {},
-			host: "",
-			method: "GET",
-			origin: "",
-			url: "/users",
-		});
-
-		expect(spyRoute).toHaveBeenCalled();
-		expect(spyNotfound).not.toHaveBeenCalled();
-	});
-
-	it("buildedRouter skip route when pattern not match and execute next", async() => {
-		const spyRoute = vi.fn();
-		const route = useRouteBuilder("GET", "/users")
-			.handler(
-				ResponseContract.ok("users.find", DP.empty()),
-				(floor, { response }) => {
-					spyRoute();
-					return response("users.find");
-				},
-			);
-
-		const spyRoute2 = vi.fn();
-		const route2 = useRouteBuilder("GET", "/admins")
-			.handler(
-				ResponseContract.ok("admins.find", DP.empty()),
-				(floor, { response }) => {
-					spyRoute2();
-					return response("admins.find");
-				},
-			);
-
-		const spyNotfound = vi.fn();
-		const buildedRouter = await buildRouter(
-			createHub({
-				environment: "DEV",
-			})
-				.register([route, route2])
-				.setNotfoundHandler(
-					ResponseContract.notFound("notfound"),
-					({ response }) => {
-						spyNotfound();
-						return response("notfound");
-					},
-				)
-				.addBodyReaderImplementation(textBodyReaderImplementation),
-		);
-
-		await buildedRouter.exec({
-			headers: {},
-			host: "",
-			method: "GET",
-			origin: "",
-			url: "/admins",
-		});
-
-		expect(spyRoute).not.toHaveBeenCalled();
-		expect(spyRoute2).toHaveBeenCalled();
-		expect(spyNotfound).not.toHaveBeenCalled();
 	});
 });

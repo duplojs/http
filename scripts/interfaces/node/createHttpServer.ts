@@ -1,5 +1,4 @@
 import { type Hub } from "@core/hub";
-import { type RouterInitializationData } from "@core/router";
 import http from "http";
 import https from "https";
 import { initNodeHook } from "./hooks";
@@ -7,6 +6,7 @@ import { implementHttpServer } from "@core/implementHttpServer";
 import { O } from "@duplojs/utils";
 import { type HttpServerParams } from "@core/types";
 import { createFormDataBodyReaderImplementation, createTextBodyReaderImplementation } from "./bodyReaders";
+import { type RouterParams } from "@core/router";
 
 declare module "@core/types" {
 	interface HttpServerParams {
@@ -58,9 +58,9 @@ export function createHttpServer(
 
 	function whenUncaughtError(
 		error: unknown,
-		routerInitializationData: RouterInitializationData,
+		routerParams: RouterParams,
 	) {
-		const serverResponse = routerInitializationData.raw.response;
+		const serverResponse = routerParams.raw.response;
 
 		if (!serverResponse.headersSent && !serverResponse.writableEnded) {
 			serverResponse.writeHead(500, {

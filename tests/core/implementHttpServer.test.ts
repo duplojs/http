@@ -1,5 +1,4 @@
-import { type HttpServerParams, ResponseContract, TextBodyController, createHub, implementHttpServer, serverErrorExitHookFunction, serverErrorNextHookFunction, useRouteBuilder } from "@core";
-import { type RouterInitializationData } from "@core/router";
+import { type HttpServerParams, ResponseContract, type RouterParams, TextBodyController, createHub, implementHttpServer, serverErrorExitHookFunction, serverErrorNextHookFunction, useRouteBuilder } from "@core";
 import { E, type AnyFunction } from "@duplojs/utils";
 
 describe("implementHttpServer", () => {
@@ -127,7 +126,7 @@ describe("implementHttpServer", () => {
 			},
 		);
 
-		const routerInitializationData: RouterInitializationData = {
+		const routerInitializationData: RouterParams = {
 			method: "GET",
 			headers: {},
 			host: "",
