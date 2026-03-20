@@ -16,6 +16,7 @@ tsc -p tests/plugins/openApiGenerator/tsconfig.json
 tsc -p tests/plugins/cacheController/tsconfig.json
 tsc -p tests/plugins/static/tsconfig.json
 tsc -p tests/plugins/cors/tsconfig.json
+tsc -p tests/plugins/cookie/tsconfig.json
 # integration
 npm -w integration run test:types
 # documentation

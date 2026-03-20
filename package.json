@@ -67,6 +67,11 @@
       "require": "./dist/plugins/cacheController/index.cjs",
       "types": "./dist/plugins/cacheController/index.d.ts"
     },
+    "./cookie": {
+      "import": "./dist/plugins/cookie/index.mjs",
+      "require": "./dist/plugins/cookie/index.cjs",
+      "types": "./dist/plugins/cookie/index.d.ts"
+    },
     "./static": {
       "import": "./dist/plugins/static/index.mjs",
       "require": "./dist/plugins/static/index.cjs",

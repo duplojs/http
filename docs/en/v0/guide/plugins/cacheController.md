@@ -4,8 +4,8 @@ prev:
   text: "CORS handling"
   link: "/en/v0/guide/plugins/cors"
 next:
-  text: "Advanced FormData"
-  link: "/en/v0/guide/features/formData"
+  text: "Cookie handling"
+  link: "/en/v0/guide/plugins/cookie"
 ---
 
 # Cache control

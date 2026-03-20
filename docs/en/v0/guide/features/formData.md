@@ -1,8 +1,8 @@
 ---
 description: "Handle complex FormData payloads."
 prev:
-  text: "Cache control"
-  link: "/en/v0/guide/plugins/cacheController"
+  text: "Cookie handling"
+  link: "/en/v0/guide/plugins/cookie"
 next:
   text: "Server-Sent Events (SSE)"
   link: "/en/v0/guide/features/SSE"

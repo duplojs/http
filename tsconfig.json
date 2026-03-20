@@ -11,6 +11,7 @@
 	{ "path": "./scripts/plugins/static/tsconfig.json" },
 	{ "path": "./scripts/plugins/cacheController/tsconfig.json" },
 	{ "path": "./scripts/plugins/cors/tsconfig.json" },
+	{ "path": "./scripts/plugins/cookie/tsconfig.json" },
 
 	{ "path": "./tests/_utils/tsconfig.json" },
 	{ "path": "./tests/core/tsconfig.json" },
@@ -23,6 +24,7 @@
 	{ "path": "./tests/plugins/static/tsconfig.json" },
 	{ "path": "./tests/plugins/cacheController/tsconfig.json" },
 	{ "path": "./tests/plugins/cors/tsconfig.json" },
+	{ "path": "./tests/plugins/cookie/tsconfig.json" },
 
 	{ "path": "./integration/core/tsconfig.json" },
 	{ "path": "./integration/node/tsconfig.json" },
@@ -32,5 +34,6 @@
 	{ "path": "./integration/static/tsconfig.json" },
 	{ "path": "./integration/cacheController/tsconfig.json" },
 	{ "path": "./integration/cors/tsconfig.json" },
+	{ "path": "./integration/cookie/tsconfig.json" },
   ],
 }
