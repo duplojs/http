@@ -1,10 +1,5 @@
 import { createHub, ResponseContract, useRouteBuilder } from "@duplojs/http";
-import {
-	defaultParser,
-	defaultSerializer,
-	parseRequestCookieHook,
-	serializeResponseCookieHook,
-} from "@duplojs/http/cookie";
+import { defaultParser, defaultSerializer, parseRequestCookieHook, serializeResponseCookieHook } from "@duplojs/http/cookie";
 import { DPE } from "@duplojs/utils";
 
 const route = useRouteBuilder("GET", "/admin/session", {
