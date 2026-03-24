@@ -21,8 +21,8 @@
     "test:tu:watch": "vitest --coverage --watch",
     "test:tu:update": "vitest --coverage --update",
     "test:types": "./.commands/test-types.sh",
-    "test:lint": "./.commands/test-eslint.sh",
-    "test:lint:fix": "./.commands/test-eslint.sh --fix",
+    "test:lint": "./.commands/test-lint.sh",
+    "test:lint:fix": "./.commands/test-lint.sh --fix",
     "prepare": "husky"
   },
   "types": "./dist/core/index.d.ts",
@@ -66,6 +66,11 @@
        "import": "./dist/plugins/cacheController/index.mjs",
       "require": "./dist/plugins/cacheController/index.cjs",
       "types": "./dist/plugins/cacheController/index.d.ts"
+    },
+    "./cookie": {
+      "import": "./dist/plugins/cookie/index.mjs",
+      "require": "./dist/plugins/cookie/index.cjs",
+      "types": "./dist/plugins/cookie/index.d.ts"
     },
     "./static": {
       "import": "./dist/plugins/static/index.mjs",

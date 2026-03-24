@@ -117,6 +117,9 @@ export default pipe(
 									"// @filename: @duplojs/http/cacheController.ts",
 									`export * from "@v${namedGroups?.version ?? ""}/cacheController";`,
 
+									"// @filename: @duplojs/http/cookie.ts",
+									`export * from "@v${namedGroups?.version ?? ""}/cookie";`,
+
 									"// @filename: index.ts",
 									"// ---cut---",
 								],
@@ -145,6 +148,7 @@ export default pipe(
 								"@v0/static": ["libs/v0/plugins/static/index"],
 								"@v0/cors": ["libs/v0/plugins/cors/index"],
 								"@v0/cacheController": ["libs/v0/plugins/cacheController/index"],
+								"@v0/cookie": ["libs/v0/plugins/cookie/index"],
 							},
 						},
 					},
@@ -287,6 +291,10 @@ export default pipe(
 											{
 												text: "Contrôle du cache",
 												link: "/fr/v0/guide/plugins/cacheController",
+											},
+											{
+												text: "Gestion Cookie",
+												link: "/fr/v0/guide/plugins/cookie",
 											},
 										],
 									},
@@ -434,15 +442,19 @@ export default pipe(
 											},
 											{
 												text: "Create a static entry point",
-												link: "/fr/v0/guide/plugins/static",
+												link: "/en/v0/guide/plugins/static",
 											},
 											{
 												text: "CORS Management",
-												link: "/fr/v0/guide/plugins/cors",
+												link: "/en/v0/guide/plugins/cors",
 											},
 											{
 												text: "Cache Control",
-												link: "/fr/v0/guide/plugins/cacheController",
+												link: "/en/v0/guide/plugins/cacheController",
+											},
+											{
+												text: "Cookie Management",
+												link: "/en/v0/guide/plugins/cookie",
 											},
 										],
 									},

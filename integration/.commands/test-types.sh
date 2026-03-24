@@ -14,3 +14,4 @@ tsc -p openApiGenerator/tsconfig.json
 tsc -p static/tsconfig.json 
 tsc -p cacheController/tsconfig.json
 tsc -p cors/tsconfig.json
+tsc -p cookie/tsconfig.json

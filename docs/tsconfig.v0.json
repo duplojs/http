@@ -11,6 +11,7 @@
 		"@duplojs/http/static": ["libs/v0/plugins/static/index"],
 		"@duplojs/http/cors": ["libs/v0/plugins/cors/index"],
 		"@duplojs/http/cacheController": ["libs/v0/plugins/cacheController/index"],
+		"@duplojs/http/cookie": ["libs/v0/plugins/cookie/index"],
 	},
 	"types": ["web"]
   },

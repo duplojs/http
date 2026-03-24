@@ -3,6 +3,7 @@ import { setCurrentWorkingDirectory, SF } from "@duplojs/server-utils";
 import { createHub, routeStore } from "@duplojs/http";
 import { staticPlugin } from "@duplojs/http/static";
 import { corsPlugin } from "@duplojs/http/cors";
+import { cookiePlugin } from "@duplojs/http/cookie";
 
 import "./routes";
 
@@ -34,4 +35,7 @@ export const hub = createHub({ environment: "DEV" })
 			exposeHeaders: ["info"],
 			maxAge: 0,
 		}),
+	)
+	.plug(
+		cookiePlugin(),
 	);

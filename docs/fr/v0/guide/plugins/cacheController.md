@@ -4,8 +4,8 @@ prev:
   text: "Gestion CORS"
   link: "/fr/v0/guide/plugins/cors"
 next:
-  text: "FormData avancés"
-  link: "/fr/v0/guide/features/formData"
+  text: "Gestion cookie"
+  link: "/fr/v0/guide/plugins/cookie"
 ---
 
 # Contrôle du cache

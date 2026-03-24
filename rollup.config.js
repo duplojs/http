@@ -130,6 +130,31 @@ export default defineConfig([
 			tscAlias({ configFile: "scripts/plugins/cors/tsconfig.build.json" }),
 		],
 	},
+	{
+		input: "scripts/plugins/cookie/index.ts",
+		output: [
+			{
+				dir: "dist",
+				format: "esm",
+				preserveModules: true,
+				preserveModulesRoot: "scripts",
+				entryFileNames: "[name].mjs"
+			},
+			{
+				dir: "dist",
+				format: "cjs",
+				preserveModules: true,
+				preserveModulesRoot: "scripts",
+				entryFileNames: "[name].cjs"
+			},
+		],
+		treeshake: false,
+		plugins: [
+			del({ targets: "dist/plugins/cookie" }),
+			typescript({ tsconfig: "scripts/plugins/cookie/tsconfig.build.json" }),
+			tscAlias({ configFile: "scripts/plugins/cookie/tsconfig.build.json" }),
+		],
+	},
 
 	// interfaces
 	{

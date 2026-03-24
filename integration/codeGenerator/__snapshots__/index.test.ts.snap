@@ -124,6 +124,28 @@ export type Routes = {
     };
 } | {
     method: "GET";
+    path: "/cookie-check";
+    responses: {
+        code: "422";
+        information: "extract-error";
+        body?: undefined;
+    } | {
+        code: "200";
+        information: "cookie.checked";
+        body: {
+            session: string;
+        };
+    };
+} | {
+    method: "GET";
+    path: "/cookie-drop";
+    responses: {
+        code: "204";
+        information: "cookie.dropped";
+        body?: undefined;
+    };
+} | {
+    method: "GET";
     path: "/static-file";
     responses: {
         code: "200";
