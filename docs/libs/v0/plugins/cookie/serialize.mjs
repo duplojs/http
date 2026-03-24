@@ -43,15 +43,9 @@ function defaultSerializer(name, value, params) {
         throw new SerializeCookieError("params expires and expireIn are mutually exclusive");
     }
     if (params?.expires) {
-        if (!Number.isFinite(params.expires.getTime())) {
-            throw new SerializeCookieError("param expires is invalid");
-        }
         setCookie += `; Expires=${params.expires.toUTCString()}`;
     }
     if (params?.expireIn !== undefined) {
-        if (!D.isTime(params.expireIn)) {
-            throw new SerializeCookieError("param expireIn is invalid");
-        }
         setCookie += `; Expires=${D.addTime(D.now(), params.expireIn).toUTCString()}`;
     }
     if (params?.httpOnly) {

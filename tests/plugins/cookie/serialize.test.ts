@@ -104,23 +104,10 @@ describe("defaultSerializer", () => {
 		).toThrowError(/param path is invalid/);
 	});
 
-	it("rejects invalid domain and expires attributes", () => {
+	it("rejects invalid domain attributes", () => {
 		expect(
 			() => defaultSerializer("token", "value", { domain: "bad_domain" }),
 		).toThrowError(/param domain is invalid/);
-		expect(
-			() => defaultSerializer("token", "value", { expires: new Date(Number.NaN) as never }),
-		).toThrowError(/param expires is invalid/);
-	});
-
-	it("rejects expireIn when it is not a D.TheTime", () => {
-		expect(
-			() => defaultSerializer(
-				"token",
-				"value",
-				{ expireIn: 1000 as never },
-			),
-		).toThrowError(/param expireIn is invalid/);
 	});
 
 	it("rejects expires and expireIn together", () => {

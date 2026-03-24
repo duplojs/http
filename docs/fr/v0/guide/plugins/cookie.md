@@ -20,7 +20,7 @@ Il est utile si vous voulez :
 
 ## Avec `cookiePlugin`
 
-```ts twoslash {2,7-9,23-27,31-33}
+```ts twoslash {2,7-9,22-24}
 // @version: 0
 <!--@include: @/examples/v0/guide/plugins/cookie/plugin.ts-->
 ```
@@ -37,21 +37,32 @@ Cette approche est la plus simple si le support des cookies doit être disponibl
 Vous pouvez aussi passer votre propre `parser` et votre propre `serializer` au plugin.
 Cela permet par exemple de gérer des cookies signés, de centraliser une logique d'encodage particulière, ou d'adapter le format à une contrainte métier.
 
+Si vous utilisez `cookiePlugin` globalement, vous pouvez exclure une route précise avec `IgnoreRouteCookieMetadata`.
+Cela permet de garder le plugin activé partout, tout en retirant automatiquement les hooks cookie sur certaines routes.
+
 ## Avec les hooks directement sur une route
 
-```ts twoslash {2-7,11-18}
+Sur une route, il existe trois façons de brancher les hooks cookie :
+
+- laisser `cookiePlugin` les ajouter automatiquement
+- ajouter `cookieHooks` pour récupérer le parsing d'entrée et la sérialisation de sortie d'un coup
+- ajouter `parseRequestCookieHook` et `serializeResponseCookieHook` séparément si vous voulez un comportement plus ciblé
+
+Si vous voulez brancher les deux comportements directement sur une route sans passer par le plugin, `cookieHooks` est la forme la plus simple.
+
+```ts twoslash {2,6-9}
+// @version: 0
+<!--@include: @/examples/v0/guide/plugins/cookie/cookieHooks.ts-->
+```
+
+Ici, la route récupère le comportement standard du plugin, mais seulement pour elle.
+C'est souvent la forme la plus pratique si vous voulez activer les cookies route par route.
+
+## Avec les deux hooks séparés sur une route
+```ts twoslash {2,5-12}
 // @version: 0
 <!--@include: @/examples/v0/guide/plugins/cookie/routeHooks.ts-->
 ```
 
-Ici, le `Hub` n'est pas branché globalement avec `cookiePlugin`.
-La route charge elle-même les hooks dont elle a besoin.
-
-Cette forme est utile si vous voulez :
-
-- limiter l'usage des cookies à quelques routes
-- choisir vous-même quel parser ou quel serializer utiliser
-- n'ajouter qu'un seul hook si nécessaire, par exemple uniquement le parsing d'entrée ou uniquement la sérialisation de sortie
-
-Comme pour le plugin, chaque hook peut recevoir son propre parser ou son propre serializer.
-C'est pratique si vous voulez réserver un comportement spécifique à une seule route, par exemple pour signer ou vérifier certains cookies sensibles.
+Cette forme est la plus flexible.
+Elle est utile si vous voulez n'ajouter qu'un seul hook, ou traiter séparément le parsing d'entrée et la sérialisation de sortie.

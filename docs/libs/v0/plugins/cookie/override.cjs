@@ -8,7 +8,7 @@ index.Request.prototype.cookies = undefined;
 base.Response.prototype.cookie = undefined;
 base.Response.prototype.setCookie = function (name, value, params) {
     if (!this.cookie) {
-        this.cookie = Object.create(null);
+        this.cookie = {};
     }
     this.cookie[name] = {
         value,
@@ -18,7 +18,7 @@ base.Response.prototype.setCookie = function (name, value, params) {
 };
 base.Response.prototype.dropCookie = function (name) {
     if (!this.cookie) {
-        this.cookie = Object.create(null);
+        this.cookie = {};
     }
     this.cookie[name] = {
         value: "",

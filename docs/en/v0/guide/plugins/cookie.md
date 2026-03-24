@@ -20,7 +20,7 @@ It is useful when you want to:
 
 ## With `cookiePlugin`
 
-```ts twoslash {2,7-9,23-27,31-33}
+```ts twoslash {2,7-9,22-24}
 // @version: 0
 <!--@include: @/examples/v0/guide/plugins/cookie/plugin.ts-->
 ```
@@ -37,21 +37,32 @@ This is the simplest approach when cookie support should be available across you
 You can also pass your own `parser` and `serializer` to the plugin.
 This can be useful for signed cookies, custom encoding rules, or any project-specific format.
 
+If you use `cookiePlugin` globally, you can exclude a specific route with `IgnoreRouteCookieMetadata`.
+This lets you keep the plugin enabled everywhere while automatically removing cookie hooks from some routes.
+
 ## With hooks directly on one route
 
-```ts twoslash {2-7,11-18}
+On a route, there are three ways to register cookie hooks:
+
+- let `cookiePlugin` add them automatically
+- add `cookieHooks` to get input parsing and output serialization at once
+- add `parseRequestCookieHook` and `serializeResponseCookieHook` separately if you want more targeted behavior
+
+If you want both behaviors directly on a route without using the plugin, `cookieHooks` is the simplest form.
+
+```ts twoslash {2,6-9}
+// @version: 0
+<!--@include: @/examples/v0/guide/plugins/cookie/cookieHooks.ts-->
+```
+
+Here, the route gets the standard plugin behavior, but only for itself.
+This is often the most practical form when you want to enable cookies route by route.
+
+## With the two hooks separately on one route
+```ts twoslash {2,5-12}
 // @version: 0
 <!--@include: @/examples/v0/guide/plugins/cookie/routeHooks.ts-->
 ```
 
-Here, the `Hub` is not globally configured with `cookiePlugin`.
-The route registers the hooks it needs by itself.
-
-This form is useful when you want to:
-
-- limit cookie usage to only a few routes
-- choose your own parser or serializer
-- register only one hook if needed, for example only input parsing or only output serialization
-
-Just like with the plugin, each hook can receive its own parser or serializer.
-This is useful when you want route-specific behavior, for example to sign or verify sensitive cookies.
+This form is the most flexible.
+It is useful when you only want one hook, or when input parsing and output serialization should be handled separately.

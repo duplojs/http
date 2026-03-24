@@ -17,10 +17,10 @@ interface SerializerParamsBase {
 }
 export interface SerializerParamsWithExpires extends SerializerParamsBase {
     expires?: D.TheDate;
-    expireIn?: never;
+    expireIn?: undefined;
 }
 export interface SerializerParamsWithExpireIn extends SerializerParamsBase {
-    expires?: never;
+    expires?: undefined;
     expireIn?: D.TheTime;
 }
 export type SerializerParams = SerializerParamsWithExpires | SerializerParamsWithExpireIn;

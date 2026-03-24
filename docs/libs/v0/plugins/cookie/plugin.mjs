@@ -1,15 +1,26 @@
-import { defaultParser } from './parser.mjs';
-import { defaultSerializer } from './serialize.mjs';
+import { A } from '@duplojs/utils';
 import './hooks/index.mjs';
-import { parseRequestCookieHook } from './hooks/parseRequestCookie.mjs';
-import { serializeResponseCookieHook } from './hooks/serializeResponseCookie.mjs';
+import { IgnoreRouteCookieMetadata } from './metadata.mjs';
+import { cookieHooks } from './hooks/cookieHooks.mjs';
 
 function cookiePlugin(params) {
     return () => ({
         name: "cookie-plugin",
-        hooksRouteLifeCycle: [
-            parseRequestCookieHook({ parser: params?.parser ?? defaultParser }),
-            serializeResponseCookieHook({ serializer: params?.serializer ?? defaultSerializer }),
+        hooksHubLifeCycle: [
+            {
+                beforeBuildRoute: (route) => {
+                    if (A.some(route.definition.metadata, IgnoreRouteCookieMetadata.is)) {
+                        return route;
+                    }
+                    return {
+                        ...route,
+                        definition: {
+                            ...route.definition,
+                            hooks: [...route.definition.hooks, cookieHooks(params)],
+                        },
+                    };
+                },
+            },
         ],
     });
 }

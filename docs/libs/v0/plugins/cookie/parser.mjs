@@ -44,7 +44,7 @@ function decode(value) {
     }
 }
 function defaultParser(value) {
-    const result = Object.create(null);
+    const result = {};
     const valueLength = value.length;
     if (valueLength < 2) {
         return result;
@@ -61,7 +61,10 @@ function defaultParser(value) {
             continue;
         }
         const key = sliceAndTrimOws(value, index, equalCharIndex);
-        if (key === "") {
+        if (key === ""
+            || key === "__proto__"
+            || key === "constructor"
+            || key === "prototype") {
             index = pairEndIndex + 1;
             continue;
         }

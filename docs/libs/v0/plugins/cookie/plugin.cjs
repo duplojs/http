@@ -1,17 +1,28 @@
 'use strict';
 
-var parser = require('./parser.cjs');
-var serialize = require('./serialize.cjs');
+var utils = require('@duplojs/utils');
 require('./hooks/index.cjs');
-var parseRequestCookie = require('./hooks/parseRequestCookie.cjs');
-var serializeResponseCookie = require('./hooks/serializeResponseCookie.cjs');
+var metadata = require('./metadata.cjs');
+var cookieHooks = require('./hooks/cookieHooks.cjs');
 
 function cookiePlugin(params) {
     return () => ({
         name: "cookie-plugin",
-        hooksRouteLifeCycle: [
-            parseRequestCookie.parseRequestCookieHook({ parser: params?.parser ?? parser.defaultParser }),
-            serializeResponseCookie.serializeResponseCookieHook({ serializer: params?.serializer ?? serialize.defaultSerializer }),
+        hooksHubLifeCycle: [
+            {
+                beforeBuildRoute: (route) => {
+                    if (utils.A.some(route.definition.metadata, metadata.IgnoreRouteCookieMetadata.is)) {
+                        return route;
+                    }
+                    return {
+                        ...route,
+                        definition: {
+                            ...route.definition,
+                            hooks: [...route.definition.hooks, cookieHooks.cookieHooks(params)],
+                        },
+                    };
+                },
+            },
         ],
     });
 }
