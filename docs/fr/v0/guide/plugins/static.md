@@ -1,5 +1,5 @@
 ---
-description: "Créer un point d'entrée static facilement"
+description: "Fichiers static facilement"
 prev:
   text: "Génération OpenAPI"
   link: "/fr/v0/guide/plugins/openApiGenerator"
@@ -8,7 +8,7 @@ next:
   link: "/fr/v0/guide/plugins/cors"
 ---
 
-# Créer un point d'entrée static
+# Fichiers static
 
 `@duplojs/http/static` permet d'exposer un fichier ou un dossier en lecture seule.
 Vous pouvez soit brancher directement le `staticPlugin` dans le `Hub`, soit enregistrer une route manuellement avec `makeRouteFile` ou `makeRouteFolder`.

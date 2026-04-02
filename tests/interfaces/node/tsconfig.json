@@ -12,6 +12,7 @@
   },
   "include": [
 	"**/*.ts",
-	"../../../scripts/interfaces/node/**/*.ts", "../../../scripts/core/errors/parseJsonError.ts",
+	"../../../scripts/core/**/*.ts",
+	"../../../scripts/interfaces/node/**/*.ts", 
   ],
 }

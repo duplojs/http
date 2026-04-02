@@ -1,7 +1,7 @@
 ---
 description: "Handle CORS headers."
 prev:
-  text: "Create a static entry point"
+  text: "Static Files"
   link: "/en/v0/guide/plugins/static"
 next:
   text: "Cache control"

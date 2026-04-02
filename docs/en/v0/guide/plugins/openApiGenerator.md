@@ -4,7 +4,7 @@ prev:
   text: "Code generation"
   link: "/en/v0/guide/plugins/codeGenerator"
 next:
-  text: "Create a static entry point"
+  text: "Static Files"
   link: "/en/v0/guide/plugins/static"
 ---
 

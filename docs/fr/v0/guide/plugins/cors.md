@@ -1,7 +1,7 @@
 ---
 description: "Gérer les entêtes CORS"
 prev:
-  text: "Créer un point d'entrée static"
+  text: "Fichiers static"
   link: "/fr/v0/guide/plugins/static"
 next:
   text: "Contrôle du cache"

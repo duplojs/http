@@ -281,7 +281,7 @@ export default pipe(
 												link: "/fr/v0/guide/plugins/openApiGenerator",
 											},
 											{
-												text: "Créer un point d'entrée static",
+												text: "Fichiers static",
 												link: "/fr/v0/guide/plugins/static",
 											},
 											{
@@ -441,7 +441,7 @@ export default pipe(
 												link: "/en/v0/guide/plugins/openApiGenerator",
 											},
 											{
-												text: "Create a static entry point",
+												text: "Static Files",
 												link: "/en/v0/guide/plugins/static",
 											},
 											{

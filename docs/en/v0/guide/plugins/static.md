@@ -1,5 +1,5 @@
 ---
-description: "Create a static entry point easily."
+description: "Static Files easily."
 prev:
   text: "OpenAPI generation"
   link: "/en/v0/guide/plugins/openApiGenerator"
@@ -8,7 +8,7 @@ next:
   link: "/en/v0/guide/plugins/cors"
 ---
 
-# Create a static entry point
+# Static Files
 
 `@duplojs/http/static` lets you expose a file or a folder in read-only mode.
 You can either plug `staticPlugin` directly into the `Hub`, or manually register a route with `makeRouteFile` or `makeRouteFolder`.
