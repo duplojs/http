@@ -4,8 +4,8 @@ prev:
   text: "Make a request"
   link: "/en/v0/guide/client/doRequest"
 next:
-  text: "Code generation"
-  link: "/en/v0/guide/plugins/codeGenerator"
+  text: "Client cache"
+  link: "/en/v0/guide/client/clientCache"
 ---
 
 # Handle a response

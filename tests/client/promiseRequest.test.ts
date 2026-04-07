@@ -1,4 +1,4 @@
-import { type Hooks, type PromiseRequestParams } from "@client";
+import { type ClientCacheStore, type Hooks, type PromiseRequestParams } from "@client";
 import { PromiseRequest } from "@client/promiseRequest";
 import { type AllClientResponse, type ClientResponse } from "@client/types/clientResponse";
 import { UnexpectedCodeResponseError, UnexpectedInformationResponseError, UnexpectedResponseError, UnexpectedResponseTypeError } from "@client/unexpectedResponseError";
@@ -35,6 +35,7 @@ describe("PromiseRequest", () => {
 		predictedHeaderKey: "predicted",
 		disabledPredicateMode: false,
 		abortController: new AbortController(),
+		cacheStore: new Map(),
 		...overrides,
 	});
 
@@ -203,6 +204,234 @@ describe("PromiseRequest", () => {
 		expect(unwrap(resultNumber).predicted).toBe(false);
 		expect(unwrap(resultHeader).ok).toBe(true);
 		expect(Symbol.asyncIterator in unwrap(resultSEE)).toBe(true);
+	});
+
+	it("static fetch returns cached response without calling fetch", async() => {
+		const requestParams = createParams({
+			clientCache: vi.fn(() => "cache-key"),
+			cacheStore: new Map([
+				[
+					"cache-key",
+					{
+						body: { cached: true },
+						code: "200",
+						headers: {
+							"content-type": "application/json",
+							"x-cache": "hit",
+						},
+						information: "cached",
+						ok: true,
+						predicted: false,
+						redirected: false,
+						type: "basic",
+						url: "http://test.local/resource",
+					},
+				],
+			]),
+		});
+		const fetchMock = vi.fn();
+
+		vi.stubGlobal("fetch", fetchMock);
+
+		const result = await PromiseRequest.fetch(requestParams);
+
+		asserts(result, E.isRight);
+		expect(fetchMock).not.toHaveBeenCalled();
+		expect(unwrap(result)).toMatchObject({
+			body: { cached: true },
+			code: "200",
+			information: "cached",
+			ok: true,
+			predicted: false,
+			requestParams,
+		});
+		expect(unwrap(result).headers).toBeInstanceOf(Headers);
+	});
+
+	it("static fetch refreshes cache by bypassing lookup and saving fresh response", async() => {
+		const fetchMock = vi.fn().mockResolvedValue({
+			status: 200,
+			ok: true,
+			statusText: "OK",
+			headers: new Headers({
+				"content-type": "application/json",
+				information: "fresh-info",
+				predicted: "true",
+			}),
+			json: vi.fn().mockResolvedValue({ fresh: true }),
+			text: vi.fn(),
+			formData: vi.fn(),
+			blob: vi.fn(),
+			type: "basic",
+			url: "http://test.local/resource",
+			redirected: false,
+		} as unknown as Response);
+		const clientCache = vi.fn(() => "cache-key");
+		const cacheStore: ClientCacheStore = new Map([
+			[
+				"cache-key",
+				{
+					body: { stale: true },
+					code: "200",
+					headers: { "content-type": "application/json" },
+					information: "stale-info",
+					ok: true,
+					predicted: false,
+					redirected: false,
+					type: "basic" as ResponseType,
+					url: "http://test.local/resource",
+				},
+			],
+		]);
+		const requestParams = createParams({
+			clientCache,
+			cacheStore,
+			refreshClientCache: true,
+		});
+
+		vi.stubGlobal("fetch", fetchMock);
+
+		const result = await PromiseRequest.fetch(requestParams);
+
+		asserts(result, E.isRight);
+		expect(fetchMock).toHaveBeenCalledTimes(1);
+		expect(unwrap(result).body).toStrictEqual({ fresh: true });
+		expect(cacheStore.get("cache-key")).toStrictEqual({
+			body: { fresh: true },
+			code: "200",
+			headers: {
+				"content-type": "application/json",
+				information: "fresh-info",
+				predicted: "true",
+			},
+			information: "fresh-info",
+			ok: true,
+			predicted: true,
+			redirected: false,
+			type: "basic",
+			url: "http://test.local/resource",
+		});
+	});
+
+	it("static fetch saves successful responses in cache store", async() => {
+		const fetchMock = vi.fn().mockResolvedValue({
+			status: 200,
+			ok: true,
+			statusText: "OK",
+			headers: new Headers({
+				"content-type": "application/json",
+				information: "info",
+				predicted: "true",
+			}),
+			json: vi.fn().mockResolvedValue({ value: 1 }),
+			text: vi.fn(),
+			formData: vi.fn(),
+			blob: vi.fn(),
+			type: "basic",
+			url: "http://test.local/resource",
+			redirected: false,
+		} as unknown as Response);
+		const cacheStore = new Map();
+		const clientCache = vi.fn(() => "cache-key");
+		const requestParams = createParams({
+			method: "POST",
+			body: { value: 1 },
+			cacheStore,
+			clientCache,
+		});
+
+		vi.stubGlobal("fetch", fetchMock);
+
+		const result = await PromiseRequest.fetch(requestParams);
+
+		asserts(result, E.isRight);
+		expect(fetchMock).toHaveBeenCalledTimes(1);
+		expect(clientCache).toHaveBeenCalledWith({
+			method: requestParams.method,
+			path: requestParams.path,
+			body: requestParams.body,
+			headers: requestParams.headers,
+			hookParams: requestParams.hookParams,
+			params: requestParams.params,
+			query: requestParams.query,
+		});
+		expect(cacheStore.get("cache-key")).toStrictEqual({
+			body: { value: 1 },
+			code: "200",
+			headers: {
+				"content-type": "application/json",
+				information: "info",
+				predicted: "true",
+			},
+			information: "info",
+			ok: true,
+			predicted: true,
+			redirected: false,
+			type: "basic",
+			url: "http://test.local/resource",
+		});
+	});
+
+	it("static fetch does not read or write cache when bypassClientCache is enabled", async() => {
+		const fetchMock = vi.fn().mockResolvedValue({
+			status: 200,
+			ok: true,
+			statusText: "OK",
+			headers: new Headers({
+				"content-type": "application/json",
+				information: "info",
+				predicted: "true",
+			}),
+			json: vi.fn().mockResolvedValue({ live: true }),
+			text: vi.fn(),
+			formData: vi.fn(),
+			blob: vi.fn(),
+			type: "basic",
+			url: "http://test.local/resource",
+			redirected: false,
+		} as unknown as Response);
+		const clientCache = vi.fn(() => "cache-key");
+		const cacheStore: ClientCacheStore = new Map([
+			[
+				"cache-key",
+				{
+					body: { cached: true },
+					code: "200",
+					headers: { "content-type": "application/json" },
+					information: "cached",
+					ok: true,
+					predicted: false,
+					redirected: false,
+					type: "basic" as ResponseType,
+					url: "http://test.local/resource",
+				},
+			],
+		]);
+		const requestParams = createParams({
+			clientCache,
+			cacheStore,
+			bypassClientCache: true,
+		});
+
+		vi.stubGlobal("fetch", fetchMock);
+
+		const result = await PromiseRequest.fetch(requestParams);
+
+		asserts(result, E.isRight);
+		expect(fetchMock).toHaveBeenCalledTimes(1);
+		expect(clientCache).not.toHaveBeenCalled();
+		expect(unwrap(result).body).toStrictEqual({ live: true });
+		expect(cacheStore.get("cache-key")).toStrictEqual({
+			body: { cached: true },
+			code: "200",
+			headers: { "content-type": "application/json" },
+			information: "cached",
+			ok: true,
+			predicted: false,
+			redirected: false,
+			type: "basic",
+			url: "http://test.local/resource",
+		});
 	});
 
 	it("addRequestInterceptor", async() => {

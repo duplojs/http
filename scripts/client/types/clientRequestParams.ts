@@ -2,6 +2,7 @@ import { type SimplifyTopLevel, type IsEqual, type MaybeArray, type AnyTuple } f
 import { type ServerRouteHeaders, type ServerRouteParams, type ServerRouteQuery, type ServerRoute, type ServerPrimitiveData } from "./serverRoute";
 import { type ObjectCanBeEmpty } from "./ObjectCanBeEmpty";
 import type * as OO from "@duplojs/utils/object";
+import { type CreateClientCacheKeyParams, type CreateClientCacheKey } from "./clientCache";
 
 export interface ClientRequestInitParams extends Pick<
 	RequestInit,
@@ -38,6 +39,9 @@ export interface ClientRequestParams<
 	abortController?: AbortController;
 	initParams?: ClientRequestInitParams;
 	hookParams?: GenericHookParams;
+	clientCache?: "auto" | CreateClientCacheKey<GenericHookParams>;
+	bypassClientCache?: boolean;
+	refreshClientCache?: boolean;
 }
 
 type StringifyTuple<
@@ -128,6 +132,9 @@ export type ServerRouteToClientRequestParams<
 			abortController?: AbortController;
 			initParams?: ClientRequestInitParams;
 			hookParams?: GenericHookParams;
+			bypassClientCache?: boolean;
+			refreshClientCache?: boolean;
+			clientCache?: "auto" | CreateClientCacheKey<GenericHookParams>;
 		}
 		& MaybeParams<
 			& (
@@ -165,7 +172,7 @@ export type ServerRouteToClientRequestParams<
 					}
 			)
 		>
-	)> extends infer InferredResult extends ClientRequestParams
+	)> extends infer InferredResult extends ClientRequestParams<GenericHookParams>
 		? InferredResult
 		: never
 	: never;

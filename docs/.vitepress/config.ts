@@ -267,6 +267,10 @@ export default pipe(
 												text: "Traiter une réponse",
 												link: "/fr/v0/guide/client/handleResponse",
 											},
+											{
+												text: "Cache client",
+												link: "/fr/v0/guide/client/clientCache",
+											},
 										],
 									},
 									{
@@ -426,6 +430,10 @@ export default pipe(
 											{
 												text: "Handle a response",
 												link: "/en/v0/guide/client/handleResponse",
+											},
+											{
+												text: "Client cache",
+												link: "/en/v0/guide/client/clientCache",
 											},
 										],
 									},

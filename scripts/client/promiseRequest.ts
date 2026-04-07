@@ -9,6 +9,7 @@ import * as AA from "@duplojs/utils/array";
 import { UnexpectedCodeResponseError, UnexpectedInformationResponseError, UnexpectedResponseError, UnexpectedResponseTypeError, type RequestErrorContent } from "./unexpectedResponseError";
 import { type PromiseRequestParams, type Hooks, type NotPredictedResponseHook, type ErrorHook, type ClientEventsResponse, type AllClientResponse, type AllNotPredictedClientResponse, type ClientResponse, type ClientEventsResponseHandler, type ServerEvent } from "./types";
 import { makeClientEventsResponse } from "./serverSentEvents";
+import { findResponseFromCacheStore, saveResponseInCacheStore } from "./clientCache";
 
 type MaybeResponse<
 	GenericClientResponse extends AllClientResponse = AllClientResponse,
@@ -1087,6 +1088,17 @@ export class PromiseRequest<
 	>(
 		requestParams: GenericPromiseRequestParams,
 	): Promise<MaybeResponse> {
+		const cachedResponse = findResponseFromCacheStore(requestParams);
+
+		if (cachedResponse) {
+			return Promise.resolve(
+				EE.right(
+					"response",
+					cachedResponse,
+				),
+			);
+		}
+
 		const path = insertParamsInPath(requestParams.path, requestParams.params);
 		const query = queryToString(requestParams.query);
 		const url = query
@@ -1164,6 +1176,13 @@ export class PromiseRequest<
 										fetchUrl,
 										fetchInitParams,
 									),
+								);
+							}
+
+							if (clientResponse.code.startsWith("2")) {
+								saveResponseInCacheStore(
+									requestParams,
+									clientResponse,
 								);
 							}
 

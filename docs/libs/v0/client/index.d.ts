@@ -8,3 +8,4 @@ export * from "./queryToString";
 export * from "./promiseRequest";
 export * from "./unexpectedResponseError";
 export * from "./serverSentEvents";
+export * from "./clientCache";

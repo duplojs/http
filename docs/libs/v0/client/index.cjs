@@ -10,6 +10,7 @@ var queryToString = require('./queryToString.cjs');
 var promiseRequest = require('./promiseRequest.cjs');
 var unexpectedResponseError = require('./unexpectedResponseError.cjs');
 var serverSentEvents = require('./serverSentEvents.cjs');
+var clientCache = require('./clientCache.cjs');
 
 
 
@@ -38,3 +39,6 @@ exports.UnexpectedInformationResponseError = unexpectedResponseError.UnexpectedI
 exports.UnexpectedResponseError = unexpectedResponseError.UnexpectedResponseError;
 exports.UnexpectedResponseTypeError = unexpectedResponseError.UnexpectedResponseTypeError;
 exports.makeClientEventsResponse = serverSentEvents.makeClientEventsResponse;
+exports.autoCreateCacheKey = clientCache.autoCreateCacheKey;
+exports.findResponseFromCacheStore = clientCache.findResponseFromCacheStore;
+exports.saveResponseInCacheStore = clientCache.saveResponseInCacheStore;

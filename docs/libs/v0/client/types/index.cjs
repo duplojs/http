@@ -6,4 +6,5 @@ require('./serverRoute.cjs');
 require('./ObjectCanBeEmpty.cjs');
 require('./promiseRequestParams.cjs');
 require('./hooks.cjs');
+require('./clientCache.cjs');
 

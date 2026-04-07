@@ -4,6 +4,7 @@ var OO = require('@duplojs/utils/object');
 var GG = require('@duplojs/utils/generator');
 var kind = require('./kind.cjs');
 var promiseRequest = require('./promiseRequest.cjs');
+var clientCache = require('./clientCache.cjs');
 
 function _interopNamespaceDefault(e) {
     var n = Object.create(null);
@@ -27,6 +28,9 @@ var GG__namespace = /*#__PURE__*/_interopNamespaceDefault(GG);
 
 const httpClientKind = kind.createClientKind("http-client");
 function createHttpClient(clientParams) {
+    const cacheStore = new Map(clientParams.clientCacheInitialValues
+        ? OO__namespace.entries(clientParams.clientCacheInitialValues)
+        : []);
     const hooks = OO__namespace.override({
         request: [],
         response: [],
@@ -59,6 +63,7 @@ function createHttpClient(clientParams) {
         config,
         hooks,
         defaultHeaders,
+        cacheStore,
         addDefaultHeader(headerName, headerValue) {
             defaultHeaders.set(headerName, typeof headerValue === "function"
                 ? headerValue
@@ -135,8 +140,8 @@ function createHttpClient(clientParams) {
                 baseUrl: config.baseUrl,
                 ...params,
                 headers: {
-                    ...params.headers,
                     ...headers,
+                    ...params.headers,
                 },
                 initParams: {
                     ...params.initParams,
@@ -147,6 +152,10 @@ function createHttpClient(clientParams) {
                 informationHeaderKey: config.informationHeaderKey,
                 disabledPredicateMode: config.disabledPredictedMode,
                 abortController: params.abortController ?? new AbortController(),
+                cacheStore: cacheStore,
+                clientCache: params.clientCache === "auto"
+                    ? clientCache.autoCreateCacheKey
+                    : params.clientCache,
             });
         },
         get: ((path, params) => self.request({

@@ -2,6 +2,7 @@ import type * as SS from "@duplojs/utils/string";
 import { type ServerRouteResponse, type ServerRoute } from "./serverRoute";
 import { type MaybePromise, type IsEqual, type SimplifyTopLevel, type NeverCoalescing } from "@duplojs/utils";
 import { type PromiseRequestParams } from "./promiseRequestParams";
+import { type ServerRouteToClientRequestParams } from "./clientRequestParams";
 
 export type ClientResponseBody = unknown;
 
@@ -19,6 +20,7 @@ export interface ClientResponse<
 	raw: globalThis.Response;
 	requestParams: PromiseRequestParams<GenericHookParams>;
 	predicted: boolean;
+	fromCache?: boolean;
 }
 
 export interface ServerEvent {
@@ -103,8 +105,15 @@ export type ServerRouteToClientResponse<
 					url: string;
 					redirected: boolean;
 					raw: globalThis.Response;
-					requestParams: PromiseRequestParams<GenericHookParams>;
+					requestParams: SimplifyTopLevel<
+						& ServerRouteToClientRequestParams<
+							GenericServerRoute,
+							GenericHookParams
+						>
+						& PromiseRequestParams<GenericHookParams>
+					>;
 					predicted: boolean;
+					fromCache?: boolean;
 				}>
 				& (
 					IsEqual<InferredResponse["events"], unknown> extends true
