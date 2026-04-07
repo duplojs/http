@@ -2,9 +2,13 @@ import * as OO from '@duplojs/utils/object';
 import * as GG from '@duplojs/utils/generator';
 import { createClientKind } from './kind.mjs';
 import { PromiseRequest } from './promiseRequest.mjs';
+import { autoCreateCacheKey } from './clientCache.mjs';
 
 const httpClientKind = createClientKind("http-client");
 function createHttpClient(clientParams) {
+    const cacheStore = new Map(clientParams.clientCacheInitialValues
+        ? OO.entries(clientParams.clientCacheInitialValues)
+        : []);
     const hooks = OO.override({
         request: [],
         response: [],
@@ -37,6 +41,7 @@ function createHttpClient(clientParams) {
         config,
         hooks,
         defaultHeaders,
+        cacheStore,
         addDefaultHeader(headerName, headerValue) {
             defaultHeaders.set(headerName, typeof headerValue === "function"
                 ? headerValue
@@ -113,8 +118,8 @@ function createHttpClient(clientParams) {
                 baseUrl: config.baseUrl,
                 ...params,
                 headers: {
-                    ...params.headers,
                     ...headers,
+                    ...params.headers,
                 },
                 initParams: {
                     ...params.initParams,
@@ -125,6 +130,10 @@ function createHttpClient(clientParams) {
                 informationHeaderKey: config.informationHeaderKey,
                 disabledPredicateMode: config.disabledPredictedMode,
                 abortController: params.abortController ?? new AbortController(),
+                cacheStore: cacheStore,
+                clientCache: params.clientCache === "auto"
+                    ? autoCreateCacheKey
+                    : params.clientCache,
             });
         },
         get: ((path, params) => self.request({

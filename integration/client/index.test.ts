@@ -1,8 +1,8 @@
 import { hub } from "@core";
 import { createHttpServer } from "@duplojs/http/node";
-import { type AllNotPredictedClientResponse, createHttpClient, type PromiseRequestParams, type RequestErrorContent } from "@duplojs/http/client";
+import { type AllNotPredictedClientResponse, type ClientEventsResponseHandler, createHttpClient, type FindServerRoute, type PromiseRequestParams, type RequestErrorContent, type ServerRouteToClientRequestParams } from "@duplojs/http/client";
 import { type Routes } from "./clientType";
-import { A, asserts, createFormData, E, S, sleep, stringToBytes, type ExpectType } from "@duplojs/utils";
+import { A, asserts, createFormData, E, S, type SimplifyTopLevel, sleep, stringToBytes, type ExpectType } from "@duplojs/utils";
 import { createFileToSend } from "@utils";
 import { resolve } from "path";
 import { SF } from "@duplojs/server-utils";
@@ -25,7 +25,18 @@ describe("client", async() => {
 	});
 
 	it("get all users", async() => {
-		const result = await httpClient.get("/users");
+		type RequestParams = SimplifyTopLevel<
+			& ServerRouteToClientRequestParams<
+				FindServerRoute<
+					Routes,
+					"GET",
+					"/users"
+				>
+			>
+			& PromiseRequestParams
+		>;
+
+		const result = await httpClient.get("/users", { clientCache: "auto" });
 
 		type Check = ExpectType<
 			typeof result,
@@ -46,8 +57,9 @@ describe("client", async() => {
 					url: string;
 					redirected: boolean;
 					raw: Response;
-					requestParams: PromiseRequestParams<Record<string, unknown>>;
+					requestParams: RequestParams;
 					predicted: boolean;
+					fromCache?: boolean;
 				}
 				| AllNotPredictedClientResponse<
 					Record<string, unknown>
@@ -73,10 +85,42 @@ describe("client", async() => {
 				}),
 			),
 		);
+
+		const resultFromCache = await httpClient.get("/users", { clientCache: "auto" });
+
+		expect(resultFromCache).toStrictEqual(
+			E.right(
+				"response",
+				expect.objectContaining({
+					url: "http://localhost:8946/users",
+					information: "users.findMany",
+					body: [
+						{
+							age: 28,
+							id: 23,
+							name: "",
+						},
+					],
+					predicted: true,
+					fromCache: true,
+				}),
+			),
+		);
 	});
 
 	it("get user", async() => {
 		const result = await httpClient.get("/users/{userId}", { params: { userId: S.to(15) } });
+
+		type RequestParams = SimplifyTopLevel<
+			& ServerRouteToClientRequestParams<
+				FindServerRoute<
+					Routes,
+					"GET",
+					"/users/{userId}"
+				>
+			>
+			& PromiseRequestParams
+		>;
 
 		type Check = ExpectType<
 			typeof result,
@@ -96,8 +140,9 @@ describe("client", async() => {
 					url: string;
 					redirected: boolean;
 					raw: Response;
-					requestParams: PromiseRequestParams<Record<string, unknown>>;
+					requestParams: RequestParams;
 					predicted: boolean;
+					fromCache?: boolean;
 				}
 				| {
 					code: "200";
@@ -113,8 +158,9 @@ describe("client", async() => {
 					url: string;
 					redirected: boolean;
 					raw: Response;
-					requestParams: PromiseRequestParams<Record<string, unknown>>;
+					requestParams: RequestParams;
 					predicted: boolean;
+					fromCache?: boolean;
 				}
 			>,
 			"strict"
@@ -146,6 +192,17 @@ describe("client", async() => {
 			},
 		});
 
+		type RequestParams = SimplifyTopLevel<
+			& ServerRouteToClientRequestParams<
+				FindServerRoute<
+					Routes,
+					"POST",
+					"/users"
+				>
+			>
+			& PromiseRequestParams
+		>;
+
 		type Check = ExpectType<
 			typeof result,
 			| E.Left<"request-error", RequestErrorContent>
@@ -161,8 +218,9 @@ describe("client", async() => {
 					url: string;
 					redirected: boolean;
 					raw: Response;
-					requestParams: PromiseRequestParams<Record<string, unknown>>;
+					requestParams: RequestParams;
 					predicted: boolean;
+					fromCache?: boolean;
 				}
 				| {
 					code: "200";
@@ -178,8 +236,9 @@ describe("client", async() => {
 					url: string;
 					redirected: boolean;
 					raw: Response;
-					requestParams: PromiseRequestParams<Record<string, unknown>>;
+					requestParams: RequestParams;
 					predicted: boolean;
+					fromCache?: boolean;
 				}
 				| AllNotPredictedClientResponse<
 					Record<string, unknown>
@@ -214,6 +273,17 @@ describe("client", async() => {
 			}),
 		});
 
+		type RequestParams = SimplifyTopLevel<
+			& ServerRouteToClientRequestParams<
+				FindServerRoute<
+					Routes,
+					"POST",
+					"/documents"
+				>
+			>
+			& PromiseRequestParams
+		>;
+
 		type Check = ExpectType<
 			typeof result,
 			| E.Left<"request-error", RequestErrorContent>
@@ -229,8 +299,9 @@ describe("client", async() => {
 					url: string;
 					redirected: boolean;
 					raw: Response;
-					requestParams: PromiseRequestParams<Record<string, unknown>>;
+					requestParams: RequestParams;
 					predicted: boolean;
+					fromCache?: boolean;
 				}
 				| {
 					code: "204";
@@ -242,8 +313,9 @@ describe("client", async() => {
 					url: string;
 					redirected: boolean;
 					raw: Response;
-					requestParams: PromiseRequestParams<Record<string, unknown>>;
+					requestParams: RequestParams;
 					predicted: boolean;
+					fromCache?: boolean;
 				}
 				| AllNotPredictedClientResponse<
 					Record<string, unknown>
@@ -289,6 +361,52 @@ describe("client", async() => {
 				.whenReceiveServerEvent("message", spyClientMessage)
 				.whenReceiveServerEvent("other", spyClientOther)
 				.iWantInformationOrThrow("super-sse");
+
+			type RequestParams = SimplifyTopLevel<
+				& ServerRouteToClientRequestParams<
+					FindServerRoute<
+						Routes,
+						"GET",
+						"/sse"
+					>
+				>
+				& PromiseRequestParams
+			>;
+
+			type Check = ExpectType<
+				typeof result,
+				(
+					{
+						code: "200";
+						information: "super-sse";
+						body: undefined;
+						ok: boolean | null;
+						headers: Headers;
+						type: ResponseType;
+						url: string;
+						redirected: boolean;
+						raw: Response;
+						requestParams: RequestParams;
+						predicted: boolean;
+						fromCache?: boolean;
+					}
+					& ClientEventsResponseHandler<
+						| {
+							event: "other";
+							data: string;
+							id?: string | undefined;
+							retry?: number | undefined;
+						}
+						| {
+							event: "message";
+							data: { test: string };
+							id?: string | undefined;
+							retry?: number | undefined;
+						}
+					>
+				),
+				"strict"
+			>;
 
 			void result
 				.onStreamEvent("receiveServerEvents", spyAllEvent)

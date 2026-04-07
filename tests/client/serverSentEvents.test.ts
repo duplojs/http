@@ -37,6 +37,7 @@ describe("server sent event", () => {
 		predictedHeaderKey: "predicted",
 		disabledPredicateMode: false,
 		abortController: new AbortController(),
+		cacheStore: new Map(),
 		...overrides,
 	});
 

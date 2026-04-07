@@ -2,6 +2,7 @@ import { type SimplifyTopLevel, type IsEqual, type MaybeArray, type AnyTuple } f
 import { type ServerRouteHeaders, type ServerRouteParams, type ServerRouteQuery, type ServerRoute, type ServerPrimitiveData } from "./serverRoute";
 import { type ObjectCanBeEmpty } from "./ObjectCanBeEmpty";
 import type * as OO from "@duplojs/utils/object";
+import { type CreateClientCacheKey } from "./clientCache";
 export interface ClientRequestInitParams extends Pick<RequestInit, "cache" | "credentials" | "integrity" | "keepalive" | "mode" | "redirect" | "referrer" | "referrerPolicy" | "signal"> {
 }
 export type ClientRequestParamsHeaders = Record<string, string | undefined | {
@@ -24,6 +25,9 @@ export interface ClientRequestParams<GenericHookParams extends Record<string, un
     abortController?: AbortController;
     initParams?: ClientRequestInitParams;
     hookParams?: GenericHookParams;
+    clientCache?: "auto" | CreateClientCacheKey<GenericHookParams>;
+    bypassClientCache?: boolean;
+    refreshClientCache?: boolean;
 }
 type StringifyTuple<GenericTuple extends AnyTuple<ServerPrimitiveData>> = GenericTuple extends [
     infer InferredFirst extends ServerPrimitiveData,
@@ -47,6 +51,9 @@ export type ServerRouteToClientRequestParams<GenericServerRoute extends ServerRo
     abortController?: AbortController;
     initParams?: ClientRequestInitParams;
     hookParams?: GenericHookParams;
+    bypassClientCache?: boolean;
+    refreshClientCache?: boolean;
+    clientCache?: "auto" | CreateClientCacheKey<GenericHookParams>;
 } & MaybeParams<(IsEqual<GenericServerRoute["headers"], unknown> extends true ? {} : {
     headers: ServerRouteToClientRequestParamsHeaders<GenericServerRoute["headers"]>;
 }) & (IsEqual<GenericServerRoute["params"], unknown> extends true ? {} : {
@@ -55,5 +62,5 @@ export type ServerRouteToClientRequestParams<GenericServerRoute extends ServerRo
     query: ServerRouteToClientRequestParamsQuery<GenericServerRoute["query"]>;
 }) & (IsEqual<GenericServerRoute["body"], unknown> extends true ? {} : {
     body: GenericServerRoute["body"];
-})>)> extends infer InferredResult extends ClientRequestParams ? InferredResult : never : never;
+})>)> extends infer InferredResult extends ClientRequestParams<GenericHookParams> ? InferredResult : never : never;
 export {};

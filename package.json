@@ -63,7 +63,7 @@
       "types": "./dist/plugins/openApiGenerator/index.d.ts"
     },
     "./cacheController": {
-       "import": "./dist/plugins/cacheController/index.mjs",
+      "import": "./dist/plugins/cacheController/index.mjs",
       "require": "./dist/plugins/cacheController/index.cjs",
       "types": "./dist/plugins/cacheController/index.d.ts"
     },
@@ -107,7 +107,7 @@
     "form-data": "^4.0.5",
     "husky": "9.1.7",
     "node-mocks-http": "^1.17.2",
-    "rollup": "4.50.0",
+    "rollup": "^4.60.1",
     "rollup-plugin-delete": "3.0.1",
     "rollup-plugin-esbuild": "6.2.1",
     "rollup-plugin-tsc-alias": "1.1.4",

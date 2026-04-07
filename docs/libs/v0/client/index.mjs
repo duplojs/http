@@ -8,3 +8,4 @@ export { queryToString } from './queryToString.mjs';
 export { PromiseRequest } from './promiseRequest.mjs';
 export { UnexpectedCodeResponseError, UnexpectedInformationResponseError, UnexpectedResponseError, UnexpectedResponseTypeError } from './unexpectedResponseError.mjs';
 export { makeClientEventsResponse } from './serverSentEvents.mjs';
+export { autoCreateCacheKey, findResponseFromCacheStore, saveResponseInCacheStore } from './clientCache.mjs';

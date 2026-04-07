@@ -3,7 +3,7 @@ vi.mock("@client/promiseRequest", () => ({
 }));
 
 import { PromiseRequest } from "@client/promiseRequest";
-import { createHttpClient, type Hooks, httpClientKind } from "@client";
+import { autoCreateCacheKey, createHttpClient, type Hooks, httpClientKind } from "@client";
 import { forward } from "@duplojs/utils";
 
 describe("httpClient", () => {
@@ -12,6 +12,7 @@ describe("httpClient", () => {
 	});
 
 	beforeEach(() => {
+		vi.clearAllMocks();
 		httpClient.defaultHeaders.clear();
 	});
 
@@ -115,6 +116,145 @@ describe("httpClient", () => {
 			disabledPredicateMode: false,
 			method: "GET",
 			path: "/test/ok",
+			cacheStore: httpClient.cacheStore,
+			clientCache: undefined,
+		});
+	});
+
+	it("request passes cache store and auto cache key builder", () => {
+		void httpClient.request({
+			method: "GET",
+			path: "/test/ok",
+			clientCache: "auto",
+		});
+
+		expect(PromiseRequest).toHaveBeenCalledWith({
+			baseUrl: "http://test.com",
+			headers: {},
+			abortController: expect.any(AbortController),
+			hooks: {
+				clientErrorResponseType: [],
+				code: {},
+				error: [],
+				expectedResponse: [],
+				information: {},
+				informationalResponseType: [],
+				notPredictedResponse: [],
+				redirectionResponseType: [],
+				request: [],
+				response: [],
+				serverErrorResponseType: [],
+				successfulResponseType: [],
+				startServerEvent: [],
+				receiveEventServerEvent: [],
+				errorServerEvent: [],
+				closeServerEvent: [],
+				beforeRetryServerEvent: [],
+			},
+			initParams: {
+				cache: undefined,
+				credentials: undefined,
+			},
+			predictedHeaderKey: "predicted",
+			informationHeaderKey: "information",
+			disabledPredicateMode: false,
+			method: "GET",
+			path: "/test/ok",
+			cacheStore: httpClient.cacheStore,
+			clientCache: autoCreateCacheKey,
+		});
+	});
+
+	it("request passes custom cache key builder unchanged", () => {
+		const clientCache = vi.fn(() => "custom-key");
+
+		void httpClient.request({
+			method: "GET",
+			path: "/test/ok",
+			clientCache,
+		});
+
+		expect(PromiseRequest).toHaveBeenCalledWith({
+			baseUrl: "http://test.com",
+			headers: {},
+			abortController: expect.any(AbortController),
+			hooks: {
+				clientErrorResponseType: [],
+				code: {},
+				error: [],
+				expectedResponse: [],
+				information: {},
+				informationalResponseType: [],
+				notPredictedResponse: [],
+				redirectionResponseType: [],
+				request: [],
+				response: [],
+				serverErrorResponseType: [],
+				successfulResponseType: [],
+				startServerEvent: [],
+				receiveEventServerEvent: [],
+				errorServerEvent: [],
+				closeServerEvent: [],
+				beforeRetryServerEvent: [],
+			},
+			initParams: {
+				cache: undefined,
+				credentials: undefined,
+			},
+			predictedHeaderKey: "predicted",
+			informationHeaderKey: "information",
+			disabledPredicateMode: false,
+			method: "GET",
+			path: "/test/ok",
+			cacheStore: httpClient.cacheStore,
+			clientCache,
+		});
+	});
+
+	it("request passes cache control flags", () => {
+		void httpClient.request({
+			method: "GET",
+			path: "/test/ok",
+			bypassClientCache: true,
+			refreshClientCache: true,
+		});
+
+		expect(PromiseRequest).toHaveBeenCalledWith({
+			baseUrl: "http://test.com",
+			headers: {},
+			abortController: expect.any(AbortController),
+			hooks: {
+				clientErrorResponseType: [],
+				code: {},
+				error: [],
+				expectedResponse: [],
+				information: {},
+				informationalResponseType: [],
+				notPredictedResponse: [],
+				redirectionResponseType: [],
+				request: [],
+				response: [],
+				serverErrorResponseType: [],
+				successfulResponseType: [],
+				startServerEvent: [],
+				receiveEventServerEvent: [],
+				errorServerEvent: [],
+				closeServerEvent: [],
+				beforeRetryServerEvent: [],
+			},
+			initParams: {
+				cache: undefined,
+				credentials: undefined,
+			},
+			predictedHeaderKey: "predicted",
+			informationHeaderKey: "information",
+			disabledPredicateMode: false,
+			method: "GET",
+			path: "/test/ok",
+			bypassClientCache: true,
+			refreshClientCache: true,
+			cacheStore: httpClient.cacheStore,
+			clientCache: undefined,
 		});
 	});
 
@@ -155,6 +295,8 @@ describe("httpClient", () => {
 			disabledPredicateMode: false,
 			method: "GET",
 			path: "/test/ok",
+			cacheStore: httpClient.cacheStore,
+			clientCache: undefined,
 		});
 	});
 
@@ -196,6 +338,8 @@ describe("httpClient", () => {
 			method: "POST",
 			path: "/test/ok",
 			body: { prop1: "" },
+			cacheStore: httpClient.cacheStore,
+			clientCache: undefined,
 		});
 	});
 
@@ -237,6 +381,8 @@ describe("httpClient", () => {
 			method: "PUT",
 			path: "/test/ok",
 			body: { prop1: "" },
+			cacheStore: httpClient.cacheStore,
+			clientCache: undefined,
 		});
 	});
 
@@ -278,6 +424,8 @@ describe("httpClient", () => {
 			method: "PATCH",
 			path: "/test/ok",
 			body: { prop1: "" },
+			cacheStore: httpClient.cacheStore,
+			clientCache: undefined,
 		});
 	});
 
@@ -318,6 +466,46 @@ describe("httpClient", () => {
 			disabledPredicateMode: false,
 			method: "DELETE",
 			path: "/test/ok",
+			cacheStore: httpClient.cacheStore,
+			clientCache: undefined,
+		});
+	});
+
+	describe("cache", () => {
+		it("initializes cache store from client cache initial values", () => {
+			const cachedClient = createHttpClient({
+				baseUrl: "http://test.com",
+				clientCacheInitialValues: {
+					"cache-key": {
+						body: { cached: true },
+						code: "200",
+						headers: { "content-type": "application/json" },
+						information: "cached",
+						ok: true,
+						predicted: true,
+						redirected: false,
+						type: "basic",
+						url: "http://test.com/test/ok",
+					},
+				},
+			});
+
+			expect([...cachedClient.cacheStore.entries()]).toStrictEqual([
+				[
+					"cache-key",
+					{
+						body: { cached: true },
+						code: "200",
+						headers: { "content-type": "application/json" },
+						information: "cached",
+						ok: true,
+						predicted: true,
+						redirected: false,
+						type: "basic",
+						url: "http://test.com/test/ok",
+					},
+				],
+			]);
 		});
 	});
 
@@ -424,6 +612,8 @@ describe("httpClient", () => {
 				disabledPredicateMode: false,
 				method: "GET",
 				path: "/test/ok",
+				cacheStore: httpClient.cacheStore,
+				clientCache: undefined,
 			});
 		});
 	});

@@ -8,6 +8,7 @@ import * as SS from '@duplojs/utils/string';
 import * as AA from '@duplojs/utils/array';
 import { UnexpectedInformationResponseError, UnexpectedCodeResponseError, UnexpectedResponseTypeError, UnexpectedResponseError } from './unexpectedResponseError.mjs';
 import { makeClientEventsResponse } from './serverSentEvents.mjs';
+import { findResponseFromCacheStore, saveResponseInCacheStore } from './clientCache.mjs';
 
 class PromiseRequest extends Promise {
     params;
@@ -322,6 +323,10 @@ class PromiseRequest extends Promise {
         return Promise;
     }
     static fetch(requestParams) {
+        const cachedResponse = findResponseFromCacheStore(requestParams);
+        if (cachedResponse) {
+            return Promise.resolve(EE.right("response", cachedResponse));
+        }
         const path = insertParamsInPath(requestParams.path, requestParams.params);
         const query = queryToString(requestParams.query);
         const url = query
@@ -379,6 +384,9 @@ class PromiseRequest extends Promise {
             };
             if (response.headers.get("content-type")?.includes("text/event-stream")) {
                 return EE.right("response", makeClientEventsResponse(clientResponse, fetchUrl, fetchInitParams));
+            }
+            if (clientResponse.code.startsWith("2")) {
+                saveResponseInCacheStore(requestParams, clientResponse);
             }
             return EE.right("response", clientResponse);
         }))

@@ -10,6 +10,7 @@ var SS = require('@duplojs/utils/string');
 var AA = require('@duplojs/utils/array');
 var unexpectedResponseError = require('./unexpectedResponseError.cjs');
 var serverSentEvents = require('./serverSentEvents.cjs');
+var clientCache = require('./clientCache.cjs');
 
 function _interopNamespaceDefault(e) {
     var n = Object.create(null);
@@ -345,6 +346,10 @@ class PromiseRequest extends Promise {
         return Promise;
     }
     static fetch(requestParams) {
+        const cachedResponse = clientCache.findResponseFromCacheStore(requestParams);
+        if (cachedResponse) {
+            return Promise.resolve(EE__namespace.right("response", cachedResponse));
+        }
         const path = insertParamsInPath.insertParamsInPath(requestParams.path, requestParams.params);
         const query = queryToString.queryToString(requestParams.query);
         const url = query
@@ -402,6 +407,9 @@ class PromiseRequest extends Promise {
             };
             if (response.headers.get("content-type")?.includes("text/event-stream")) {
                 return EE__namespace.right("response", serverSentEvents.makeClientEventsResponse(clientResponse, fetchUrl, fetchInitParams));
+            }
+            if (clientResponse.code.startsWith("2")) {
+                clientCache.saveResponseInCacheStore(requestParams, clientResponse);
             }
             return EE__namespace.right("response", clientResponse);
         }))

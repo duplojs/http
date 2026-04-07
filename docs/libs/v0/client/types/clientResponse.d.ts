@@ -2,6 +2,7 @@ import type * as SS from "@duplojs/utils/string";
 import { type ServerRouteResponse, type ServerRoute } from "./serverRoute";
 import { type MaybePromise, type IsEqual, type SimplifyTopLevel, type NeverCoalescing } from "@duplojs/utils";
 import { type PromiseRequestParams } from "./promiseRequestParams";
+import { type ServerRouteToClientRequestParams } from "./clientRequestParams";
 export type ClientResponseBody = unknown;
 export interface ClientResponse<GenericHookParams extends Record<string, unknown> = Record<string, unknown>> {
     code: SS.Number;
@@ -15,6 +16,7 @@ export interface ClientResponse<GenericHookParams extends Record<string, unknown
     raw: globalThis.Response;
     requestParams: PromiseRequestParams<GenericHookParams>;
     predicted: boolean;
+    fromCache?: boolean;
 }
 export interface ServerEvent {
     data: unknown;
@@ -53,8 +55,9 @@ export type ServerRouteToClientResponse<GenericServerRoute extends ServerRoute =
     url: string;
     redirected: boolean;
     raw: globalThis.Response;
-    requestParams: PromiseRequestParams<GenericHookParams>;
+    requestParams: SimplifyTopLevel<ServerRouteToClientRequestParams<GenericServerRoute, GenericHookParams> & PromiseRequestParams<GenericHookParams>>;
     predicted: boolean;
+    fromCache?: boolean;
 }> & (IsEqual<InferredResponse["events"], unknown> extends true ? unknown : InferredResponse["events"] extends object ? ClientEventsResponseHandler<{
     [EventName in keyof InferredResponse["events"]]: EventName extends string ? {
         event: EventName;

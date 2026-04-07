@@ -4,3 +4,4 @@ export * from "./serverRoute";
 export * from "./ObjectCanBeEmpty";
 export * from "./promiseRequestParams";
 export * from "./hooks";
+export * from "./clientCache";

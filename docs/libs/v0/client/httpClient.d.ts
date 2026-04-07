@@ -1,5 +1,5 @@
 import { type Kind, type MayBeGetter, type SimplifyTopLevel, type IsEqual } from "@duplojs/utils";
-import { type ClientRequestInitParams, type ServerRoute, type ServerRouteToClientRequestParams, type ServerRouteToClientResponse, type ClientRequestParams, type Hooks, type RequestHook, type ResponseHook, type InformationHook, type CodeHook, type ResponseTypeHook, type ExpectedResponseHook, type NotPredictedResponseHook, type ErrorHook, type GetServerRoutePath, type AllClientResponse, type BeforeRetryServerEventHook, type CloseServerEventHook, type ErrorServerEventHook, type StartServerEventHook, type ReceiveEventServerEventHook } from "./types";
+import { type ClientRequestInitParams, type ServerRoute, type ServerRouteToClientRequestParams, type ServerRouteToClientResponse, type ClientRequestParams, type Hooks, type RequestHook, type ResponseHook, type InformationHook, type CodeHook, type ResponseTypeHook, type ExpectedResponseHook, type NotPredictedResponseHook, type ErrorHook, type GetServerRoutePath, type AllClientResponse, type BeforeRetryServerEventHook, type CloseServerEventHook, type ErrorServerEventHook, type StartServerEventHook, type ReceiveEventServerEventHook, type ClientCacheInitialValues, type ClientCacheStore } from "./types";
 import { PromiseRequest } from "./promiseRequest";
 export declare const httpClientKind: import("@duplojs/utils").KindHandler<import("@duplojs/utils").KindDefinition<"@DuplojsHttpClient/http-client", unknown>>;
 type MaybeRequestParams<GenericRequestParams extends object> = {} extends GenericRequestParams ? [params?: GenericRequestParams] : [params: GenericRequestParams];
@@ -21,11 +21,13 @@ export interface HttpClientConfig {
     readonly disabledPredictedMode: boolean;
     readonly credentials?: ClientRequestInitParams["credentials"];
     readonly cache?: ClientRequestInitParams["cache"];
+    readonly clientCacheInitialValues?: ClientCacheInitialValues;
 }
 export interface HttpClient<GenericServerRoute extends ServerRoute = ServerRoute, GenericHookParams extends Record<string, unknown> = Record<string, unknown>> extends Kind<typeof httpClientKind.definition> {
     readonly config: HttpClientConfig;
     readonly hooks: Hooks;
     readonly defaultHeaders: Map<string, () => (string | undefined | null)>;
+    readonly cacheStore: ClientCacheStore;
     addDefaultHeader(headerName: string, headerValue: MayBeGetter<string | undefined | null>): void;
     addDefaultHeaders(headers: Record<string, MayBeGetter<string | undefined | null>>): void;
     addRequestHook(hook: RequestHook<GenericHookParams>): void;
@@ -65,6 +67,7 @@ export interface CreateHttpClientParams {
     readonly informationHeaderKey?: string;
     readonly predictedHeaderKey?: string;
     readonly disabledPredictedMode?: boolean;
+    readonly clientCacheInitialValues?: ClientCacheInitialValues;
 }
 export declare function createHttpClient<GenericServerRoute extends ServerRoute = ServerRoute, GenericHookParams extends Record<string, unknown> = Record<string, unknown>>(clientParams: CreateHttpClientParams): HttpClient<GenericServerRoute, GenericHookParams>;
 export {};

@@ -1,5 +1,5 @@
-import { createHttpClient, type RequestErrorContent, type PromiseRequest, type PromiseRequestParams, type FindServerRoute, type AddPrefixPathServerRoute, type RemovePrefixPathServerRoute, type FindServerRouteResponse, type AllClientResponse, type AllNotPredictedClientResponse, type ClientEventsResponseHandler } from "@client";
-import { E, S, type TheFormData, type ExpectType, createFormData } from "@duplojs/utils";
+import { createHttpClient, type RequestErrorContent, type PromiseRequest, type PromiseRequestParams, type FindServerRoute, type AddPrefixPathServerRoute, type RemovePrefixPathServerRoute, type FindServerRouteResponse, type AllClientResponse, type AllNotPredictedClientResponse, type ClientEventsResponseHandler, type ServerRouteToClientRequestParams, type CreateClientCacheKeyParams } from "@client";
+import { E, S, type TheFormData, type ExpectType, createFormData, type SimplifyTopLevel } from "@duplojs/utils";
 
 type Routes = {
 	method: "GET";
@@ -91,7 +91,10 @@ type Routes = {
 	};
 };
 
-const httpClient = createHttpClient<Routes, { params1: string }>({
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+type HooksParams = { params1: string };
+
+const httpClient = createHttpClient<Routes, HooksParams>({
 	baseUrl: "http://test.com",
 });
 
@@ -102,7 +105,28 @@ const promiseRequest = httpClient
 		params: {
 			userId: S.to(1),
 		},
+		clientCache: (params) => {
+			type Check = ExpectType<
+				typeof params,
+				CreateClientCacheKeyParams<HooksParams>,
+				"strict"
+			>;
+
+			return null;
+		},
 	});
+
+type RequestParams = SimplifyTopLevel<
+	& ServerRouteToClientRequestParams<
+		FindServerRoute<
+			Routes,
+			"GET",
+			"/users/{userId}"
+		>,
+		HooksParams
+	>
+	& PromiseRequestParams<HooksParams>
+>;
 
 type Check = ExpectType<
 	typeof promiseRequest,
@@ -120,10 +144,9 @@ type Check = ExpectType<
 			url: string;
 			redirected: boolean;
 			raw: globalThis.Response;
-			requestParams: PromiseRequestParams<{
-				params1: string;
-			}>;
+			requestParams: RequestParams;
 			predicted: boolean;
+			fromCache?: boolean;
 		}
 		| {
 			code: "200";
@@ -139,10 +162,9 @@ type Check = ExpectType<
 			url: string;
 			redirected: boolean;
 			raw: globalThis.Response;
-			requestParams: PromiseRequestParams<{
-				params1: string;
-			}>;
+			requestParams: RequestParams;
 			predicted: boolean;
+			fromCache?: boolean;
 		}
 	>,
 	"strict"
@@ -166,10 +188,9 @@ void promiseRequest
 				url: string;
 				redirected: boolean;
 				raw: globalThis.Response;
-				requestParams: PromiseRequestParams<{
-					params1: string;
-				}>;
+				requestParams: RequestParams;
 				predicted: boolean;
+				fromCache?: boolean;
 			},
 			"strict"
 		>;
@@ -191,10 +212,9 @@ void promiseRequest
 				url: string;
 				redirected: boolean;
 				raw: globalThis.Response;
-				requestParams: PromiseRequestParams<{
-					params1: string;
-				}>;
+				requestParams: RequestParams;
 				predicted: boolean;
+				fromCache?: boolean;
 			},
 			"strict"
 		>;
@@ -225,10 +245,9 @@ void promiseRequest
 				url: string;
 				redirected: boolean;
 				raw: globalThis.Response;
-				requestParams: PromiseRequestParams<{
-					params1: string;
-				}>;
+				requestParams: RequestParams;
 				predicted: boolean;
+				fromCache?: boolean;
 			},
 			"strict"
 		>;
@@ -255,10 +274,9 @@ void promiseRequest
 				url: string;
 				redirected: boolean;
 				raw: globalThis.Response;
-				requestParams: PromiseRequestParams<{
-					params1: string;
-				}>;
+				requestParams: RequestParams;
 				predicted: boolean;
+				fromCache?: boolean;
 			},
 			"strict"
 		>;
@@ -285,10 +303,9 @@ void promiseRequest
 				url: string;
 				redirected: boolean;
 				raw: globalThis.Response;
-				requestParams: PromiseRequestParams<{
-					params1: string;
-				}>;
+				requestParams: RequestParams;
 				predicted: boolean;
+				fromCache?: boolean;
 			} | {
 				code: "200";
 				information: "users.find";
@@ -303,10 +320,9 @@ void promiseRequest
 				url: string;
 				redirected: boolean;
 				raw: globalThis.Response;
-				requestParams: PromiseRequestParams<{
-					params1: string;
-				}>;
+				requestParams: RequestParams;
 				predicted: boolean;
+				fromCache?: boolean;
 			},
 			"strict"
 		>;
@@ -352,8 +368,9 @@ void promiseRequest
 					url: string;
 					redirected: boolean;
 					raw: Response;
-					requestParams: PromiseRequestParams<{ params1: string }>;
+					requestParams: RequestParams;
 					predicted: boolean;
+					fromCache?: boolean;
 				}>,
 				"strict"
 			>;
@@ -374,10 +391,9 @@ void promiseRequest
 					url: string;
 					redirected: boolean;
 					raw: globalThis.Response;
-					requestParams: PromiseRequestParams<{
-						params1: string;
-					}>;
+					requestParams: RequestParams;
 					predicted: boolean;
+					fromCache?: boolean;
 				}
 				| AllNotPredictedClientResponse<{
 					params1: string;
@@ -404,8 +420,9 @@ void promiseRequest
 					url: string;
 					redirected: boolean;
 					raw: Response;
-					requestParams: PromiseRequestParams<{ params1: string }>;
+					requestParams: RequestParams;
 					predicted: boolean;
+					fromCache?: boolean;
 				}>,
 				"strict"
 			>;
@@ -426,10 +443,9 @@ void promiseRequest
 					url: string;
 					redirected: boolean;
 					raw: globalThis.Response;
-					requestParams: PromiseRequestParams<{
-						params1: string;
-					}>;
+					requestParams: RequestParams;
 					predicted: boolean;
+					fromCache?: boolean;
 				}
 				| AllNotPredictedClientResponse<{
 					params1: string;
@@ -486,10 +502,9 @@ void promiseRequest
 					url: string;
 					redirected: boolean;
 					raw: globalThis.Response;
-					requestParams: PromiseRequestParams<{
-						params1: string;
-					}>;
+					requestParams: RequestParams;
 					predicted: boolean;
+					fromCache?: boolean;
 				}>,
 				"strict"
 			>;
@@ -506,8 +521,9 @@ void promiseRequest
 					url: string;
 					redirected: boolean;
 					raw: Response;
-					requestParams: PromiseRequestParams<{ params1: string }>;
+					requestParams: RequestParams;
 					predicted: boolean;
+					fromCache?: boolean;
 				}
 				| AllNotPredictedClientResponse<{
 					params1: string;
@@ -558,8 +574,9 @@ void promiseRequest
 					url: string;
 					redirected: boolean;
 					raw: Response;
-					requestParams: PromiseRequestParams<{ params1: string }>;
+					requestParams: RequestParams;
 					predicted: boolean;
+					fromCache?: boolean;
 				}>,
 				"strict"
 			>;
@@ -580,10 +597,9 @@ void promiseRequest
 					url: string;
 					redirected: boolean;
 					raw: globalThis.Response;
-					requestParams: PromiseRequestParams<{
-						params1: string;
-					}>;
+					requestParams: RequestParams;
 					predicted: boolean;
+					fromCache?: boolean;
 				}
 				| AllNotPredictedClientResponse<{
 					params1: string;
@@ -636,10 +652,9 @@ void promiseRequest
 					url: string;
 					redirected: boolean;
 					raw: globalThis.Response;
-					requestParams: PromiseRequestParams<{
-						params1: string;
-					}>;
+					requestParams: RequestParams;
 					predicted: boolean;
+					fromCache?: boolean;
 				} | {
 					code: "200";
 					information: "users.find";
@@ -654,10 +669,9 @@ void promiseRequest
 					url: string;
 					redirected: boolean;
 					raw: globalThis.Response;
-					requestParams: PromiseRequestParams<{
-						params1: string;
-					}>;
+					requestParams: RequestParams;
 					predicted: boolean;
+					fromCache?: boolean;
 				}>,
 				"strict"
 			>;
@@ -699,10 +713,9 @@ void promiseRequest
 					url: string;
 					redirected: boolean;
 					raw: globalThis.Response;
-					requestParams: PromiseRequestParams<{
-						params1: string;
-					}>;
+					requestParams: RequestParams;
 					predicted: boolean;
+					fromCache?: boolean;
 				}>,
 				"strict"
 			>;
@@ -719,8 +732,9 @@ void promiseRequest
 					url: string;
 					redirected: boolean;
 					raw: Response;
-					requestParams: PromiseRequestParams<{ params1: string }>;
+					requestParams: RequestParams;
 					predicted: boolean;
+					fromCache?: boolean;
 				}
 				| AllNotPredictedClientResponse<{
 					params1: string;
@@ -750,10 +764,9 @@ void promiseRequest
 				url: string;
 				redirected: boolean;
 				raw: globalThis.Response;
-				requestParams: PromiseRequestParams<{
-					params1: string;
-				}>;
+				requestParams: RequestParams;
 				predicted: boolean;
+				fromCache?: boolean;
 			},
 			"strict"
 		>;
@@ -778,10 +791,9 @@ void promiseRequest
 				url: string;
 				redirected: boolean;
 				raw: globalThis.Response;
-				requestParams: PromiseRequestParams<{
-					params1: string;
-				}>;
+				requestParams: RequestParams;
 				predicted: boolean;
+				fromCache?: boolean;
 			},
 			"strict"
 		>;
@@ -818,10 +830,9 @@ void promiseRequest
 				url: string;
 				redirected: boolean;
 				raw: globalThis.Response;
-				requestParams: PromiseRequestParams<{
-					params1: string;
-				}>;
+				requestParams: RequestParams;
 				predicted: boolean;
+				fromCache?: boolean;
 			},
 			"strict"
 		>;
@@ -854,10 +865,9 @@ void promiseRequest
 				url: string;
 				redirected: boolean;
 				raw: globalThis.Response;
-				requestParams: PromiseRequestParams<{
-					params1: string;
-				}>;
+				requestParams: RequestParams;
 				predicted: boolean;
+				fromCache?: boolean;
 			},
 			"strict"
 		>;
@@ -890,10 +900,9 @@ void promiseRequest
 				url: string;
 				redirected: boolean;
 				raw: globalThis.Response;
-				requestParams: PromiseRequestParams<{
-					params1: string;
-				}>;
+				requestParams: RequestParams;
 				predicted: boolean;
+				fromCache?: boolean;
 			} | {
 				code: "200";
 				information: "users.find";
@@ -908,10 +917,9 @@ void promiseRequest
 				url: string;
 				redirected: boolean;
 				raw: globalThis.Response;
-				requestParams: PromiseRequestParams<{
-					params1: string;
-				}>;
+				requestParams: RequestParams;
 				predicted: boolean;
+				fromCache?: boolean;
 			},
 			"strict"
 		>;
@@ -935,10 +943,9 @@ void promiseRequest
 				url: string;
 				redirected: boolean;
 				raw: globalThis.Response;
-				requestParams: PromiseRequestParams<{
-					params1: string;
-				}>;
+				requestParams: RequestParams;
 				predicted: boolean;
+				fromCache?: boolean;
 			},
 			"strict"
 		>;
@@ -961,8 +968,9 @@ void promiseRequest
 						url: string;
 						redirected: boolean;
 						raw: Response;
-						requestParams: PromiseRequestParams<{ params1: string }>;
+						requestParams: RequestParams;
 						predicted: boolean;
+						fromCache?: boolean;
 					}
 					| {
 						code: "200";
@@ -978,8 +986,9 @@ void promiseRequest
 						url: string;
 						redirected: boolean;
 						raw: Response;
-						requestParams: PromiseRequestParams<{ params1: string }>;
+						requestParams: RequestParams;
 						predicted: boolean;
+						fromCache?: boolean;
 					}
 					| AllNotPredictedClientResponse<{ params1: string }>
 				>,
@@ -993,6 +1002,18 @@ void promiseRequest
 			>;
 		}
 	});
+
+type RequestParams1 = SimplifyTopLevel<
+	& ServerRouteToClientRequestParams<
+		FindServerRoute<
+			Routes,
+			"GET",
+			"/users"
+		>,
+		HooksParams
+	>
+	& PromiseRequestParams<HooksParams>
+>;
 
 void httpClient.get("/users")
 	.whenInformation("users.findMany", (value) => {
@@ -1012,10 +1033,9 @@ void httpClient.get("/users")
 				url: string;
 				redirected: boolean;
 				raw: globalThis.Response;
-				requestParams: PromiseRequestParams<{
-					params1: string;
-				}>;
+				requestParams: RequestParams1;
 				predicted: boolean;
+				fromCache?: boolean;
 			},
 			"strict"
 		>;
@@ -1041,13 +1061,26 @@ void httpClient.get("/users")
 					url: string;
 					redirected: boolean;
 					raw: Response;
-					requestParams: PromiseRequestParams<{ params1: string }>;
+					requestParams: RequestParams1;
 					predicted: boolean;
+					fromCache?: boolean;
 				}
 			>,
 			"strict"
 		>;
 	});
+
+type RequestParams2 = SimplifyTopLevel<
+	& ServerRouteToClientRequestParams<
+		FindServerRoute<
+			Routes,
+			"POST",
+			"/users"
+		>,
+		HooksParams
+	>
+	& PromiseRequestParams<HooksParams>
+>;
 
 void httpClient.post("/users", {
 	body: {
@@ -1073,8 +1106,9 @@ void httpClient.post("/users", {
 				url: string;
 				redirected: boolean;
 				raw: Response;
-				requestParams: PromiseRequestParams<{ params1: string }>;
+				requestParams: RequestParams2;
 				predicted: boolean;
+				fromCache?: boolean;
 			},
 			"strict"
 		>;
@@ -1096,8 +1130,9 @@ void httpClient.post("/users", {
 					url: string;
 					redirected: boolean;
 					raw: Response;
-					requestParams: PromiseRequestParams<{ params1: string }>;
+					requestParams: RequestParams2;
 					predicted: boolean;
+					fromCache?: boolean;
 				}
 				| {
 					code: "200";
@@ -1113,8 +1148,9 @@ void httpClient.post("/users", {
 					url: string;
 					redirected: boolean;
 					raw: Response;
-					requestParams: PromiseRequestParams<{ params1: string }>;
+					requestParams: RequestParams2;
 					predicted: boolean;
+					fromCache?: boolean;
 				}
 			>,
 			"strict"
@@ -1146,6 +1182,18 @@ void httpClient
 		>;
 	});
 
+type RequestParams3 = SimplifyTopLevel<
+	& ServerRouteToClientRequestParams<
+		FindServerRoute<
+			Routes,
+			"GET",
+			"/sse"
+		>,
+		HooksParams
+	>
+	& PromiseRequestParams<HooksParams>
+>;
+
 void httpClient.get("/sse")
 	.whenReceiveServerEvent(
 		"message",
@@ -1174,10 +1222,9 @@ void httpClient.get("/sse")
 					url: string;
 					redirected: boolean;
 					raw: globalThis.Response;
-					requestParams: PromiseRequestParams<{
-						params1: string;
-					}>;
+					requestParams: RequestParams3;
 					predicted: boolean;
+					fromCache?: boolean;
 				} & ClientEventsResponseHandler<{
 					event: "message";
 					data: {
@@ -1226,10 +1273,9 @@ void httpClient.get("/sse")
 								url: string;
 								redirected: boolean;
 								raw: globalThis.Response;
-								requestParams: PromiseRequestParams<{
-									params1: string;
-								}>;
+								requestParams: RequestParams3;
 								predicted: boolean;
+								fromCache?: boolean;
 							} & ClientEventsResponseHandler<{
 								event: "message";
 								data: {

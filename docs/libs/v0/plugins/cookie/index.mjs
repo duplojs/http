@@ -4,6 +4,6 @@ import './override.mjs';
 export { IgnoreRouteCookieMetadata } from './metadata.mjs';
 import './hooks/index.mjs';
 export { cookiePlugin } from './plugin.mjs';
+export { cookieHooks } from './hooks/cookieHooks.mjs';
 export { parseRequestCookieHook } from './hooks/parseRequestCookie.mjs';
 export { serializeResponseCookieHook } from './hooks/serializeResponseCookie.mjs';
-export { cookieHooks } from './hooks/cookieHooks.mjs';
