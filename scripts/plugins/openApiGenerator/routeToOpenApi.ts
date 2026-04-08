@@ -1,6 +1,6 @@
 import type { Route } from "@core/route";
 import { aggregateStepContract } from "./aggregateStepContract";
-import { A, DP, isType, justReturn, O, P, pipe, S, when, whenNot } from "@duplojs/utils";
+import { A, DP, isType, justExec, justReturn, O, P, pipe, S, when, whenNot } from "@duplojs/utils";
 import { ResponseContract } from "@core/response";
 import { type MapContext, type JsonSchema, render, defaultTransformers } from "@duplojs/data-parser-tools/toJsonSchema";
 import { FormDataBodyController, type RequestMethods } from "@core/request";
@@ -268,6 +268,69 @@ export function routeToOpenApi(
 					);
 				}
 
+				if (ResponseContract.streamContractKind.has(contract)) {
+					const lastContent = lastValue[code]?.content;
+					const schema = {
+						type: "string",
+						format: "binary",
+					} as const;
+					const content: EndpointResponseContent = {
+						...lastContent,
+						"application/octet-stream": {
+							schema: lastContent?.["application/octet-stream"]
+								? {
+									anyOf: [
+										lastContent["application/octet-stream"].schema,
+										schema,
+									],
+								}
+								: schema,
+						},
+					};
+
+					return nextWithObject(
+						lastValue,
+						{
+							[code]: {
+								headers,
+								content,
+							},
+						},
+					);
+				}
+
+				if (ResponseContract.streamTextContractKind.has(contract)) {
+					const lastContent = lastValue[code]?.content;
+					const schema = factoryJsonSchema({
+						context: params.contextToJsonSchemaFactory,
+						resultSchemaContext: params.resultSchemaContext,
+						schema: contract.flux,
+					});
+					const content: EndpointResponseContent = {
+						...lastContent,
+						"text/plain": {
+							schema: lastContent?.["text/plain"]
+								? {
+									anyOf: [
+										lastContent["text/plain"].schema,
+										schema,
+									],
+								}
+								: schema,
+						},
+					};
+
+					return nextWithObject(
+						lastValue,
+						{
+							[code]: {
+								headers,
+								content,
+							},
+						},
+					);
+				}
+
 				const schemaResponse = factoryJsonSchema({
 					context: params.contextToJsonSchemaFactory,
 					resultSchemaContext: params.resultSchemaContext,
@@ -282,14 +345,14 @@ export function routeToOpenApi(
 					),
 					P.otherwise(
 						(value) => {
-							if (DP.identifier(value, DP.stringKind) && lastValue[code]?.content?.["plain/text"]) {
+							if (DP.identifier(value, DP.stringKind) && lastValue[code]?.content?.["text/plain"]) {
 								return lastValue[code].content;
 							}
 
 							if (DP.identifier(value, DP.stringKind)) {
 								return {
 									...lastValue[code]?.content,
-									"plain/text": {
+									"text/plain": {
 										schema: schemaResponse,
 									},
 								};

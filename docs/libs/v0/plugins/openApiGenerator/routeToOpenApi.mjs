@@ -165,13 +165,13 @@ function routeToOpenApi(route, params) {
             schema: body,
         });
         const content = pipe(body, P.when(DP.identifier(DP.emptyKind), justReturn(lastValue[code]?.content)), P.otherwise((value) => {
-            if (DP.identifier(value, DP.stringKind) && lastValue[code]?.content?.["plain/text"]) {
+            if (DP.identifier(value, DP.stringKind) && lastValue[code]?.content?.["text/plain"]) {
                 return lastValue[code].content;
             }
             if (DP.identifier(value, DP.stringKind)) {
                 return {
                     ...lastValue[code]?.content,
-                    "plain/text": {
+                    "text/plain": {
                         schema: schemaResponse,
                     },
                 };

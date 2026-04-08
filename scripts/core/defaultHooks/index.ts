@@ -1,5 +1,5 @@
 import { type Hub } from "@core/hub";
-import { HookResponse, ServerSentEventsPredictedResponse, PredictedResponse } from "@core/response";
+import { HookResponse, ServerSentEventsPredictedResponse, PredictedResponse, StreamPredictedResponse, StreamTextPredictedResponse } from "@core/response";
 import { createHookRouteLifeCycle } from "@core/route";
 import { type HttpServerParams } from "@core/types";
 import { SF } from "@duplojs/server-utils";
@@ -51,6 +51,14 @@ export function initDefaultHook(
 				currentResponse.setHeader("content-type", "text/event-stream");
 				currentResponse.setHeader("cache-control", "no-cache");
 				currentResponse.setHeader("connection", "keep-alive");
+			} else if (currentResponse instanceof StreamPredictedResponse) {
+				currentResponse.setHeader(predictedHeaderKey, "1");
+				currentResponse.setHeader("transfer-encoding", "chunked");
+				currentResponse.setHeader("content-type", "application/octet-stream");
+			} else if (currentResponse instanceof StreamTextPredictedResponse) {
+				currentResponse.setHeader(predictedHeaderKey, "1");
+				currentResponse.setHeader("transfer-encoding", "chunked");
+				currentResponse.setHeader("content-type", "text/plain; charset=UTF-8");
 			} else if (currentResponse instanceof HookResponse) {
 				currentResponse.setHeader(fromHookHeaderKey, currentResponse.fromHook);
 			}

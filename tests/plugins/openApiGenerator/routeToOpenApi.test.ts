@@ -198,7 +198,7 @@ describe("routeToOpenApi", () => {
 								},
 							},
 							content: {
-								"plain/text": { schema: { $ref: "#/components/schemas/NotIdentified0" } },
+								"text/plain": { schema: { $ref: "#/components/schemas/NotIdentified0" } },
 							},
 						},
 					},
@@ -329,7 +329,7 @@ describe("routeToOpenApi", () => {
 								},
 							},
 							content: {
-								"plain/text": { schema: { $ref: "#/components/schemas/NotIdentified2" } },
+								"text/plain": { schema: { $ref: "#/components/schemas/NotIdentified2" } },
 							},
 						},
 						422: {
@@ -393,7 +393,7 @@ describe("routeToOpenApi", () => {
 								},
 							},
 							content: {
-								"plain/text": { schema: { $ref: "#/components/schemas/NotIdentified2" } },
+								"text/plain": { schema: { $ref: "#/components/schemas/NotIdentified2" } },
 							},
 						},
 						422: {
@@ -491,6 +491,132 @@ describe("routeToOpenApi", () => {
 										},
 										{
 											const: "see2",
+											type: "string",
+										},
+									],
+								},
+							},
+						},
+					},
+				},
+			},
+		]);
+	});
+
+	it("stream", () => {
+		const route = useRouteBuilder("GET", "/test")
+			.handler(
+				[
+					ResponseContract.stream("stream", DPE.string()),
+					ResponseContract.stream("stream2", DPE.string()),
+				],
+				(__, { streamResponse }) => streamResponse("stream", () => {}),
+			);
+
+		const result = routeToOpenApi(
+			route,
+			{
+				defaultExtractContract,
+				contextToJsonSchemaFactory: new Map(),
+				resultSchemaContext: new Map(),
+			},
+		);
+
+		expect(result).toStrictEqual([
+			{
+				method: "get",
+				parameters: [],
+				path: "/test",
+				requestBody: undefined,
+				responses: {
+					200: {
+						content: {
+							"application/octet-stream": {
+								schema: {
+									anyOf: [
+										{
+											format: "binary",
+											type: "string",
+										},
+										{
+											format: "binary",
+											type: "string",
+										},
+									],
+								},
+							},
+						},
+						headers: {
+							information: {
+								description: "stream | stream2",
+								schema: {
+									anyOf: [
+										{
+											const: "stream",
+											type: "string",
+										},
+										{
+											const: "stream2",
+											type: "string",
+										},
+									],
+								},
+							},
+						},
+					},
+				},
+			},
+		]);
+	});
+
+	it("stream text", () => {
+		const route = useRouteBuilder("GET", "/test")
+			.handler(
+				[
+					ResponseContract.streamText("streamText"),
+					ResponseContract.streamText("stream2Text"),
+				],
+				(__, { streamTextResponse }) => streamTextResponse("streamText", () => {}),
+			);
+
+		const result = routeToOpenApi(
+			route,
+			{
+				defaultExtractContract,
+				contextToJsonSchemaFactory: new Map(),
+				resultSchemaContext: new Map(),
+			},
+		);
+
+		expect(result).toStrictEqual([
+			{
+				method: "get",
+				parameters: [],
+				path: "/test",
+				requestBody: undefined,
+				responses: {
+					200: {
+						content: {
+							"text/plain": {
+								schema: {
+									anyOf: [
+										{ $ref: "#/components/schemas/NotIdentified0" },
+										{ $ref: "#/components/schemas/NotIdentified1" },
+									],
+								},
+							},
+						},
+						headers: {
+							information: {
+								description: "streamText | stream2Text",
+								schema: {
+									anyOf: [
+										{
+											const: "streamText",
+											type: "string",
+										},
+										{
+											const: "stream2Text",
 											type: "string",
 										},
 									],

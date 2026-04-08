@@ -104,6 +104,119 @@ describe("ResponseContract", () => {
 		>;
 	});
 
+	it("create server sent events contract", () => {
+		const mainEventSchema = DP.string();
+		const pingEventSchema = DP.object({
+			value: DP.number(),
+		});
+
+		const contract = ResponseContract.serverSentEvents(
+			"my super information",
+			mainEventSchema,
+			{ ping: pingEventSchema },
+		);
+
+		expect(contract).toStrictEqual({
+			code: "200",
+			information: "my super information",
+			events: {
+				ping: pingEventSchema,
+				message: mainEventSchema,
+			},
+			body: expect.objectContaining({
+				[DP.emptyKind.runTimeKey]: null,
+			}),
+			[ResponseContract.serverSentEventsContractKind.runTimeKey]: null,
+		});
+
+		type Check = ExpectType<
+			typeof contract,
+			ResponseContract.ServerSentEventsContract<
+				"200",
+				"my super information",
+				{
+					ping: typeof pingEventSchema;
+				} & {
+					message: typeof mainEventSchema;
+				},
+				DP.DataParserEmpty<{
+					readonly errorMessage?: string | undefined;
+					readonly coerce: boolean;
+					readonly checkers: readonly [];
+				}>
+			>,
+			"strict"
+		>;
+	});
+
+	it("create stream contract", () => {
+		const flux = DP.object({
+			value: DP.number(),
+		});
+
+		const contract = ResponseContract.stream("my super information", flux);
+
+		expect(contract).toStrictEqual({
+			code: "200",
+			information: "my super information",
+			flux,
+			body: expect.objectContaining({
+				[DP.emptyKind.runTimeKey]: null,
+			}),
+			[ResponseContract.streamContractKind.runTimeKey]: null,
+		});
+
+		type Check = ExpectType<
+			typeof contract,
+			ResponseContract.StreamContract<
+				"200",
+				"my super information",
+				typeof flux,
+				DP.DataParserEmpty<{
+					readonly errorMessage?: string | undefined;
+					readonly coerce: boolean;
+					readonly checkers: readonly [];
+				}>
+			>,
+			"strict"
+		>;
+	});
+
+	it("create stream text contract", () => {
+		const contract = ResponseContract.streamText("my super information");
+
+		expect(contract).toStrictEqual({
+			code: "200",
+			information: "my super information",
+			flux: expect.objectContaining({
+				[DP.stringKind.runTimeKey]: null,
+			}),
+			body: expect.objectContaining({
+				[DP.emptyKind.runTimeKey]: null,
+			}),
+			[ResponseContract.streamTextContractKind.runTimeKey]: null,
+		});
+
+		type Check = ExpectType<
+			typeof contract,
+			ResponseContract.StreamTextContract<
+				"200",
+				"my super information",
+				DP.DataParserString<{
+					readonly errorMessage?: string | undefined;
+					readonly coerce: boolean;
+					readonly checkers: readonly [];
+				}>,
+				DP.DataParserEmpty<{
+					readonly errorMessage?: string | undefined;
+					readonly coerce: boolean;
+					readonly checkers: readonly [];
+				}>
+			>,
+			"strict"
+		>;
+	});
+
 	it("error", () => {
 		const error = new ResponseContract.Error("test", "");
 

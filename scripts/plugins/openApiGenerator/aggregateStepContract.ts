@@ -11,10 +11,7 @@ export type EntrypointReduceResult = Record<
 
 export interface AggregateStepsResult {
 	entrypointContract: EntrypointReduceResult;
-	endpointContract: (
-		| ResponseContract.Contract
-		| ResponseContract.ServerSentEventsContract
-	)[];
+	endpointContract: ResponseContract.Contracts[];
 }
 
 export interface AggregateStepsParams {

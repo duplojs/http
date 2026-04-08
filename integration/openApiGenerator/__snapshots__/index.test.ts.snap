@@ -333,6 +333,98 @@ exports[`openApiGenerator > correct generate file 1`] = `
         }
       }
     },
+    "/stream": {
+      "get": {
+        "parameters": [
+          {
+            "name": "value",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/NotIdentified21"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "headers": {
+              "information": {
+                "schema": {
+                  "const": "monSuperStream",
+                  "type": "string"
+                },
+                "description": "monSuperStream"
+              }
+            },
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "422": {
+            "headers": {
+              "information": {
+                "schema": {
+                  "const": "extract-error",
+                  "type": "string"
+                },
+                "description": "extract-error"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stream-text": {
+      "post": {
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NotIdentified23"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "headers": {
+              "information": {
+                "schema": {
+                  "const": "monSuperStream",
+                  "type": "string"
+                },
+                "description": "monSuperStream"
+              }
+            },
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotIdentified25"
+                }
+              }
+            }
+          },
+          "422": {
+            "headers": {
+              "information": {
+                "schema": {
+                  "const": "extract-error",
+                  "type": "string"
+                },
+                "description": "extract-error"
+              }
+            }
+          }
+        }
+      }
+    },
     "/static-file": {
       "get": {
         "parameters": [],
@@ -350,7 +442,7 @@ exports[`openApiGenerator > correct generate file 1`] = `
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/NotIdentified21"
+                  "$ref": "#/components/schemas/NotIdentified26"
                 }
               }
             }
@@ -386,7 +478,7 @@ exports[`openApiGenerator > correct generate file 1`] = `
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/NotIdentified23"
+                  "$ref": "#/components/schemas/NotIdentified28"
                 }
               }
             }
@@ -668,16 +760,42 @@ exports[`openApiGenerator > correct generate file 1`] = `
       },
       "NotIdentified20": {},
       "NotIdentified21": {
-        "type": "string",
-        "format": "binary"
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "string"
+          }
+        ]
       },
       "NotIdentified22": {},
       "NotIdentified23": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "value"
+        ]
+      },
+      "NotIdentified24": {},
+      "NotIdentified25": {
+        "type": "string"
+      },
+      "NotIdentified26": {
         "type": "string",
         "format": "binary"
       },
-      "NotIdentified24": {},
-      "NotIdentified25": {}
+      "NotIdentified27": {},
+      "NotIdentified28": {
+        "type": "string",
+        "format": "binary"
+      },
+      "NotIdentified29": {},
+      "NotIdentified30": {}
     }
   }
 }"

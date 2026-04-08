@@ -167,13 +167,13 @@ function routeToOpenApi(route, params) {
             schema: body,
         });
         const content = utils.pipe(body, utils.P.when(utils.DP.identifier(utils.DP.emptyKind), utils.justReturn(lastValue[code]?.content)), utils.P.otherwise((value) => {
-            if (utils.DP.identifier(value, utils.DP.stringKind) && lastValue[code]?.content?.["plain/text"]) {
+            if (utils.DP.identifier(value, utils.DP.stringKind) && lastValue[code]?.content?.["text/plain"]) {
                 return lastValue[code].content;
             }
             if (utils.DP.identifier(value, utils.DP.stringKind)) {
                 return {
                     ...lastValue[code]?.content,
-                    "plain/text": {
+                    "text/plain": {
                         schema: schemaResponse,
                     },
                 };

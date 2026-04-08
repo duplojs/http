@@ -1,4 +1,4 @@
-import { type ExtractStep, extractStepKind, type HandlerStep, handlerStepKind, ResponseContract, type Route, routeKind, stepKind, useRouteBuilder, type PredictedResponse, type HandlerStepFunctionParams, type Request, routeStore, IgnoreByRouteStoreMetadata, type Metadata, type RouteHookParamsAfter, type RouteHookNext } from "@core";
+import { type ExtractStep, extractStepKind, type HandlerStep, handlerStepKind, ResponseContract, type Route, routeKind, stepKind, useRouteBuilder, type PredictedResponse, type HandlerStepFunctionParams, type Request, routeStore, IgnoreByRouteStoreMetadata, type Metadata, type RouteHookParamsAfter, type RouteHookNext, type ServerSentEventsPredictedResponse, type StreamPredictedResponse, type StreamTextPredictedResponse } from "@core";
 import { type DP, DPE, type ExpectType } from "@duplojs/utils";
 import { type MaybePromise } from "rollup";
 
@@ -101,8 +101,56 @@ describe("route builder handler method", () => {
 	it("handler with multi contract", () => {
 		const routeBuilder = useRouteBuilder("GET", "/test")
 			.handler(
-				[ResponseContract.ok("test", DPE.string()), ResponseContract.noContent("toto")],
-				(floor, { response }) => true.valueOf() ? response("test", "toto") : response("toto"),
+				[
+					ResponseContract.ok("test", DPE.string()),
+					ResponseContract.serverSentEvents("sse", DPE.string()),
+					ResponseContract.stream("stream", DPE.number()),
+					ResponseContract.streamText("streamText"),
+				],
+				(floor, { response, serverSentEventsResponse, streamResponse, streamTextResponse }) => {
+					if (!!true as boolean) {
+						//@ts-expect-error contract data error
+						return response("test", 1);
+					}
+
+					if (!!true as boolean) {
+						return serverSentEventsResponse(
+							"sse",
+							async({ send }) => {
+								await send("message", "");
+
+								//@ts-expect-error contract event error
+								await send("", "");
+							},
+						);
+					}
+
+					if (!!true as boolean) {
+						return streamResponse(
+							"stream",
+							async({ send }) => {
+								await send(1);
+
+								//@ts-expect-error contract data error
+								await send("");
+							},
+						);
+					}
+
+					if (!!true as boolean) {
+						return streamTextResponse(
+							"streamText",
+							async({ send }) => {
+								await send("");
+
+								//@ts-expect-error contract data error
+								await send(1);
+							},
+						);
+					}
+
+					return response("test", "test");
+				},
 			);
 
 		expect([...routeStore.getAll()]).toContain(routeBuilder);
@@ -128,8 +176,16 @@ describe("route builder handler method", () => {
 									code: "200",
 								}),
 								expect.objectContaining({
-									[ResponseContract.contractKind.runTimeKey]: null,
-									code: "204",
+									[ResponseContract.serverSentEventsContractKind.runTimeKey]: null,
+									code: "200",
+								}),
+								expect.objectContaining({
+									[ResponseContract.streamContractKind.runTimeKey]: null,
+									code: "200",
+								}),
+								expect.objectContaining({
+									[ResponseContract.streamTextContractKind.runTimeKey]: null,
+									code: "200",
 								}),
 							],
 							metadata: [],
@@ -160,21 +216,64 @@ describe("route builder handler method", () => {
 										readonly checkers: readonly [];
 									}>
 								>,
-								ResponseContract.Contract<
-									"204",
-									"toto",
-									DP.DataParserEmpty
+								ResponseContract.ServerSentEventsContract<
+									"200",
+									"sse",
+									{
+										message: DPE.DataParserStringExtended<{
+											readonly errorMessage?: string | undefined;
+											readonly coerce: boolean;
+											readonly checkers: readonly [];
+										}>;
+									},
+									DP.DataParserEmpty<{
+										readonly errorMessage?: string | undefined;
+										readonly coerce: boolean;
+										readonly checkers: readonly [];
+									}>
+								>,
+								ResponseContract.StreamContract<
+									"200",
+									"stream",
+									DPE.DataParserNumberExtended<{
+										readonly errorMessage?: string | undefined;
+										readonly coerce: boolean;
+										readonly checkers: readonly [];
+									}>,
+									DP.DataParserEmpty<{
+										readonly errorMessage?: string | undefined;
+										readonly coerce: boolean;
+										readonly checkers: readonly [];
+									}>
+								>,
+								ResponseContract.StreamTextContract<
+									"200",
+									"streamText",
+									DP.DataParserString<{
+										readonly errorMessage?: string | undefined;
+										readonly coerce: boolean;
+										readonly checkers: readonly [];
+									}>,
+									DP.DataParserEmpty<{
+										readonly errorMessage?: string | undefined;
+										readonly coerce: boolean;
+										readonly checkers: readonly [];
+									}>
 								>,
 							];
 							theFunction(
 								floor: {},
 								param: HandlerStepFunctionParams<
 									| PredictedResponse<"200", "test", string>
-									| PredictedResponse<"204", "toto", undefined>
+									| ServerSentEventsPredictedResponse<"200", "sse", ["message", string]>
+									| StreamPredictedResponse<"200", "stream", number>
+									| StreamTextPredictedResponse<"200", "streamText">
 								>
 							): MaybePromise<
 								| PredictedResponse<"200", "test", string>
-								| PredictedResponse<"204", "toto", undefined>
+								| ServerSentEventsPredictedResponse<"200", "sse", ["message", string]>
+								| StreamPredictedResponse<"200", "stream", number>
+								| StreamTextPredictedResponse<"200", "streamText">
 							>;
 							readonly metadata: readonly [];
 						}>,

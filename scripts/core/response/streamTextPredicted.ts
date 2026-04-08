@@ -1,18 +1,17 @@
 import { createCoreLibKind } from "@core/kind";
 import { Response, type SuccessResponseCode } from "@core/response";
-import { type ServerSentEvents } from "@core/serverSentEvents";
+import { type Stream } from "@core/stream";
 import { kindHeritage, type MaybePromise } from "@duplojs/utils";
 
 const defaultParamsParent = [undefined, undefined, undefined] as const;
 const defaultParams = {};
 
-export class ServerSentEventsPredictedResponse<
+export class StreamTextPredictedResponse<
 	GenericCode extends SuccessResponseCode = SuccessResponseCode,
 	GenericInformation extends string = string,
-	GenericEvents extends ServerSentEvents.DefinitionShape = ServerSentEvents.DefinitionShape,
 > extends kindHeritage(
-		"server-sent-events-predicted-response",
-		createCoreLibKind("server-sent-events-predicted-response"),
+		"stream-text-predicted-response",
+		createCoreLibKind("stream-text-predicted-response"),
 		Response,
 	) {
 	public override code: GenericCode;
@@ -24,8 +23,8 @@ export class ServerSentEventsPredictedResponse<
 	public constructor(
 		code: GenericCode,
 		information: GenericInformation,
-		public startSendingEvents: (
-			params: ServerSentEvents.StartSendingParams<GenericEvents>
+		public startStream: (
+			params: Stream.StartSendingParams<string>
 		) => MaybePromise<void>,
 	) {
 		super(defaultParams, defaultParamsParent);

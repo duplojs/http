@@ -3,6 +3,7 @@ import { A, DP, hasSomeKinds, innerPipe, O, P, pipe } from "@duplojs/utils";
 import { type EntrypointKey } from "./types";
 import { ResponseContract } from "@core/response";
 import { IgnoreByCodeGeneratorMetadata } from "./metadata";
+import { factory } from "typescript";
 
 type EntrypointReduceResult = Record<
 	EntrypointKey,
@@ -17,6 +18,10 @@ export interface StepsToDataParserResult {
 	entrypointContract: EntrypointReduceResult;
 	endpointContract: DP.DataParser[];
 }
+
+const defaultFluxStreamSchema = DP.unknown().setOverrideTypescriptTransformer(
+	factory.createTypeReferenceNode("Blob"),
+);
 
 export function aggregateStepContract(
 	steps: readonly Steps[],
@@ -155,6 +160,24 @@ export function aggregateStepContract(
 						information: DP.literal(information),
 						body,
 						events: DP.object(events),
+					}),
+				),
+				P.when(
+					ResponseContract.streamContractKind.has,
+					({ code, information, body }) => DP.object({
+						code: DP.literal(code),
+						information: DP.literal(information),
+						body,
+						flux: defaultFluxStreamSchema,
+					}),
+				),
+				P.when(
+					ResponseContract.streamTextContractKind.has,
+					({ code, information, body, flux }) => DP.object({
+						code: DP.literal(code),
+						information: DP.literal(information),
+						body,
+						flux,
 					}),
 				),
 				P.exhaustive,
