@@ -1,4 +1,4 @@
-import { createHttpClient, type RequestErrorContent, type PromiseRequest, type PromiseRequestParams, type ServerRoute, type ClientEventsResponse, type AllNotPredictedClientResponse, type AllClientResponse, type ServerEvent } from "@client";
+import { createHttpClient, type RequestErrorContent, type PromiseRequest, type PromiseRequestParams, type ServerRoute, type ClientEventsResponse, type AllNotPredictedClientResponse, type AllClientResponse, type ServerEvent, isClientEventsResponse } from "@client";
 import { createFormData, E, type ExpectType } from "@duplojs/utils";
 
 const httpClient = createHttpClient<ServerRoute, { params1: string }>({
@@ -551,7 +551,7 @@ void httpClient.post("/see")
 	)
 	.whenExpectedResponse(
 		(response) => {
-			if (Symbol.asyncIterator in response) {
+			if (isClientEventsResponse(response)) {
 				response.onReceiveEvent(
 					"message",
 					(event, response) => {

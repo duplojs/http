@@ -47,7 +47,7 @@ interface HandlerStepFunctionParamsStreamTextResponse<
 		>,
 	>(
 		information: GenericInformation,
-		startStreamText: GenericFilteredResponse["startStream"],
+		startStream: GenericFilteredResponse["startStream"],
 	): GenericFilteredResponse;
 }
 

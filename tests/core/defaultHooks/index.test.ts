@@ -231,6 +231,7 @@ describe("defaultHook", () => {
 			predicted: "1",
 			"transfer-encoding": "chunked",
 			"content-type": "application/octet-stream",
+			"x-duplojs-body-options": "stream",
 		});
 	});
 
@@ -245,10 +246,11 @@ describe("defaultHook", () => {
 		});
 
 		expect(response.headers).toStrictEqual({
-			"content-type": "text/plain; charset=UTF-8",
+			"content-type": "text/plain; charset=utf-8",
 			information: "test",
 			predicted: "1",
 			"transfer-encoding": "chunked",
+			"x-duplojs-body-options": "stream",
 		});
 	});
 });

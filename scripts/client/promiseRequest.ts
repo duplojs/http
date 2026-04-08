@@ -7,9 +7,10 @@ import * as EE from "@duplojs/utils/either";
 import * as SS from "@duplojs/utils/string";
 import * as AA from "@duplojs/utils/array";
 import { UnexpectedCodeResponseError, UnexpectedInformationResponseError, UnexpectedResponseError, UnexpectedResponseTypeError, type RequestErrorContent } from "./unexpectedResponseError";
-import { type PromiseRequestParams, type Hooks, type NotPredictedResponseHook, type ErrorHook, type ClientEventsResponse, type AllClientResponse, type AllNotPredictedClientResponse, type ClientResponse, type ClientEventsResponseHandler, type ServerEvent } from "./types";
-import { makeClientEventsResponse } from "./serverSentEvents";
+import { type PromiseRequestParams, type Hooks, type NotPredictedResponseHook, type ErrorHook, type ClientEventsResponse, type AllClientResponse, type AllNotPredictedClientResponse, type ClientResponse, type ClientEventsResponseHandler, type ServerEvent, type ClientStreamResponseHandler, type ClientStreamResponse } from "./types";
+import { isClientEventsResponse, makeClientEventsResponse } from "./serverSentEvents";
 import { findResponseFromCacheStore, saveResponseInCacheStore } from "./clientCache";
+import { isClientStreamResponse, makeClientStreamResponse } from "./stream";
 
 type MaybeResponse<
 	GenericClientResponse extends AllClientResponse = AllClientResponse,
@@ -401,9 +402,44 @@ export class PromiseRequest<
 							response.predicted === true
 							|| response.requestParams.disabledPredicateMode === true
 						)
-						&& Symbol.asyncIterator in response
+						&& isClientEventsResponse(response)
 					) {
 						response.onReceiveEvent(eventName, callback as never);
+					}
+				},
+			),
+		);
+
+		return this;
+	}
+
+	public whenReceiveDataStream<
+		GenericFlux extends(
+			GenericClientResponse extends ClientStreamResponseHandler<infer InferredFlux>
+				? InferredFlux
+				: never
+		),
+	>(
+		callback: (
+			data: GenericFlux,
+			response: NeverCoalescing<
+				Extract<GenericClientResponse, ClientStreamResponseHandler>,
+				ClientStreamResponse
+			>
+		) => MaybePromise<void>,
+
+	) {
+		void this.then(
+			EE.whenIsRight(
+				(response) => {
+					if (
+						(
+							response.predicted === true
+							|| response.requestParams.disabledPredicateMode === true
+						)
+						&& isClientStreamResponse(response)
+					) {
+						response.onStream("receiveData", callback as never);
 					}
 				},
 			),
@@ -1015,7 +1051,7 @@ export class PromiseRequest<
 					}
 
 					throw new UnexpectedResponseTypeError(
-						"informational",
+						"serverError",
 						unwrap(maybeResponse),
 					);
 				},
@@ -1114,7 +1150,7 @@ export class PromiseRequest<
 					headers["content-type"] = "text/plain; charset=utf-8";
 					body = body.toString();
 				} else if (body instanceof TheFormData) {
-					headers["content-type-options"] = "advanced";
+					headers["x-duplojs-body-options"] = "advanced";
 				} else if (
 					(
 						body
@@ -1149,49 +1185,62 @@ export class PromiseRequest<
 			fetchInitParams,
 		)
 			.then(
-				(response) => getBody(response)
-					.then(
-						(body) => {
-							const clientResponse: ClientResponse = {
-								body,
-								information: response.headers.get(requestParams.informationHeaderKey) ?? undefined,
-								code: response.status.toString() as SS.Number,
-								ok: (response.status < 500)
-									? response.ok
-									: null,
-								headers: response.headers,
-								type: response.type,
-								url: response.url,
-								redirected: response.redirected,
-								raw: response,
-								requestParams,
-								predicted: response.headers.get(requestParams.predictedHeaderKey) !== null,
-							};
+				(response) => {
+					const clientResponse: ClientResponse = {
+						body: undefined,
+						information: response.headers.get(requestParams.informationHeaderKey) ?? undefined,
+						code: response.status.toString() as SS.Number,
+						ok: (response.status < 500)
+							? response.ok
+							: null,
+						headers: response.headers,
+						type: response.type,
+						url: response.url,
+						redirected: response.redirected,
+						raw: response,
+						requestParams,
+						predicted: response.headers.get(requestParams.predictedHeaderKey) !== null,
+					};
 
-							if (response.headers.get("content-type")?.includes("text/event-stream")) {
+					if (response.headers.get("content-type")?.includes("text/event-stream")) {
+						return EE.right(
+							"response",
+							makeClientEventsResponse(
+								clientResponse,
+								fetchUrl,
+								fetchInitParams,
+							),
+						);
+					}
+
+					if (response.headers.get("x-duplojs-body-options")?.includes("stream")) {
+						return EE.right(
+							"response",
+							makeClientStreamResponse(
+								clientResponse,
+							),
+						);
+					}
+
+					return getBody(response)
+						.then(
+							(body) => {
+								clientResponse.body = body;
+
+								if (clientResponse.code.startsWith("2")) {
+									saveResponseInCacheStore(
+										requestParams,
+										clientResponse,
+									);
+								}
+
 								return EE.right(
 									"response",
-									makeClientEventsResponse(
-										clientResponse,
-										fetchUrl,
-										fetchInitParams,
-									),
-								);
-							}
-
-							if (clientResponse.code.startsWith("2")) {
-								saveResponseInCacheStore(
-									requestParams,
 									clientResponse,
 								);
-							}
-
-							return EE.right(
-								"response",
-								clientResponse,
-							);
-						},
-					),
+							},
+						);
+				},
 			)
 			.catch(
 				(error) => EE.left(

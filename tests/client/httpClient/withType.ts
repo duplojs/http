@@ -89,6 +89,22 @@ type Routes = {
 		};
 		body: undefined;
 	};
+} | {
+	method: "GET";
+	path: "/stream";
+	query: {
+		value: number;
+	};
+	responses: {
+		code: "422";
+		information: "extract-error";
+		body?: undefined;
+	} | {
+		code: "200";
+		information: "monSuperStream";
+		body?: undefined;
+		flux: Uint8Array<ArrayBuffer>;
+	};
 };
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions

@@ -55,10 +55,12 @@ export function initDefaultHook(
 				currentResponse.setHeader(predictedHeaderKey, "1");
 				currentResponse.setHeader("transfer-encoding", "chunked");
 				currentResponse.setHeader("content-type", "application/octet-stream");
+				currentResponse.setHeader("x-duplojs-body-options", "stream");
 			} else if (currentResponse instanceof StreamTextPredictedResponse) {
 				currentResponse.setHeader(predictedHeaderKey, "1");
 				currentResponse.setHeader("transfer-encoding", "chunked");
-				currentResponse.setHeader("content-type", "text/plain; charset=UTF-8");
+				currentResponse.setHeader("content-type", "text/plain; charset=utf-8");
+				currentResponse.setHeader("x-duplojs-body-options", "stream");
 			} else if (currentResponse instanceof HookResponse) {
 				currentResponse.setHeader(fromHookHeaderKey, currentResponse.fromHook);
 			}

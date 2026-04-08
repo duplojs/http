@@ -102,7 +102,7 @@ function createFormDataBodyReaderImplementation(serverParams) {
             }
             return result;
         }
-        if (request.headers["content-type-options"]?.includes("advanced")) {
+        if (request.headers["x-duplojs-body-options"]?.includes("advanced")) {
             return utils.E.success(utils.TheFormData.fromEntries(result.entries(), params.maxIndexArray));
         }
         return utils.E.success(utils.O.fromEntries(result.entries()));

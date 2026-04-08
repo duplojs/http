@@ -29,7 +29,7 @@ describe("file", async() => {
 			fetch("http://localhost:8961/documents", {
 				method: "POST",
 				body: formData,
-				headers: { "content-type-options": "advanced" },
+				headers: { "x-duplojs-body-options": "advanced" },
 			})
 				.then((response) => ({
 					headers: [...response.headers.entries()],

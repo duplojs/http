@@ -158,7 +158,7 @@ export type Routes = {
         code: "200";
         information: "monSuperStream";
         body?: undefined;
-        flux: Blob;
+        flux: Uint8Array<ArrayBuffer>;
     };
 } | {
     method: "POST";

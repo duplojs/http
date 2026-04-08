@@ -20,7 +20,10 @@ export interface StepsToDataParserResult {
 }
 
 const defaultFluxStreamSchema = DP.unknown().setOverrideTypescriptTransformer(
-	factory.createTypeReferenceNode("Blob"),
+	factory.createTypeReferenceNode(
+		"Uint8Array",
+		[factory.createTypeReferenceNode("ArrayBuffer")],
+	),
 );
 
 export function aggregateStepContract(

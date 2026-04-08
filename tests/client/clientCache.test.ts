@@ -20,6 +20,10 @@ describe("clientCache", () => {
 		errorServerEvent: [],
 		receiveEventServerEvent: [],
 		startServerEvent: [],
+		closeStream: [],
+		errorStream: [],
+		receiveDataStream: [],
+		startStream: [],
 	});
 
 	const createParams = (

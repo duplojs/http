@@ -2,7 +2,7 @@ import { pipe, sleep } from "@duplojs/utils";
 import * as GG from "@duplojs/utils/generator";
 import * as SS from "@duplojs/utils/string";
 import * as AA from "@duplojs/utils/array";
-import { type ServerEvent, type ClientEventsResponse, type ClientResponse, type CloseServerEventHook, type BeforeRetryServerEventHook, type ErrorServerEventHook, type StartServerEventHook, type ReceiveEventServerEventHook } from "./types";
+import { type ServerEvent, type ClientEventsResponse, type ClientResponse, type CloseServerEventHook, type BeforeRetryServerEventHook, type ErrorServerEventHook, type StartServerEventHook, type ReceiveEventServerEventHook, type AllClientResponse } from "./types";
 import { launchBeforeRetryServerEventHook, launchCloseServerEventHook, launchErrorServerEventHook, launchReceiveEventServerEventHook, launchStartServerEventHook } from "./hooks";
 
 interface RawServerEvent {
@@ -40,16 +40,7 @@ export function makeClientEventsResponse(
 
 		const eventResponse: ClientEventsResponse = {
 			...response,
-			closeEventStream: () => void abortController.abort(closeReason),
-			onReceiveEvent: (eventName, callback) => {
-				receiveEventServerEvent ??= [];
-				receiveEventServerEvent.push(
-					(receiveEvent) => receiveEvent.event === eventName
-						? callback(receiveEvent as never, eventResponse)
-						: undefined,
-				);
-				return eventResponse;
-			},
+			handlerType: "events",
 			onStreamEvent: (event, callback) => {
 				if (event === "receiveServerEvents") {
 					receiveEventServerEvent ??= [];
@@ -70,7 +61,17 @@ export function makeClientEventsResponse(
 
 				return eventResponse;
 			},
-			async consumeEventStream() {
+			onReceiveEvent: (eventName, callback) => {
+				receiveEventServerEvent ??= [];
+				receiveEventServerEvent.push(
+					(receiveEvent) => receiveEvent.event === eventName
+						? callback(receiveEvent as never, eventResponse)
+						: undefined,
+				);
+				return eventResponse;
+			},
+			closeEventStream: () => void abortController.abort(closeReason),
+			consumeEventStream: async() => {
 				for await (const __ of eventResponse) { }
 			},
 			[Symbol.asyncIterator]: async function *() {
@@ -120,11 +121,7 @@ export function makeClientEventsResponse(
 		return eventResponse;
 	};
 
-	if (
-		!reader
-		|| response.code === "204"
-		|| !response.headers.get("content-type")?.includes("text/event-stream")
-	) {
+	if (!reader || response.code === "204") {
 		return createEventResponse(
 			async function *() {},
 		);
@@ -303,4 +300,10 @@ export function makeClientEventsResponse(
 			);
 		},
 	);
+}
+
+export function isClientEventsResponse<
+	GenericResponse extends AllClientResponse,
+>(response: GenericResponse): response is Extract<GenericResponse, ClientEventsResponse> {
+	return Symbol.asyncIterator in response && response.handlerType === "events";
 }

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/prefer-for-of */
-import { type CodeHook, type ErrorHook, type InformationHook, type NotPredictedResponseHook, type RequestHook, type ResponseHook, type ResponseTypeHook, type PromiseRequestParams, type NotPredictedClientResponse, type ClientResponse, type CloseServerEventHook, type ClientEventsResponse, type BeforeRetryServerEventHook, type ErrorServerEventHook, type StartServerEventHook, type ServerEvent, type ReceiveEventServerEventHook } from "./types";
+import { type CodeHook, type ErrorHook, type InformationHook, type NotPredictedResponseHook, type RequestHook, type ResponseHook, type ResponseTypeHook, type PromiseRequestParams, type NotPredictedClientResponse, type ClientResponse, type CloseServerEventHook, type ClientEventsResponse, type BeforeRetryServerEventHook, type ErrorServerEventHook, type StartServerEventHook, type ServerEvent, type ReceiveEventServerEventHook, type CloseStreamHook, type ClientStreamResponse, type ReceiveDataStreamHook, type ErrorStreamHook, type StartStreamHook, type ServerRouteResponseFlux } from "./types";
 
 export async function launchRequestHook(
 	clientHook: readonly RequestHook[],
@@ -191,5 +191,63 @@ export async function launchReceiveEventServerEventHook(
 
 	for (let index = 0; index < clientHook.length; index++) {
 		await clientHook[index]!(event, response);
+	}
+}
+
+export async function launchCloseStreamHook(
+	clientHook: readonly CloseStreamHook[],
+	promiseRequestHook: readonly CloseStreamHook[],
+	response: ClientStreamResponse,
+) {
+	for (let index = 0; index < promiseRequestHook.length; index++) {
+		await promiseRequestHook[index]!(response);
+	}
+
+	for (let index = 0; index < clientHook.length; index++) {
+		await clientHook[index]!(response);
+	}
+}
+
+export async function launchReceiveDataStreamHook(
+	clientHook: readonly ReceiveDataStreamHook[],
+	promiseRequestHook: readonly ReceiveDataStreamHook[],
+	data: ServerRouteResponseFlux,
+	response: ClientStreamResponse,
+) {
+	for (let index = 0; index < promiseRequestHook.length; index++) {
+		await promiseRequestHook[index]!(data, response);
+	}
+
+	for (let index = 0; index < clientHook.length; index++) {
+		await clientHook[index]!(data, response);
+	}
+}
+
+export async function launchErrorStreamHook(
+	clientHook: readonly ErrorStreamHook[],
+	promiseRequestHook: readonly ErrorStreamHook[],
+	error: unknown,
+	response: ClientStreamResponse,
+) {
+	for (let index = 0; index < promiseRequestHook.length; index++) {
+		await promiseRequestHook[index]!(error, response);
+	}
+
+	for (let index = 0; index < clientHook.length; index++) {
+		await clientHook[index]!(error, response);
+	}
+}
+
+export async function launchStartStreamHook(
+	clientHook: readonly StartStreamHook[],
+	promiseRequestHook: readonly StartStreamHook[],
+	response: ClientStreamResponse,
+) {
+	for (let index = 0; index < promiseRequestHook.length; index++) {
+		await promiseRequestHook[index]!(response);
+	}
+
+	for (let index = 0; index < clientHook.length; index++) {
+		await clientHook[index]!(response);
 	}
 }

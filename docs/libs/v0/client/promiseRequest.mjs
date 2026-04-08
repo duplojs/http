@@ -341,7 +341,7 @@ class PromiseRequest extends Promise {
                     body = body.toString();
                 }
                 else if (body instanceof TheFormData) {
-                    headers["content-type-options"] = "advanced";
+                    headers["x-duplojs-body-options"] = "advanced";
                 }
                 else if ((body
                     && typeof body === "object"

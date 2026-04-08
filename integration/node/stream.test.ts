@@ -33,6 +33,10 @@ describe("stream", async() => {
 					"application/octet-stream",
 				],
 				[
+					"x-duplojs-body-options",
+					"stream",
+				],
+				[
 					"predicted",
 					"1",
 				],
@@ -64,7 +68,11 @@ describe("stream", async() => {
 				],
 				[
 					"content-type",
-					"text/plain; charset=UTF-8",
+					"text/plain; charset=utf-8",
+				],
+				[
+					"x-duplojs-body-options",
+					"stream",
 				],
 				[
 					"predicted",

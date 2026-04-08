@@ -30,4 +30,4 @@ Pour envoyer des `FormData` à structure complexe, il vous suffit d'utiliser le 
 <!--@include: @/examples/v0/guide/features/formData/client.ts-->
 ```
 
-Il suffit d'utiliser la fonction `createFormData` de la librairie `@duplojs/utils` pour obtenir un `TheFormData` (une classe étendue de `FormData`) qui supporte les structures complexes. Lorsque le client détecte que le body est un `TheFormData`, il ajoute automatiquement un en-tête personnalisé pour l'indiquer au serveur (`content-type-options: advanced`). Cela permet également de rester compatible avec des `FormData` classiques.
+Il suffit d'utiliser la fonction `createFormData` de la librairie `@duplojs/utils` pour obtenir un `TheFormData` (une classe étendue de `FormData`) qui supporte les structures complexes. Lorsque le client détecte que le body est un `TheFormData`, il ajoute automatiquement un en-tête personnalisé pour l'indiquer au serveur (`x-duplojs-body-options: advanced`). Cela permet également de rester compatible avec des `FormData` classiques.

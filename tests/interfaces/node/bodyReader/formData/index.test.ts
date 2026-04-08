@@ -401,11 +401,11 @@ describe("createFormDataBodyReaderImplementation", () => {
 		expect(fspSpy.open).toHaveBeenCalledTimes(1);
 	});
 
-	it("returns advanced object when content-type-options includes advanced", async() => {
+	it("returns advanced object when x-duplojs-body-options includes advanced", async() => {
 		const request = createFakeRequest({
 			headers: {
 				"content-type": contentType,
-				"content-type-options": "advanced",
+				"x-duplojs-body-options": "advanced",
 			},
 			raw: {
 				request: {
