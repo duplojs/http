@@ -503,4 +503,58 @@ describe("client", async() => {
 			]);
 		});
 	});
+
+	describe("stream", () => {
+		it("Uint8Array", async() => {
+			const spyClientFlux = vi.fn();
+			const spyFlux = vi.fn();
+			const encoder = new TextEncoder();
+
+			const result = await httpClient
+				.get(
+					"/stream",
+					{ query: { value: "15" } },
+				)
+				.whenReceiveDataStream(spyClientFlux)
+				.iWantInformationOrThrow("monSuperStream");
+
+			result.onStream("receiveData", spyFlux);
+
+			await result.consumeStream();
+
+			expect(spyClientFlux).toHaveBeenCalledTimes(6);
+			expect(spyClientFlux).toHaveBeenNthCalledWith(1, encoder.encode("1"), expect.any(Object));
+			expect(spyClientFlux).toHaveBeenNthCalledWith(2, encoder.encode("2"), expect.any(Object));
+			expect(spyClientFlux).toHaveBeenNthCalledWith(3, encoder.encode("3"), expect.any(Object));
+			expect(spyClientFlux).toHaveBeenNthCalledWith(4, encoder.encode("4"), expect.any(Object));
+			expect(spyClientFlux).toHaveBeenNthCalledWith(5, encoder.encode("5"), expect.any(Object));
+			expect(spyClientFlux).toHaveBeenNthCalledWith(6, encoder.encode("15"), expect.any(Object));
+
+			expect(spyFlux).toHaveBeenCalledTimes(6);
+			expect(spyFlux).toHaveBeenNthCalledWith(1, encoder.encode("1"), expect.any(Object));
+			expect(spyFlux).toHaveBeenNthCalledWith(2, encoder.encode("2"), expect.any(Object));
+			expect(spyFlux).toHaveBeenNthCalledWith(3, encoder.encode("3"), expect.any(Object));
+			expect(spyFlux).toHaveBeenNthCalledWith(4, encoder.encode("4"), expect.any(Object));
+			expect(spyFlux).toHaveBeenNthCalledWith(5, encoder.encode("5"), expect.any(Object));
+			expect(spyFlux).toHaveBeenNthCalledWith(6, encoder.encode("15"), expect.any(Object));
+		});
+
+		it("text", async() => {
+			const result = await httpClient
+				.post(
+					"/stream-text",
+					{ body: { value: "Trop fort" } },
+				)
+				.iWantInformationOrThrow("monSuperStream");
+
+			await expect(A.from(result)).resolves.toStrictEqual([
+				"super",
+				"Value",
+				"De",
+				"La",
+				"Mort",
+				" Trop fort",
+			]);
+		});
+	});
 });

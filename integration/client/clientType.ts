@@ -104,4 +104,36 @@ export type Routes = {
 		information: "close";
 		body?: undefined;
 	};
+} | {
+	method: "GET";
+	path: "/stream";
+	query: {
+		value: number;
+	};
+	responses: {
+		code: "422";
+		information: "extract-error";
+		body?: undefined;
+	} | {
+		code: "200";
+		information: "monSuperStream";
+		body?: undefined;
+		flux: Uint8Array<ArrayBuffer>;
+	};
+} | {
+	method: "POST";
+	path: "/stream-text";
+	body: {
+		value: string;
+	};
+	responses: {
+		code: "422";
+		information: "extract-error";
+		body?: undefined;
+	} | {
+		code: "200";
+		information: "monSuperStream";
+		body?: undefined;
+		flux: string;
+	};
 };
