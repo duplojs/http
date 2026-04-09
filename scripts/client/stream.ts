@@ -39,7 +39,10 @@ export function makeClientStreamResponse(
 
 				return streamResponse;
 			},
-			closeStream: () => void abortController.abort(closeReason),
+			closeStream: () => {
+				abortController.abort(closeReason);
+				void reader?.cancel(closeReason);
+			},
 			consumeStream: async() => {
 				for await (const __ of streamResponse) { }
 			},

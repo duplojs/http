@@ -362,6 +362,7 @@ describe("stream", () => {
 					body: {
 						getReader: () => ({
 							read: vi.fn(),
+							cancel: () => {},
 						}),
 					},
 				} as never,
@@ -391,6 +392,7 @@ describe("stream", () => {
 								streamResponse.closeStream();
 								return Promise.reject(requestParams.abortController.signal.reason as Error);
 							}),
+							cancel: () => {},
 						}),
 					},
 				} as never,

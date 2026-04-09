@@ -70,7 +70,10 @@ export function makeClientEventsResponse(
 				);
 				return eventResponse;
 			},
-			closeEventStream: () => void abortController.abort(closeReason),
+			closeEventStream: () => {
+				abortController.abort(closeReason);
+				void reader?.cancel(closeReason);
+			},
 			consumeEventStream: async() => {
 				for await (const __ of eventResponse) { }
 			},
