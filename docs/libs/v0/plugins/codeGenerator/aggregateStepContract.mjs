@@ -1,7 +1,8 @@
 import '../../core/steps/index.mjs';
-import { A, pipe, O, DP, P, hasSomeKinds, innerPipe } from '@duplojs/utils';
+import { DP, A, pipe, O, P, hasSomeKinds, innerPipe } from '@duplojs/utils';
 import '../../core/response/index.mjs';
 import { IgnoreByCodeGeneratorMetadata } from './metadata.mjs';
+import { factory } from 'typescript';
 import { stepIdentifier } from '../../core/steps/identifier.mjs';
 import { processStepKind } from '../../core/steps/process.mjs';
 import { extractStepKind } from '../../core/steps/extract.mjs';
@@ -11,6 +12,7 @@ import { cutStepKind } from '../../core/steps/cut.mjs';
 import { handlerStepKind } from '../../core/steps/handler.mjs';
 import { ResponseContract } from '../../core/response/contract.mjs';
 
+const defaultFluxStreamSchema = DP.unknown().setOverrideTypescriptTransformer(factory.createTypeReferenceNode("Uint8Array", [factory.createTypeReferenceNode("ArrayBuffer")]));
 function aggregateStepContract(steps, params) {
     const filteredStep = A.filter(steps, (step) => A.find(step.definition.metadata, IgnoreByCodeGeneratorMetadata.is) === undefined);
     const processContracts = pipe(filteredStep, A.filter(stepIdentifier(processStepKind)), A.filter((step) => A.find(step.definition.process.definition.metadata, IgnoreByCodeGeneratorMetadata.is) === undefined), A.map((element) => aggregateStepContract(element.definition.process.definition.steps, params)), O.to({
@@ -64,6 +66,16 @@ function aggregateStepContract(steps, params) {
         information: DP.literal(information),
         body,
         events: DP.object(events),
+    })), P.when(ResponseContract.streamContractKind.has, ({ code, information, body }) => DP.object({
+        code: DP.literal(code),
+        information: DP.literal(information),
+        body,
+        flux: defaultFluxStreamSchema,
+    })), P.when(ResponseContract.streamTextContractKind.has, ({ code, information, body, flux }) => DP.object({
+        code: DP.literal(code),
+        information: DP.literal(information),
+        body,
+        flux,
     })), P.exhaustive)), A.concat(processContracts.endpointContract));
     return {
         entrypointContract,

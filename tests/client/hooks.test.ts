@@ -17,11 +17,18 @@ import {
 	type ClientResponse,
 	type PromiseRequestParams,
 	launchCloseServerEventHook,
-	type CloseServerEventHook,
 	launchBeforeRetryServerEventHook,
 	launchErrorServerEventHook,
 	launchStartServerEventHook,
 	launchReceiveEventServerEventHook,
+	launchCloseStreamHook,
+	launchReceiveDataStreamHook,
+	launchErrorStreamHook,
+	launchStartStreamHook,
+	type CloseStreamHook,
+	type ReceiveDataStreamHook,
+	type ErrorStreamHook,
+	type StartStreamHook,
 } from "@client";
 
 describe("client hooks", () => {
@@ -347,6 +354,102 @@ describe("client hooks", () => {
 		];
 
 		await launchReceiveEventServerEventHook(clientHooks, promiseHooks, {} as never, response as never);
+
+		expect(order).toStrictEqual(["promise", "client"]);
+	});
+
+	it("launchCloseStreamHook runs promise hooks before client hooks", async() => {
+		const order: string[] = [];
+		const response = {
+			code: "200",
+			predicted: false,
+		} as unknown as ClientResponse;
+
+		const promiseHooks: CloseStreamHook[] = [
+			() => {
+				order.push("promise");
+			},
+		];
+
+		const clientHooks: CloseStreamHook[] = [
+			() => {
+				order.push("client");
+			},
+		];
+
+		await launchCloseStreamHook(clientHooks, promiseHooks, response as never);
+
+		expect(order).toStrictEqual(["promise", "client"]);
+	});
+
+	it("launchReceiveDataStreamHook runs promise hooks before client hooks", async() => {
+		const order: string[] = [];
+		const response = {
+			code: "200",
+			predicted: false,
+		} as unknown as ClientResponse;
+
+		const promiseHooks: ReceiveDataStreamHook[] = [
+			(data) => {
+				order.push(`promise-${typeof data === "string" ? data : "binary"}`);
+			},
+		];
+
+		const clientHooks: ReceiveDataStreamHook[] = [
+			(data) => {
+				order.push(`client-${typeof data === "string" ? data : "binary"}`);
+			},
+		];
+
+		await launchReceiveDataStreamHook(clientHooks, promiseHooks, "chunk", response as never);
+
+		expect(order).toStrictEqual(["promise-chunk", "client-chunk"]);
+	});
+
+	it("launchErrorStreamHook runs promise hooks before client hooks", async() => {
+		const order: string[] = [];
+		const response = {
+			code: "200",
+			predicted: false,
+		} as unknown as ClientResponse;
+
+		const promiseHooks: ErrorStreamHook[] = [
+			(error) => {
+				order.push(`promise-${String(error)}`);
+			},
+		];
+
+		const clientHooks: ErrorStreamHook[] = [
+			(error) => {
+				order.push(`client-${String(error)}`);
+			},
+		];
+
+		await launchErrorStreamHook(clientHooks, promiseHooks, "boom", response as never);
+
+		expect(order).toStrictEqual(["promise-boom", "client-boom"]);
+	});
+
+	it("launchStartStreamHook runs promise hooks before client hooks", async() => {
+		const order: string[] = [];
+		const response = {
+			code: "200",
+			predicted: false,
+		} as unknown as ClientResponse;
+
+		const promiseHooks: StartStreamHook[] = [
+			() => {
+				order.push("promise");
+			},
+		];
+
+		const clientHooks: StartStreamHook[] = [
+			() => {
+				order.push("client");
+			},
+		];
+
+		await launchStartStreamHook(clientHooks, promiseHooks, response as never);
 
 		expect(order).toStrictEqual(["promise", "client"]);
 	});

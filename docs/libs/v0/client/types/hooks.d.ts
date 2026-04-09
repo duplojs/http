@@ -1,6 +1,7 @@
 import { type MaybePromise } from "@duplojs/utils";
-import { type ClientEventsResponse, type ServerEvent, type AllClientResponse, type AllNotPredictedClientResponse } from "./clientResponse";
+import { type ClientEventsResponse, type ServerEvent, type AllClientResponse, type AllNotPredictedClientResponse, type ClientStreamResponse } from "./clientResponse";
 import { type PromiseRequestParams } from "./promiseRequestParams";
+import { type ServerRouteResponseFlux } from "./serverRoute";
 export type RequestHook<GenericHookParams extends Record<string, unknown> = Record<string, unknown>> = (requestParams: PromiseRequestParams<GenericHookParams>) => MaybePromise<PromiseRequestParams<GenericHookParams>>;
 export type ResponseHook<GenericHookParams extends Record<string, unknown> = Record<string, unknown>> = (response: AllClientResponse<GenericHookParams>) => MaybePromise<AllClientResponse<GenericHookParams>>;
 export type InformationHook<GenericHookParams extends Record<string, unknown> = Record<string, unknown>> = (response: AllClientResponse<GenericHookParams>) => MaybePromise<void>;
@@ -14,6 +15,10 @@ export type BeforeRetryServerEventHook<GenericHookParams extends Record<string, 
 export type ErrorServerEventHook<GenericHookParams extends Record<string, unknown> = Record<string, unknown>> = (error: unknown, response: ClientEventsResponse<GenericHookParams>) => MaybePromise<void>;
 export type StartServerEventHook<GenericHookParams extends Record<string, unknown> = Record<string, unknown>> = (response: ClientEventsResponse<GenericHookParams>) => MaybePromise<void>;
 export type ReceiveEventServerEventHook<GenericHookParams extends Record<string, unknown> = Record<string, unknown>> = (event: ServerEvent, response: ClientEventsResponse<GenericHookParams>) => MaybePromise<void>;
+export type CloseStreamHook<GenericHookParams extends Record<string, unknown> = Record<string, unknown>> = (response: ClientStreamResponse<GenericHookParams>) => MaybePromise<void>;
+export type ReceiveDataStreamHook<GenericHookParams extends Record<string, unknown> = Record<string, unknown>> = (data: ServerRouteResponseFlux, response: ClientStreamResponse<GenericHookParams>) => MaybePromise<void>;
+export type ErrorStreamHook<GenericHookParams extends Record<string, unknown> = Record<string, unknown>> = (error: unknown, response: ClientStreamResponse<GenericHookParams>) => MaybePromise<void>;
+export type StartStreamHook<GenericHookParams extends Record<string, unknown> = Record<string, unknown>> = (response: ClientStreamResponse<GenericHookParams>) => MaybePromise<void>;
 export interface Hooks {
     request: RequestHook[];
     response: ResponseHook[];
@@ -32,4 +37,8 @@ export interface Hooks {
     errorServerEvent: ErrorServerEventHook[];
     startServerEvent: StartServerEventHook[];
     receiveEventServerEvent: ReceiveEventServerEventHook[];
+    closeStream: CloseStreamHook[];
+    receiveDataStream: ReceiveDataStreamHook[];
+    errorStream: ErrorStreamHook[];
+    startStream: StartStreamHook[];
 }

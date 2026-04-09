@@ -91,6 +91,27 @@ exports.ResponseContract = void 0;
         });
     }
     ResponseContract.serverSentEvents = serverSentEvents;
+    ResponseContract.streamContractKind = kind.createCoreLibKind("stream-response-contract");
+    function stream(information, schema) {
+        return ResponseContract.streamContractKind.setTo({
+            code: "200",
+            information,
+            flux: schema,
+            body: defaultSchema,
+        });
+    }
+    ResponseContract.stream = stream;
+    ResponseContract.streamTextContractKind = kind.createCoreLibKind("stream-text-response-contract");
+    const defaultStreamTextSchema = utils.DP.string();
+    function streamText(information) {
+        return ResponseContract.streamTextContractKind.setTo({
+            code: "200",
+            information,
+            flux: defaultStreamTextSchema,
+            body: defaultSchema,
+        });
+    }
+    ResponseContract.streamText = streamText;
     class Error extends utils.kindHeritage("contract-error", kind.createCoreLibKind("contract-error"), ErrorClass) {
         information;
         detail;

@@ -1,5 +1,5 @@
 import { type Kind, type MayBeGetter, type SimplifyTopLevel, type IsEqual } from "@duplojs/utils";
-import { type ClientRequestInitParams, type ServerRoute, type ServerRouteToClientRequestParams, type ServerRouteToClientResponse, type ClientRequestParams, type Hooks, type RequestHook, type ResponseHook, type InformationHook, type CodeHook, type ResponseTypeHook, type ExpectedResponseHook, type NotPredictedResponseHook, type ErrorHook, type GetServerRoutePath, type AllClientResponse, type BeforeRetryServerEventHook, type CloseServerEventHook, type ErrorServerEventHook, type StartServerEventHook, type ReceiveEventServerEventHook, type ClientCacheInitialValues, type ClientCacheStore } from "./types";
+import { type ClientRequestInitParams, type ServerRoute, type ServerRouteToClientRequestParams, type ServerRouteToClientResponse, type ClientRequestParams, type Hooks, type RequestHook, type ResponseHook, type InformationHook, type CodeHook, type ResponseTypeHook, type ExpectedResponseHook, type NotPredictedResponseHook, type ErrorHook, type GetServerRoutePath, type AllClientResponse, type BeforeRetryServerEventHook, type CloseServerEventHook, type ErrorServerEventHook, type StartServerEventHook, type ReceiveEventServerEventHook, type ClientCacheInitialValues, type ClientCacheStore, type CloseStreamHook, type ReceiveDataStreamHook, type ErrorStreamHook, type StartStreamHook } from "./types";
 import { PromiseRequest } from "./promiseRequest";
 export declare const httpClientKind: import("@duplojs/utils").KindHandler<import("@duplojs/utils").KindDefinition<"@DuplojsHttpClient/http-client", unknown>>;
 type MaybeRequestParams<GenericRequestParams extends object> = {} extends GenericRequestParams ? [params?: GenericRequestParams] : [params: GenericRequestParams];
@@ -47,6 +47,10 @@ export interface HttpClient<GenericServerRoute extends ServerRoute = ServerRoute
     addErrorServerEventHook(hook: ErrorServerEventHook<GenericHookParams>): void;
     addStartServerEventHook(hook: StartServerEventHook<GenericHookParams>): void;
     addReceiveEventServerEventHook(hook: ReceiveEventServerEventHook<GenericHookParams>): void;
+    addCloseStreamHook(hook: CloseStreamHook<GenericHookParams>): void;
+    addReceiveDataStreamHook(hook: ReceiveDataStreamHook<GenericHookParams>): void;
+    addErrorStreamHook(hook: ErrorStreamHook<GenericHookParams>): void;
+    addStartStreamHook(hook: StartStreamHook<GenericHookParams>): void;
     request<GenericClientRequestParams extends ServerRouteToClientRequestParams<GenericServerRoute, GenericHookParams>, GenericMatchedPath extends GetServerRoutePath<Extract<GenericServerRoute, {
         method: GenericClientRequestParams["method"];
     }>, GenericClientRequestParams["path"]>>(params: GenericClientRequestParams): PromiseRequest<GenericHookParams, IsEqual<GenericServerRoute, ServerRoute> extends true ? AllClientResponse<GenericHookParams> : ServerRouteToClientResponse<Extract<GenericServerRoute, {

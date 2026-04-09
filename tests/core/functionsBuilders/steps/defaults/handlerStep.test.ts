@@ -1,4 +1,4 @@
-import { ResponseContract, useRouteBuilder, Request, Response, PredictedResponse, type ServerSentEventsPredictedResponse } from "@core";
+import { ResponseContract, useRouteBuilder, Request, Response, PredictedResponse, type ServerSentEventsPredictedResponse, type StreamPredictedResponse, type StreamTextPredictedResponse } from "@core";
 import { DP, DPE } from "@duplojs/utils";
 import { useTestRouteFunctionBuilder } from "@test-utils/useTestRouteFunctionBuilder";
 import { createBodyReader } from "@test-utils/bodyReader";
@@ -246,6 +246,221 @@ describe("handler step function builder", () => {
 				"good",
 				expect.objectContaining({ [DP.errorKind.runTimeKey]: null }),
 			),
+		);
+	});
+
+	it("streamResponse from handler", async() => {
+		const response = await new Promise<StreamPredictedResponse>((resolve) => {
+			const route = useRouteBuilder("GET", "/test", {
+				hooks: [
+					{
+						afterSendResponse: ({ currentResponse, next }) => {
+							void resolve(currentResponse as never);
+							return next();
+						},
+					},
+				],
+			})
+				.handler(
+					ResponseContract.stream("good", DPE.object({ value: DPE.number() })),
+					(floor, { streamResponse }) => streamResponse("good", async({ send }) => {
+						await send({ value: 2 });
+						await send({ value: 3 });
+					}),
+				);
+
+			void useTestRouteFunctionBuilder(route)
+				.then(
+					(buildedRoute) => buildedRoute(
+						new Request({
+							headers: {},
+							host: "",
+							matchedPath: "",
+							method: "",
+							origin: "",
+							path: "",
+							params: {},
+							query: {},
+							url: "",
+							bodyReader: createBodyReader(),
+						}),
+					),
+				);
+		});
+
+		const spySend = vi.fn();
+
+		await response.startStream({ send: spySend } as never);
+
+		expect(spySend).toHaveBeenCalledTimes(2);
+		expect(spySend).toHaveBeenNthCalledWith(1, { value: 2 });
+		expect(spySend).toHaveBeenNthCalledWith(2, { value: 3 });
+	});
+
+	it("streamResponse wrong contract information", async() => {
+		const route = useRouteBuilder("GET", "/test", { hooks: [{ afterSendResponse: spyResponse }] })
+			.handler(
+				ResponseContract.stream("good", DPE.string()),
+				(floor, { streamResponse }) => streamResponse("wrongInfo" as any, () => {}),
+			);
+
+		const buildedRoute = await useTestRouteFunctionBuilder(route);
+
+		await buildedRoute(
+			new Request({
+				headers: {},
+				host: "",
+				matchedPath: "",
+				method: "",
+				origin: "",
+				path: "",
+				params: {},
+				query: {},
+				url: "",
+				bodyReader: createBodyReader(),
+			}),
+		);
+
+		expect(spyResponse).toHaveBeenCalledWith(
+			expect.objectContaining({
+				currentResponse: new Response("500", "server-error", new ResponseContract.Error("wrongInfo", "Contract not found.")),
+			}),
+		);
+	});
+
+	it("streamResponse wrong contract data", async() => {
+		const response = await new Promise<StreamPredictedResponse>((resolve) => {
+			const route = useRouteBuilder("GET", "/test", {
+				hooks: [
+					{
+						afterSendResponse: ({ currentResponse, next }) => {
+							void resolve(currentResponse as never);
+							return next();
+						},
+					},
+				],
+			})
+				.handler(
+					ResponseContract.stream("good", DPE.number()),
+					(floor, { streamResponse }) => streamResponse("good", async({ send }) => {
+						await send("wrong" as any);
+						await send(2);
+					}),
+				);
+
+			void useTestRouteFunctionBuilder(route)
+				.then(
+					(buildedRoute) => buildedRoute(
+						new Request({
+							headers: {},
+							host: "",
+							matchedPath: "",
+							method: "",
+							origin: "",
+							path: "",
+							params: {},
+							query: {},
+							url: "",
+							bodyReader: createBodyReader(),
+						}),
+					),
+				);
+		});
+
+		const spySend = vi.fn();
+		const spyError = vi.spyOn(console, "error");
+		spyError.mockImplementation(() => {});
+
+		await response.startStream({ send: spySend } as never);
+
+		expect(spySend).toHaveBeenCalledTimes(1);
+		expect(spySend).toHaveBeenNthCalledWith(1, 2);
+		expect(spyError).toHaveBeenCalledTimes(1);
+		expect(spyError).toHaveBeenNthCalledWith(
+			1,
+			new ResponseContract.Error(
+				"good",
+				expect.objectContaining({ [DP.errorKind.runTimeKey]: null }),
+			),
+		);
+	});
+
+	it("streamTextResponse from handler", async() => {
+		const response = await new Promise<StreamTextPredictedResponse>((resolve) => {
+			const route = useRouteBuilder("GET", "/test", {
+				hooks: [
+					{
+						afterSendResponse: ({ currentResponse, next }) => {
+							void resolve(currentResponse as never);
+							return next();
+						},
+					},
+				],
+			})
+				.handler(
+					ResponseContract.streamText("good"),
+					(floor, { streamTextResponse }) => streamTextResponse("good", async({ send }) => {
+						await send("test1");
+						await send("test2");
+					}),
+				);
+
+			void useTestRouteFunctionBuilder(route)
+				.then(
+					(buildedRoute) => buildedRoute(
+						new Request({
+							headers: {},
+							host: "",
+							matchedPath: "",
+							method: "",
+							origin: "",
+							path: "",
+							params: {},
+							query: {},
+							url: "",
+							bodyReader: createBodyReader(),
+						}),
+					),
+				);
+		});
+
+		const spySend = vi.fn();
+
+		await response.startStream({ send: spySend } as never);
+
+		expect(spySend).toHaveBeenCalledTimes(2);
+		expect(spySend).toHaveBeenNthCalledWith(1, "test1");
+		expect(spySend).toHaveBeenNthCalledWith(2, "test2");
+	});
+
+	it("streamTextResponse wrong contract information", async() => {
+		const route = useRouteBuilder("GET", "/test", { hooks: [{ afterSendResponse: spyResponse }] })
+			.handler(
+				ResponseContract.streamText("good"),
+				(floor, { streamTextResponse }) => streamTextResponse("wrongInfo" as any, () => {}),
+			);
+
+		const buildedRoute = await useTestRouteFunctionBuilder(route);
+
+		await buildedRoute(
+			new Request({
+				headers: {},
+				host: "",
+				matchedPath: "",
+				method: "",
+				origin: "",
+				path: "",
+				params: {},
+				query: {},
+				url: "",
+				bodyReader: createBodyReader(),
+			}),
+		);
+
+		expect(spyResponse).toHaveBeenCalledWith(
+			expect.objectContaining({
+				currentResponse: new Response("500", "server-error", new ResponseContract.Error("wrongInfo", "Contract not found.")),
+			}),
 		);
 	});
 });

@@ -2,7 +2,7 @@ import { type ClientCacheStore, type Hooks, type PromiseRequestParams } from "@c
 import { PromiseRequest } from "@client/promiseRequest";
 import { type AllClientResponse, type ClientResponse } from "@client/types/clientResponse";
 import { UnexpectedCodeResponseError, UnexpectedInformationResponseError, UnexpectedResponseError, UnexpectedResponseTypeError } from "@client/unexpectedResponseError";
-import { asserts, unwrap, E, createFormData, sleep } from "@duplojs/utils";
+import { A, asserts, unwrap, E, createFormData, sleep } from "@duplojs/utils";
 
 describe("PromiseRequest", () => {
 	const createHooks = (): Hooks => ({
@@ -23,6 +23,10 @@ describe("PromiseRequest", () => {
 		errorServerEvent: [],
 		receiveEventServerEvent: [],
 		startServerEvent: [],
+		closeStream: [],
+		errorStream: [],
+		receiveDataStream: [],
+		startStream: [],
 	});
 
 	const createParams = (overrides: Partial<PromiseRequestParams> = {}): PromiseRequestParams => ({
@@ -60,6 +64,55 @@ describe("PromiseRequest", () => {
 	afterEach(() => {
 		vi.restoreAllMocks();
 		vi.unstubAllGlobals();
+	});
+
+	it("static fetch returns stream response without consuming body or caching it", async() => {
+		const text = vi.fn();
+		const json = vi.fn();
+		const encoder = new TextEncoder();
+		const cacheStore: ClientCacheStore = new Map();
+		const requestParams = createParams({
+			cacheStore,
+			clientCache: vi.fn(() => "stream-cache-key"),
+		});
+		const streamResponse = {
+			status: 200,
+			ok: true,
+			statusText: "OK",
+			headers: new Headers({
+				"content-type": "text/plain; charset=utf-8",
+				"x-duplojs-body-options": "stream",
+				information: "stream-info",
+				predicted: "true",
+			}),
+			body: new ReadableStream<Uint8Array>({
+				start(controller) {
+					controller.enqueue(encoder.encode("hello"));
+					controller.enqueue(encoder.encode(" world"));
+					controller.close();
+				},
+			}),
+			json,
+			text,
+			formData: vi.fn(),
+			blob: vi.fn(),
+			type: "basic",
+			url: "http://test.local/resource",
+			redirected: false,
+		} as unknown as Response;
+
+		vi.stubGlobal("fetch", vi.fn().mockResolvedValue(streamResponse));
+
+		const result = await PromiseRequest.fetch(requestParams);
+
+		asserts(result, E.isRight);
+		expect(text).not.toHaveBeenCalled();
+		expect(json).not.toHaveBeenCalled();
+		expect(cacheStore.size).toBe(0);
+		expect(unwrap(result).information).toBe("stream-info");
+		expect(unwrap(result).predicted).toBe(true);
+		expect(Symbol.asyncIterator in unwrap(result)).toBe(true);
+		await expect(A.from(unwrap(result) as AsyncIterable<unknown>)).resolves.toStrictEqual(["hello", " world"]);
 	});
 
 	it("static fetch uses global fetch and builds response or error", async() => {
@@ -179,7 +232,7 @@ describe("PromiseRequest", () => {
 			expect.objectContaining({
 				method: "GET",
 				headers: {
-					"content-type-options": "advanced",
+					"x-duplojs-body-options": "advanced",
 				},
 			}),
 		);
@@ -634,6 +687,7 @@ describe("PromiseRequest", () => {
 		const response = createResponse(params, {
 			code: "200",
 			headers: new Headers({ "content-type": "text/event-stream" }),
+			handlerType: "events",
 			onReceiveEvent: spy,
 			[Symbol.asyncIterator]: async function *() {},
 		});
@@ -659,6 +713,47 @@ describe("PromiseRequest", () => {
 		const requestNotPredicted = new PromiseRequest(params);
 		const resultNotPredicated = requestNotPredicted.whenReceiveServerEvent(
 			"test",
+			() => {},
+		);
+		await requestNotPredicted;
+
+		expect(resultNotPredicated).toBe(requestNotPredicted);
+		expect(spy).toHaveBeenCalledTimes(0);
+	});
+
+	it("whenReceiveDataStream", async() => {
+		const spy = vi.fn();
+		const params = createParams();
+		const response = createResponse(params, {
+			code: "200",
+			headers: new Headers({
+				"content-type": "text/plain; charset=utf-8",
+				"x-duplojs-body-options": "stream",
+			}),
+			handlerType: "stream",
+			onStream: spy,
+			[Symbol.asyncIterator]: async function *() {},
+		});
+		vi.spyOn(PromiseRequest, "fetch").mockResolvedValue(E.right("response", response));
+
+		const request = new PromiseRequest(params);
+		const result = request.whenReceiveDataStream(
+			() => {},
+		);
+		await request;
+
+		expect(result).toBe(request);
+		expect(spy).toHaveBeenCalledWith("receiveData", expect.any(Function));
+
+		spy.mockClear();
+
+		vi.spyOn(PromiseRequest, "fetch").mockResolvedValue(E.right("response", {
+			...response,
+			predicted: false,
+		}));
+
+		const requestNotPredicted = new PromiseRequest(params);
+		const resultNotPredicated = requestNotPredicted.whenReceiveDataStream(
 			() => {},
 		);
 		await requestNotPredicted;
@@ -1130,9 +1225,9 @@ describe("PromiseRequest", () => {
 		fetchSpy.mockResolvedValueOnce(E.right("response", responseMiss));
 
 		const requestMiss = new PromiseRequest(paramsMiss);
-		await expect(requestMiss.iWantServerErrorResponseOrThrow()).rejects.toBeInstanceOf(
-			UnexpectedResponseTypeError,
-		);
+		await expect(requestMiss.iWantServerErrorResponseOrThrow()).rejects.toMatchObject({
+			expectType: "serverError",
+		});
 	});
 
 	it("iWantExpectedResponseOrThrow", async() => {

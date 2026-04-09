@@ -1,4 +1,4 @@
-import { createHub, HookResponse, type HttpServerParams, initDefaultHook, PredictedResponse, Response, ServerSentEventsPredictedResponse } from "@core";
+import { createHub, HookResponse, type HttpServerParams, initDefaultHook, PredictedResponse, Response, ServerSentEventsPredictedResponse, StreamPredictedResponse, StreamTextPredictedResponse } from "@core";
 import { SF } from "@duplojs/server-utils";
 
 describe("defaultHook", () => {
@@ -213,6 +213,44 @@ describe("defaultHook", () => {
 			information: "test",
 			predicted: "1",
 			"transfer-encoding": "chunked",
+		});
+	});
+
+	it("beforeSendResponse StreamPredictedResponse", () => {
+		const response = new StreamPredictedResponse("200", "test", () => undefined);
+
+		defaultHook.beforeSendResponse({
+			currentResponse: response,
+			next: () => ({}) as any,
+			request: {} as any,
+			exit: {} as any,
+		});
+
+		expect(response.headers).toStrictEqual({
+			information: "test",
+			predicted: "1",
+			"transfer-encoding": "chunked",
+			"content-type": "application/octet-stream",
+			"x-duplojs-body-options": "stream",
+		});
+	});
+
+	it("beforeSendResponse StreamTextPredictedResponse", () => {
+		const response = new StreamTextPredictedResponse("200", "test", () => undefined);
+
+		defaultHook.beforeSendResponse({
+			currentResponse: response,
+			next: () => ({}) as any,
+			request: {} as any,
+			exit: {} as any,
+		});
+
+		expect(response.headers).toStrictEqual({
+			"content-type": "text/plain; charset=utf-8",
+			information: "test",
+			predicted: "1",
+			"transfer-encoding": "chunked",
+			"x-duplojs-body-options": "stream",
 		});
 	});
 });

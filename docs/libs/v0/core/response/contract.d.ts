@@ -1,6 +1,7 @@
-import { DP, type Kind, type NeverCoalescing } from "@duplojs/utils";
-import { type ResponseCode, type PredictedResponse, type ServerSentEventsPredictedResponse, type SuccessResponseCode } from ".";
+import { DP, type Kind, type IsEqual, type NeverCoalescing } from "@duplojs/utils";
+import { type ResponseCode, type PredictedResponse, type ServerSentEventsPredictedResponse, type SuccessResponseCode, type StreamTextPredictedResponse } from ".";
 import { type ForbiddenBigintDataParser } from "../types";
+import { type StreamPredictedResponse } from "./streamPredicted";
 export declare namespace ResponseContract {
     type SupportedDataParser = DP.DataParser;
     export const contractKind: import("@duplojs/utils").KindHandler<import("@duplojs/utils").KindDefinition<"@DuplojsHttpCore/response-contract", unknown>>;
@@ -9,6 +10,11 @@ export declare namespace ResponseContract {
         information: GenericInformation;
         body: GenericSchema;
     }
+    const defaultSchema: DP.DataParserEmpty<{
+        readonly errorMessage?: string | undefined;
+        readonly coerce: boolean;
+        readonly checkers: readonly [];
+    }>;
     export const http100Continue: <GenericInformation extends string, GenericSchema extends SupportedDataParser = DP.DataParserEmpty<{
         readonly errorMessage?: string | undefined;
         readonly coerce: boolean;
@@ -287,15 +293,37 @@ export declare namespace ResponseContract {
         events: GenericEvents;
         body: GenericSchema;
     }
-    export function serverSentEvents<GenericInformation extends string, GenericMainEventSchema extends SupportedDataParser, GenericEvents extends Record<string, SupportedDataParser> = {}>(information: GenericInformation, mainEventSchema: GenericMainEventSchema, events?: GenericEvents): ServerSentEventsContract<"200", GenericInformation, GenericEvents & {
+    export function serverSentEvents<GenericInformation extends string, GenericMainEventSchema extends SupportedDataParser, GenericEvents extends Record<string, SupportedDataParser> = {}>(information: GenericInformation, mainEventSchema: GenericMainEventSchema, events?: GenericEvents): ServerSentEventsContract<"200", GenericInformation, (IsEqual<GenericEvents, Record<string, SupportedDataParser>> extends true ? {} : GenericEvents) & {
         message: GenericMainEventSchema;
+    }, typeof defaultSchema>;
+    export const streamContractKind: import("@duplojs/utils").KindHandler<import("@duplojs/utils").KindDefinition<"@DuplojsHttpCore/stream-response-contract", unknown>>;
+    export interface StreamContract<GenericCode extends SuccessResponseCode = SuccessResponseCode, GenericInformation extends string = string, GenericFlux extends SupportedDataParser = SupportedDataParser, GenericSchema extends SupportedDataParser = SupportedDataParser> extends Kind<typeof streamContractKind.definition> {
+        code: GenericCode;
+        information: GenericInformation;
+        flux: GenericFlux;
+        body: GenericSchema;
+    }
+    export function stream<GenericInformation extends string, GenericSchema extends SupportedDataParser>(information: GenericInformation, schema: GenericSchema): StreamContract<"200", GenericInformation, GenericSchema, typeof defaultSchema>;
+    export const streamTextContractKind: import("@duplojs/utils").KindHandler<import("@duplojs/utils").KindDefinition<"@DuplojsHttpCore/stream-text-response-contract", unknown>>;
+    export interface StreamTextContract<GenericCode extends SuccessResponseCode = SuccessResponseCode, GenericInformation extends string = string, GenericFlux extends DP.Contract<string> = DP.Contract<string>, GenericSchema extends SupportedDataParser = SupportedDataParser> extends Kind<typeof streamTextContractKind.definition> {
+        code: GenericCode;
+        information: GenericInformation;
+        flux: GenericFlux;
+        body: GenericSchema;
+    }
+    const defaultStreamTextSchema: DP.DataParserString<{
+        readonly errorMessage?: string | undefined;
+        readonly coerce: boolean;
+        readonly checkers: readonly [];
     }>;
-    export type Convert<GenericContract extends Contract | ServerSentEventsContract> = GenericContract extends Contract ? PredictedResponse<GenericContract["code"], GenericContract["information"], DP.Input<GenericContract["body"]>> : GenericContract extends ServerSentEventsContract ? ServerSentEventsPredictedResponse<GenericContract["code"], GenericContract["information"], {
+    export function streamText<GenericInformation extends string>(information: GenericInformation): StreamTextContract<"200", GenericInformation, typeof defaultStreamTextSchema, typeof defaultSchema>;
+    export type Contracts = (Contract | ServerSentEventsContract | StreamContract | StreamTextContract);
+    export type Convert<GenericContract extends Contracts> = GenericContract extends Contract ? PredictedResponse<GenericContract["code"], GenericContract["information"], DP.Output<GenericContract["body"]>> : GenericContract extends ServerSentEventsContract ? ServerSentEventsPredictedResponse<GenericContract["code"], GenericContract["information"], {
         [Prop in keyof GenericContract["events"]]: [
             Extract<Prop, string>,
             DP.Output<GenericContract["events"][Prop]>
         ];
-    }[keyof GenericContract["events"]]> : never;
+    }[keyof GenericContract["events"]]> : GenericContract extends StreamContract ? StreamPredictedResponse<GenericContract["code"], GenericContract["information"], DP.Output<GenericContract["flux"]>> : GenericContract extends StreamTextContract ? StreamTextPredictedResponse<GenericContract["code"], GenericContract["information"]> : never;
     const Error_base: new (params: {
         "@DuplojsHttpCore/contract-error"?: unknown;
     }, parentParams: readonly [message?: string | undefined, options?: ErrorOptions | undefined]) => globalThis.Error & Kind<import("@duplojs/utils").KindDefinition<"@DuplojsHttpCore/contract-error", unknown>, unknown> & Kind<import("@duplojs/utils").KindDefinition<"contract-error", unknown>, unknown>;

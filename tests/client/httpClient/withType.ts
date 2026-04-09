@@ -1,4 +1,4 @@
-import { createHttpClient, type RequestErrorContent, type PromiseRequest, type PromiseRequestParams, type FindServerRoute, type AddPrefixPathServerRoute, type RemovePrefixPathServerRoute, type FindServerRouteResponse, type AllClientResponse, type AllNotPredictedClientResponse, type ClientEventsResponseHandler, type ServerRouteToClientRequestParams, type CreateClientCacheKeyParams } from "@client";
+import { createHttpClient, type RequestErrorContent, type PromiseRequest, type PromiseRequestParams, type FindServerRoute, type AddPrefixPathServerRoute, type RemovePrefixPathServerRoute, type FindServerRouteResponse, type AllClientResponse, type AllNotPredictedClientResponse, type ClientEventsResponseHandler, type ServerRouteToClientRequestParams, type CreateClientCacheKeyParams, type ClientStreamResponseHandler } from "@client";
 import { E, S, type TheFormData, type ExpectType, createFormData, type SimplifyTopLevel } from "@duplojs/utils";
 
 type Routes = {
@@ -88,6 +88,15 @@ type Routes = {
 			ping: string;
 		};
 		body: undefined;
+	};
+} | {
+	method: "GET";
+	path: "/stream";
+	responses: {
+		code: "200";
+		information: "monSuperStream";
+		body?: undefined;
+		flux: Uint8Array<ArrayBuffer>;
 	};
 };
 
@@ -1244,56 +1253,147 @@ void httpClient.get("/sse")
 	)
 	.whenExpectedResponse(
 		(response) => {
-			if (Symbol.asyncIterator in response) {
-				response.onReceiveEvent(
-					"message",
-					(event, response) => {
-						type Check = ExpectType<
-							typeof event,
-							{
-								event: "message";
-								data: {
-									test: string;
-								};
-								id?: string | undefined;
-								retry?: number | undefined;
-							},
-							"strict"
-						>;
+			response.onReceiveEvent(
+				"message",
+				(event, response) => {
+					type Check = ExpectType<
+						typeof event,
+						{
+							event: "message";
+							data: {
+								test: string;
+							};
+							id?: string | undefined;
+							retry?: number | undefined;
+						},
+						"strict"
+					>;
 
-						type Check1 = ExpectType<
-							typeof response,
-							{
-								code: "200";
-								information: "ess";
-								body: undefined;
-								ok: boolean | null;
-								headers: Headers;
-								type: ResponseType;
-								url: string;
-								redirected: boolean;
-								raw: globalThis.Response;
-								requestParams: RequestParams3;
-								predicted: boolean;
-								fromCache?: boolean;
-							} & ClientEventsResponseHandler<{
-								event: "message";
-								data: {
-									test: string;
-								};
-								id?: string;
-								retry?: number;
-							} | {
-								event: "ping";
-								data: string;
-								id?: string;
-								retry?: number;
-							}>,
-							"strict"
-						>;
-					},
-				);
-			}
+					type Check1 = ExpectType<
+						typeof response,
+						{
+							code: "200";
+							information: "ess";
+							body: undefined;
+							ok: boolean | null;
+							headers: Headers;
+							type: ResponseType;
+							url: string;
+							redirected: boolean;
+							raw: globalThis.Response;
+							requestParams: RequestParams3;
+							predicted: boolean;
+							fromCache?: boolean;
+						} & ClientEventsResponseHandler<{
+							event: "message";
+							data: {
+								test: string;
+							};
+							id?: string;
+							retry?: number;
+						} | {
+							event: "ping";
+							data: string;
+							id?: string;
+							retry?: number;
+						}>,
+						"strict"
+					>;
+				},
+			);
+		},
+	);
+
+type RequestParams4 = SimplifyTopLevel<
+	& ServerRouteToClientRequestParams<
+		FindServerRoute<
+			Routes,
+			"GET",
+			"/stream"
+		>,
+		HooksParams
+	>
+	& PromiseRequestParams<HooksParams>
+>;
+
+void httpClient.get("/stream")
+	.whenReceiveDataStream(
+		(data, response) => {
+			type Check = ExpectType<
+				typeof data,
+				Uint8Array<ArrayBuffer>,
+				"strict"
+			>;
+
+			type Check1 = ExpectType<
+				typeof response,
+				{
+					code: "200";
+					information: "monSuperStream";
+					body: undefined;
+					ok: boolean | null;
+					headers: Headers;
+					type: ResponseType;
+					url: string;
+					redirected: boolean;
+					raw: globalThis.Response;
+					requestParams: RequestParams4;
+					predicted: boolean;
+					fromCache?: boolean | undefined;
+				} & ClientStreamResponseHandler<Uint8Array<ArrayBuffer>>,
+				"strict"
+			>;
+		},
+	)
+	.whenExpectedResponse(
+		(response) => {
+			response.onStream("start", (response) => {
+				type Check = ExpectType<
+					typeof response,
+					{
+						code: "200";
+						information: "monSuperStream";
+						body: undefined;
+						ok: boolean | null;
+						headers: Headers;
+						type: ResponseType;
+						url: string;
+						redirected: boolean;
+						raw: globalThis.Response;
+						requestParams: RequestParams4;
+						predicted: boolean;
+						fromCache?: boolean | undefined;
+					} & ClientStreamResponseHandler<Uint8Array<ArrayBuffer>>,
+					"strict"
+				>;
+			});
+
+			response.onStream("receiveData", (data, response) => {
+				type Check = ExpectType<
+					typeof data,
+					Uint8Array<ArrayBuffer>,
+					"strict"
+				>;
+
+				type Check1 = ExpectType<
+					typeof response,
+					{
+						code: "200";
+						information: "monSuperStream";
+						body: undefined;
+						ok: boolean | null;
+						headers: Headers;
+						type: ResponseType;
+						url: string;
+						redirected: boolean;
+						raw: globalThis.Response;
+						requestParams: RequestParams4;
+						predicted: boolean;
+						fromCache?: boolean | undefined;
+					} & ClientStreamResponseHandler<Uint8Array<ArrayBuffer>>,
+					"strict"
+				>;
+			});
 		},
 	);
 

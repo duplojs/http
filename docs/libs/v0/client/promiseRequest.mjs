@@ -7,8 +7,9 @@ import * as EE from '@duplojs/utils/either';
 import * as SS from '@duplojs/utils/string';
 import * as AA from '@duplojs/utils/array';
 import { UnexpectedInformationResponseError, UnexpectedCodeResponseError, UnexpectedResponseTypeError, UnexpectedResponseError } from './unexpectedResponseError.mjs';
-import { makeClientEventsResponse } from './serverSentEvents.mjs';
+import { isClientEventsResponse, makeClientEventsResponse } from './serverSentEvents.mjs';
 import { findResponseFromCacheStore, saveResponseInCacheStore } from './clientCache.mjs';
+import { isClientStreamResponse, makeClientStreamResponse } from './stream.mjs';
 
 class PromiseRequest extends Promise {
     params;
@@ -129,8 +130,18 @@ class PromiseRequest extends Promise {
         void this.then(EE.whenIsRight((response) => {
             if ((response.predicted === true
                 || response.requestParams.disabledPredicateMode === true)
-                && Symbol.asyncIterator in response) {
+                && isClientEventsResponse(response)) {
                 response.onReceiveEvent(eventName, callback);
+            }
+        }));
+        return this;
+    }
+    whenReceiveDataStream(callback) {
+        void this.then(EE.whenIsRight((response) => {
+            if ((response.predicted === true
+                || response.requestParams.disabledPredicateMode === true)
+                && isClientStreamResponse(response)) {
+                response.onStream("receiveData", callback);
             }
         }));
         return this;
@@ -296,7 +307,7 @@ class PromiseRequest extends Promise {
             if (EE.isRight(maybeResponse)) {
                 return unwrap(maybeResponse);
             }
-            throw new UnexpectedResponseTypeError("informational", unwrap(maybeResponse));
+            throw new UnexpectedResponseTypeError("serverError", unwrap(maybeResponse));
         });
     }
     iWantExpectedResponseOrThrow() {
@@ -341,7 +352,7 @@ class PromiseRequest extends Promise {
                     body = body.toString();
                 }
                 else if (body instanceof TheFormData) {
-                    headers["content-type-options"] = "advanced";
+                    headers["x-duplojs-body-options"] = "advanced";
                 }
                 else if ((body
                     && typeof body === "object"
@@ -365,10 +376,9 @@ class PromiseRequest extends Promise {
             signal: requestParams.abortController.signal,
         };
         return fetch(fetchUrl, fetchInitParams)
-            .then((response) => getBody(response)
-            .then((body) => {
+            .then((response) => {
             const clientResponse = {
-                body,
+                body: undefined,
                 information: response.headers.get(requestParams.informationHeaderKey) ?? undefined,
                 code: response.status.toString(),
                 ok: (response.status < 500)
@@ -385,11 +395,18 @@ class PromiseRequest extends Promise {
             if (response.headers.get("content-type")?.includes("text/event-stream")) {
                 return EE.right("response", makeClientEventsResponse(clientResponse, fetchUrl, fetchInitParams));
             }
-            if (clientResponse.code.startsWith("2")) {
-                saveResponseInCacheStore(requestParams, clientResponse);
+            if (response.headers.get("x-duplojs-body-options")?.includes("stream")) {
+                return EE.right("response", makeClientStreamResponse(clientResponse));
             }
-            return EE.right("response", clientResponse);
-        }))
+            return getBody(response)
+                .then((body) => {
+                clientResponse.body = body;
+                if (clientResponse.code.startsWith("2")) {
+                    saveResponseInCacheStore(requestParams, clientResponse);
+                }
+                return EE.right("response", clientResponse);
+            });
+        })
             .catch((error) => EE.left("request-error", {
             error,
             requestParams,

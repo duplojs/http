@@ -1,7 +1,8 @@
 import { DP, type Kind, pipe, type IsEqual, type NeverCoalescing, kindHeritage } from "@duplojs/utils";
 import { createCoreLibKind } from "../kind";
-import { type ResponseCode, type PredictedResponse, type ServerSentEventsPredictedResponse, type SuccessResponseCode } from ".";
+import { type ResponseCode, type PredictedResponse, type ServerSentEventsPredictedResponse, type SuccessResponseCode, type StreamTextPredictedResponse } from ".";
 import { type ForbiddenBigintDataParser } from "@core/types";
+import { type StreamPredictedResponse } from "./streamPredicted";
 
 const ErrorClass = Error;
 
@@ -150,10 +151,13 @@ export namespace ResponseContract {
 	): ServerSentEventsContract<
 			"200",
 			GenericInformation,
-			& GenericEvents
-			& {
-				message: GenericMainEventSchema;
-			}
+			& (
+				IsEqual<GenericEvents, Record<string, SupportedDataParser>> extends true
+					? {}
+					: GenericEvents
+			)
+			& { message: GenericMainEventSchema },
+			typeof defaultSchema
 		> {
 		return serverSentEventsContractKind.setTo({
 			code: <const>"200",
@@ -166,13 +170,85 @@ export namespace ResponseContract {
 		});
 	}
 
+	export const streamContractKind = createCoreLibKind("stream-response-contract");
+	export interface StreamContract<
+		GenericCode extends SuccessResponseCode = SuccessResponseCode,
+		GenericInformation extends string = string,
+		GenericFlux extends SupportedDataParser = SupportedDataParser,
+		GenericSchema extends SupportedDataParser = SupportedDataParser,
+	> extends Kind<typeof streamContractKind.definition> {
+		code: GenericCode;
+		information: GenericInformation;
+		flux: GenericFlux;
+		body: GenericSchema;
+	}
+
+	export function stream<
+		GenericInformation extends string,
+		GenericSchema extends SupportedDataParser,
+	>(
+		information: GenericInformation,
+		schema: GenericSchema,
+	): StreamContract<
+			"200",
+			GenericInformation,
+			GenericSchema,
+			typeof defaultSchema
+		> {
+		return streamContractKind.setTo({
+			code: <const>"200",
+			information,
+			flux: schema,
+			body: defaultSchema,
+		});
+	}
+
+	export const streamTextContractKind = createCoreLibKind("stream-text-response-contract");
+	export interface StreamTextContract<
+		GenericCode extends SuccessResponseCode = SuccessResponseCode,
+		GenericInformation extends string = string,
+		GenericFlux extends DP.Contract<string> = DP.Contract<string>,
+		GenericSchema extends SupportedDataParser = SupportedDataParser,
+	> extends Kind<typeof streamTextContractKind.definition> {
+		code: GenericCode;
+		information: GenericInformation;
+		flux: GenericFlux;
+		body: GenericSchema;
+	}
+
+	const defaultStreamTextSchema = DP.string();
+	export function streamText<
+		GenericInformation extends string,
+	>(
+		information: GenericInformation,
+	): StreamTextContract<
+			"200",
+			GenericInformation,
+			typeof defaultStreamTextSchema,
+			typeof defaultSchema
+		> {
+		return streamTextContractKind.setTo({
+			code: <const>"200",
+			information,
+			flux: defaultStreamTextSchema,
+			body: defaultSchema,
+		});
+	}
+
+	export type Contracts = (
+		| Contract
+		| ServerSentEventsContract
+		| StreamContract
+		| StreamTextContract
+	);
+
 	export type Convert<
-		GenericContract extends Contract | ServerSentEventsContract,
+		GenericContract extends Contracts,
 	> = GenericContract extends Contract
 		? PredictedResponse<
 			GenericContract["code"],
 			GenericContract["information"],
-			DP.Input<GenericContract["body"]>
+			DP.Output<GenericContract["body"]>
 		>
 		: GenericContract extends ServerSentEventsContract
 			? ServerSentEventsPredictedResponse<
@@ -185,7 +261,18 @@ export namespace ResponseContract {
 					]
 				}[keyof GenericContract["events"]]
 			>
-			: never;
+			: GenericContract extends StreamContract
+				? StreamPredictedResponse<
+					GenericContract["code"],
+					GenericContract["information"],
+					DP.Output<GenericContract["flux"]>
+				>
+				: GenericContract extends StreamTextContract
+					? StreamTextPredictedResponse<
+						GenericContract["code"],
+						GenericContract["information"]
+					>
+					: never;
 
 	export class Error extends kindHeritage(
 		"contract-error",

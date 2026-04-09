@@ -17,7 +17,7 @@ export declare function makeOpenApiRoute(routePath: RoutePath, openApiPage: stri
             readonly coerce: boolean;
             readonly checkers: readonly [];
         }>>>;
-        theFunction(floor: {}, param: import("../../core/steps").HandlerStepFunctionParams<import("../../core/response").PredictedResponse<"200", "swaggerUi", string>>): import("@duplojs/utils").MaybePromise<import("../../core/response").PredictedResponse<"200", "swaggerUi", string>>;
+        theFunction(floor: {}, params: import("../../core/steps").HandlerStepFunctionParams<import("../../core/response").PredictedResponse<"200", "swaggerUi", string>>): import("@duplojs/utils").MaybePromise<import("../../core/response").PredictedResponse<"200", "swaggerUi", string>>;
         readonly metadata: readonly [];
     }>];
 }>;

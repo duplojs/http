@@ -2,7 +2,7 @@ import { type SimplifyTopLevel, type IsEqual, type MaybeArray, type AnyTuple } f
 import { type ServerRouteHeaders, type ServerRouteParams, type ServerRouteQuery, type ServerRoute, type ServerPrimitiveData } from "./serverRoute";
 import { type ObjectCanBeEmpty } from "./ObjectCanBeEmpty";
 import type * as OO from "@duplojs/utils/object";
-import { type CreateClientCacheKeyParams, type CreateClientCacheKey } from "./clientCache";
+import { type CreateClientCacheKey } from "./clientCache";
 
 export interface ClientRequestInitParams extends Pick<
 	RequestInit,

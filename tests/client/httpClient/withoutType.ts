@@ -1,4 +1,4 @@
-import { createHttpClient, type RequestErrorContent, type PromiseRequest, type PromiseRequestParams, type ServerRoute, type ClientEventsResponse, type AllNotPredictedClientResponse, type AllClientResponse, type ServerEvent } from "@client";
+import { createHttpClient, type RequestErrorContent, type PromiseRequest, type PromiseRequestParams, type ServerRoute, type ClientEventsResponse, type AllNotPredictedClientResponse, type AllClientResponse, type ServerEvent, isClientEventsResponse, type ServerRouteResponseFlux, type ClientStreamResponse, isClientStreamResponse } from "@client";
 import { createFormData, E, type ExpectType } from "@duplojs/utils";
 
 const httpClient = createHttpClient<ServerRoute, { params1: string }>({
@@ -551,7 +551,7 @@ void httpClient.post("/see")
 	)
 	.whenExpectedResponse(
 		(response) => {
-			if (Symbol.asyncIterator in response) {
+			if (isClientEventsResponse(response)) {
 				response.onReceiveEvent(
 					"message",
 					(event, response) => {
@@ -606,3 +606,52 @@ void httpClient.post("/see")
 		},
 	);
 
+void httpClient.get("/stream")
+	.whenReceiveDataStream(
+		(data, response) => {
+			type Check = ExpectType<
+				typeof data,
+				ServerRouteResponseFlux,
+				"strict"
+			>;
+
+			type Check1 = ExpectType<
+				typeof response,
+				ClientStreamResponse<{
+					params1: string;
+				}>,
+				"strict"
+			>;
+		},
+	)
+	.whenExpectedResponse(
+		(response) => {
+			if (isClientStreamResponse(response)) {
+				response.onStream("start", (response) => {
+					type Check = ExpectType<
+						typeof response,
+						ClientStreamResponse<{
+							params1: string;
+						}>,
+						"strict"
+					>;
+				});
+
+				response.onStream("receiveData", (data, response) => {
+					type Check = ExpectType<
+						typeof data,
+						ServerRouteResponseFlux,
+						"strict"
+					>;
+
+					type Check1 = ExpectType<
+						typeof response,
+						ClientStreamResponse<{
+							params1: string;
+						}>,
+						"strict"
+					>;
+				});
+			}
+		},
+	);

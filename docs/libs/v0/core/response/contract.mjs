@@ -89,6 +89,27 @@ var ResponseContract;
         });
     }
     ResponseContract.serverSentEvents = serverSentEvents;
+    ResponseContract.streamContractKind = createCoreLibKind("stream-response-contract");
+    function stream(information, schema) {
+        return ResponseContract.streamContractKind.setTo({
+            code: "200",
+            information,
+            flux: schema,
+            body: defaultSchema,
+        });
+    }
+    ResponseContract.stream = stream;
+    ResponseContract.streamTextContractKind = createCoreLibKind("stream-text-response-contract");
+    const defaultStreamTextSchema = DP.string();
+    function streamText(information) {
+        return ResponseContract.streamTextContractKind.setTo({
+            code: "200",
+            information,
+            flux: defaultStreamTextSchema,
+            body: defaultSchema,
+        });
+    }
+    ResponseContract.streamText = streamText;
     class Error extends kindHeritage("contract-error", createCoreLibKind("contract-error"), ErrorClass) {
         information;
         detail;

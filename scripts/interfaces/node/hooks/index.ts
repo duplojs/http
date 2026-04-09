@@ -1,7 +1,8 @@
 import { type Hub } from "@core/hub";
-import { ServerSentEventsPredictedResponse } from "@core/response";
+import { ServerSentEventsPredictedResponse, StreamPredictedResponse, StreamTextPredictedResponse } from "@core/response";
 import { createHookRouteLifeCycle } from "@core/route";
 import { ServerSentEvents } from "@core/serverSentEvents";
+import { Stream } from "@core/stream";
 import { type HttpServerParams } from "@core/types";
 import { SF } from "@duplojs/server-utils";
 import { A } from "@duplojs/utils";
@@ -27,7 +28,7 @@ export function initNodeHook(
 
 			if (currentResponse instanceof ServerSentEventsPredictedResponse) {
 				const handler = ServerSentEvents.init(
-					currentResponse as ServerSentEventsPredictedResponse,
+					currentResponse.startSendingEvents,
 					{
 						lastId: typeof request.headers["last-event-id"] === "string"
 							? request.headers["last-event-id"]
@@ -39,6 +40,36 @@ export function initNodeHook(
 					(value) => new Promise(
 						(resolve) => {
 							if (!rawResponse.write(value)) {
+								rawResponse.once("drain", resolve);
+							} else {
+								resolve();
+							}
+						},
+					),
+					() => void rawResponse.end(),
+				);
+				return exit();
+			} else if (
+				currentResponse instanceof StreamPredictedResponse
+				|| currentResponse instanceof StreamTextPredictedResponse
+			) {
+				const handler = Stream.init(
+					currentResponse.startStream,
+				);
+				rawRequest.on("close", handler.abort);
+				void handler.start(
+					(value) => new Promise(
+						(resolve) => {
+							if (
+								!rawResponse.write(
+									(
+										value instanceof Buffer
+										|| value instanceof Uint8Array
+									)
+										? value
+										: String(value),
+								)
+							) {
 								rawResponse.once("drain", resolve);
 							} else {
 								resolve();

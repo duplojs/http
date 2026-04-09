@@ -1,4 +1,3 @@
-
 import { createCoreLibKind } from "@core/kind";
 import { Response, type SuccessResponseCode } from "@core/response";
 import { type ServerSentEvents } from "@core/serverSentEvents";

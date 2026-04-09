@@ -50,7 +50,7 @@ exports[`plugin implementation > generate OpenApi file 1`] = `
               }
             },
             "content": {
-              "plain/text": {
+              "text/plain": {
                 "schema": {
                   "$ref": "#/components/schemas/NotIdentified5"
                 }
@@ -166,7 +166,7 @@ exports[`plugin implementation > generate OpenApi file with type apiKey ok secur
               }
             },
             "content": {
-              "plain/text": {
+              "text/plain": {
                 "schema": {
                   "$ref": "#/components/schemas/NotIdentified5"
                 }
@@ -294,7 +294,7 @@ exports[`plugin implementation > generate OpenApi file with type bearer ok secur
               }
             },
             "content": {
-              "plain/text": {
+              "text/plain": {
                 "schema": {
                   "$ref": "#/components/schemas/NotIdentified5"
                 }

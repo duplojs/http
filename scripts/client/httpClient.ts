@@ -2,7 +2,7 @@ import { type RemoveKind, type Kind, type MayBeGetter, type SimplifyTopLevel, ty
 import * as OO from "@duplojs/utils/object";
 import * as GG from "@duplojs/utils/generator";
 import { createClientKind } from "./kind";
-import { type ClientRequestInitParams, type ServerRoute, type ServerRouteToClientRequestParams, type ServerRouteToClientResponse, type ClientRequestParamsHeaders, type ClientRequestParams, type Hooks, type RequestHook, type ResponseHook, type InformationHook, type CodeHook, type ResponseTypeHook, type ExpectedResponseHook, type NotPredictedResponseHook, type ErrorHook, type GetServerRoutePath, type AllClientResponse, type BeforeRetryServerEventHook, type CloseServerEventHook, type ErrorServerEventHook, type StartServerEventHook, type ReceiveEventServerEventHook, type ClientCacheInitialValues, type ClientCacheStore } from "./types";
+import { type ClientRequestInitParams, type ServerRoute, type ServerRouteToClientRequestParams, type ServerRouteToClientResponse, type ClientRequestParamsHeaders, type ClientRequestParams, type Hooks, type RequestHook, type ResponseHook, type InformationHook, type CodeHook, type ResponseTypeHook, type ExpectedResponseHook, type NotPredictedResponseHook, type ErrorHook, type GetServerRoutePath, type AllClientResponse, type BeforeRetryServerEventHook, type CloseServerEventHook, type ErrorServerEventHook, type StartServerEventHook, type ReceiveEventServerEventHook, type ClientCacheInitialValues, type ClientCacheStore, type CloseStreamHook, type ReceiveDataStreamHook, type ErrorStreamHook, type StartStreamHook } from "./types";
 import { PromiseRequest } from "./promiseRequest";
 import { autoCreateCacheKey } from "./clientCache";
 
@@ -117,6 +117,10 @@ export interface HttpClient<
 	addErrorServerEventHook(hook: ErrorServerEventHook<GenericHookParams>): void;
 	addStartServerEventHook(hook: StartServerEventHook<GenericHookParams>): void;
 	addReceiveEventServerEventHook(hook: ReceiveEventServerEventHook<GenericHookParams>): void;
+	addCloseStreamHook(hook: CloseStreamHook<GenericHookParams>): void;
+	addReceiveDataStreamHook(hook: ReceiveDataStreamHook<GenericHookParams>): void;
+	addErrorStreamHook(hook: ErrorStreamHook<GenericHookParams>): void;
+	addStartStreamHook(hook: StartStreamHook<GenericHookParams>): void;
 
 	request<
 		GenericClientRequestParams extends ServerRouteToClientRequestParams<
@@ -220,6 +224,10 @@ export function createHttpClient<
 			errorServerEvent: [],
 			receiveEventServerEvent: [],
 			startServerEvent: [],
+			closeStream: [],
+			errorStream: [],
+			receiveDataStream: [],
+			startStream: [],
 		},
 		clientParams.hooks ?? {},
 	);
@@ -306,6 +314,18 @@ export function createHttpClient<
 			},
 			addStartServerEventHook(hook) {
 				hooks.startServerEvent.push(hook);
+			},
+			addCloseStreamHook(hook) {
+				hooks.closeStream.push(hook);
+			},
+			addReceiveDataStreamHook(hook) {
+				hooks.receiveDataStream.push(hook);
+			},
+			addErrorStreamHook(hook) {
+				hooks.errorStream.push(hook);
+			},
+			addStartStreamHook(hook) {
+				hooks.startStream.push(hook);
 			},
 			request(params) {
 				const headers = GG.reduce(

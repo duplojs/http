@@ -27,6 +27,10 @@ function createHttpClient(clientParams) {
         errorServerEvent: [],
         receiveEventServerEvent: [],
         startServerEvent: [],
+        closeStream: [],
+        errorStream: [],
+        receiveDataStream: [],
+        startStream: [],
     }, clientParams.hooks ?? {});
     const config = {
         baseUrl: clientParams.baseUrl,
@@ -104,6 +108,18 @@ function createHttpClient(clientParams) {
         },
         addStartServerEventHook(hook) {
             hooks.startServerEvent.push(hook);
+        },
+        addCloseStreamHook(hook) {
+            hooks.closeStream.push(hook);
+        },
+        addReceiveDataStreamHook(hook) {
+            hooks.receiveDataStream.push(hook);
+        },
+        addErrorStreamHook(hook) {
+            hooks.errorStream.push(hook);
+        },
+        addStartStreamHook(hook) {
+            hooks.startStream.push(hook);
         },
         request(params) {
             const headers = GG.reduce(defaultHeaders.entries(), GG.reduceFrom({}), ({ element, lastValue, next }) => {

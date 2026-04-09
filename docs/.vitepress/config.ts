@@ -313,6 +313,10 @@ export default pipe(
 												text: "Server-Sent Events (SSE)",
 												link: "/fr/v0/guide/features/SSE",
 											},
+											{
+												text: "Stream",
+												link: "/fr/v0/guide/features/stream",
+											},
 										],
 									},
 								],
@@ -476,6 +480,10 @@ export default pipe(
 											{
 												text: "Server-Sent Events (SSE)",
 												link: "/en/v0/guide/features/SSE",
+											},
+											{
+												text: "Stream",
+												link: "/en/v0/guide/features/stream",
 											},
 										],
 									},

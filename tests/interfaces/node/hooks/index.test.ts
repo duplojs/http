@@ -1,5 +1,5 @@
 import { fsSpy } from "@test-utils/fs";
-import { type HttpServerParams, Response, ServerSentEventsPredictedResponse, exitHookFunction, nextHookFunction } from "@core";
+import { type HttpServerParams, Response, ServerSentEventsPredictedResponse, StreamPredictedResponse, StreamTextPredictedResponse, exitHookFunction, nextHookFunction } from "@core";
 import { createFakeRequest } from "@test-utils/request";
 import { initNodeHook } from "@interface-node";
 import { setEnvironment, SF, TESTImplementation } from "@duplojs/server-utils";
@@ -246,6 +246,141 @@ describe("makeNodeHook", () => {
 				await sleep();
 
 				expect(spyLastId).toHaveBeenCalledWith("test");
+			});
+		});
+
+		describe("streamResponse", () => {
+			it("send stream chunks", async() => {
+				const request = createFakeRequest();
+
+				const write = request.raw.response.write;
+				request.raw.response.write = vi.fn()
+					.mockImplementationOnce(
+						(data) => {
+							write(data);
+							void sleep().then(() => request.raw.response.emit("drain"));
+							return false;
+						},
+					)
+					.mockImplementationOnce(
+						(data) => {
+							write(data);
+							return true;
+						},
+					)
+					.mockImplementationOnce(
+						(data) => {
+							write(data);
+							return true;
+						},
+					);
+
+				await hooks.sendResponse({
+					request,
+					currentResponse: new StreamPredictedResponse(
+						"200",
+						"test",
+						async({ send }) => {
+							await send(Buffer.from("ok"));
+							await send("ok2");
+							await send(new Uint8Array([10]));
+						},
+					),
+					exit: exitHookFunction,
+				} as any);
+
+				await sleep(100);
+
+				expect(request.raw.response.write).toHaveBeenNthCalledWith(1, Buffer.from("ok"));
+				expect(request.raw.response.write).toHaveBeenNthCalledWith(2, "ok2");
+				expect(request.raw.response.write).toHaveBeenNthCalledWith(3, new Uint8Array([10]));
+				expect(request.raw.response._isEndCalled()).toBe(true);
+			});
+
+			it("client close request", async() => {
+				const spyOnAbort = vi.fn();
+				const request = createFakeRequest();
+
+				await hooks.sendResponse({
+					request,
+					currentResponse: new StreamPredictedResponse(
+						"200",
+						"test",
+						({ onAbort }) => {
+							onAbort(spyOnAbort);
+						},
+					),
+					exit: exitHookFunction,
+				} as any);
+
+				await sleep();
+
+				expect(spyOnAbort).toHaveBeenCalledTimes(0);
+				request.raw.request.emit("close");
+				expect(spyOnAbort).toHaveBeenCalledTimes(1);
+			});
+		});
+
+		describe("streamTextResponse", () => {
+			it("send text stream chunks", async() => {
+				const request = createFakeRequest();
+
+				const write = request.raw.response.write;
+				request.raw.response.write = vi.fn()
+					.mockImplementationOnce(
+						(data) => {
+							write(data);
+							void sleep().then(() => request.raw.response.emit("drain"));
+							return false;
+						},
+					)
+					.mockImplementationOnce(
+						(data) => {
+							write(data);
+							return true;
+						},
+					);
+
+				await hooks.sendResponse({
+					request,
+					currentResponse: new StreamTextPredictedResponse(
+						"200",
+						"test",
+						async({ send }) => {
+							await send("ok");
+							await send("ok2");
+						},
+					),
+					exit: exitHookFunction,
+				} as any);
+
+				await sleep(100);
+
+				expect(request.raw.response._getData()).toBe("okok2");
+				expect(request.raw.response._isEndCalled()).toBe(true);
+			});
+
+			it("client close request", async() => {
+				const spyOnAbort = vi.fn();
+				const request = createFakeRequest();
+
+				await hooks.sendResponse({
+					request,
+					currentResponse: new StreamTextPredictedResponse(
+						"200",
+						"test",
+						({ onAbort }) => {
+							onAbort(spyOnAbort);
+						},
+					),
+					exit: exitHookFunction,
+				} as any);
+
+				await sleep();
+
+				expect(spyOnAbort).toHaveBeenCalledTimes(0);
+				request.raw.request.emit("close");
+				expect(spyOnAbort).toHaveBeenCalledTimes(1);
 			});
 		});
 	});

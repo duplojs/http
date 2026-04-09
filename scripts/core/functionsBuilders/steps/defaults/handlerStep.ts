@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/prefer-for-of */
 import { type HandlerStepFunctionParams, handlerStepKind } from "@core/steps";
 import { createStepFunctionBuilder } from "../create";
-import { A, E, unwrap } from "@duplojs/utils";
-import { PredictedResponse, ResponseContract, ServerSentEventsPredictedResponse } from "@core/response";
+import { A, type AnyTuple, E, unwrap } from "@duplojs/utils";
+import { PredictedResponse, ResponseContract, ServerSentEventsPredictedResponse, StreamPredictedResponse, StreamTextPredictedResponse } from "@core/response";
 
 export const defaultHandlerStepFunctionBuilder = createStepFunctionBuilder(
 	handlerStepKind.has,
@@ -16,7 +17,7 @@ export const defaultHandlerStepFunctionBuilder = createStepFunctionBuilder(
 			A.reduceFrom<
 				Record<
 					string,
-					ResponseContract.Contract | ResponseContract.ServerSentEventsContract
+					ResponseContract.Contracts
 				>
 			>({}),
 			({ element, lastValue, nextWithObject }) => nextWithObject(
@@ -94,6 +95,60 @@ export const defaultHandlerStepFunctionBuilder = createStepFunctionBuilder(
 			) as never;
 		};
 
+		const streamResponse: HandlerStepFunctionParams["streamResponse"] = (
+			information,
+			startStream,
+		) => {
+			const currentContract = preparedContractResponse[information];
+
+			if (
+				!currentContract
+				|| !ResponseContract.streamContractKind.has(currentContract)
+			) {
+				throw new ResponseContract.Error(information, "Contract not found.");
+			}
+
+			return new StreamPredictedResponse(
+				currentContract.code,
+				information,
+				(params) => startStream({
+					...params,
+					send: (...args: AnyTuple<unknown>) => {
+						for (let index = 0; index < args.length; index++) {
+							const result = currentContract.flux.parse(args[index]);
+
+							if (E.isLeft(result)) {
+								console.error(new ResponseContract.Error(information, unwrap(result)));
+								return Promise.resolve();
+							}
+						}
+
+						return params.send(...args);
+					},
+				}),
+			) as never;
+		};
+
+		const streamTextResponse: HandlerStepFunctionParams["streamTextResponse"] = (
+			information,
+			startStreamText,
+		) => {
+			const currentContract = preparedContractResponse[information];
+
+			if (
+				!currentContract
+				|| !ResponseContract.streamTextContractKind.has(currentContract)
+			) {
+				throw new ResponseContract.Error(information, "Contract not found.");
+			}
+
+			return new StreamTextPredictedResponse(
+				currentContract.code,
+				information,
+				startStreamText,
+			) as never;
+		};
+
 		return success({
 			buildedFunction: async(request, floor) => handlerFunction(
 				floor,
@@ -101,6 +156,8 @@ export const defaultHandlerStepFunctionBuilder = createStepFunctionBuilder(
 					request,
 					response,
 					serverSentEventsResponse,
+					streamResponse,
+					streamTextResponse,
 				},
 			),
 			hooksRouteLifeCycle: [],

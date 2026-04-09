@@ -13,6 +13,8 @@ export type ServerRouteBody = unknown;
 
 export type ServerRouteResponseBody = unknown;
 
+export type ServerRouteResponseFlux = string | Uint8Array<ArrayBuffer>;
+
 export type ServerRouteResponseEvents = Record<string, unknown>;
 
 export interface ServerRouteResponse {
@@ -20,6 +22,7 @@ export interface ServerRouteResponse {
 	information?: string;
 	body?: ServerRouteResponseBody;
 	events?: ServerRouteResponseEvents;
+	flux?: ServerRouteResponseFlux;
 }
 
 export interface ServerRoute {

@@ -29,17 +29,21 @@ describe("httpClient", () => {
 		expect(httpClient.hooks).toStrictEqual({
 			clientErrorResponseType: [],
 			code: {},
+			closeStream: [],
 			error: [],
+			errorStream: [],
 			expectedResponse: [],
 			information: {},
 			informationalResponseType: [],
 			notPredictedResponse: [],
 			redirectionResponseType: [],
+			receiveDataStream: [],
 			request: [],
 			response: [],
 			serverErrorResponseType: [],
 			successfulResponseType: [],
 			startServerEvent: [],
+			startStream: [],
 			receiveEventServerEvent: [],
 			errorServerEvent: [],
 			closeServerEvent: [],
@@ -91,17 +95,21 @@ describe("httpClient", () => {
 			hooks: {
 				clientErrorResponseType: [],
 				code: {},
+				closeStream: [],
 				error: [],
+				errorStream: [],
 				expectedResponse: [],
 				information: {},
 				informationalResponseType: [],
 				notPredictedResponse: [],
 				redirectionResponseType: [],
+				receiveDataStream: [],
 				request: [],
 				response: [],
 				serverErrorResponseType: [],
 				successfulResponseType: [],
 				startServerEvent: [],
+				startStream: [],
 				receiveEventServerEvent: [],
 				errorServerEvent: [],
 				closeServerEvent: [],
@@ -135,17 +143,21 @@ describe("httpClient", () => {
 			hooks: {
 				clientErrorResponseType: [],
 				code: {},
+				closeStream: [],
 				error: [],
+				errorStream: [],
 				expectedResponse: [],
 				information: {},
 				informationalResponseType: [],
 				notPredictedResponse: [],
 				redirectionResponseType: [],
+				receiveDataStream: [],
 				request: [],
 				response: [],
 				serverErrorResponseType: [],
 				successfulResponseType: [],
 				startServerEvent: [],
+				startStream: [],
 				receiveEventServerEvent: [],
 				errorServerEvent: [],
 				closeServerEvent: [],
@@ -181,17 +193,21 @@ describe("httpClient", () => {
 			hooks: {
 				clientErrorResponseType: [],
 				code: {},
+				closeStream: [],
 				error: [],
+				errorStream: [],
 				expectedResponse: [],
 				information: {},
 				informationalResponseType: [],
 				notPredictedResponse: [],
 				redirectionResponseType: [],
+				receiveDataStream: [],
 				request: [],
 				response: [],
 				serverErrorResponseType: [],
 				successfulResponseType: [],
 				startServerEvent: [],
+				startStream: [],
 				receiveEventServerEvent: [],
 				errorServerEvent: [],
 				closeServerEvent: [],
@@ -226,17 +242,21 @@ describe("httpClient", () => {
 			hooks: {
 				clientErrorResponseType: [],
 				code: {},
+				closeStream: [],
 				error: [],
+				errorStream: [],
 				expectedResponse: [],
 				information: {},
 				informationalResponseType: [],
 				notPredictedResponse: [],
 				redirectionResponseType: [],
+				receiveDataStream: [],
 				request: [],
 				response: [],
 				serverErrorResponseType: [],
 				successfulResponseType: [],
 				startServerEvent: [],
+				startStream: [],
 				receiveEventServerEvent: [],
 				errorServerEvent: [],
 				closeServerEvent: [],
@@ -270,17 +290,21 @@ describe("httpClient", () => {
 			hooks: {
 				clientErrorResponseType: [],
 				code: {},
+				closeStream: [],
 				error: [],
+				errorStream: [],
 				expectedResponse: [],
 				information: {},
 				informationalResponseType: [],
 				notPredictedResponse: [],
 				redirectionResponseType: [],
+				receiveDataStream: [],
 				request: [],
 				response: [],
 				serverErrorResponseType: [],
 				successfulResponseType: [],
 				startServerEvent: [],
+				startStream: [],
 				receiveEventServerEvent: [],
 				errorServerEvent: [],
 				closeServerEvent: [],
@@ -312,17 +336,21 @@ describe("httpClient", () => {
 			hooks: {
 				clientErrorResponseType: [],
 				code: {},
+				closeStream: [],
 				error: [],
+				errorStream: [],
 				expectedResponse: [],
 				information: {},
 				informationalResponseType: [],
 				notPredictedResponse: [],
 				redirectionResponseType: [],
+				receiveDataStream: [],
 				request: [],
 				response: [],
 				serverErrorResponseType: [],
 				successfulResponseType: [],
 				startServerEvent: [],
+				startStream: [],
 				receiveEventServerEvent: [],
 				errorServerEvent: [],
 				closeServerEvent: [],
@@ -355,17 +383,21 @@ describe("httpClient", () => {
 			hooks: {
 				clientErrorResponseType: [],
 				code: {},
+				closeStream: [],
 				error: [],
+				errorStream: [],
 				expectedResponse: [],
 				information: {},
 				informationalResponseType: [],
 				notPredictedResponse: [],
 				redirectionResponseType: [],
+				receiveDataStream: [],
 				request: [],
 				response: [],
 				serverErrorResponseType: [],
 				successfulResponseType: [],
 				startServerEvent: [],
+				startStream: [],
 				receiveEventServerEvent: [],
 				errorServerEvent: [],
 				closeServerEvent: [],
@@ -398,17 +430,21 @@ describe("httpClient", () => {
 			hooks: {
 				clientErrorResponseType: [],
 				code: {},
+				closeStream: [],
 				error: [],
+				errorStream: [],
 				expectedResponse: [],
 				information: {},
 				informationalResponseType: [],
 				notPredictedResponse: [],
 				redirectionResponseType: [],
+				receiveDataStream: [],
 				request: [],
 				response: [],
 				serverErrorResponseType: [],
 				successfulResponseType: [],
 				startServerEvent: [],
+				startStream: [],
 				receiveEventServerEvent: [],
 				errorServerEvent: [],
 				closeServerEvent: [],
@@ -441,17 +477,21 @@ describe("httpClient", () => {
 			hooks: {
 				clientErrorResponseType: [],
 				code: {},
+				closeStream: [],
 				error: [],
+				errorStream: [],
 				expectedResponse: [],
 				information: {},
 				informationalResponseType: [],
 				notPredictedResponse: [],
 				redirectionResponseType: [],
+				receiveDataStream: [],
 				request: [],
 				response: [],
 				serverErrorResponseType: [],
 				successfulResponseType: [],
 				startServerEvent: [],
+				startStream: [],
 				receiveEventServerEvent: [],
 				errorServerEvent: [],
 				closeServerEvent: [],
@@ -527,6 +567,10 @@ describe("httpClient", () => {
 		const closeServerEvent: Hooks["closeServerEvent"][number] = vi.fn();
 		const errorServerEvent: Hooks["errorServerEvent"][number] = vi.fn();
 		const receiveEventServerEvent: Hooks["receiveEventServerEvent"][number] = vi.fn();
+		const closeStream: Hooks["closeStream"][number] = vi.fn();
+		const receiveDataStream: Hooks["receiveDataStream"][number] = vi.fn();
+		const errorStream: Hooks["errorStream"][number] = vi.fn();
+		const startStream: Hooks["startStream"][number] = vi.fn();
 
 		httpClient.addRequestHook(requestHook);
 		httpClient.addResponseHook(responseHook);
@@ -545,6 +589,10 @@ describe("httpClient", () => {
 		httpClient.addCloseServerEventHook(closeServerEvent);
 		httpClient.addErrorServerEventHook(errorServerEvent);
 		httpClient.addReceiveEventServerEventHook(receiveEventServerEvent);
+		httpClient.addCloseStreamHook(closeStream);
+		httpClient.addReceiveDataStreamHook(receiveDataStream);
+		httpClient.addErrorStreamHook(errorStream);
+		httpClient.addStartStreamHook(startStream);
 
 		it("adds hooks to client registry", () => {
 			expect(httpClient.hooks.request).toContain(requestHook);
@@ -564,6 +612,10 @@ describe("httpClient", () => {
 			expect(httpClient.hooks.closeServerEvent).toContain(closeServerEvent);
 			expect(httpClient.hooks.errorServerEvent).toContain(errorServerEvent);
 			expect(httpClient.hooks.receiveEventServerEvent).toContain(receiveEventServerEvent);
+			expect(httpClient.hooks.closeStream).toContain(closeStream);
+			expect(httpClient.hooks.receiveDataStream).toContain(receiveDataStream);
+			expect(httpClient.hooks.errorStream).toContain(errorStream);
+			expect(httpClient.hooks.startStream).toContain(startStream);
 		});
 
 		it("pass hook to PromiseRequest", () => {
@@ -587,17 +639,21 @@ describe("httpClient", () => {
 				hooks: {
 					clientErrorResponseType: [responseTypeHook],
 					code: { 200: [codeHook] },
+					closeStream: [closeStream],
 					error: [errorHook],
+					errorStream: [errorStream],
 					expectedResponse: [expectedHook],
 					information: { info: [infoHook] },
 					informationalResponseType: [responseTypeHook],
 					notPredictedResponse: [notPredictedHook],
 					redirectionResponseType: [responseTypeHook],
+					receiveDataStream: [receiveDataStream],
 					request: [requestHook],
 					response: [responseHook],
 					serverErrorResponseType: [responseTypeHook],
 					successfulResponseType: [responseTypeHook],
 					startServerEvent: [startServerEvent],
+					startStream: [startStream],
 					receiveEventServerEvent: [receiveEventServerEvent],
 					errorServerEvent: [errorServerEvent],
 					closeServerEvent: [closeServerEvent],

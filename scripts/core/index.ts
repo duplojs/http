@@ -21,3 +21,4 @@ export * from "./clean";
 export * from "./defaultHooks";
 export * from "./errors";
 export * from "./serverSentEvents";
+export * from "./stream";

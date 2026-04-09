@@ -1,8 +1,8 @@
 ---
 description: "Générer le typage des routes avec codeGenerator."
 prev:
-  text: "Traiter une réponse"
-  link: "/fr/v0/guide/client/handleResponse"
+  text: "Cache client"
+  link: "/fr/v0/guide/client/clientCache"
 next:
   text: "Génération OpenAPI"
   link: "/fr/v0/guide/plugins/openApiGenerator"
@@ -21,4 +21,3 @@ Le paramètre `outputFile` vous permet de définir dans quel fichier sera écrit
 ::: warning
 Vous êtes obligé d'avoir une implémentation de serveur HTTP, car le plugin se lie au hook `beforeStartServer` qui se lance uniquement via des fonctions d'interfaçage comme `createHttpServer`. Lancez avec le `Hub` configuré en mode `BUILD` pour que le serveur HTTP ne se lance pas. 
 :::
-

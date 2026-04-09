@@ -1,7 +1,7 @@
 import { type NeverCoalescing, type MaybePromise, type O } from "@duplojs/utils";
 import * as EE from "@duplojs/utils/either";
 import { type RequestErrorContent } from "./unexpectedResponseError";
-import { type PromiseRequestParams, type Hooks, type NotPredictedResponseHook, type ErrorHook, type ClientEventsResponse, type AllClientResponse, type AllNotPredictedClientResponse, type ClientEventsResponseHandler, type ServerEvent } from "./types";
+import { type PromiseRequestParams, type Hooks, type NotPredictedResponseHook, type ErrorHook, type ClientEventsResponse, type AllClientResponse, type AllNotPredictedClientResponse, type ClientEventsResponseHandler, type ServerEvent, type ClientStreamResponseHandler, type ClientStreamResponse } from "./types";
 type MaybeResponse<GenericClientResponse extends AllClientResponse = AllClientResponse> = (EE.Right<"response", GenericClientResponse> | EE.Left<"request-error", RequestErrorContent>);
 type MaybeWantedResponse<GenericWantedClientResponse extends AllClientResponse = AllClientResponse, GenericUnexpectClientResponse extends AllClientResponse = AllClientResponse> = (EE.Right<"response", GenericWantedClientResponse> | EE.Left<"unexpect-response", GenericUnexpectClientResponse> | EE.Left<"request-error", RequestErrorContent>);
 export declare class PromiseRequest<GenericHookParams extends Record<string, unknown> = Record<string, unknown>, GenericClientResponse extends AllClientResponse<GenericHookParams> = AllClientResponse<GenericHookParams>> extends Promise<MaybeResponse<GenericClientResponse | AllNotPredictedClientResponse<GenericHookParams>>> {
@@ -39,6 +39,7 @@ export declare class PromiseRequest<GenericHookParams extends Record<string, unk
     whenReceiveServerEvent<GenericEvent extends (GenericClientResponse extends ClientEventsResponseHandler<infer InferredEvent> ? InferredEvent : never), GenericEventName extends GenericEvent["event"]>(eventName: GenericEventName, callback: (event: NoInfer<NeverCoalescing<Extract<GenericEvent, {
         event: GenericEventName;
     }>, ServerEvent>>, response: NeverCoalescing<Extract<GenericClientResponse, ClientEventsResponseHandler<GenericEvent>>, ClientEventsResponse>) => MaybePromise<void>): this;
+    whenReceiveDataStream<GenericFlux extends (GenericClientResponse extends ClientStreamResponseHandler<infer InferredFlux> ? InferredFlux : never)>(callback: (data: GenericFlux, response: NeverCoalescing<Extract<GenericClientResponse, ClientStreamResponseHandler>, ClientStreamResponse>) => MaybePromise<void>): this;
     iWantInformation<GenericInformation extends Extract<GenericClientResponse["information"], string>, GenericResponse extends NeverCoalescing<Extract<GenericClientResponse, GenericInformation extends any ? {
         information: GenericInformation;
     } : never>, AllClientResponse<GenericHookParams>>>(information: GenericInformation | GenericInformation[]): Promise<MaybeWantedResponse<GenericResponse, NeverCoalescing<Exclude<GenericClientResponse, GenericResponse>, AllClientResponse<GenericHookParams>> | AllNotPredictedClientResponse<GenericHookParams>>>;

@@ -14,17 +14,10 @@ declare module "./builder" {
 	> {
 		handler<
 			GenericResponseContract extends (
-				| ResponseContract.Contract
-				| ResponseContract.ServerSentEventsContract
+				| ResponseContract.Contracts
 				| readonly [
-					(
-						| ResponseContract.Contract
-						| ResponseContract.ServerSentEventsContract
-					),
-					...(
-						| ResponseContract.Contract
-						| ResponseContract.ServerSentEventsContract
-					)[],
+					ResponseContract.Contracts,
+					...ResponseContract.Contracts[],
 				]
 			),
 			GenericResponse extends ResponseContract.Convert<
@@ -37,7 +30,7 @@ declare module "./builder" {
 			responseContract: GenericResponseContract,
 			theFunction: (
 				floor: GenericFloor,
-				param: HandlerStepFunctionParams<
+				params: HandlerStepFunctionParams<
 					GenericResponse
 				>
 			) => MaybePromise<GenericResponse>,
@@ -53,7 +46,7 @@ declare module "./builder" {
 								readonly responseContract: GenericResponseContract;
 								theFunction(
 									floor: GenericFloor,
-									param: HandlerStepFunctionParams<
+									params: HandlerStepFunctionParams<
 										GenericResponse
 									>
 								): MaybePromise<GenericResponse>;

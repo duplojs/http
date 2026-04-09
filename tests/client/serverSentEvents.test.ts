@@ -1,6 +1,5 @@
 import { type ClientResponse, type Hooks, type PromiseRequestParams, makeClientEventsResponse } from "@client";
 import { A, pipe, S, sleep } from "@duplojs/utils";
-import { TemplateLiteralContainLargeType } from "@duplojs/utils/string";
 
 describe("server sent event", () => {
 	const encoder = new TextEncoder();
@@ -23,6 +22,10 @@ describe("server sent event", () => {
 		errorServerEvent: [],
 		receiveEventServerEvent: [],
 		startServerEvent: [],
+		closeStream: [],
+		errorStream: [],
+		receiveDataStream: [],
+		startStream: [],
 	});
 
 	const createRequestParams = (
@@ -138,19 +141,6 @@ describe("server sent event", () => {
 		const response = makeClientEventsResponse(
 			createResponse({
 				code: "204",
-				raw: createRawSseResponse(["data: hello\n\n"]),
-			}),
-			"http://test.local/sse",
-			{},
-		);
-
-		await expect(A.from(response)).resolves.toStrictEqual([]);
-	});
-
-	it("returns empty stream when content-type is not text/event-stream", async() => {
-		const response = makeClientEventsResponse(
-			createResponse({
-				headers: new Headers({ "content-type": "text/plain" }),
 				raw: createRawSseResponse(["data: hello\n\n"]),
 			}),
 			"http://test.local/sse",

@@ -159,19 +159,72 @@ function routeToOpenApi(route, params) {
                 },
             });
         }
+        if (ResponseContract.streamContractKind.has(contract)) {
+            const lastContent = lastValue[code]?.content;
+            const schema = {
+                type: "string",
+                format: "binary",
+            };
+            const content = {
+                ...lastContent,
+                "application/octet-stream": {
+                    schema: lastContent?.["application/octet-stream"]
+                        ? {
+                            anyOf: [
+                                lastContent["application/octet-stream"].schema,
+                                schema,
+                            ],
+                        }
+                        : schema,
+                },
+            };
+            return nextWithObject(lastValue, {
+                [code]: {
+                    headers,
+                    content,
+                },
+            });
+        }
+        if (ResponseContract.streamTextContractKind.has(contract)) {
+            const lastContent = lastValue[code]?.content;
+            const schema = factoryJsonSchema({
+                context: params.contextToJsonSchemaFactory,
+                resultSchemaContext: params.resultSchemaContext,
+                schema: contract.flux,
+            });
+            const content = {
+                ...lastContent,
+                "text/plain": {
+                    schema: lastContent?.["text/plain"]
+                        ? {
+                            anyOf: [
+                                lastContent["text/plain"].schema,
+                                schema,
+                            ],
+                        }
+                        : schema,
+                },
+            };
+            return nextWithObject(lastValue, {
+                [code]: {
+                    headers,
+                    content,
+                },
+            });
+        }
         const schemaResponse = factoryJsonSchema({
             context: params.contextToJsonSchemaFactory,
             resultSchemaContext: params.resultSchemaContext,
             schema: body,
         });
         const content = pipe(body, P.when(DP.identifier(DP.emptyKind), justReturn(lastValue[code]?.content)), P.otherwise((value) => {
-            if (DP.identifier(value, DP.stringKind) && lastValue[code]?.content?.["plain/text"]) {
+            if (DP.identifier(value, DP.stringKind) && lastValue[code]?.content?.["text/plain"]) {
                 return lastValue[code].content;
             }
             if (DP.identifier(value, DP.stringKind)) {
                 return {
                     ...lastValue[code]?.content,
-                    "plain/text": {
+                    "text/plain": {
                         schema: schemaResponse,
                     },
                 };

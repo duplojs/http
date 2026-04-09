@@ -22,6 +22,7 @@ require('./clean/index.cjs');
 var index$7 = require('./defaultHooks/index.cjs');
 require('./errors/index.cjs');
 var serverSentEvents = require('./serverSentEvents.cjs');
+var stream = require('./stream.cjs');
 var bodyParseWrongChunkReceived = require('./errors/bodyParseWrongChunkReceived.cjs');
 var bodySizeExceedsLimitError = require('./errors/bodySizeExceedsLimitError.cjs');
 var empty = require('./request/bodyController/empty.cjs');
@@ -35,6 +36,8 @@ var base = require('./response/base.cjs');
 var contract = require('./response/contract.cjs');
 var buildError = require('./router/buildError.cjs');
 var serverSentEventsPredicted = require('./response/serverSentEventsPredicted.cjs');
+var streamPredicted = require('./response/streamPredicted.cjs');
+var streamTextPredicted = require('./response/streamTextPredicted.cjs');
 var text = require('./request/bodyController/text.cjs');
 var base$1 = require('./request/bodyController/base.cjs');
 var wrongContentTypeError = require('./errors/wrongContentTypeError.cjs');
@@ -101,6 +104,10 @@ Object.defineProperty(exports, "ServerSentEvents", {
 	enumerable: true,
 	get: function () { return serverSentEvents.ServerSentEvents; }
 });
+Object.defineProperty(exports, "Stream", {
+	enumerable: true,
+	get: function () { return stream.Stream; }
+});
 exports.BodyParseWrongChunkReceived = bodyParseWrongChunkReceived.BodyParseWrongChunkReceived;
 exports.BodySizeExceedsLimitError = bodySizeExceedsLimitError.BodySizeExceedsLimitError;
 exports.EmptyBodyController = empty.EmptyBodyController;
@@ -119,6 +126,8 @@ Object.defineProperty(exports, "ResponseContract", {
 });
 exports.RouterBuildError = buildError.RouterBuildError;
 exports.ServerSentEventsPredictedResponse = serverSentEventsPredicted.ServerSentEventsPredictedResponse;
+exports.StreamPredictedResponse = streamPredicted.StreamPredictedResponse;
+exports.StreamTextPredictedResponse = streamTextPredicted.StreamTextPredictedResponse;
 exports.TextBodyController = text.TextBodyController;
 exports.controlBodyAsText = text.controlBodyAsText;
 exports.WrongBodyReaderImplementationError = base$1.WrongBodyReaderImplementationError;
