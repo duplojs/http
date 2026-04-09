@@ -95,7 +95,7 @@ export function makeClientStreamResponse(
 
 	return createStreamResponse(
 		(emitError) => GG.asyncLoop(
-			async({ next, exit }: GG.GeneratorLoopParams<unknown>) => {
+			async({ next, exit }: GG.GeneratorLoopParams<ServerRouteResponseFlux>) => {
 				try {
 					if (abortController.signal.aborted) {
 						return exit();
