@@ -4,8 +4,8 @@ prev:
   text: "Advanced FormData"
   link: "/en/v0/guide/features/formData"
 next:
-  text: ""
-  link: ""
+  text: "Stream"
+  link: "/en/v0/guide/features/stream"
 ---
 
 # Server-Sent Events (SSE)

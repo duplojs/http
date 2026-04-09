@@ -8,7 +8,10 @@ var handler = require('../../../steps/handler.cjs');
 var contract = require('../../../response/contract.cjs');
 var predicted = require('../../../response/predicted.cjs');
 var serverSentEventsPredicted = require('../../../response/serverSentEventsPredicted.cjs');
+var streamPredicted = require('../../../response/streamPredicted.cjs');
+var streamTextPredicted = require('../../../response/streamTextPredicted.cjs');
 
+/* eslint-disable @typescript-eslint/prefer-for-of */
 const defaultHandlerStepFunctionBuilder = create.createStepFunctionBuilder(handler.handlerStepKind.has, (step, { success }) => {
     const { responseContract, theFunction: handlerFunction, } = step.definition;
     const preparedContractResponse = utils.A.reduce(utils.A.coalescing(responseContract), utils.A.reduceFrom({}), ({ element, lastValue, nextWithObject }) => nextWithObject(lastValue, {
@@ -49,11 +52,41 @@ const defaultHandlerStepFunctionBuilder = create.createStepFunctionBuilder(handl
             },
         }));
     };
+    const streamResponse = (information, startStream) => {
+        const currentContract = preparedContractResponse[information];
+        if (!currentContract
+            || !contract.ResponseContract.streamContractKind.has(currentContract)) {
+            throw new contract.ResponseContract.Error(information, "Contract not found.");
+        }
+        return new streamPredicted.StreamPredictedResponse(currentContract.code, information, (params) => startStream({
+            ...params,
+            send: (...args) => {
+                for (let index = 0; index < args.length; index++) {
+                    const result = currentContract.flux.parse(args[index]);
+                    if (utils.E.isLeft(result)) {
+                        console.error(new contract.ResponseContract.Error(information, utils.unwrap(result)));
+                        return Promise.resolve();
+                    }
+                }
+                return params.send(...args);
+            },
+        }));
+    };
+    const streamTextResponse = (information, startStreamText) => {
+        const currentContract = preparedContractResponse[information];
+        if (!currentContract
+            || !contract.ResponseContract.streamTextContractKind.has(currentContract)) {
+            throw new contract.ResponseContract.Error(information, "Contract not found.");
+        }
+        return new streamTextPredicted.StreamTextPredictedResponse(currentContract.code, information, startStreamText);
+    };
     return success({
         buildedFunction: async (request, floor) => handlerFunction(floor, {
             request,
             response,
             serverSentEventsResponse,
+            streamResponse,
+            streamTextResponse,
         }),
         hooksRouteLifeCycle: [],
     });

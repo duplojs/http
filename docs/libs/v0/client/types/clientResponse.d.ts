@@ -1,5 +1,5 @@
 import type * as SS from "@duplojs/utils/string";
-import { type ServerRouteResponse, type ServerRoute } from "./serverRoute";
+import { type ServerRouteResponse, type ServerRoute, type ServerRouteResponseFlux } from "./serverRoute";
 import { type MaybePromise, type IsEqual, type SimplifyTopLevel, type NeverCoalescing } from "@duplojs/utils";
 import { type PromiseRequestParams } from "./promiseRequestParams";
 import { type ServerRouteToClientRequestParams } from "./clientRequestParams";
@@ -18,13 +18,26 @@ export interface ClientResponse<GenericHookParams extends Record<string, unknown
     predicted: boolean;
     fromCache?: boolean;
 }
+export interface ClientResponseHandler<GenericType extends string> {
+    handlerType: GenericType;
+}
+export interface ClientStreamResponseHandler<GenericFlux extends ServerRouteResponseFlux = ServerRouteResponseFlux> extends AsyncIterable<GenericFlux, void>, ClientResponseHandler<"stream"> {
+    closeStream(): void;
+    onStream(event: "close", callback: (response: this) => MaybePromise<void>): this;
+    onStream(event: "error", callback: (error: unknown, response: this) => MaybePromise<void>): this;
+    onStream(event: "start", callback: (response: this) => MaybePromise<void>): this;
+    onStream(event: "receiveData", callback: (data: GenericFlux, response: this) => MaybePromise<void>): this;
+    consumeStream(): Promise<void>;
+}
+export interface ClientStreamResponse<GenericHookParams extends Record<string, unknown> = Record<string, unknown>> extends ClientResponse<GenericHookParams>, ClientStreamResponseHandler {
+}
 export interface ServerEvent {
     data: unknown;
     event: string;
     id?: string;
     retry?: number;
 }
-export interface ClientEventsResponseHandler<GenericServerEvent extends ServerEvent = ServerEvent> extends AsyncIterable<GenericServerEvent, void> {
+export interface ClientEventsResponseHandler<GenericServerEvent extends ServerEvent = ServerEvent> extends AsyncIterable<GenericServerEvent, void>, ClientResponseHandler<"events"> {
     closeEventStream(): void;
     onReceiveEvent<GenericEventName extends GenericServerEvent["event"]>(name: GenericEventName, callback: (event: NeverCoalescing<Extract<GenericServerEvent, {
         event: GenericEventName;
@@ -38,13 +51,15 @@ export interface ClientEventsResponseHandler<GenericServerEvent extends ServerEv
 }
 export interface ClientEventsResponse<GenericHookParams extends Record<string, unknown> = Record<string, unknown>> extends ClientResponse<GenericHookParams>, ClientEventsResponseHandler {
 }
-export type AllClientResponse<GenericHookParams extends Record<string, unknown> = Record<string, unknown>> = (ClientResponse<GenericHookParams> | ClientEventsResponse<GenericHookParams>);
+export type AllClientResponse<GenericHookParams extends Record<string, unknown> = Record<string, unknown>> = (ClientResponse<GenericHookParams> | ClientStreamResponse<GenericHookParams> | ClientEventsResponse<GenericHookParams>);
 export interface NotPredictedClientResponse<GenericHookParams extends Record<string, unknown> = Record<string, unknown>> extends ClientResponse<GenericHookParams> {
     predicted: false;
 }
+export interface NotPredictedClientStreamResponse<GenericHookParams extends Record<string, unknown> = Record<string, unknown>> extends NotPredictedClientResponse<GenericHookParams>, ClientStreamResponseHandler {
+}
 export interface NotPredictedClientEventsResponse<GenericHookParams extends Record<string, unknown> = Record<string, unknown>> extends NotPredictedClientResponse<GenericHookParams>, ClientEventsResponseHandler {
 }
-export type AllNotPredictedClientResponse<GenericHookParams extends Record<string, unknown> = Record<string, unknown>> = (NotPredictedClientResponse<GenericHookParams> | NotPredictedClientEventsResponse<GenericHookParams>);
+export type AllNotPredictedClientResponse<GenericHookParams extends Record<string, unknown> = Record<string, unknown>> = (NotPredictedClientResponse<GenericHookParams> | NotPredictedClientStreamResponse<GenericHookParams> | NotPredictedClientEventsResponse<GenericHookParams>);
 export type ServerRouteToClientResponse<GenericServerRoute extends ServerRoute = ServerRoute, GenericHookParams extends Record<string, unknown> = Record<string, unknown>> = GenericServerRoute extends any ? GenericServerRoute["responses"] extends infer InferredResponse ? InferredResponse extends ServerRouteResponse ? (SimplifyTopLevel<{
     code: InferredResponse["code"];
     information: InferredResponse["information"];
@@ -65,4 +80,4 @@ export type ServerRouteToClientResponse<GenericServerRoute extends ServerRoute =
         id?: string;
         retry?: number;
     } : never;
-}[keyof InferredResponse["events"]]> : unknown)) extends infer InferredResult extends ClientResponse ? InferredResult : never : never : never : never;
+}[keyof InferredResponse["events"]]> : unknown) & (IsEqual<InferredResponse["flux"], unknown> extends true ? unknown : InferredResponse["flux"] extends ServerRouteResponseFlux ? ClientStreamResponseHandler<InferredResponse["flux"]> : never)) extends infer InferredResult extends ClientResponse ? InferredResult : never : never : never : never;

@@ -15,6 +15,9 @@ export interface EndpointResponseContent {
     "text/plain"?: {
         schema: JsonSchema;
     };
+    "application/octet-stream"?: {
+        schema: JsonSchema;
+    };
 }
 export interface EndpointResponse {
     description?: string;

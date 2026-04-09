@@ -6,6 +6,8 @@ var serverUtils = require('@duplojs/server-utils');
 var hooks = require('../route/hooks.cjs');
 var predicted = require('../response/predicted.cjs');
 var serverSentEventsPredicted = require('../response/serverSentEventsPredicted.cjs');
+var streamPredicted = require('../response/streamPredicted.cjs');
+var streamTextPredicted = require('../response/streamTextPredicted.cjs');
 var hook = require('../response/hook.cjs');
 
 function initDefaultHook(hub, serverParams) {
@@ -46,6 +48,18 @@ function initDefaultHook(hub, serverParams) {
                 currentResponse.setHeader("content-type", "text/event-stream");
                 currentResponse.setHeader("cache-control", "no-cache");
                 currentResponse.setHeader("connection", "keep-alive");
+            }
+            else if (currentResponse instanceof streamPredicted.StreamPredictedResponse) {
+                currentResponse.setHeader(predictedHeaderKey, "1");
+                currentResponse.setHeader("transfer-encoding", "chunked");
+                currentResponse.setHeader("content-type", "application/octet-stream");
+                currentResponse.setHeader("x-duplojs-body-options", "stream");
+            }
+            else if (currentResponse instanceof streamTextPredicted.StreamTextPredictedResponse) {
+                currentResponse.setHeader(predictedHeaderKey, "1");
+                currentResponse.setHeader("transfer-encoding", "chunked");
+                currentResponse.setHeader("content-type", "text/plain; charset=utf-8");
+                currentResponse.setHeader("x-duplojs-body-options", "stream");
             }
             else if (currentResponse instanceof hook.HookResponse) {
                 currentResponse.setHeader(fromHookHeaderKey, currentResponse.fromHook);

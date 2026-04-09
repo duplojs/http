@@ -1,8 +1,8 @@
 ---
 description: "Generate route typings with codeGenerator plugin."
 prev:
-  text: "Handle a response"
-  link: "/en/v0/guide/client/handleResponse"
+  text: "Client cache"
+  link: "/en/v0/guide/client/clientCache"
 next:
   text: "OpenAPI generation"
   link: "/en/v0/guide/plugins/openApiGenerator"

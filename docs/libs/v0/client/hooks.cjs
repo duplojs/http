@@ -108,17 +108,53 @@ async function launchReceiveEventServerEventHook(clientHook, promiseRequestHook,
         await clientHook[index](event, response);
     }
 }
+async function launchCloseStreamHook(clientHook, promiseRequestHook, response) {
+    for (let index = 0; index < promiseRequestHook.length; index++) {
+        await promiseRequestHook[index](response);
+    }
+    for (let index = 0; index < clientHook.length; index++) {
+        await clientHook[index](response);
+    }
+}
+async function launchReceiveDataStreamHook(clientHook, promiseRequestHook, data, response) {
+    for (let index = 0; index < promiseRequestHook.length; index++) {
+        await promiseRequestHook[index](data, response);
+    }
+    for (let index = 0; index < clientHook.length; index++) {
+        await clientHook[index](data, response);
+    }
+}
+async function launchErrorStreamHook(clientHook, promiseRequestHook, error, response) {
+    for (let index = 0; index < promiseRequestHook.length; index++) {
+        await promiseRequestHook[index](error, response);
+    }
+    for (let index = 0; index < clientHook.length; index++) {
+        await clientHook[index](error, response);
+    }
+}
+async function launchStartStreamHook(clientHook, promiseRequestHook, response) {
+    for (let index = 0; index < promiseRequestHook.length; index++) {
+        await promiseRequestHook[index](response);
+    }
+    for (let index = 0; index < clientHook.length; index++) {
+        await clientHook[index](response);
+    }
+}
 
 exports.launchBeforeRetryServerEventHook = launchBeforeRetryServerEventHook;
 exports.launchCloseServerEventHook = launchCloseServerEventHook;
+exports.launchCloseStreamHook = launchCloseStreamHook;
 exports.launchCodeHook = launchCodeHook;
 exports.launchErrorHook = launchErrorHook;
 exports.launchErrorServerEventHook = launchErrorServerEventHook;
+exports.launchErrorStreamHook = launchErrorStreamHook;
 exports.launchExpectedResponseHook = launchExpectedResponseHook;
 exports.launchInformationHook = launchInformationHook;
 exports.launchNotPredictedHook = launchNotPredictedHook;
+exports.launchReceiveDataStreamHook = launchReceiveDataStreamHook;
 exports.launchReceiveEventServerEventHook = launchReceiveEventServerEventHook;
 exports.launchRequestHook = launchRequestHook;
 exports.launchResponseHook = launchResponseHook;
 exports.launchResponseTypeHook = launchResponseTypeHook;
 exports.launchStartServerEventHook = launchStartServerEventHook;
+exports.launchStartStreamHook = launchStartStreamHook;

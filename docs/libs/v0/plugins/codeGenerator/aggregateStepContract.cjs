@@ -4,6 +4,7 @@ require('../../core/steps/index.cjs');
 var utils = require('@duplojs/utils');
 require('../../core/response/index.cjs');
 var metadata = require('./metadata.cjs');
+var typescript = require('typescript');
 var identifier = require('../../core/steps/identifier.cjs');
 var process = require('../../core/steps/process.cjs');
 var extract = require('../../core/steps/extract.cjs');
@@ -13,6 +14,7 @@ var cut = require('../../core/steps/cut.cjs');
 var handler = require('../../core/steps/handler.cjs');
 var contract = require('../../core/response/contract.cjs');
 
+const defaultFluxStreamSchema = utils.DP.unknown().setOverrideTypescriptTransformer(typescript.factory.createTypeReferenceNode("Uint8Array", [typescript.factory.createTypeReferenceNode("ArrayBuffer")]));
 function aggregateStepContract(steps, params) {
     const filteredStep = utils.A.filter(steps, (step) => utils.A.find(step.definition.metadata, metadata.IgnoreByCodeGeneratorMetadata.is) === undefined);
     const processContracts = utils.pipe(filteredStep, utils.A.filter(identifier.stepIdentifier(process.processStepKind)), utils.A.filter((step) => utils.A.find(step.definition.process.definition.metadata, metadata.IgnoreByCodeGeneratorMetadata.is) === undefined), utils.A.map((element) => aggregateStepContract(element.definition.process.definition.steps, params)), utils.O.to({
@@ -66,6 +68,16 @@ function aggregateStepContract(steps, params) {
         information: utils.DP.literal(information),
         body,
         events: utils.DP.object(events),
+    })), utils.P.when(contract.ResponseContract.streamContractKind.has, ({ code, information, body }) => utils.DP.object({
+        code: utils.DP.literal(code),
+        information: utils.DP.literal(information),
+        body,
+        flux: defaultFluxStreamSchema,
+    })), utils.P.when(contract.ResponseContract.streamTextContractKind.has, ({ code, information, body, flux }) => utils.DP.object({
+        code: utils.DP.literal(code),
+        information: utils.DP.literal(information),
+        body,
+        flux,
     })), utils.P.exhaustive)), utils.A.concat(processContracts.endpointContract));
     return {
         entrypointContract,

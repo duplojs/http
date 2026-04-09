@@ -1,11 +1,12 @@
 import './types/index.mjs';
 export { createClientKind } from './kind.mjs';
 export { createHttpClient, httpClientKind } from './httpClient.mjs';
-export { launchBeforeRetryServerEventHook, launchCloseServerEventHook, launchCodeHook, launchErrorHook, launchErrorServerEventHook, launchExpectedResponseHook, launchInformationHook, launchNotPredictedHook, launchReceiveEventServerEventHook, launchRequestHook, launchResponseHook, launchResponseTypeHook, launchStartServerEventHook } from './hooks.mjs';
+export { launchBeforeRetryServerEventHook, launchCloseServerEventHook, launchCloseStreamHook, launchCodeHook, launchErrorHook, launchErrorServerEventHook, launchErrorStreamHook, launchExpectedResponseHook, launchInformationHook, launchNotPredictedHook, launchReceiveDataStreamHook, launchReceiveEventServerEventHook, launchRequestHook, launchResponseHook, launchResponseTypeHook, launchStartServerEventHook, launchStartStreamHook } from './hooks.mjs';
 export { getBody } from './getBody.mjs';
 export { insertParamsInPath } from './insertParamsInPath.mjs';
 export { queryToString } from './queryToString.mjs';
 export { PromiseRequest } from './promiseRequest.mjs';
 export { UnexpectedCodeResponseError, UnexpectedInformationResponseError, UnexpectedResponseError, UnexpectedResponseTypeError } from './unexpectedResponseError.mjs';
-export { makeClientEventsResponse } from './serverSentEvents.mjs';
+export { isClientEventsResponse, makeClientEventsResponse } from './serverSentEvents.mjs';
+export { isClientStreamResponse, makeClientStreamResponse } from './stream.mjs';
 export { autoCreateCacheKey, findResponseFromCacheStore, saveResponseInCacheStore } from './clientCache.mjs';

@@ -32,7 +32,7 @@ export declare function makeRouteFolder(params: MakeRouteFolderParams): import("
             readonly coerce: boolean;
             readonly checkers: readonly [];
         }>>>, NoInfer<ResponseContract.Contract<"304", "resource.notModified", import("@duplojs/utils/dataParser").DataParserEmpty<import("@duplojs/utils/dataParser").DataParserDefinitionEmpty>>>];
-        theFunction(floor: {}, param: import("../../core/steps").HandlerStepFunctionParams<import("../../core/response").PredictedResponse<"200", "resource.found", SF.FileInterface> | import("../../core/response").PredictedResponse<"404", "resource.notfound", undefined> | import("../../core/response").PredictedResponse<"304", "resource.notModified", undefined>>): import("@duplojs/utils").MaybePromise<import("../../core/response").PredictedResponse<"200", "resource.found", SF.FileInterface> | import("../../core/response").PredictedResponse<"404", "resource.notfound", undefined> | import("../../core/response").PredictedResponse<"304", "resource.notModified", undefined>>;
+        theFunction(floor: {}, params: import("../../core/steps").HandlerStepFunctionParams<import("../../core/response").PredictedResponse<"200", "resource.found", SF.FileInterface> | import("../../core/response").PredictedResponse<"404", "resource.notfound", undefined> | import("../../core/response").PredictedResponse<"304", "resource.notModified", undefined>>): import("@duplojs/utils").MaybePromise<import("../../core/response").PredictedResponse<"200", "resource.found", SF.FileInterface> | import("../../core/response").PredictedResponse<"404", "resource.notfound", undefined> | import("../../core/response").PredictedResponse<"304", "resource.notModified", undefined>>;
         readonly metadata: readonly [];
     }>];
 }>;

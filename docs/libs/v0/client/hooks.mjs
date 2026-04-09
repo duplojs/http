@@ -106,5 +106,37 @@ async function launchReceiveEventServerEventHook(clientHook, promiseRequestHook,
         await clientHook[index](event, response);
     }
 }
+async function launchCloseStreamHook(clientHook, promiseRequestHook, response) {
+    for (let index = 0; index < promiseRequestHook.length; index++) {
+        await promiseRequestHook[index](response);
+    }
+    for (let index = 0; index < clientHook.length; index++) {
+        await clientHook[index](response);
+    }
+}
+async function launchReceiveDataStreamHook(clientHook, promiseRequestHook, data, response) {
+    for (let index = 0; index < promiseRequestHook.length; index++) {
+        await promiseRequestHook[index](data, response);
+    }
+    for (let index = 0; index < clientHook.length; index++) {
+        await clientHook[index](data, response);
+    }
+}
+async function launchErrorStreamHook(clientHook, promiseRequestHook, error, response) {
+    for (let index = 0; index < promiseRequestHook.length; index++) {
+        await promiseRequestHook[index](error, response);
+    }
+    for (let index = 0; index < clientHook.length; index++) {
+        await clientHook[index](error, response);
+    }
+}
+async function launchStartStreamHook(clientHook, promiseRequestHook, response) {
+    for (let index = 0; index < promiseRequestHook.length; index++) {
+        await promiseRequestHook[index](response);
+    }
+    for (let index = 0; index < clientHook.length; index++) {
+        await clientHook[index](response);
+    }
+}
 
-export { launchBeforeRetryServerEventHook, launchCloseServerEventHook, launchCodeHook, launchErrorHook, launchErrorServerEventHook, launchExpectedResponseHook, launchInformationHook, launchNotPredictedHook, launchReceiveEventServerEventHook, launchRequestHook, launchResponseHook, launchResponseTypeHook, launchStartServerEventHook };
+export { launchBeforeRetryServerEventHook, launchCloseServerEventHook, launchCloseStreamHook, launchCodeHook, launchErrorHook, launchErrorServerEventHook, launchErrorStreamHook, launchExpectedResponseHook, launchInformationHook, launchNotPredictedHook, launchReceiveDataStreamHook, launchReceiveEventServerEventHook, launchRequestHook, launchResponseHook, launchResponseTypeHook, launchStartServerEventHook, launchStartStreamHook };

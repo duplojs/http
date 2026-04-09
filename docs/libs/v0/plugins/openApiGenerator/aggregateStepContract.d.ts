@@ -5,7 +5,7 @@ import type { EntrypointKey } from "./types";
 export type EntrypointReduceResult = Record<EntrypointKey, DP.DataParser | Record<string, DP.DataParser>>;
 export interface AggregateStepsResult {
     entrypointContract: EntrypointReduceResult;
-    endpointContract: (ResponseContract.Contract | ResponseContract.ServerSentEventsContract)[];
+    endpointContract: ResponseContract.Contracts[];
 }
 export interface AggregateStepsParams {
     readonly defaultExtractContract: ResponseContract.Contract;

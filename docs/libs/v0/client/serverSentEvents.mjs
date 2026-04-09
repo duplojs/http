@@ -20,14 +20,7 @@ function makeClientEventsResponse(response, fetchUrl, fetchInitParams) {
         let receiveEventServerEvent = undefined;
         const eventResponse = {
             ...response,
-            closeEventStream: () => void abortController.abort(closeReason),
-            onReceiveEvent: (eventName, callback) => {
-                receiveEventServerEvent ??= [];
-                receiveEventServerEvent.push((receiveEvent) => receiveEvent.event === eventName
-                    ? callback(receiveEvent, eventResponse)
-                    : undefined);
-                return eventResponse;
-            },
+            handlerType: "events",
             onStreamEvent: (event, callback) => {
                 if (event === "receiveServerEvents") {
                     receiveEventServerEvent ??= [];
@@ -51,7 +44,18 @@ function makeClientEventsResponse(response, fetchUrl, fetchInitParams) {
                 }
                 return eventResponse;
             },
-            async consumeEventStream() {
+            onReceiveEvent: (eventName, callback) => {
+                receiveEventServerEvent ??= [];
+                receiveEventServerEvent.push((receiveEvent) => receiveEvent.event === eventName
+                    ? callback(receiveEvent, eventResponse)
+                    : undefined);
+                return eventResponse;
+            },
+            closeEventStream: () => {
+                abortController.abort(closeReason);
+                void reader?.cancel(closeReason);
+            },
+            consumeEventStream: async () => {
                 for await (const __ of eventResponse) { }
             },
             [Symbol.asyncIterator]: async function* () {
@@ -71,9 +75,7 @@ function makeClientEventsResponse(response, fetchUrl, fetchInitParams) {
         };
         return eventResponse;
     };
-    if (!reader
-        || response.code === "204"
-        || !response.headers.get("content-type")?.includes("text/event-stream")) {
+    if (!reader || response.code === "204") {
         return createEventResponse(async function* () { });
     }
     return createEventResponse((emitError, emitBeforeRetry) => {
@@ -204,5 +206,8 @@ function makeClientEventsResponse(response, fetchUrl, fetchInitParams) {
         });
     });
 }
+function isClientEventsResponse(response) {
+    return Symbol.asyncIterator in response && response.handlerType === "events";
+}
 
-export { makeClientEventsResponse };
+export { isClientEventsResponse, makeClientEventsResponse };

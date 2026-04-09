@@ -11,6 +11,7 @@ var AA = require('@duplojs/utils/array');
 var unexpectedResponseError = require('./unexpectedResponseError.cjs');
 var serverSentEvents = require('./serverSentEvents.cjs');
 var clientCache = require('./clientCache.cjs');
+var stream = require('./stream.cjs');
 
 function _interopNamespaceDefault(e) {
     var n = Object.create(null);
@@ -152,8 +153,18 @@ class PromiseRequest extends Promise {
         void this.then(EE__namespace.whenIsRight((response) => {
             if ((response.predicted === true
                 || response.requestParams.disabledPredicateMode === true)
-                && Symbol.asyncIterator in response) {
+                && serverSentEvents.isClientEventsResponse(response)) {
                 response.onReceiveEvent(eventName, callback);
+            }
+        }));
+        return this;
+    }
+    whenReceiveDataStream(callback) {
+        void this.then(EE__namespace.whenIsRight((response) => {
+            if ((response.predicted === true
+                || response.requestParams.disabledPredicateMode === true)
+                && stream.isClientStreamResponse(response)) {
+                response.onStream("receiveData", callback);
             }
         }));
         return this;
@@ -319,7 +330,7 @@ class PromiseRequest extends Promise {
             if (EE__namespace.isRight(maybeResponse)) {
                 return utils.unwrap(maybeResponse);
             }
-            throw new unexpectedResponseError.UnexpectedResponseTypeError("informational", utils.unwrap(maybeResponse));
+            throw new unexpectedResponseError.UnexpectedResponseTypeError("serverError", utils.unwrap(maybeResponse));
         });
     }
     iWantExpectedResponseOrThrow() {
@@ -388,10 +399,9 @@ class PromiseRequest extends Promise {
             signal: requestParams.abortController.signal,
         };
         return fetch(fetchUrl, fetchInitParams)
-            .then((response) => getBody.getBody(response)
-            .then((body) => {
+            .then((response) => {
             const clientResponse = {
-                body,
+                body: undefined,
                 information: response.headers.get(requestParams.informationHeaderKey) ?? undefined,
                 code: response.status.toString(),
                 ok: (response.status < 500)
@@ -408,11 +418,18 @@ class PromiseRequest extends Promise {
             if (response.headers.get("content-type")?.includes("text/event-stream")) {
                 return EE__namespace.right("response", serverSentEvents.makeClientEventsResponse(clientResponse, fetchUrl, fetchInitParams));
             }
-            if (clientResponse.code.startsWith("2")) {
-                clientCache.saveResponseInCacheStore(requestParams, clientResponse);
+            if (response.headers.get("x-duplojs-body-options")?.includes("stream")) {
+                return EE__namespace.right("response", stream.makeClientStreamResponse(clientResponse));
             }
-            return EE__namespace.right("response", clientResponse);
-        }))
+            return getBody.getBody(response)
+                .then((body) => {
+                clientResponse.body = body;
+                if (clientResponse.code.startsWith("2")) {
+                    clientCache.saveResponseInCacheStore(requestParams, clientResponse);
+                }
+                return EE__namespace.right("response", clientResponse);
+            });
+        })
             .catch((error) => EE__namespace.left("request-error", {
             error,
             requestParams,

@@ -3,11 +3,14 @@
 require('../../../core/response/index.cjs');
 require('../../../core/route/index.cjs');
 var serverSentEvents = require('../../../core/serverSentEvents.cjs');
+var stream = require('../../../core/stream.cjs');
 var serverUtils = require('@duplojs/server-utils');
 var utils = require('@duplojs/utils');
 var node_fs = require('node:fs');
 var hooks = require('../../../core/route/hooks.cjs');
 var serverSentEventsPredicted = require('../../../core/response/serverSentEventsPredicted.cjs');
+var streamPredicted = require('../../../core/response/streamPredicted.cjs');
+var streamTextPredicted = require('../../../core/response/streamTextPredicted.cjs');
 
 function initNodeHook(hub, serverParams) {
     const isDev = hub.config.environment === "DEV";
@@ -19,7 +22,7 @@ function initNodeHook(hub, serverParams) {
         async sendResponse({ request, currentResponse, exit }) {
             const { response: rawResponse, request: rawRequest } = request.raw;
             if (currentResponse instanceof serverSentEventsPredicted.ServerSentEventsPredictedResponse) {
-                const handler = serverSentEvents.ServerSentEvents.init(currentResponse, {
+                const handler = serverSentEvents.ServerSentEvents.init(currentResponse.startSendingEvents, {
                     lastId: typeof request.headers["last-event-id"] === "string"
                         ? request.headers["last-event-id"]
                         : null,
@@ -27,6 +30,23 @@ function initNodeHook(hub, serverParams) {
                 rawRequest.on("close", handler.abort);
                 void handler.start((value) => new Promise((resolve) => {
                     if (!rawResponse.write(value)) {
+                        rawResponse.once("drain", resolve);
+                    }
+                    else {
+                        resolve();
+                    }
+                }), () => void rawResponse.end());
+                return exit();
+            }
+            else if (currentResponse instanceof streamPredicted.StreamPredictedResponse
+                || currentResponse instanceof streamTextPredicted.StreamTextPredictedResponse) {
+                const handler = stream.Stream.init(currentResponse.startStream);
+                rawRequest.on("close", handler.abort);
+                void handler.start((value) => new Promise((resolve) => {
+                    if (!rawResponse.write((value instanceof Buffer
+                        || value instanceof Uint8Array)
+                        ? value
+                        : String(value))) {
                         rawResponse.once("drain", resolve);
                     }
                     else {

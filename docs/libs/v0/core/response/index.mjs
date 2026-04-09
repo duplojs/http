@@ -3,3 +3,5 @@ export { ResponseContract } from './contract.mjs';
 export { HookResponse } from './hook.mjs';
 export { PredictedResponse } from './predicted.mjs';
 export { ServerSentEventsPredictedResponse } from './serverSentEventsPredicted.mjs';
+export { StreamPredictedResponse } from './streamPredicted.mjs';
+export { StreamTextPredictedResponse } from './streamTextPredicted.mjs';

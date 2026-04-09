@@ -12,12 +12,14 @@ export type ServerRouteQuery = Record<string, MaybeArray<ServerPrimitiveData | {
 }>>;
 export type ServerRouteBody = unknown;
 export type ServerRouteResponseBody = unknown;
+export type ServerRouteResponseFlux = string | Uint8Array<ArrayBuffer>;
 export type ServerRouteResponseEvents = Record<string, unknown>;
 export interface ServerRouteResponse {
     code: SS.Number;
     information?: string;
     body?: ServerRouteResponseBody;
     events?: ServerRouteResponseEvents;
+    flux?: ServerRouteResponseFlux;
 }
 export interface ServerRoute {
     path: string;

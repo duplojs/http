@@ -1,5 +1,12 @@
+import { type PredictedResponse } from "./predicted";
+import { type ServerSentEventsPredictedResponse } from "./serverSentEventsPredicted";
+import { type StreamPredictedResponse } from "./streamPredicted";
+import { type StreamTextPredictedResponse } from "./streamTextPredicted";
 export * from "./base";
 export * from "./contract";
 export * from "./hook";
 export * from "./predicted";
 export * from "./serverSentEventsPredicted";
+export * from "./streamPredicted";
+export * from "./streamTextPredicted";
+export type PredictedResponses = (PredictedResponse | ServerSentEventsPredictedResponse | StreamPredictedResponse | StreamTextPredictedResponse);
