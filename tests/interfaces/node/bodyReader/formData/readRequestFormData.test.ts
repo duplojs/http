@@ -335,10 +335,9 @@ describe("readRequestFormData", () => {
 						"content-type": contentType,
 					},
 					bodyChunks: [
-						Buffer.from(`--${boundary}\r\n`),
-						Buffer.from("Content-Disposition:"),
-						Buffer.from(" form-data; name=\"field\"\r\n\r\n"),
-
+						Buffer.from(`--${boundary}\r\nContent-Disposition: form-data; name="field"`),
+						Buffer.from("A".repeat(20)),
+						Buffer.from("\r\n\r\n"),
 					],
 				},
 			},
@@ -363,7 +362,7 @@ describe("readRequestFormData", () => {
 		);
 
 		expect(E.hasInformation(result, "error")).toBe(true);
-		expect(unwrap(result)).toBeInstanceOf(BodyParseFormDataError);
+		expect(unwrap(result)).toStrictEqual(new BodyParseFormDataError("Buffer size exceeds limit."));
 	});
 
 	it("returns error for invalid header part", async() => {
