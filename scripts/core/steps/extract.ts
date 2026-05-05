@@ -28,6 +28,7 @@ export type ExtractShape<
 			| DisabledExtractKeys
 			| "body"
 			| "bodyReader"
+			| "params"
 			| symbol
 		>,
 		| DP.DataParser
@@ -38,6 +39,7 @@ export type ExtractShape<
 			| DP.DataParser
 			| Record<string, DP.DataParser>
 		);
+		params: Record<string, DP.DataParser>;
 	}
 >;
 

@@ -6,6 +6,23 @@ import { routeBuilderHandler } from "./builder";
 import { type ClientErrorResponseCode, type ResponseContract } from "@core/response";
 import { type Request } from "@core/request";
 import { type Metadata } from "@core/metadata";
+import { type ExtractParamsKeyFromPath } from "@core/types";
+
+type HandleParamsInference<
+	GenericShape extends ExtractShape,
+	GenericPath extends string,
+> = (
+	& GenericShape
+	& {
+		params?: ExtractParamsKeyFromPath<GenericPath> extends infer InferredKey extends string
+			? (
+				& Partial<Record<InferredKey, DP.DataParser>>
+				& Record<string, DP.DataParser>
+				& Record<Exclude<keyof GenericShape["params"], InferredKey>, never>
+			)
+			: {};
+	}
+);
 
 declare module "./builder" {
 	interface RouteBuilder<
@@ -20,7 +37,10 @@ declare module "./builder" {
 			) = never,
 			const GenericMetadata extends readonly Metadata[] = readonly [],
 		>(
-			shape: GenericShape,
+			shape: HandleParamsInference<
+				GenericShape,
+				GenericDefinition["paths"][number]
+			>,
 			responseContract?: GenericResponseContract,
 			...metadata: GenericMetadata,
 		): RouteBuilder<

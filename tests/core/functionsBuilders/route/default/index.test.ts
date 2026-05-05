@@ -11,7 +11,7 @@ describe("route function builder", () => {
 	});
 
 	it("failed build step", async() => {
-		const route = useRouteBuilder("GET", "/test", { hooks: [{ afterSendResponse: spyResponse }] })
+		const route = useRouteBuilder("GET", "/test/{value}", { hooks: [{ afterSendResponse: spyResponse }] })
 			.extract({ params: { value: DPE.string() } })
 			.handler(
 				ResponseContract.ok("good", DPE.string()),
@@ -28,7 +28,7 @@ describe("route function builder", () => {
 
 		const route = usePreflightBuilder()
 			.exec(process)
-			.useRouteBuilder("GET", "/test", { hooks: [{ afterSendResponse: spyResponse }] })
+			.useRouteBuilder("GET", "/test/{value}", { hooks: [{ afterSendResponse: spyResponse }] })
 			.extract({ params: { value: DPE.string() } })
 			.handler(
 				ResponseContract.ok("good", DPE.string()),
@@ -49,7 +49,7 @@ describe("route function builder", () => {
 
 		const route = usePreflightBuilder()
 			.exec(process)
-			.useRouteBuilder("GET", "/test", { hooks: [{ afterSendResponse: spyResponse }] })
+			.useRouteBuilder("GET", "/test/{value}", { hooks: [{ afterSendResponse: spyResponse }] })
 			.extract({ params: { value: DPE.string() } })
 			.handler(
 				ResponseContract.ok("good", DPE.string()),
@@ -90,7 +90,7 @@ describe("route function builder", () => {
 
 		const route = usePreflightBuilder()
 			.exec(process)
-			.useRouteBuilder("GET", "/test", { hooks: [{ afterSendResponse: spyResponse }] })
+			.useRouteBuilder("GET", "/test/{value}", { hooks: [{ afterSendResponse: spyResponse }] })
 			.extract({ params: { value: DPE.string() } })
 			.handler(
 				ResponseContract.ok("good", DPE.string()),
@@ -122,7 +122,7 @@ describe("route function builder", () => {
 	});
 
 	it("route default response", async() => {
-		const route = useRouteBuilder("GET", "/test", { hooks: [{ afterSendResponse: spyResponse }] })
+		const route = useRouteBuilder("GET", "/test/{value}", { hooks: [{ afterSendResponse: spyResponse }] })
 			.extract({ params: { value: DPE.string() } })
 			.handler(
 				ResponseContract.ok("good", DPE.empty()),

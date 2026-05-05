@@ -11,7 +11,7 @@ describe("handler step function builder", () => {
 	});
 
 	it("response from handler", async() => {
-		const route = useRouteBuilder("GET", "/test", { hooks: [{ afterSendResponse: spyResponse }] })
+		const route = useRouteBuilder("GET", "/test/{value}", { hooks: [{ afterSendResponse: spyResponse }] })
 			.extract({ params: { value: DPE.string() } })
 			.handler(
 				ResponseContract.ok("good", DPE.string()),

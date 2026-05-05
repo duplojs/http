@@ -25,7 +25,7 @@ describe("aggregateStepContract", () => {
 		.extract({ query: { ignoredQuery: DPE.string() } })
 		.exports();
 
-	const route = useRouteBuilder("GET", "/test")
+	const route = useRouteBuilder("GET", "/test/{ignoredParams}")
 		.extract({
 			headers: DPE.object({
 				header3: DPE.string(),
