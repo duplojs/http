@@ -192,10 +192,6 @@ export async function readRequestFormData<
 				return await treatError(new BodyParseWrongChunkReceived("Buffer.", chunk));
 			}
 
-			if (currentBuffer.length > params.maxBufferSize) {
-				return await treatError(new BodyParseFormDataError("Buffer size exceeds limit."));
-			}
-
 			currentBuffer = Buffer.concat([currentBuffer, chunk]);
 
 			while (true) {
@@ -243,6 +239,10 @@ export async function readRequestFormData<
 				} else {
 					// check if buffer contain only end of header part
 					return await treatError(new BodyParseFormDataError("Wrong content."));
+				}
+
+				if (currentBuffer.length > params.maxBufferSize) {
+					return await treatError(new BodyParseFormDataError("Buffer size exceeds limit."));
 				}
 			}
 		}

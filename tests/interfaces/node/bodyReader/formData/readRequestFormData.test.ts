@@ -334,7 +334,12 @@ describe("readRequestFormData", () => {
 					headers: {
 						"content-type": contentType,
 					},
-					bodyChunks: [Buffer.from("A".repeat(20))],
+					bodyChunks: [
+						Buffer.from(`--${boundary}\r\n`),
+						Buffer.from("Content-Disposition:"),
+						Buffer.from(" form-data; name=\"field\"\r\n\r\n"),
+
+					],
 				},
 			},
 		});
