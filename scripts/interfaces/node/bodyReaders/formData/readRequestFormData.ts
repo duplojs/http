@@ -191,9 +191,9 @@ export async function readRequestFormData<
 			if (!(chunk instanceof Buffer)) {
 				return await treatError(new BodyParseWrongChunkReceived("Buffer.", chunk));
 			}
-
+			console.log("chunk.length", chunk.length);
 			currentBuffer = Buffer.concat([currentBuffer, chunk]);
-
+			console.log("currentBuffer.length", currentBuffer.length);
 			if (currentBuffer.length > params.maxBufferSize) {
 				return await treatError(new BodyParseFormDataError("Buffer size exceeds limit."));
 			}

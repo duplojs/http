@@ -9,6 +9,6 @@ export class BodyParseFormDataError extends kindHeritage(
 	public constructor(
 		public information: string,
 	) {
-		super({}, [`Body parse form date error: ${information}`]);
+		super({}, [`Body parse form data error: ${information}`]);
 	}
 }
