@@ -1,12 +1,16 @@
-import { DPE, keyWrappedValue } from "@duplojs/utils";
-import { createPrimitive, type EligiblePrimitive, type Primitive } from "@duplojs/utils/clean";
+import { DPE, C } from "@duplojs/utils";
+import "@duplojs/utils/clean";
+
+interface ToExtractParserParams {
+	coerce?: boolean;
+}
 
 declare module "@duplojs/utils/clean" {
 	interface PrimitiveHandler<
-		GenericValue extends EligiblePrimitive = EligiblePrimitive,
+		GenericValue extends C.EligiblePrimitive = C.EligiblePrimitive,
 	> {
-		toExtractParser(): DPE.ContractExtended<
-			Primitive<GenericValue>,
+		toExtractParser(params?: ToExtractParserParams): DPE.ContractExtended<
+			C.Primitive<GenericValue>,
 			unknown
 		>;
 
@@ -17,23 +21,27 @@ declare module "@duplojs/utils/clean" {
 	}
 }
 
-createPrimitive.overrideHandler.setMethod(
+C.createPrimitive.overrideHandler.setMethod(
 	"toExtractParser",
-	(self) => {
-		const dataParser = DPE.transform(
-			self.dataParser,
-			(input) => ({
-				[keyWrappedValue]: input,
-			}) as never,
+	(self, params) => {
+		const innerDataParser = C.toMapDataParser(
+			self,
+			params,
 		);
 
-		return dataParser;
+		return DPE.lazy(
+			() => innerDataParser,
+		) as never;
 	},
 );
 
-createPrimitive.overrideHandler.setMethod(
+C.createPrimitive.overrideHandler.setMethod(
 	"toEndpointSchema",
-	(self) => DPE.lazy(
-		() => self.dataParser,
-	),
+	(self) => {
+		const innerDataParser = self.dataParser;
+
+		return DPE.lazy(
+			() => innerDataParser,
+		) as never;
+	},
 );

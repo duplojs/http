@@ -11,7 +11,7 @@ describe("cut step function builder", () => {
 	});
 
 	it("response from cut", async() => {
-		const route = useRouteBuilder("GET", "/test", { hooks: [{ afterSendResponse: spyResponse }] })
+		const route = useRouteBuilder("GET", "/test/{value}", { hooks: [{ afterSendResponse: spyResponse }] })
 			.extract({ params: { value: DPE.string() } })
 			.cut(
 				[ResponseContract.ok("goodCut", DPE.string().transform(async(value) => Promise.resolve(value)))],

@@ -11,7 +11,7 @@ describe("extract step function builder", () => {
 	});
 
 	it("sub extract value from params", async() => {
-		const route = useRouteBuilder("GET", "/test", { hooks: [{ afterSendResponse: spyResponse }] })
+		const route = useRouteBuilder("GET", "/test/{value}", { hooks: [{ afterSendResponse: spyResponse }] })
 			.extract({ params: { value: DPE.string() } })
 			.handler(
 				ResponseContract.ok("good", DPE.string()),
@@ -112,7 +112,7 @@ describe("extract step function builder", () => {
 	});
 
 	it("error sub extract", async() => {
-		const route = useRouteBuilder("GET", "/test", { hooks: [{ afterSendResponse: spyResponse }] })
+		const route = useRouteBuilder("GET", "/test/{value}", { hooks: [{ afterSendResponse: spyResponse }] })
 			.extract({ params: { value: DPE.string() } })
 			.handler(
 				ResponseContract.ok("good", DPE.string()),

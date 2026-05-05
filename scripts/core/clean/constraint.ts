@@ -1,14 +1,18 @@
-import { type DP, DPE, keyWrappedValue } from "@duplojs/utils";
-import { type ConstrainedType, constrainedTypeKind, createConstraint, type EligiblePrimitive } from "@duplojs/utils/clean";
+import { type DP, DPE, C } from "@duplojs/utils";
+import "@duplojs/utils/clean";
+
+interface ToExtractParserParams {
+	coerce?: boolean;
+}
 
 declare module "@duplojs/utils/clean" {
 	interface ConstraintHandler<
 		GenericName extends string = string,
-		GenericPrimitiveValue extends EligiblePrimitive = EligiblePrimitive,
+		GenericPrimitiveValue extends C.EligiblePrimitive = C.EligiblePrimitive,
 		GenericCheckers extends readonly DP.DataParserChecker[] = readonly DP.DataParserChecker[],
 	> {
-		toExtractParser(): DPE.ContractExtended<
-			ConstrainedType<
+		toExtractParser(params?: ToExtractParserParams): DPE.ContractExtended<
+			C.ConstrainedType<
 				GenericName,
 				GenericPrimitiveValue
 			>,
@@ -19,39 +23,27 @@ declare module "@duplojs/utils/clean" {
 	}
 }
 
-createConstraint.overrideHandler.setMethod(
+C.createConstraint.overrideHandler.setMethod(
 	"toExtractParser",
-	(self) => {
-		const dataParserWithCheckers = self
-			.primitiveHandler
-			.dataParser
-			.addChecker(...self.checkers as never);
-
-		const valueContainer = constrainedTypeKind.setTo(
-			{},
-			{ [self.name]: null },
+	(self, params) => {
+		const innerDataParser = C.toMapDataParser(
+			self,
+			params,
 		);
 
-		const dataParser = DPE.transform(
-			dataParserWithCheckers,
-			(input) => ({
-				...valueContainer,
-				[keyWrappedValue]: input,
-			}) as never,
-		);
-
-		return dataParser;
+		return DPE.lazy(
+			() => innerDataParser,
+		) as never;
 	},
 );
 
-createConstraint.overrideHandler.setMethod(
+C.createConstraint.overrideHandler.setMethod(
 	"toEndpointSchema",
 	(self) => {
-		const dataParser = self
-			.primitiveHandler
-			.dataParser
-			.addChecker(...self.checkers as never) as never;
+		const innerDataParser = self.internal.dataParser;
 
-		return DPE.lazy(() => dataParser);
+		return DPE.lazy(
+			() => innerDataParser,
+		) as never;
 	},
 );

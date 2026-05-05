@@ -1,6 +1,10 @@
 import { DP, DPE, type IsEqual, type SimplifyTopLevel, type IsExtends, pipe, O, A, C, type MaybeArray } from "@duplojs/utils";
 import "@duplojs/utils/clean";
 
+interface ToExtractParserParams {
+	coerce?: boolean;
+}
+
 interface ToEndpointSchemaParams {
 	addEntityName?: boolean | string;
 }
@@ -16,7 +20,8 @@ declare module "@duplojs/utils/clean" {
 			const GenericKey extends MaybeArray<keyof GenericEntityProperties>
 			= readonly (keyof GenericEntityProperties)[],
 		>(
-			keys?: GenericKey
+			keys?: GenericKey,
+			params?: ToExtractParserParams
 		): GenericKey extends readonly any[]
 			? ReturnType<
 				typeof DPE.object<
@@ -67,11 +72,11 @@ declare module "@duplojs/utils/clean" {
 
 C.createEntity.overrideHandler.setMethod(
 	"toExtractParser",
-	(self, keys) => {
+	(self, keys, params) => {
 		if (typeof keys === "string") {
 			return C.entityPropertyDefinitionToDataParser(
 				self.propertiesDefinition[keys]!,
-				(newTypeHandler) => newTypeHandler.toExtractParser(),
+				(newTypeHandler) => newTypeHandler.toExtractParser(params),
 			);
 		}
 
@@ -84,7 +89,7 @@ C.createEntity.overrideHandler.setMethod(
 					key,
 					C.entityPropertyDefinitionToDataParser(
 						value,
-						(newTypeHandler) => newTypeHandler.toExtractParser(),
+						(newTypeHandler) => newTypeHandler.toExtractParser(params),
 					),
 				),
 			),

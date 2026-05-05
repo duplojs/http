@@ -5,7 +5,6 @@ import { type O, type MaybeArray, type NeverCoalescing, type FixDeepFunctionInfe
 import { routeBuilderHandler } from "./builder";
 import { type GetCheckerInput, type Checker, type GetCheckerResult, type GetCheckerOptions } from "@core/checker";
 import { type ClientErrorResponseCode, type ResponseContract } from "@core/response";
-import { type Request } from "@core/request";
 import { type Metadata } from "@core/metadata";
 
 declare module "./builder" {

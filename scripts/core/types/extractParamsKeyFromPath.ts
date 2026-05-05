@@ -1,0 +1,5 @@
+export type ExtractParamsKeyFromPath<
+	GenericPath extends string = string,
+> = GenericPath extends `${string}{${infer InferredParams}}${infer InferredRest}`
+	? InferredParams | ExtractParamsKeyFromPath<InferredRest>
+	: never;

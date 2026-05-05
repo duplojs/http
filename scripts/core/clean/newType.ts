@@ -1,5 +1,9 @@
-import { A, DPE, keyWrappedValue, O, pipe } from "@duplojs/utils";
-import { constrainedTypeKind, createNewType, type NewType, newTypeKind } from "@duplojs/utils/clean";
+import { C, DPE } from "@duplojs/utils";
+import "@duplojs/utils/clean";
+
+interface ToExtractParserParams {
+	coerce?: boolean;
+}
 
 declare module "@duplojs/utils/clean" {
 	interface NewTypeHandler<
@@ -8,8 +12,8 @@ declare module "@duplojs/utils/clean" {
 		GenericConstraintsHandler extends readonly ConstraintHandler[] = readonly ConstraintHandler[],
 		GenericInput extends unknown = unknown,
 	> {
-		toExtractParser(): DPE.ContractExtended<
-			NewType<
+		toExtractParser(params?: ToExtractParserParams): DPE.ContractExtended<
+			C.NewType<
 				GenericName,
 				GenericValue,
 				GenericConstraintsHandler[number]["name"]
@@ -21,36 +25,27 @@ declare module "@duplojs/utils/clean" {
 	}
 }
 
-createNewType.overrideHandler.setMethod(
+C.createNewType.overrideHandler.setMethod(
 	"toExtractParser",
-	(self) => {
-		const constraintsKindValue = pipe(
-			self.constraints,
-			A.map(({ name }) => O.entry(name, null)),
-			O.fromEntries,
+	(self, params) => {
+		const innerDataParser = C.toMapDataParser(
+			self,
+			params,
 		);
 
-		const valueContainer = newTypeKind.setTo(
-			constrainedTypeKind.setTo(
-				{},
-				constraintsKindValue,
-			),
-			self.name,
-		);
-
-		const dataParser = DPE.transform(
-			self.dataParser,
-			(input) => ({
-				...valueContainer,
-				[keyWrappedValue]: input,
-			}) as never,
-		);
-
-		return dataParser;
+		return DPE.lazy(
+			() => innerDataParser,
+		) as never;
 	},
 );
 
-createNewType.overrideHandler.setMethod(
+C.createNewType.overrideHandler.setMethod(
 	"toEndpointSchema",
-	(self) => DPE.lazy(() => self.dataParser),
+	(self) => {
+		const innerDataParser = self.internal.dataParser;
+
+		return DPE.lazy(
+			() => innerDataParser,
+		) as never;
+	},
 );

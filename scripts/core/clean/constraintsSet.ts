@@ -1,18 +1,22 @@
-import { A, DPE, keyWrappedValue, O, pipe, type UnionToIntersection } from "@duplojs/utils";
-import { constrainedTypeKind, createConstraintsSet, type EligiblePrimitive, type GetConstraint, type Primitive } from "@duplojs/utils/clean";
+import { DPE, type UnionToIntersection, C } from "@duplojs/utils";
+import "@duplojs/utils/clean";
+
+interface ToExtractParserParams {
+	coerce?: boolean;
+}
 
 declare module "@duplojs/utils/clean" {
 	interface ConstraintsSetHandler<
-		GenericPrimitiveValue extends EligiblePrimitive = EligiblePrimitive,
+		GenericPrimitiveValue extends C.EligiblePrimitive = C.EligiblePrimitive,
 		GenericConstraintsHandler extends readonly ConstraintHandler[] = readonly [],
 	> {
-		toExtractParser(): DPE.ContractExtended<
+		toExtractParser(params?: ToExtractParserParams): DPE.ContractExtended<
 			(
-				& Primitive<GenericPrimitiveValue>
+				& C.Primitive<GenericPrimitiveValue>
 				& UnionToIntersection<
 					GenericConstraintsHandler[number] extends infer InferredConstraint
 						? InferredConstraint extends ConstraintHandler
-							? GetConstraint<InferredConstraint>
+							? C.GetConstraint<InferredConstraint>
 							: never
 						: never
 				>
@@ -24,57 +28,27 @@ declare module "@duplojs/utils/clean" {
 	}
 }
 
-createConstraintsSet.overrideHandler.setMethod(
+C.createConstraintsSet.overrideHandler.setMethod(
 	"toExtractParser",
-	(self) => {
-		const checkers = A.flatMap(
-			self.constraints,
-			({ checkers }) => checkers,
+	(self, params) => {
+		const innerDataParser = C.toMapDataParser(
+			self,
+			params,
 		);
 
-		const dataParserWithCheckers = self
-			.primitiveHandler
-			.dataParser
-			.addChecker(...checkers as never);
-
-		const constraintsKindValue = pipe(
-			self.constraints,
-			A.map(({ name }) => O.entry(name, null)),
-			O.fromEntries,
-		);
-
-		const valueContainer = constrainedTypeKind.setTo(
-			{},
-			constraintsKindValue,
-		);
-
-		const dataParser = DPE.transform(
-			dataParserWithCheckers,
-			(input) => ({
-				...valueContainer,
-				[keyWrappedValue]: input,
-			}) as never,
-		);
-
-		return dataParser;
+		return DPE.lazy(
+			() => innerDataParser,
+		) as never;
 	},
 );
 
-createConstraintsSet.overrideHandler.setMethod(
+C.createConstraintsSet.overrideHandler.setMethod(
 	"toEndpointSchema",
 	(self) => {
-		const checkers = A.flatMap(
-			self.constraints,
-			({ checkers }) => checkers,
-		);
-
-		const dataParserWithCheckers = self
-			.primitiveHandler
-			.dataParser
-			.addChecker(...checkers as never) as never;
+		const innerDataParser = self.internal.dataParser;
 
 		return DPE.lazy(
-			() => dataParserWithCheckers,
-		);
+			() => innerDataParser,
+		) as never;
 	},
 );

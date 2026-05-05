@@ -18,7 +18,7 @@ describe("checker step function builder", () => {
 					: output("wrongResult", null),
 			);
 
-		const route = useRouteBuilder("GET", "/test", { hooks: [{ afterSendResponse: spyResponse }] })
+		const route = useRouteBuilder("GET", "/test/{value}", { hooks: [{ afterSendResponse: spyResponse }] })
 			.extract({ params: { value: DPE.string() } })
 			.check(
 				checker,
@@ -65,7 +65,7 @@ describe("checker step function builder", () => {
 					: output("wrongResult", null),
 			);
 
-		const route = useRouteBuilder("GET", "/test", { hooks: [{ afterSendResponse: spyResponse }] })
+		const route = useRouteBuilder("GET", "/test/{value}", { hooks: [{ afterSendResponse: spyResponse }] })
 			.extract({ params: { value: DPE.string() } })
 			.check(
 				checker,
@@ -113,7 +113,7 @@ describe("checker step function builder", () => {
 					: output("wrongResult", null),
 			);
 
-		const route = useRouteBuilder("GET", "/test", { hooks: [{ afterSendResponse: spyResponse }] })
+		const route = useRouteBuilder("GET", "/test/{value}", { hooks: [{ afterSendResponse: spyResponse }] })
 			.extract({ params: { value: DPE.string() } })
 			.check(
 				checker,
@@ -161,7 +161,7 @@ describe("checker step function builder", () => {
 					: output("wrongResult", null),
 			);
 
-		const route = useRouteBuilder("GET", "/test", { hooks: [{ afterSendResponse: spyResponse }] })
+		const route = useRouteBuilder("GET", "/test/{value}", { hooks: [{ afterSendResponse: spyResponse }] })
 			.extract({ params: { value: DPE.string() } })
 			.check(
 				checker,
@@ -212,7 +212,7 @@ describe("checker step function builder", () => {
 					: output("wrongResult", null),
 			);
 
-		const route = useRouteBuilder("GET", "/test", { hooks: [{ afterSendResponse: spyResponse }] })
+		const route = useRouteBuilder("GET", "/test/{value}", { hooks: [{ afterSendResponse: spyResponse }] })
 			.extract({ params: { value: DPE.string() } })
 			.check(
 				checker,
@@ -263,7 +263,7 @@ describe("checker step function builder", () => {
 				),
 			);
 
-		const route = useRouteBuilder("GET", "/test", { hooks: [{ afterSendResponse: spyResponse }] })
+		const route = useRouteBuilder("GET", "/test/{value}", { hooks: [{ afterSendResponse: spyResponse }] })
 			.extract({ params: { value: DPE.string() } })
 			.check(
 				checker,
@@ -318,7 +318,7 @@ describe("checker step function builder", () => {
 			},
 		);
 
-		const route = useRouteBuilder("GET", "/test", { hooks: [{ afterSendResponse: spyResponse }] })
+		const route = useRouteBuilder("GET", "/test/{value}", { hooks: [{ afterSendResponse: spyResponse }] })
 			.extract({ params: { value: DPE.string() } })
 			.presetCheck(
 				presetChecker,
