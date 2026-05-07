@@ -27,12 +27,12 @@ declare module "@duplojs/utils/clean" {
 				typeof DPE.object<
 					SimplifyTopLevel<
 						& {
-							[Prop in GenericKey[number]]: DP.Contract<GenericEntityProperties[Prop], unknown>
+							[Prop in GenericKey[number]]: DP.DataParserExtended<GenericEntityProperties[Prop], unknown>
 						}
 					>
 				>
 			>
-			: DP.Contract<GenericEntityProperties[Extract<GenericKey, string>], unknown>;
+			: DP.DataParser<GenericEntityProperties[Extract<GenericKey, string>], unknown>;
 
 		toEndpointSchema<
 			GenericEntityRawProperties extends C.EntityRawProperties<GenericPropertiesDefinition>,
@@ -51,22 +51,22 @@ declare module "@duplojs/utils/clean" {
 				typeof DPE.object<
 					SimplifyTopLevel<
 						& {
-							[Prop in GenericKey[number]]: DP.Contract<GenericEntityRawProperties[Prop], unknown>
+							[Prop in GenericKey[number]]: DP.DataParser<GenericEntityRawProperties[Prop], unknown>
 						}
 						& (
 							IsEqual<GenericParams["addEntityName"], true> extends true
-								? { [Prop in "_entityName"]: DP.Contract<GenericName, unknown> }
+								? { [Prop in "_entityName"]: DP.DataParser<GenericName, unknown> }
 								: {}
 						)
 						& (
 							IsExtends<GenericParams["addEntityName"], string> extends true
-								? { [Prop in "_entityName"]: DP.Contract<`${GenericName}/${GenericParams["addEntityName"]}`, unknown> }
+								? { [Prop in "_entityName"]: DP.DataParser<`${GenericName}/${GenericParams["addEntityName"]}`, unknown> }
 								: {}
 						)
 					>
 				>
 			>
-			: DP.Contract<GenericEntityRawProperties[Extract<GenericKey, string>], unknown>;
+			: DP.DataParser<GenericEntityRawProperties[Extract<GenericKey, string>], unknown>;
 	}
 }
 

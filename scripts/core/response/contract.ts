@@ -207,7 +207,7 @@ export namespace ResponseContract {
 	export interface StreamTextContract<
 		GenericCode extends SuccessResponseCode = SuccessResponseCode,
 		GenericInformation extends string = string,
-		GenericFlux extends DP.Contract<string> = DP.Contract<string>,
+		GenericFlux extends DP.DataParser<string> = DP.DataParser<string>,
 		GenericSchema extends SupportedDataParser = SupportedDataParser,
 	> extends Kind<typeof streamTextContractKind.definition> {
 		code: GenericCode;

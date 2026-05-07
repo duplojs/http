@@ -12,7 +12,7 @@ declare module "@duplojs/utils/clean" {
 		GenericConstraintsHandler extends readonly ConstraintHandler[] = readonly ConstraintHandler[],
 		GenericInput extends unknown = unknown,
 	> {
-		toExtractParser(params?: ToExtractParserParams): DPE.ContractExtended<
+		toExtractParser(params?: ToExtractParserParams): DPE.DataParserExtended<
 			C.NewType<
 				GenericName,
 				GenericValue,
@@ -21,7 +21,7 @@ declare module "@duplojs/utils/clean" {
 			unknown
 		>;
 
-		toEndpointSchema(): DPE.ContractExtended<GenericValue>;
+		toEndpointSchema(): DPE.DataParserExtended<GenericValue>;
 	}
 }
 
@@ -34,8 +34,8 @@ C.createNewType.overrideHandler.setMethod(
 		);
 
 		return DPE.lazy(
-			() => innerDataParser,
-		) as never;
+			() => innerDataParser as never,
+		);
 	},
 );
 
@@ -45,7 +45,7 @@ C.createNewType.overrideHandler.setMethod(
 		const innerDataParser = self.internal.dataParser;
 
 		return DPE.lazy(
-			() => innerDataParser,
-		) as never;
+			() => innerDataParser as never,
+		);
 	},
 );

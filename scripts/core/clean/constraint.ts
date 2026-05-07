@@ -11,7 +11,7 @@ declare module "@duplojs/utils/clean" {
 		GenericPrimitiveValue extends C.EligiblePrimitive = C.EligiblePrimitive,
 		GenericCheckers extends readonly DP.DataParserChecker[] = readonly DP.DataParserChecker[],
 	> {
-		toExtractParser(params?: ToExtractParserParams): DPE.ContractExtended<
+		toExtractParser(params?: ToExtractParserParams): DPE.DataParserExtended<
 			C.ConstrainedType<
 				GenericName,
 				GenericPrimitiveValue
@@ -19,7 +19,7 @@ declare module "@duplojs/utils/clean" {
 			unknown
 		>;
 
-		toEndpointSchema(): DPE.ContractExtended<GenericPrimitiveValue>;
+		toEndpointSchema(): DPE.DataParserExtended<GenericPrimitiveValue>;
 	}
 }
 
@@ -32,8 +32,8 @@ C.createConstraint.overrideHandler.setMethod(
 		);
 
 		return DPE.lazy(
-			() => innerDataParser,
-		) as never;
+			() => innerDataParser as never,
+		);
 	},
 );
 
@@ -43,7 +43,7 @@ C.createConstraint.overrideHandler.setMethod(
 		const innerDataParser = self.internal.dataParser;
 
 		return DPE.lazy(
-			() => innerDataParser,
-		) as never;
+			() => innerDataParser as never,
+		);
 	},
 );

@@ -9,12 +9,12 @@ declare module "@duplojs/utils/clean" {
 	interface PrimitiveHandler<
 		GenericValue extends C.EligiblePrimitive = C.EligiblePrimitive,
 	> {
-		toExtractParser(params?: ToExtractParserParams): DPE.ContractExtended<
+		toExtractParser(params?: ToExtractParserParams): DPE.DataParserExtended<
 			C.Primitive<GenericValue>,
 			unknown
 		>;
 
-		toEndpointSchema(): DPE.ContractExtended<
+		toEndpointSchema(): DPE.DataParserExtended<
 			GenericValue,
 			unknown
 		>;
@@ -30,8 +30,8 @@ C.createPrimitive.overrideHandler.setMethod(
 		);
 
 		return DPE.lazy(
-			() => innerDataParser,
-		) as never;
+			() => innerDataParser as never,
+		);
 	},
 );
 
@@ -41,7 +41,7 @@ C.createPrimitive.overrideHandler.setMethod(
 		const innerDataParser = self.dataParser;
 
 		return DPE.lazy(
-			() => innerDataParser,
-		) as never;
+			() => innerDataParser as never,
+		);
 	},
 );
