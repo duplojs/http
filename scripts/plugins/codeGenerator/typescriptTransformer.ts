@@ -1,3 +1,4 @@
+import { DataParserToTypescript } from "@duplojs/data-parser-tools";
 import { createTransformer } from "@duplojs/data-parser-tools/toTypescript";
 import { SDP } from "@duplojs/server-utils";
 import { DP } from "@duplojs/utils";
@@ -41,3 +42,10 @@ export const timeTransformer = createTransformer(
 		]));
 	},
 );
+
+export const typescriptTransformers = [
+	fileTransformer,
+	dateTransformer,
+	timeTransformer,
+	...DataParserToTypescript.defaultTransformers,
+];
