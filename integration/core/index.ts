@@ -1,19 +1,17 @@
-import { asserts, E, Path } from "@duplojs/utils";
-import { setCurrentWorkingDirectory, SF } from "@duplojs/server-utils";
+import { Path } from "@duplojs/utils";
+import { setCurrentWorkingDirectoryOrThrow, SF } from "@duplojs/server-utils";
 import { createHub, routeStore } from "@duplojs/http";
 import { staticPlugin } from "@duplojs/http/static";
 import { corsPlugin } from "@duplojs/http/cors";
 import { cookiePlugin } from "@duplojs/http/cookie";
+import "@duplojs/http/codeGenerator";
 
 import "./routes";
 
 const sourceFile = SF.createFileInterface("files/fakeFiles/superTextFile.txt");
 const sourceFolder = SF.createFolderInterface("files/fakeFiles");
 
-asserts(
-	setCurrentWorkingDirectory(Path.resolveRelative([import.meta.dirname, "../"])),
-	E.isRight,
-);
+setCurrentWorkingDirectoryOrThrow(Path.resolveRelative([import.meta.dirname, "../"]));
 
 export const hub = createHub({ environment: "DEV" })
 	.register(routeStore.getAll())

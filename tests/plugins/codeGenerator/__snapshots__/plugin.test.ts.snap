@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`plugin implementation > generate API type 1`] = `
-"import type { TheDate, SerializedTheDate, TheTime, SerializedTheTime } from "@duplojs/utils/date";
+"import { TheDate, SerializedTheDate, TheTime, SerializedTheTime } from "@duplojs/utils/date";
 
 export type Routes = {
     method: "GET";
@@ -28,4 +28,112 @@ export type Routes = {
         body: string;
     };
 };"
+`;
+
+exports[`plugin implementation > generate data parser files from identified route data parsers 1`] = `
+[
+  "routes.d.ts",
+  "export type ChildParser = string;
+
+export type Routes = {
+    method: "GET";
+    path: "/generated";
+    body: {
+        child: ChildParser;
+        count: number;
+    };
+    responses: {
+        code: "422";
+        information: "extract-error";
+        body?: undefined;
+    } | {
+        code: "200";
+        information: "generated.success";
+        body: ChildParser;
+    };
+};",
+]
+`;
+
+exports[`plugin implementation > generate data parser files from identified route data parsers 2`] = `
+[
+  "generated/types.ts",
+  "import * as DP from "@duplojs/utils/dataParser";",
+]
+`;
+
+exports[`plugin implementation > generate data parser files from identified route data parsers 3`] = `
+[
+  "generated/childParserDataParser.ts",
+  "import * as DP from "@duplojs/utils/dataParser";
+
+export const childParserDataParser = DP.string();",
+]
+`;
+
+exports[`plugin implementation > generate data parser files from identified route data parsers 4`] = `
+[
+  "generated/bodyParserDataParser.ts",
+  "import * as DP from "@duplojs/utils/dataParser";
+
+import { childParserDataParser } from "./childParserDataParser";
+
+export const bodyParserDataParser = DP.object({
+    child: childParserDataParser,
+    count: DP.number()
+});",
+]
+`;
+
+exports[`plugin implementation > generate data parser files from identified route data parsers 5`] = `
+[
+  "generated/index.ts",
+  "export * from "./childParserDataParser";
+export * from "./bodyParserDataParser";",
+]
+`;
+
+exports[`plugin implementation > generate data parser files only from explicit data parsers when disabledFromRoute is enabled 1`] = `
+[
+  "routes.d.ts",
+  "export type RouteParser = string;
+
+export type Routes = {
+    method: "GET";
+    path: "/generated";
+    body: RouteParser;
+    responses: {
+        code: "422";
+        information: "extract-error";
+        body?: undefined;
+    } | {
+        code: "204";
+        information: "generated.success";
+        body?: undefined;
+    };
+};",
+]
+`;
+
+exports[`plugin implementation > generate data parser files only from explicit data parsers when disabledFromRoute is enabled 2`] = `
+[
+  "generated/types.ts",
+  "import * as DP from "@duplojs/utils/dataParser";",
+]
+`;
+
+exports[`plugin implementation > generate data parser files only from explicit data parsers when disabledFromRoute is enabled 3`] = `
+[
+  "generated/explicitParserDataParser.ts",
+  "import * as DP from "@duplojs/utils/dataParser";
+
+export const explicitParserDataParser = DP.number();",
+]
+`;
+
+exports[`plugin implementation > generate data parser files only from explicit data parsers when disabledFromRoute is enabled 4`] = `
+[
+  "generated/index.ts",
+  "export * from "./explicitParserDataParser";",
+]
 `;

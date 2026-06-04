@@ -40,6 +40,27 @@ describe("findIdentifiedDataParserInSteps", () => {
 		]);
 	});
 
+	it("finds identified data parsers from custom extract response contracts", () => {
+		const extractErrorBody = DPE.string().setIdentifier("extractErrorBody");
+
+		const route = useRouteBuilder("GET", "/test")
+			.extract(
+				{ body: DPE.number() },
+				ResponseContract.badRequest("extract.invalid", extractErrorBody),
+			)
+			.handler(
+				ResponseContract.noContent("extract.ok"),
+				(__, { response }) => response("extract.ok"),
+			);
+
+		const result = findIdentifiedDataParserInSteps(
+			route.definition.steps,
+			{ ignoreDataParser: new Set() },
+		);
+
+		expect(result).toStrictEqual([extractErrorBody]);
+	});
+
 	it("finds only identified data parsers from step response contracts", () => {
 		const presetBody = DPE.string().setIdentifier("presetBody");
 

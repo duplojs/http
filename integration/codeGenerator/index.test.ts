@@ -5,15 +5,25 @@ import { launchHookServer } from "@duplojs/http";
 
 describe("codeGenerator", () => {
 	const fileName = `${import.meta.dirname}/generateCode.generate.ts`;
+	const folderName = `${import.meta.dirname}/generateDataParser.generate`;
 	beforeAll(() => {
 		if (existsSync(fileName)) {
 			rmSync(fileName);
+		}
+		if (existsSync(folderName)) {
+			rmSync(folderName, {
+				recursive: true,
+				force: true,
+			});
 		}
 	});
 
 	it("correct generate file", async() => {
 		const hubWithPlugins = hub.plug(
-			codeGeneratorPlugin({ outputFile: fileName }),
+			codeGeneratorPlugin({
+				outputFile: fileName,
+				generateDataParser: { outputFolder: folderName },
+			}),
 		);
 		await launchHookServer(
 			hubWithPlugins.aggregatesHooksHubLifeCycle("beforeStartServer"),

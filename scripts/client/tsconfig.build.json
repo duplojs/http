@@ -5,6 +5,6 @@
     "noEmit": false,
     "declaration": true,
 	"declarationDir": "../../dist/client",
-	"types": null,
-  },
+	"types": null
+  }
 }

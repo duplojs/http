@@ -1,12 +1,13 @@
 import * as DataParserToTypescript from "@duplojs/data-parser-tools/toTypescript";
 import { type HubPlugin } from "@core/hub";
-import { A, asserts, DP, E, equal, G, Path, pipe } from "@duplojs/utils";
+import { A, asserts, asyncPipe, DP, E, equal, G, Path, pipe } from "@duplojs/utils";
 import { routeToDataParser } from "./routeToDataParser";
 import { SF } from "@duplojs/server-utils";
 import { typescriptTransformers } from "./typescriptTransformer";
 import { dataParserHasIdentifier, findIdentifiedDataParserInSteps } from "./findIdentifiedDataParserInSteps";
 import { DataParserFinder, DataParserToDataParser } from "@duplojs/data-parser-tools";
 import { type Route } from "@core/route";
+import { createSubDataParserBuildedContext } from "./createSubDataParserBuildedContext";
 
 export interface GenerateDataParserParams {
 	outputFolder: string;
@@ -113,6 +114,23 @@ export function codeGeneratorPlugin(pluginParams: CodeGeneratorPluginParams) {
 							),
 						);
 
+						await asyncPipe(
+							SF.exists(generateDataParserParams.outputFolder),
+							E.whenIsRight(
+								async() => void asserts(
+									await SF.remove(
+										generateDataParserParams.outputFolder,
+										{ recursive: true },
+									),
+									E.isRight,
+								),
+							),
+							async() => void asserts(
+								await SF.makeDirectory(generateDataParserParams.outputFolder),
+								E.isRight,
+							),
+						);
+
 						asserts(
 							await SF.writeTextFile(
 								Path.resolveRelative([
@@ -127,63 +145,40 @@ export function codeGeneratorPlugin(pluginParams: CodeGeneratorPluginParams) {
 							E.isRight,
 						);
 
+						for (const context of createSubDataParserBuildedContext(buildedContext)) {
+							asserts(
+								await SF.writeTextFile(
+									Path.resolveRelative([
+										generateDataParserParams.outputFolder,
+										`${context.identifier}.ts`,
+									]),
+									DataParserToDataParser.printer(
+										context,
+									),
+								),
+								E.isRight,
+							);
+						}
+
 						await pipe(
-							buildedContext.context.entries(),
+							buildedContext.context.values(),
 							G.map(
-								([dataParser, contextValue]) => {
-									const subImportContext: DataParserToTypescript.MapImportContext = new Map(
-										buildedContext.importContext,
-									);
-
-									pipe(
-										contextValue.dependencies,
-										G.map(
-											(dataParser) => {
-												const subContextValue = buildedContext.context.get(dataParser);
-												if (!subContextValue) {
-													return null;
-												}
-
-												subImportContext.set(`./${subContextValue.identifier.text}`, {
-													direct: [subContextValue.identifier.text],
-												});
-
-												return null;
-											},
-										),
-									);
-
-									if (contextValue.typeIdentifier) {
-										subImportContext.set("./types", {
-											direct: [contextValue.typeIdentifier.text],
-										});
-									}
-
-									return {
-										fileName: `${contextValue.identifier.text}.ts`,
-										importContext: subImportContext,
-										context: new Map([[dataParser, contextValue]]),
-										importMode: buildedContext.importMode,
-										typescriptContext: new Map(),
-									};
-								},
+								(contextValue) => `export * from "./${contextValue.identifier.text}";`,
 							),
-							G.asyncMap(
-								async(context) => {
-									asserts(
-										await SF.writeTextFile(
-											Path.resolveRelative([
-												generateDataParserParams.outputFolder,
-												context.fileName,
-											]),
-											DataParserToDataParser.printer(
-												context,
-											),
-										),
-										E.isRight,
-									);
-								},
-							),
+							A.from,
+							A.join("\n"),
+							async(values) => {
+								asserts(
+									await SF.writeTextFile(
+										Path.resolveRelative([
+											generateDataParserParams.outputFolder,
+											"index.ts",
+										]),
+										values,
+									),
+									E.isRight,
+								);
+							},
 						);
 					}
 				},
