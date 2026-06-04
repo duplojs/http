@@ -1,12 +1,12 @@
 import { createHub, launchHookServer, ResponseContract, useRouteBuilder } from "@core";
-import { DPE, E } from "@duplojs/utils";
+import { type AnyFunction, DPE, E } from "@duplojs/utils";
 import { TESTImplementation, setEnvironment } from "@duplojs/server-utils";
 import { codeGeneratorPlugin } from "@plugin-codeGenerator";
 
 describe("plugin implementation", () => {
 	setEnvironment("TEST");
 	const spy = vi.fn((path: string, content: string) => Promise.resolve(E.ok()));
-	const spyExists = vi.fn((path: string) => Promise.resolve(E.left("file-system-exists")));
+	const spyExists = vi.fn<AnyFunction>((path: string) => Promise.resolve(E.left("file-system-exists")));
 	const spyMakeDirectory = vi.fn((path: string) => Promise.resolve(E.ok()));
 	const spyRemove = vi.fn((path: string, params?: { recursive?: boolean }) => Promise.resolve(E.ok()));
 	TESTImplementation.set("writeTextFile", spy);

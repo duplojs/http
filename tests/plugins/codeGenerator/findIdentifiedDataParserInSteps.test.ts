@@ -40,16 +40,18 @@ describe("findIdentifiedDataParserInSteps", () => {
 		]);
 	});
 
-	it("finds identified data parsers from custom extract response contracts", () => {
+	it("finds identified data parsers from handler response contracts", () => {
 		const extractErrorBody = DPE.string().setIdentifier("extractErrorBody");
 
 		const route = useRouteBuilder("GET", "/test")
 			.extract(
 				{ body: DPE.number() },
-				ResponseContract.badRequest("extract.invalid", extractErrorBody),
 			)
 			.handler(
-				ResponseContract.noContent("extract.ok"),
+				[
+					ResponseContract.badRequest("extract.invalid", extractErrorBody),
+					ResponseContract.noContent("extract.ok"),
+				],
 				(__, { response }) => response("extract.ok"),
 			);
 
