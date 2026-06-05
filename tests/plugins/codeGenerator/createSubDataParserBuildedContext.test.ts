@@ -27,7 +27,7 @@ describe("createSubDataParserBuildedContext", () => {
 						identifier: factory.createIdentifier("DependencyParser"),
 						expression: factory.createIdentifier("dependencyExpression"),
 						typeIdentifier: null,
-						dependencies: new Set(),
+						dependencies: new Set([dependencyDataParser]),
 					},
 				],
 			]),

@@ -38,11 +38,6 @@ export function findIdentifiedDataParserInSteps(
 								),
 							),
 						),
-						A.concat(
-							extractStep.definition.responseContract?.body
-								? [extractStep.definition.responseContract?.body]
-								: [],
-						),
 					),
 				),
 				P.when(
