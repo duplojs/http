@@ -2,6 +2,9 @@ import { hub } from "@core";
 import { existsSync, readFileSync, rmSync } from "fs";
 import { codeGeneratorPlugin } from "@duplojs/http/codeGenerator";
 import { launchHookServer } from "@duplojs/http";
+import { execSync } from "child_process";
+import { asyncPipe, E, Path } from "@duplojs/utils";
+import { SF } from "@duplojs/server-utils";
 
 describe("codeGenerator", () => {
 	const fileName = `${import.meta.dirname}/generateCode.generate.ts`;
@@ -32,5 +35,28 @@ describe("codeGenerator", () => {
 		);
 
 		expect(readFileSync(fileName, "utf-8")).toMatchSnapshot();
+
+		execSync("npx tsc -p codeGenerator/tsconfig.generate.json", {
+			stdio: "inherit",
+			cwd: import.meta.dirname,
+		});
+
+		const result = await asyncPipe(
+			{
+				index: SF.readTextFile(Path.resolveRelative([folderName, "index.ts"])),
+				types: SF.readTextFile(Path.resolveRelative([folderName, "types.ts"])),
+				userDataParser: SF.readTextFile(Path.resolveRelative([folderName, "userDataParser.ts"])),
+				userIdDataParser: SF.readTextFile(Path.resolveRelative([folderName, "userIdDataParser.ts"])),
+				userNameDataParser: SF.readTextFile(Path.resolveRelative([folderName, "userNameDataParser.ts"])),
+			},
+			E.asyncGroup,
+			E.unwrapRightOrThrow,
+		);
+
+		expect(result.index).toMatchSnapshot();
+		expect(result.types).toMatchSnapshot();
+		expect(result.userDataParser).toMatchSnapshot();
+		expect(result.userIdDataParser).toMatchSnapshot();
+		expect(result.userNameDataParser).toMatchSnapshot();
 	});
 });
