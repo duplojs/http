@@ -20,12 +20,8 @@ export declare function makeRouteFolder(params: MakeRouteFolderParams): import("
     readonly bodyController: null;
     readonly steps: readonly [import("../../core/steps").HandlerStep<{
         readonly responseContract: [NoInfer<ResponseContract.Contract<"200", "resource.found", SDP.DataParserFile<{
-            readonly mimeType?: RegExp | undefined;
             readonly errorMessage?: string | undefined;
             readonly coerce: boolean;
-            readonly minSize?: number | undefined;
-            readonly maxSize?: number | undefined;
-            readonly checkExist: boolean;
             readonly checkers: readonly [];
         }>>>, NoInfer<ResponseContract.Contract<"404", "resource.notfound", import("@duplojs/utils/dataParser").DataParserEmpty<{
             readonly errorMessage?: string | undefined;

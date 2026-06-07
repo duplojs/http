@@ -1,25 +1,11 @@
-import { A, pipe, O, DPE, keyWrappedValue } from '@duplojs/utils';
-import { createConstraintsSet, constrainedTypeKind } from '@duplojs/utils/clean';
+import { C, DPE } from '@duplojs/utils';
+import '@duplojs/utils/clean';
 
-createConstraintsSet.overrideHandler.setMethod("toExtractParser", (self) => {
-    const checkers = A.flatMap(self.constraints, ({ checkers }) => checkers);
-    const dataParserWithCheckers = self
-        .primitiveHandler
-        .dataParser
-        .addChecker(...checkers);
-    const constraintsKindValue = pipe(self.constraints, A.map(({ name }) => O.entry(name, null)), O.fromEntries);
-    const valueContainer = constrainedTypeKind.setTo({}, constraintsKindValue);
-    const dataParser = DPE.transform(dataParserWithCheckers, (input) => ({
-        ...valueContainer,
-        [keyWrappedValue]: input,
-    }));
-    return dataParser;
+C.createConstraintsSet.overrideHandler.setMethod("toExtractParser", (self, params) => {
+    const innerDataParser = C.toMapDataParser(self, params);
+    return DPE.lazy(() => innerDataParser);
 });
-createConstraintsSet.overrideHandler.setMethod("toEndpointSchema", (self) => {
-    const checkers = A.flatMap(self.constraints, ({ checkers }) => checkers);
-    const dataParserWithCheckers = self
-        .primitiveHandler
-        .dataParser
-        .addChecker(...checkers);
-    return DPE.lazy(() => dataParserWithCheckers);
+C.createConstraintsSet.overrideHandler.setMethod("toEndpointSchema", (self) => {
+    const innerDataParser = self.internal.dataParser;
+    return DPE.lazy(() => innerDataParser);
 });

@@ -11,30 +11,40 @@ export declare const convertRoutePath: (path: string) => DP.DataParserLiteral<{
     readonly errorMessage?: string | undefined;
     readonly identifier?: string | undefined;
     readonly overrideTypescriptTransformer?: TransformerBuildFunction | undefined;
+    readonly overrideJsonSchemaTransformer?: import("@duplojs/data-parser-tools/toJsonSchema").TransformerBuildFunction | undefined;
+    readonly overrideDataParserTransformer?: import("@duplojs/data-parser-tools/toDataParser").TransformerBuildFunction | undefined;
     readonly checkers: readonly [];
 }> | DP.DataParserTemplateLiteral<{
     readonly template: [string | DP.DataParserString<{
         readonly errorMessage?: string | undefined;
         readonly identifier?: string | undefined;
         readonly overrideTypescriptTransformer?: TransformerBuildFunction | undefined;
+        readonly overrideJsonSchemaTransformer?: import("@duplojs/data-parser-tools/toJsonSchema").TransformerBuildFunction | undefined;
+        readonly overrideDataParserTransformer?: import("@duplojs/data-parser-tools/toDataParser").TransformerBuildFunction | undefined;
         readonly coerce: boolean;
         readonly checkers: readonly [];
     }>, string | DP.DataParserString<{
         readonly errorMessage?: string | undefined;
         readonly identifier?: string | undefined;
         readonly overrideTypescriptTransformer?: TransformerBuildFunction | undefined;
+        readonly overrideJsonSchemaTransformer?: import("@duplojs/data-parser-tools/toJsonSchema").TransformerBuildFunction | undefined;
+        readonly overrideDataParserTransformer?: import("@duplojs/data-parser-tools/toDataParser").TransformerBuildFunction | undefined;
         readonly coerce: boolean;
         readonly checkers: readonly [];
     }>, ...(string | DP.DataParserString<{
         readonly errorMessage?: string | undefined;
         readonly identifier?: string | undefined;
         readonly overrideTypescriptTransformer?: TransformerBuildFunction | undefined;
+        readonly overrideJsonSchemaTransformer?: import("@duplojs/data-parser-tools/toJsonSchema").TransformerBuildFunction | undefined;
+        readonly overrideDataParserTransformer?: import("@duplojs/data-parser-tools/toDataParser").TransformerBuildFunction | undefined;
         readonly coerce: boolean;
         readonly checkers: readonly [];
     }>)[]];
     readonly errorMessage?: string | undefined;
     readonly identifier?: string | undefined;
     readonly overrideTypescriptTransformer?: TransformerBuildFunction | undefined;
+    readonly overrideJsonSchemaTransformer?: import("@duplojs/data-parser-tools/toJsonSchema").TransformerBuildFunction | undefined;
+    readonly overrideDataParserTransformer?: import("@duplojs/data-parser-tools/toDataParser").TransformerBuildFunction | undefined;
     readonly pattern: RegExp;
     readonly checkers: readonly [];
 }>;

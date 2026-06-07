@@ -2,11 +2,19 @@ import { ResponseContract, useRouteBuilder } from "@duplojs/http";
 import { createCacheControllerHooks } from "@duplojs/http/cacheController";
 import { DPE } from "@duplojs/utils";
 
-const user = DPE.object({
-	id: DPE.number(),
-	name: DPE.string(),
+interface User {
+	id: number;
+	name: string;
+	age: number;
+	friends?: User[];
+}
+
+const user: DPE.DataParserExtended<User> = DPE.object({
+	id: DPE.number().setIdentifier("UserId"),
+	name: DPE.string().setIdentifier("UserName"),
 	age: DPE.number(),
-});
+	friends: DPE.lazy(() => user).array().optional(),
+}).contractExtended<User>().setIdentifier("User");
 
 useRouteBuilder("GET", "/users", {
 	hooks: [

@@ -1,5 +1,5 @@
 import { type SF, TESTImplementation, setEnvironment } from "@duplojs/server-utils";
-import { E, D, mimeType } from "@duplojs/utils";
+import { E, D } from "@duplojs/utils";
 import { createHttpServer } from "@duplojs/http/node";
 
 import { hub } from "@core";

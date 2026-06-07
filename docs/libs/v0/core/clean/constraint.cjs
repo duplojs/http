@@ -1,24 +1,13 @@
 'use strict';
 
 var utils = require('@duplojs/utils');
-var clean = require('@duplojs/utils/clean');
+require('@duplojs/utils/clean');
 
-clean.createConstraint.overrideHandler.setMethod("toExtractParser", (self) => {
-    const dataParserWithCheckers = self
-        .primitiveHandler
-        .dataParser
-        .addChecker(...self.checkers);
-    const valueContainer = clean.constrainedTypeKind.setTo({}, { [self.name]: null });
-    const dataParser = utils.DPE.transform(dataParserWithCheckers, (input) => ({
-        ...valueContainer,
-        [utils.keyWrappedValue]: input,
-    }));
-    return dataParser;
+utils.C.createConstraint.overrideHandler.setMethod("toExtractParser", (self, params) => {
+    const innerDataParser = utils.C.toMapDataParser(self, params);
+    return utils.DPE.lazy(() => innerDataParser);
 });
-clean.createConstraint.overrideHandler.setMethod("toEndpointSchema", (self) => {
-    const dataParser = self
-        .primitiveHandler
-        .dataParser
-        .addChecker(...self.checkers);
-    return utils.DPE.lazy(() => dataParser);
+utils.C.createConstraint.overrideHandler.setMethod("toEndpointSchema", (self) => {
+    const innerDataParser = self.internal.dataParser;
+    return utils.DPE.lazy(() => innerDataParser);
 });

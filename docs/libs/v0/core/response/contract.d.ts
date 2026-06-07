@@ -305,7 +305,7 @@ export declare namespace ResponseContract {
     }
     export function stream<GenericInformation extends string, GenericSchema extends SupportedDataParser>(information: GenericInformation, schema: GenericSchema): StreamContract<"200", GenericInformation, GenericSchema, typeof defaultSchema>;
     export const streamTextContractKind: import("@duplojs/utils").KindHandler<import("@duplojs/utils").KindDefinition<"@DuplojsHttpCore/stream-text-response-contract", unknown>>;
-    export interface StreamTextContract<GenericCode extends SuccessResponseCode = SuccessResponseCode, GenericInformation extends string = string, GenericFlux extends DP.Contract<string> = DP.Contract<string>, GenericSchema extends SupportedDataParser = SupportedDataParser> extends Kind<typeof streamTextContractKind.definition> {
+    export interface StreamTextContract<GenericCode extends SuccessResponseCode = SuccessResponseCode, GenericInformation extends string = string, GenericFlux extends DP.DataParser<string> = DP.DataParser<string>, GenericSchema extends SupportedDataParser = SupportedDataParser> extends Kind<typeof streamTextContractKind.definition> {
         code: GenericCode;
         information: GenericInformation;
         flux: GenericFlux;

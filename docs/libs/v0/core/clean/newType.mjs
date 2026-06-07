@@ -1,13 +1,11 @@
-import { pipe, A, O, DPE, keyWrappedValue } from '@duplojs/utils';
-import { createNewType, newTypeKind, constrainedTypeKind } from '@duplojs/utils/clean';
+import { C, DPE } from '@duplojs/utils';
+import '@duplojs/utils/clean';
 
-createNewType.overrideHandler.setMethod("toExtractParser", (self) => {
-    const constraintsKindValue = pipe(self.constraints, A.map(({ name }) => O.entry(name, null)), O.fromEntries);
-    const valueContainer = newTypeKind.setTo(constrainedTypeKind.setTo({}, constraintsKindValue), self.name);
-    const dataParser = DPE.transform(self.dataParser, (input) => ({
-        ...valueContainer,
-        [keyWrappedValue]: input,
-    }));
-    return dataParser;
+C.createNewType.overrideHandler.setMethod("toExtractParser", (self, params) => {
+    const innerDataParser = C.toMapDataParser(self, params);
+    return DPE.lazy(() => innerDataParser);
 });
-createNewType.overrideHandler.setMethod("toEndpointSchema", (self) => DPE.lazy(() => self.dataParser));
+C.createNewType.overrideHandler.setMethod("toEndpointSchema", (self) => {
+    const innerDataParser = self.internal.dataParser;
+    return DPE.lazy(() => innerDataParser);
+});

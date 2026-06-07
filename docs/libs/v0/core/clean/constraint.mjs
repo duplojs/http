@@ -1,22 +1,11 @@
-import { DPE, keyWrappedValue } from '@duplojs/utils';
-import { createConstraint, constrainedTypeKind } from '@duplojs/utils/clean';
+import { C, DPE } from '@duplojs/utils';
+import '@duplojs/utils/clean';
 
-createConstraint.overrideHandler.setMethod("toExtractParser", (self) => {
-    const dataParserWithCheckers = self
-        .primitiveHandler
-        .dataParser
-        .addChecker(...self.checkers);
-    const valueContainer = constrainedTypeKind.setTo({}, { [self.name]: null });
-    const dataParser = DPE.transform(dataParserWithCheckers, (input) => ({
-        ...valueContainer,
-        [keyWrappedValue]: input,
-    }));
-    return dataParser;
+C.createConstraint.overrideHandler.setMethod("toExtractParser", (self, params) => {
+    const innerDataParser = C.toMapDataParser(self, params);
+    return DPE.lazy(() => innerDataParser);
 });
-createConstraint.overrideHandler.setMethod("toEndpointSchema", (self) => {
-    const dataParser = self
-        .primitiveHandler
-        .dataParser
-        .addChecker(...self.checkers);
-    return DPE.lazy(() => dataParser);
+C.createConstraint.overrideHandler.setMethod("toEndpointSchema", (self) => {
+    const innerDataParser = self.internal.dataParser;
+    return DPE.lazy(() => innerDataParser);
 });

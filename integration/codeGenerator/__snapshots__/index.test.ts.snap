@@ -1,7 +1,18 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`codeGenerator > correct generate file 1`] = `
-"import type { TheFormData } from "@duplojs/utils";
+"import { TheFormData } from "@duplojs/utils";
+
+export type UserId = number;
+
+export type UserName = string;
+
+export type User = {
+    id: UserId;
+    name: UserName;
+    age: number;
+    friends?: User[] | undefined;
+};
 
 export type Routes = {
     method: "GET";
@@ -9,11 +20,7 @@ export type Routes = {
     responses: {
         code: "200";
         information: "users.findMany";
-        body: {
-            id: number;
-            name: string;
-            age: number;
-        }[];
+        body: User[];
     };
 } | {
     method: "GET";
@@ -28,19 +35,16 @@ export type Routes = {
     } | {
         code: "200";
         information: "users.find";
-        body: {
-            id: number;
-            name: string;
-            age: number;
-        };
+        body: User;
     };
 } | {
     method: "POST";
     path: "/users";
     body: {
-        id: number;
-        name: string;
+        id: UserId;
+        name: UserName;
         age: number;
+        friends?: User[] | undefined;
     };
     responses: {
         code: "422";
@@ -49,11 +53,7 @@ export type Routes = {
     } | {
         code: "200";
         information: "users.create";
-        body: {
-            id: number;
-            name: string;
-            age: number;
-        };
+        body: User;
     };
 } | {
     method: "DELETE";
@@ -205,4 +205,56 @@ export type Routes = {
         body?: undefined;
     };
 };"
+`;
+
+exports[`codeGenerator > correct generate file 2`] = `
+"export * from "./userIdDataParser";
+export * from "./userNameDataParser";
+export * from "./userDataParser";"
+`;
+
+exports[`codeGenerator > correct generate file 3`] = `
+"import * as DP from "@duplojs/utils/dataParser";
+
+export type UserId = number;
+
+export type UserName = string;
+
+export type User = {
+    id: UserId;
+    name: UserName;
+    age: number;
+    friends?: User[] | undefined;
+};
+
+export type $userDataParser = User;"
+`;
+
+exports[`codeGenerator > correct generate file 4`] = `
+"import * as DP from "@duplojs/utils/dataParser";
+
+import { userIdDataParser } from "./userIdDataParser";
+
+import { userNameDataParser } from "./userNameDataParser";
+
+import { $userDataParser } from "./types";
+
+export const userDataParser: DP.DataParser<$userDataParser> = DP.object({
+    id: userIdDataParser,
+    name: userNameDataParser,
+    age: DP.number(),
+    friends: DP.optional(DP.array(DP.lazy(() => userDataParser)))
+});"
+`;
+
+exports[`codeGenerator > correct generate file 5`] = `
+"import * as DP from "@duplojs/utils/dataParser";
+
+export const userIdDataParser = DP.number();"
+`;
+
+exports[`codeGenerator > correct generate file 6`] = `
+"import * as DP from "@duplojs/utils/dataParser";
+
+export const userNameDataParser = DP.string();"
 `;

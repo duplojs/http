@@ -1,5 +1,5 @@
 import { controlBodyAsFormData, ResponseContract, useRouteBuilder } from "@duplojs/http";
-import { SDPE } from "@duplojs/server-utils";
+import { SDP, SDPE } from "@duplojs/server-utils";
 import { A, asyncPipe, DPE, E, Path } from "@duplojs/utils";
 
 useRouteBuilder("POST", "/documents", {
@@ -10,7 +10,9 @@ useRouteBuilder("POST", "/documents", {
 			userId: DPE.coerce.number(),
 			files: DPE.object({
 				alt: DPE.string(),
-				file: SDPE.file().mimeType(["image/png", "image/jpeg"]),
+				file: SDPE.file().addChecker(
+					SDP.checkerFileMimeType(["image/png", "image/jpeg"]),
+				),
 				description: DPE.string(),
 			}).array(),
 		},

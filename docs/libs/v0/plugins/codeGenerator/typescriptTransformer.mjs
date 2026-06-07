@@ -1,3 +1,4 @@
+import { DataParserToTypescript } from '@duplojs/data-parser-tools';
 import { createTransformer } from '@duplojs/data-parser-tools/toTypescript';
 import { SDP } from '@duplojs/server-utils';
 import { DP } from '@duplojs/utils';
@@ -20,5 +21,11 @@ const timeTransformer = createTransformer(DP.timeKind.has, (__, { success, addIm
         factory.createTypeReferenceNode(factory.createIdentifier("TheTime")),
     ]));
 });
+const typescriptTransformers = [
+    fileTransformer,
+    dateTransformer,
+    timeTransformer,
+    ...DataParserToTypescript.defaultTransformers,
+];
 
-export { dateTransformer, fileTransformer, timeTransformer };
+export { dateTransformer, fileTransformer, timeTransformer, typescriptTransformers };

@@ -3,9 +3,9 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-	  "@client/*": ["./*"],
+	  "@client/*": ["./*"]
     },
-	"types": ["web"],
+	"types": ["web"]
   },
-  "include": ["**/*.ts"],
+  "include": ["**/*.ts"]
 }

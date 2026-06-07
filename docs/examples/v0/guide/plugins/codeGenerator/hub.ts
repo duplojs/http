@@ -4,7 +4,10 @@ import { codeGeneratorPlugin } from "@duplojs/http/codeGenerator";
 
 const hub = createHub({ environment: "DEV" })
 	.register(routeStore.getAll())
-	.plug(codeGeneratorPlugin({ outputFile: "types.d.ts" }));
+	.plug(codeGeneratorPlugin({
+		outputFile: "types.d.ts",
+		generateDataParser: { outputFolder: "dataParsers" },
+	}));
 
 await createHttpServer(
 	hub,

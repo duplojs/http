@@ -8,6 +8,7 @@ describe("handler step function builder", () => {
 
 	beforeEach(() => {
 		spyResponse.mockClear();
+		vi.spyOn(console, "error").mockClear();
 	});
 
 	it("response from handler", async() => {

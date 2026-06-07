@@ -1,7 +1,7 @@
 import { D } from "@duplojs/utils";
 declare const SerializeCookieError_base: new (params: {
     "@DuplojsCookiePlugin/serialize-cookie-error"?: unknown;
-}, parentParams: readonly [message?: string | undefined, options?: ErrorOptions | undefined]) => import("@duplojs/utils").Kind<import("@duplojs/utils").KindDefinition<"@DuplojsCookiePlugin/serialize-cookie-error", unknown>, unknown> & import("@duplojs/utils").Kind<import("@duplojs/utils").KindDefinition<"serialize-cookie-error", unknown>, unknown> & Error;
+}, parentParams: readonly [message?: string | undefined, options?: ErrorOptions | undefined]) => Error & import("@duplojs/utils").Kind<import("@duplojs/utils").KindDefinition<"@DuplojsCookiePlugin/serialize-cookie-error", unknown>, unknown> & import("@duplojs/utils").Kind<import("@duplojs/utils").KindDefinition<"serialize-cookie-error", unknown>, unknown>;
 export declare class SerializeCookieError extends SerializeCookieError_base {
     constructor(message: string);
 }
