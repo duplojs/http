@@ -7,8 +7,8 @@ import { SF } from "@duplojs/server-utils";
 import { assertTypeScriptProject } from "@utils";
 
 describe("codeGenerator", () => {
-	const fileName = `${import.meta.dirname}/generateCode.generate.ts`;
-	const folderName = `${import.meta.dirname}/generateDataParser.generate`;
+	const fileName = `${import.meta.dirname}/type.generate.ts`;
+	const folderName = `${import.meta.dirname}/dataParser.generate`;
 	beforeAll(() => {
 		if (existsSync(fileName)) {
 			rmSync(fileName);
@@ -36,7 +36,7 @@ describe("codeGenerator", () => {
 
 		expect(readFileSync(fileName, "utf-8")).toMatchSnapshot();
 
-		assertTypeScriptProject("codeGenerator/tsconfig.generate.json");
+		assertTypeScriptProject("codeGenerator/tsconfig.generatedDataParser.json");
 
 		const result = await asyncPipe(
 			{
