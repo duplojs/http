@@ -5,9 +5,13 @@ import { type DP, type ObjectEntry, type O, type SimplifyTopLevel, type NeverCoa
 import { type ClientErrorResponseCode, type ResponseContract } from "../../response";
 import { type Request } from "../../request";
 import { type Metadata } from "../../metadata";
+import { type ExtractParamsKeyFromPath } from "../../types";
+type HandleParamsInference<GenericShape extends ExtractShape, GenericPath extends string> = (GenericShape & {
+    params?: ExtractParamsKeyFromPath<GenericPath> extends infer InferredKey extends string ? (Partial<Record<InferredKey, DP.DataParser>> & Record<string, DP.DataParser> & Record<Exclude<keyof GenericShape["params"], InferredKey>, never>) : {};
+});
 declare module "./builder" {
     interface RouteBuilder<GenericDefinition extends RouteDefinition = RouteDefinition, GenericFloor extends Floor = {}> {
-        extract<GenericShape extends ExtractShape<Request>, GenericResponseContract extends (ResponseContract.Contract<ClientErrorResponseCode, string, DP.DataParserEmpty> | undefined) = never, const GenericMetadata extends readonly Metadata[] = readonly []>(shape: GenericShape, responseContract?: GenericResponseContract, ...metadata: GenericMetadata): RouteBuilder<O.AssignObjects<GenericDefinition, {
+        extract<GenericShape extends ExtractShape<Request>, GenericResponseContract extends (ResponseContract.Contract<ClientErrorResponseCode, string, DP.DataParserEmpty> | undefined) = never, const GenericMetadata extends readonly Metadata[] = readonly []>(shape: HandleParamsInference<GenericShape, GenericDefinition["paths"][number]>, responseContract?: GenericResponseContract, ...metadata: GenericMetadata): RouteBuilder<O.AssignObjects<GenericDefinition, {
             readonly steps: readonly [
                 ...GenericDefinition["steps"],
                 ExtractStep<{
@@ -25,3 +29,4 @@ declare module "./builder" {
         }> : never>>;
     }
 }
+export {};

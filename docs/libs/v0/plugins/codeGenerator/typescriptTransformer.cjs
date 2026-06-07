@@ -1,5 +1,6 @@
 'use strict';
 
+var dataParserTools = require('@duplojs/data-parser-tools');
 var DataParserToTypescript = require('@duplojs/data-parser-tools/toTypescript');
 var serverUtils = require('@duplojs/server-utils');
 var utils = require('@duplojs/utils');
@@ -22,7 +23,14 @@ const timeTransformer = DataParserToTypescript.createTransformer(utils.DP.timeKi
         typescript.factory.createTypeReferenceNode(typescript.factory.createIdentifier("TheTime")),
     ]));
 });
+const typescriptTransformers = [
+    fileTransformer,
+    dateTransformer,
+    timeTransformer,
+    ...dataParserTools.DataParserToTypescript.defaultTransformers,
+];
 
 exports.dateTransformer = dateTransformer;
 exports.fileTransformer = fileTransformer;
 exports.timeTransformer = timeTransformer;
+exports.typescriptTransformers = typescriptTransformers;

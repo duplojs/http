@@ -14,6 +14,7 @@ export declare function makeOpenApiRoute(routePath: RoutePath, openApiPage: stri
             readonly identifier?: string | undefined;
             readonly overrideJsonSchemaTransformer?: import("@duplojs/data-parser-tools/toJsonSchema").TransformerBuildFunction | undefined;
             readonly overrideTypescriptTransformer?: import("@duplojs/data-parser-tools/toTypescript").TransformerBuildFunction | undefined;
+            readonly overrideDataParserTransformer?: import("@duplojs/data-parser-tools/toDataParser").TransformerBuildFunction | undefined;
             readonly coerce: boolean;
             readonly checkers: readonly [];
         }>>>;

@@ -1,10 +1,11 @@
-import { DPE, keyWrappedValue } from '@duplojs/utils';
-import { createPrimitive } from '@duplojs/utils/clean';
+import { C, DPE } from '@duplojs/utils';
+import '@duplojs/utils/clean';
 
-createPrimitive.overrideHandler.setMethod("toExtractParser", (self) => {
-    const dataParser = DPE.transform(self.dataParser, (input) => ({
-        [keyWrappedValue]: input,
-    }));
-    return dataParser;
+C.createPrimitive.overrideHandler.setMethod("toExtractParser", (self, params) => {
+    const innerDataParser = C.toMapDataParser(self, params);
+    return DPE.lazy(() => innerDataParser);
 });
-createPrimitive.overrideHandler.setMethod("toEndpointSchema", (self) => DPE.lazy(() => self.dataParser));
+C.createPrimitive.overrideHandler.setMethod("toEndpointSchema", (self) => {
+    const innerDataParser = self.dataParser;
+    return DPE.lazy(() => innerDataParser);
+});

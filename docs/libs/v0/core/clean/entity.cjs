@@ -3,11 +3,11 @@
 var utils = require('@duplojs/utils');
 require('@duplojs/utils/clean');
 
-utils.C.createEntity.overrideHandler.setMethod("toExtractParser", (self, keys) => {
+utils.C.createEntity.overrideHandler.setMethod("toExtractParser", (self, keys, params) => {
     if (typeof keys === "string") {
-        return utils.C.entityPropertyDefinitionToDataParser(self.propertiesDefinition[keys], (newTypeHandler) => newTypeHandler.toExtractParser());
+        return utils.C.entityPropertyDefinitionToDataParser(self.propertiesDefinition[keys], (newTypeHandler) => newTypeHandler.toExtractParser(params));
     }
-    return utils.pipe(self.propertiesDefinition, utils.O.entries, utils.A.filter(([key]) => keys === undefined || utils.A.includes(keys, key)), utils.A.map(([key, value]) => utils.O.entry(key, utils.C.entityPropertyDefinitionToDataParser(value, (newTypeHandler) => newTypeHandler.toExtractParser()))), utils.O.fromEntries, utils.DPE.object);
+    return utils.pipe(self.propertiesDefinition, utils.O.entries, utils.A.filter(([key]) => keys === undefined || utils.A.includes(keys, key)), utils.A.map(([key, value]) => utils.O.entry(key, utils.C.entityPropertyDefinitionToDataParser(value, (newTypeHandler) => newTypeHandler.toExtractParser(params)))), utils.O.fromEntries, utils.DPE.object);
 });
 utils.C.createEntity.overrideHandler.setMethod("toEndpointSchema", (self, keys, params) => {
     if (typeof keys === "string") {

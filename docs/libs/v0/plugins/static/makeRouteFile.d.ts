@@ -33,12 +33,8 @@ export declare function makeRouteFile(params: MakeRouteFileParams): import("../.
     readonly bodyController: null;
     readonly steps: readonly [import("../../core/steps").HandlerStep<{
         readonly responseContract: [NoInfer<ResponseContract.Contract<"200", "resource.found", SDP.DataParserFile<{
-            readonly mimeType?: RegExp | undefined;
             readonly errorMessage?: string | undefined;
             readonly coerce: boolean;
-            readonly minSize?: number | undefined;
-            readonly maxSize?: number | undefined;
-            readonly checkExist: boolean;
             readonly checkers: readonly [];
         }>>>, NoInfer<ResponseContract.Contract<"304", "resource.notModified", import("@duplojs/utils/dataParser").DataParserEmpty<import("@duplojs/utils/dataParser").DataParserDefinitionEmpty>>>];
         theFunction(floor: {}, params: import("../../core/steps").HandlerStepFunctionParams<import("../../core/response").PredictedResponse<"200", "resource.found", SF.FileInterface> | import("../../core/response").PredictedResponse<"304", "resource.notModified", undefined>>): import("@duplojs/utils").MaybePromise<import("../../core/response").PredictedResponse<"200", "resource.found", SF.FileInterface> | import("../../core/response").PredictedResponse<"304", "resource.notModified", undefined>>;

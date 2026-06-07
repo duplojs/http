@@ -5,7 +5,7 @@ export interface RequestErrorContent {
 }
 declare const UnexpectedInformationResponseError_base: new (params: {
     "@DuplojsHttpClient/unexpected-information-response-error"?: unknown;
-}, parentParams: readonly [message?: string | undefined, options?: ErrorOptions | undefined]) => import("@duplojs/utils").Kind<import("@duplojs/utils").KindDefinition<"@DuplojsHttpClient/unexpected-information-response-error", unknown>, unknown> & import("@duplojs/utils").Kind<import("@duplojs/utils").KindDefinition<"unexpected-information-response-error", unknown>, unknown> & Error;
+}, parentParams: readonly [message?: string | undefined, options?: ErrorOptions | undefined]) => Error & import("@duplojs/utils").Kind<import("@duplojs/utils").KindDefinition<"@DuplojsHttpClient/unexpected-information-response-error", unknown>, unknown> & import("@duplojs/utils").Kind<import("@duplojs/utils").KindDefinition<"unexpected-information-response-error", unknown>, unknown>;
 export declare class UnexpectedInformationResponseError extends UnexpectedInformationResponseError_base {
     information: string | string[];
     response: RequestErrorContent | ClientResponse;

@@ -1,12 +1,13 @@
 'use strict';
 
 var utils = require('@duplojs/utils');
-var clean = require('@duplojs/utils/clean');
+require('@duplojs/utils/clean');
 
-clean.createPrimitive.overrideHandler.setMethod("toExtractParser", (self) => {
-    const dataParser = utils.DPE.transform(self.dataParser, (input) => ({
-        [utils.keyWrappedValue]: input,
-    }));
-    return dataParser;
+utils.C.createPrimitive.overrideHandler.setMethod("toExtractParser", (self, params) => {
+    const innerDataParser = utils.C.toMapDataParser(self, params);
+    return utils.DPE.lazy(() => innerDataParser);
 });
-clean.createPrimitive.overrideHandler.setMethod("toEndpointSchema", (self) => utils.DPE.lazy(() => self.dataParser));
+utils.C.createPrimitive.overrideHandler.setMethod("toEndpointSchema", (self) => {
+    const innerDataParser = self.dataParser;
+    return utils.DPE.lazy(() => innerDataParser);
+});
