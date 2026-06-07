@@ -9,6 +9,12 @@ export default defineConfig({
 			"tests/**/*.test.ts",
 			"integration/**/*.test.ts",
 		],
+		typecheck: {
+			include: [
+				"tests/**/*.test-d.ts",
+				"integration/**/*.test-d.ts",
+			],
+		},
 		coverage: {
 			provider: "istanbul",
 			reporter: ["text", "json", "html", "json-summary"],

@@ -2,15 +2,13 @@ import { hub } from "@core";
 import { existsSync, readFileSync, rmSync } from "fs";
 import { codeGeneratorPlugin } from "@duplojs/http/codeGenerator";
 import { launchHookServer } from "@duplojs/http";
-import { execFileSync, execSync } from "child_process";
 import { asyncPipe, E, Path } from "@duplojs/utils";
 import { SF } from "@duplojs/server-utils";
+import { assertTypeScriptProject } from "@utils";
 
 describe("codeGenerator", () => {
 	const fileName = `${import.meta.dirname}/generateCode.generate.ts`;
 	const folderName = `${import.meta.dirname}/generateDataParser.generate`;
-	const tscPath = require.resolve("typescript/bin/tsc");
-	const rootProject = Path.resolveRelative([import.meta.dirname, "../.."]);
 	beforeAll(() => {
 		if (existsSync(fileName)) {
 			rmSync(fileName);
@@ -38,18 +36,7 @@ describe("codeGenerator", () => {
 
 		expect(readFileSync(fileName, "utf-8")).toMatchSnapshot();
 
-		execFileSync(
-			process.execPath,
-			[
-				tscPath,
-				"-p",
-				Path.resolveRelative([rootProject, "integration/codeGenerator/tsconfig.generate.json"]),
-			],
-			{
-				stdio: "inherit",
-				cwd: rootProject,
-			},
-		);
+		assertTypeScriptProject("codeGenerator/tsconfig.generate.json");
 
 		const result = await asyncPipe(
 			{
