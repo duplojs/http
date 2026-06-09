@@ -239,7 +239,7 @@ import { userNameDataParser } from "./userNameDataParser";
 
 import { $userDataParser } from "./types";
 
-export const userDataParser: DP.DataParser<$userDataParser> = DP.object({
+export const userDataParser: DP.DataParser<$userDataParser, unknown> = DP.object({
     id: userIdDataParser,
     name: userNameDataParser,
     age: DP.number(),
