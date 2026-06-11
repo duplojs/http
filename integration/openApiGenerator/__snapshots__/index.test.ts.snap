@@ -531,6 +531,10 @@ exports[`openApiGenerator > correct generate file 1`] = `
           },
           "friends": {
             "$ref": "#/components/schemas/RecursiveType2"
+          },
+          "createdAt": {
+            "type": "string",
+            "pattern": "^date-?(?<value>\\\\d{1,16})(?<sign>[+-])$"
           }
         },
         "required": [
@@ -576,6 +580,10 @@ exports[`openApiGenerator > correct generate file 1`] = `
           },
           "friends": {
             "$ref": "#/components/schemas/RecursiveType2"
+          },
+          "createdAt": {
+            "type": "string",
+            "pattern": "^date-?(?<value>\\\\d{1,16})(?<sign>[+-])$"
           }
         },
         "required": [

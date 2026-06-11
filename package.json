@@ -90,7 +90,7 @@
   "peerDependencies": {
     "@duplojs/data-parser-tools": ">=0.5.5 <1.0.0",
     "@duplojs/server-utils": ">=0.4.1 <1.0.0",
-    "@duplojs/utils": ">=1.9.2 <2.0.0"
+    "@duplojs/utils": ">=1.9.5 <2.0.0"
   },
   "devDependencies": {
     "@commitlint/cli": "19.8.1",

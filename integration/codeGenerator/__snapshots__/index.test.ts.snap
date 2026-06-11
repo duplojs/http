@@ -1,7 +1,9 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`codeGenerator > correct generate file 1`] = `
-"import { TheFormData } from "@duplojs/utils";
+"import { TheDate, SerializedTheDate } from "@duplojs/utils/date";
+
+import { TheFormData } from "@duplojs/utils";
 
 export type UserId = number;
 
@@ -12,6 +14,7 @@ export type User = {
     name: UserName;
     age: number;
     friends?: User[] | undefined;
+    createdAt?: (SerializedTheDate | TheDate) | undefined;
 };
 
 export type Routes = {
@@ -45,6 +48,7 @@ export type Routes = {
         name: UserName;
         age: number;
         friends?: User[] | undefined;
+        createdAt?: (SerializedTheDate | TheDate) | undefined;
     };
     responses: {
         code: "422";
@@ -216,6 +220,8 @@ export * from "./userDataParser";"
 exports[`codeGenerator > correct generate file 3`] = `
 "import * as DP from "@duplojs/utils/dataParser";
 
+import { TheDate } from "@duplojs/utils/date";
+
 export type UserId = number;
 
 export type UserName = string;
@@ -225,6 +231,7 @@ export type User = {
     name: UserName;
     age: number;
     friends?: User[] | undefined;
+    createdAt?: TheDate | undefined;
 };
 
 export type $userDataParser = User;"
@@ -232,6 +239,8 @@ export type $userDataParser = User;"
 
 exports[`codeGenerator > correct generate file 4`] = `
 "import * as DP from "@duplojs/utils/dataParser";
+
+import { TheDate } from "@duplojs/utils/date";
 
 import { userIdDataParser } from "./userIdDataParser";
 
@@ -243,18 +252,23 @@ export const userDataParser: DP.DataParser<$userDataParser, unknown> = DP.object
     id: userIdDataParser,
     name: userNameDataParser,
     age: DP.number(),
-    friends: DP.optional(DP.array(DP.lazy(() => userDataParser)))
+    friends: DP.optional(DP.array(DP.lazy(() => userDataParser))),
+    createdAt: DP.optional(DP.date())
 });"
 `;
 
 exports[`codeGenerator > correct generate file 5`] = `
 "import * as DP from "@duplojs/utils/dataParser";
 
+import { TheDate } from "@duplojs/utils/date";
+
 export const userIdDataParser = DP.number();"
 `;
 
 exports[`codeGenerator > correct generate file 6`] = `
 "import * as DP from "@duplojs/utils/dataParser";
+
+import { TheDate } from "@duplojs/utils/date";
 
 export const userNameDataParser = DP.string();"
 `;
