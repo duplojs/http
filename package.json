@@ -88,9 +88,9 @@
     "README.md"
   ],
   "peerDependencies": {
-    "@duplojs/data-parser-tools": ">=0.5.5 <1.0.0",
-    "@duplojs/server-utils": ">=0.4.1 <1.0.0",
-    "@duplojs/utils": ">=1.9.5 <2.0.0"
+    "@duplojs/data-parser-tools": ">=0.6.1 <1.0.0",
+    "@duplojs/server-utils": ">=0.4.2 <1.0.0",
+    "@duplojs/utils": ">=1.10.2 <2.0.0"
   },
   "devDependencies": {
     "@commitlint/cli": "19.8.1",
@@ -103,11 +103,11 @@
     "@types/web": "^0.0.317",
     "@vitest/coverage-istanbul": "3.2.4",
     "eslint": "9.34.0",
-    "eventsource": "^4.1.0",
-    "form-data": "^4.0.5",
+    "eventsource": "4.1.0",
+    "form-data": "4.0.5",
     "husky": "9.1.7",
-    "node-mocks-http": "^1.17.2",
-    "rollup": "^4.60.1",
+    "node-mocks-http": "1.17.2",
+    "rollup": "4.60.1",
     "rollup-plugin-delete": "3.0.1",
     "rollup-plugin-esbuild": "6.2.1",
     "rollup-plugin-tsc-alias": "1.1.4",

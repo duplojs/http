@@ -258,14 +258,14 @@ describe("process builder extract method", () => {
 					prop1: string[];
 					prop2: bigint[];
 					prop3: boolean[];
-					prop4: string[];
+					prop4: `${string}@${string}.${string}`[];
 					prop5: number[];
 					prop6: undefined[];
 					prop7: null[];
 					prop8: {
 						template: "test-1" | "test-test" | "test-3";
 						union?:
-							| (string | { test: (string | undefined)[] } | null)[]
+							| (`${string}@${string}.${string}` | { test: (string | undefined)[] } | null)[]
 							| null
 							| undefined;
 					};

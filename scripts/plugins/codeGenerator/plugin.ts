@@ -6,6 +6,7 @@ import { SF } from "@duplojs/server-utils";
 import { typescriptTransformers } from "./typescriptTransformer";
 import { dataParserHasIdentifier, findIdentifiedDataParserInSteps } from "./findIdentifiedDataParserInSteps";
 import { DataParserFinder, DataParserToDataParser } from "@duplojs/data-parser-tools";
+import { Typescript } from "@duplojs/data-parser-tools/typescript";
 import { type Route } from "@core/route";
 import { createSubDataParserBuildedContext } from "./createSubDataParserBuildedContext";
 
@@ -65,6 +66,7 @@ export function codeGeneratorPlugin(pluginParams: CodeGeneratorPluginParams) {
 							importContext: new Map(),
 							typescriptContext: new Map(),
 							importMode: "lite",
+							keepIdentifier: true,
 						};
 						const ignoreDataParser = new Set<DP.DataParser>();
 
@@ -162,10 +164,17 @@ export function codeGeneratorPlugin(pluginParams: CodeGeneratorPluginParams) {
 
 						await pipe(
 							buildedContext.context.values(),
-							G.map(
-								(contextValue) => `export * from "./${contextValue.identifier.text}";`,
-							),
+							G.map((contextValue): string => `export * from "./${contextValue.identifier.text}";`),
 							A.from,
+							A.unshift(
+								DataParserToDataParser.printer({
+									context: new Map(),
+									importContext: new Map(),
+									importMode: "lite",
+									typescriptContext: new Map(),
+									keepIdentifier: true,
+								}),
+							),
 							A.join("\n"),
 							async(values) => {
 								asserts(

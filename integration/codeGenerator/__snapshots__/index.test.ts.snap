@@ -212,7 +212,14 @@ export type Routes = {
 `;
 
 exports[`codeGenerator > correct generate file 2`] = `
-"export * from "./userIdDataParser";
+"import "@duplojs/utils/dataParser";
+
+declare module "@duplojs/utils/dataParser" {
+    interface DataParserDefinition {
+        identifier?: string;
+    }
+}
+export * from "./userIdDataParser";
 export * from "./userNameDataParser";
 export * from "./userDataParser";"
 `;
@@ -254,7 +261,7 @@ export const userDataParser: DP.DataParser<$userDataParser, unknown> = DP.object
     age: DP.number(),
     friends: DP.optional(DP.array(DP.lazy(() => userDataParser))),
     createdAt: DP.optional(DP.date())
-});"
+}, { identifier: "User" });"
 `;
 
 exports[`codeGenerator > correct generate file 5`] = `
@@ -262,7 +269,7 @@ exports[`codeGenerator > correct generate file 5`] = `
 
 import { TheDate } from "@duplojs/utils/date";
 
-export const userIdDataParser = DP.number();"
+export const userIdDataParser = DP.number({ identifier: "UserId" });"
 `;
 
 exports[`codeGenerator > correct generate file 6`] = `
@@ -270,5 +277,5 @@ exports[`codeGenerator > correct generate file 6`] = `
 
 import { TheDate } from "@duplojs/utils/date";
 
-export const userNameDataParser = DP.string();"
+export const userNameDataParser = DP.string({ identifier: "UserName" });"
 `;

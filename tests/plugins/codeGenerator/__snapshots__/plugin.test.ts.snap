@@ -67,7 +67,7 @@ exports[`plugin implementation > generate data parser files from identified rout
   "generated/childParserDataParser.ts",
   "import * as DP from "@duplojs/utils/dataParser";
 
-export const childParserDataParser = DP.string();",
+export const childParserDataParser = DP.string({ identifier: "ChildParser" });",
 ]
 `;
 
@@ -81,14 +81,21 @@ import { childParserDataParser } from "./childParserDataParser";
 export const bodyParserDataParser = DP.object({
     child: childParserDataParser,
     count: DP.number()
-});",
+}, { identifier: "BodyParser" });",
 ]
 `;
 
 exports[`plugin implementation > generate data parser files from identified route data parsers 5`] = `
 [
   "generated/index.ts",
-  "export * from "./childParserDataParser";
+  "import "@duplojs/utils/dataParser";
+
+declare module "@duplojs/utils/dataParser" {
+    interface DataParserDefinition {
+        identifier?: string;
+    }
+}
+export * from "./childParserDataParser";
 export * from "./bodyParserDataParser";",
 ]
 `;
@@ -127,13 +134,20 @@ exports[`plugin implementation > generate data parser files only from explicit d
   "generated/explicitParserDataParser.ts",
   "import * as DP from "@duplojs/utils/dataParser";
 
-export const explicitParserDataParser = DP.number();",
+export const explicitParserDataParser = DP.number({ identifier: "ExplicitParser" });",
 ]
 `;
 
 exports[`plugin implementation > generate data parser files only from explicit data parsers when disabledFromRoute is enabled 4`] = `
 [
   "generated/index.ts",
-  "export * from "./explicitParserDataParser";",
+  "import "@duplojs/utils/dataParser";
+
+declare module "@duplojs/utils/dataParser" {
+    interface DataParserDefinition {
+        identifier?: string;
+    }
+}
+export * from "./explicitParserDataParser";",
 ]
 `;

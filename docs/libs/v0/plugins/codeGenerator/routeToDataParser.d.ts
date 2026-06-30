@@ -9,6 +9,7 @@ export declare const bodyAsFormData: TransformerBuildFunction;
 export declare const convertRoutePath: (path: string) => DP.DataParserLiteral<{
     readonly value: readonly string[];
     readonly errorMessage?: string | undefined;
+    readonly mapImportContextEntries?: import("@duplojs/utils").AnyTuple<import("@duplojs/data-parser-tools/toTypescript").MapImportContextEntry> | undefined;
     readonly identifier?: string | undefined;
     readonly overrideTypescriptTransformer?: TransformerBuildFunction | undefined;
     readonly overrideJsonSchemaTransformer?: import("@duplojs/data-parser-tools/toJsonSchema").TransformerBuildFunction | undefined;
@@ -17,6 +18,7 @@ export declare const convertRoutePath: (path: string) => DP.DataParserLiteral<{
 }> | DP.DataParserTemplateLiteral<{
     readonly template: [string | DP.DataParserString<{
         readonly errorMessage?: string | undefined;
+        readonly mapImportContextEntries?: import("@duplojs/utils").AnyTuple<import("@duplojs/data-parser-tools/toTypescript").MapImportContextEntry> | undefined;
         readonly identifier?: string | undefined;
         readonly overrideTypescriptTransformer?: TransformerBuildFunction | undefined;
         readonly overrideJsonSchemaTransformer?: import("@duplojs/data-parser-tools/toJsonSchema").TransformerBuildFunction | undefined;
@@ -25,6 +27,7 @@ export declare const convertRoutePath: (path: string) => DP.DataParserLiteral<{
         readonly checkers: readonly [];
     }>, string | DP.DataParserString<{
         readonly errorMessage?: string | undefined;
+        readonly mapImportContextEntries?: import("@duplojs/utils").AnyTuple<import("@duplojs/data-parser-tools/toTypescript").MapImportContextEntry> | undefined;
         readonly identifier?: string | undefined;
         readonly overrideTypescriptTransformer?: TransformerBuildFunction | undefined;
         readonly overrideJsonSchemaTransformer?: import("@duplojs/data-parser-tools/toJsonSchema").TransformerBuildFunction | undefined;
@@ -33,6 +36,7 @@ export declare const convertRoutePath: (path: string) => DP.DataParserLiteral<{
         readonly checkers: readonly [];
     }>, ...(string | DP.DataParserString<{
         readonly errorMessage?: string | undefined;
+        readonly mapImportContextEntries?: import("@duplojs/utils").AnyTuple<import("@duplojs/data-parser-tools/toTypescript").MapImportContextEntry> | undefined;
         readonly identifier?: string | undefined;
         readonly overrideTypescriptTransformer?: TransformerBuildFunction | undefined;
         readonly overrideJsonSchemaTransformer?: import("@duplojs/data-parser-tools/toJsonSchema").TransformerBuildFunction | undefined;
@@ -41,6 +45,7 @@ export declare const convertRoutePath: (path: string) => DP.DataParserLiteral<{
         readonly checkers: readonly [];
     }>)[]];
     readonly errorMessage?: string | undefined;
+    readonly mapImportContextEntries?: import("@duplojs/utils").AnyTuple<import("@duplojs/data-parser-tools/toTypescript").MapImportContextEntry> | undefined;
     readonly identifier?: string | undefined;
     readonly overrideTypescriptTransformer?: TransformerBuildFunction | undefined;
     readonly overrideJsonSchemaTransformer?: import("@duplojs/data-parser-tools/toJsonSchema").TransformerBuildFunction | undefined;

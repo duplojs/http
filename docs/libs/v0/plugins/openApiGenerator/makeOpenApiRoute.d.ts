@@ -11,6 +11,7 @@ export declare function makeOpenApiRoute(routePath: RoutePath, openApiPage: stri
     readonly steps: readonly [import("../../core/steps").HandlerStep<{
         readonly responseContract: NoInfer<ResponseContract.Contract<"200", "swaggerUi", DP.DataParserString<{
             readonly errorMessage?: string | undefined;
+            readonly mapImportContextEntries?: import("@duplojs/utils").AnyTuple<import("@duplojs/data-parser-tools/toTypescript").MapImportContextEntry> | undefined;
             readonly identifier?: string | undefined;
             readonly overrideJsonSchemaTransformer?: import("@duplojs/data-parser-tools/toJsonSchema").TransformerBuildFunction | undefined;
             readonly overrideTypescriptTransformer?: import("@duplojs/data-parser-tools/toTypescript").TransformerBuildFunction | undefined;

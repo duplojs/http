@@ -15,8 +15,7 @@ class PromiseRequest extends Promise {
     params;
     hooks = {};
     constructor(params) {
-        super((resolve) => void EE
-            .rightAsyncPipe(Promise.resolve(params), (params) => launchRequestHook(params.hooks.request, this.hooks.request ?? [], params), PromiseRequest.fetch, (response) => launchResponseHook(params.hooks.response, this.hooks.response ?? [], response), async (response) => {
+        super((resolve) => void EE.asyncSafeCallback(EE.rightAsyncPipe(Promise.resolve(params), (params) => launchRequestHook(params.hooks.request, this.hooks.request ?? [], params), PromiseRequest.fetch, (response) => launchResponseHook(params.hooks.response, this.hooks.response ?? [], response), async (response) => {
             if (params.disabledPredicateMode === false && response.predicted === false) {
                 await launchNotPredictedHook(params.hooks.notPredictedResponse, this.hooks.notPredictedResponse ?? [], response);
                 return EE.right("response", response);
@@ -43,9 +42,9 @@ class PromiseRequest extends Promise {
             }
             await launchCodeHook(params.hooks.code[response.code] ?? [], this.hooks.code?.[response.code] ?? [], response);
             return EE.right("response", response);
-        })
+        }))
             .then(async (result) => {
-            if (EE.futureErrorKind.has(result)) {
+            if (EE.hasInformation(result, "safe-callback-error")) {
                 const error = unwrap(result);
                 await launchErrorHook(params.hooks.error, this.hooks.error ?? [], error, params);
                 return EE.left("request-error", {

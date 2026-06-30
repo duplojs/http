@@ -38,8 +38,7 @@ class PromiseRequest extends Promise {
     params;
     hooks = {};
     constructor(params) {
-        super((resolve) => void EE__namespace
-            .rightAsyncPipe(Promise.resolve(params), (params) => hooks.launchRequestHook(params.hooks.request, this.hooks.request ?? [], params), PromiseRequest.fetch, (response) => hooks.launchResponseHook(params.hooks.response, this.hooks.response ?? [], response), async (response) => {
+        super((resolve) => void EE__namespace.asyncSafeCallback(EE__namespace.rightAsyncPipe(Promise.resolve(params), (params) => hooks.launchRequestHook(params.hooks.request, this.hooks.request ?? [], params), PromiseRequest.fetch, (response) => hooks.launchResponseHook(params.hooks.response, this.hooks.response ?? [], response), async (response) => {
             if (params.disabledPredicateMode === false && response.predicted === false) {
                 await hooks.launchNotPredictedHook(params.hooks.notPredictedResponse, this.hooks.notPredictedResponse ?? [], response);
                 return EE__namespace.right("response", response);
@@ -66,9 +65,9 @@ class PromiseRequest extends Promise {
             }
             await hooks.launchCodeHook(params.hooks.code[response.code] ?? [], this.hooks.code?.[response.code] ?? [], response);
             return EE__namespace.right("response", response);
-        })
+        }))
             .then(async (result) => {
-            if (EE__namespace.futureErrorKind.has(result)) {
+            if (EE__namespace.hasInformation(result, "safe-callback-error")) {
                 const error = utils.unwrap(result);
                 await hooks.launchErrorHook(params.hooks.error, this.hooks.error ?? [], error, params);
                 return EE__namespace.left("request-error", {

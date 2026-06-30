@@ -1,5 +1,5 @@
 import "@core";
-import { C, DP, type DPE, E, type ExpectType, asserts } from "@duplojs/utils";
+import { C, type DArray, DP, type DPE, E, type ExpectType, asserts } from "@duplojs/utils";
 
 describe("entity", () => {
 	it("toExtractParser", () => {
@@ -108,8 +108,8 @@ describe("entity", () => {
 				role: C.NewType<"name", string> | C.NewType<"age", number, "number-min-1">;
 				tags: readonly C.NewType<"name", string>[];
 				tagsMin: readonly [C.NewType<"name", string>, ...C.NewType<"name", string>[]];
-				tagsMax: readonly C.NewType<"name", string>[];
-				tagsRange: readonly [C.NewType<"name", string>, ...C.NewType<"name", string>[]];
+				tagsMax: readonly C.NewType<"name", string>[] & DArray.MaxElements<2>;
+				tagsRange: readonly [C.NewType<"name", string>, ...C.NewType<"name", string>[]] & DArray.MaxElements<2>;
 				nick: C.NewType<"name", string> | null;
 				mixedNullable: C.NewType<"name", string> | C.NewType<"age", number, "number-min-1"> | null;
 			},

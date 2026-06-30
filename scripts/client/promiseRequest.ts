@@ -58,8 +58,8 @@ export class PromiseRequest<
 		public params: PromiseRequestParams,
 	) {
 		super(
-			(resolve) => void EE
-				.rightAsyncPipe(
+			(resolve) => void EE.asyncSafeCallback(
+				EE.rightAsyncPipe(
 					Promise.resolve(params),
 					(params) => launchRequestHook(
 						params.hooks.request,
@@ -143,31 +143,30 @@ export class PromiseRequest<
 
 						return EE.right("response", response);
 					},
-				)
-				.then(
-					async(result): Promise<MaybeResponse> => {
-						if (EE.futureErrorKind.has(result)) {
-							const error = unwrap(result);
+				),
+			)
+				.then(async(result): Promise<MaybeResponse> => {
+					if (EE.hasInformation(result, "safe-callback-error")) {
+						const error = unwrap(result);
 
-							await launchErrorHook(
-								params.hooks.error,
-								this.hooks.error ?? [],
+						await launchErrorHook(
+							params.hooks.error,
+							this.hooks.error ?? [],
+							error,
+							params,
+						);
+
+						return EE.left(
+							"request-error",
+							{
 								error,
-								params,
-							);
+								requestParams: params,
+							},
+						);
+					}
 
-							return EE.left(
-								"request-error",
-								{
-									error,
-									requestParams: params,
-								},
-							);
-						}
-
-						return result;
-					},
-				)
+					return result;
+				})
 				.then(resolve as never),
 		);
 	}
