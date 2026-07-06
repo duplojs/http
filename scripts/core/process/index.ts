@@ -27,8 +27,8 @@ export type ProcessSteps = (
 declare const SymbolProcessExportValue: unique symbol;
 
 export interface ProcessDefinition {
-	steps: readonly ProcessSteps[];
-	options?: Record<string, unknown>;
+	readonly steps: readonly ProcessSteps[];
+	readonly options?: Record<string, unknown>;
 	readonly hooks: readonly HookRouteLifeCycle[];
 	readonly metadata: readonly Metadata[];
 	[SymbolProcessExportValue]?: Floor;

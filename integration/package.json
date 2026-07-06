@@ -1,6 +1,7 @@
 {
   "name": "integrations",
   "license": "ISC",
+  "type": "module",
   "scripts": {
     "test:types": "./.commands/test-types.sh"
   },

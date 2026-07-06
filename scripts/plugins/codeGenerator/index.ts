@@ -6,3 +6,4 @@ export * from "./plugin";
 export * from "./routeToDataParser";
 export * from "./aggregateStepContract";
 export * from "./metadata";
+export * from "./byInference";

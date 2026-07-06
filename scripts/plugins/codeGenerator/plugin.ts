@@ -6,7 +6,6 @@ import { SF } from "@duplojs/server-utils";
 import { typescriptTransformers } from "./typescriptTransformer";
 import { dataParserHasIdentifier, findIdentifiedDataParserInSteps } from "./findIdentifiedDataParserInSteps";
 import { DataParserFinder, DataParserToDataParser } from "@duplojs/data-parser-tools";
-import { Typescript } from "@duplojs/data-parser-tools/typescript";
 import { type Route } from "@core/route";
 import { createSubDataParserBuildedContext } from "./createSubDataParserBuildedContext";
 
