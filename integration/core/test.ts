@@ -80,6 +80,7 @@ const newProgram = Typescript.createProgram({
 });
 
 // généré l'index
+// génére une deuxéime fois mais en résolvant le type pars inférence pour le rendre plus simple
 // résoudre le path typescript
 // threeshaker les type pour garder que le néccésaire
 
