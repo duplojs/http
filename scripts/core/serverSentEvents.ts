@@ -3,7 +3,7 @@ import { type MaybePromise, type MillisecondInString, stringToMillisecond } from
 import { Stream } from "./stream";
 
 export namespace ServerSentEvents {
-	export type DefinitionShape = [string, unknown];
+	export type DefinitionShape = Record<string, unknown>;
 
 	export interface SendParams {
 		id?: string;
@@ -14,17 +14,17 @@ export namespace ServerSentEvents {
 		GenericEvents extends DefinitionShape = DefinitionShape,
 	> extends Stream.StartSendingParams {
 		send(
-			...args: GenericEvents extends any
-				? [
-					event: GenericEvents[0],
+			...args: {
+				[Event in keyof GenericEvents]: [
+					event: Event,
 					...(
-						GenericEvents[1] extends undefined
-							? [data?: GenericEvents[1]]
-							: [data: GenericEvents[1]]
+						GenericEvents[Event] extends undefined
+							? [data?: GenericEvents[Event]]
+							: [data: GenericEvents[Event]]
 					),
 					params?: SendParams,
 				]
-				: never
+			}[keyof GenericEvents]
 		): Promise<void>;
 		readonly lastId: string | null;
 	}

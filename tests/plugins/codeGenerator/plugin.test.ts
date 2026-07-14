@@ -1,7 +1,7 @@
 import { createHub, launchHookServer, ResponseContract, useRouteBuilder } from "@core";
 import { type AnyFunction, DPE, E } from "@duplojs/utils";
 import { TESTImplementation, setEnvironment } from "@duplojs/server-utils";
-import { codeGeneratorPlugin } from "@plugin-codeGenerator";
+import { codeGeneratorPlugin, type RouteToClientRoute } from "@plugin-codeGenerator";
 
 describe("plugin implementation", () => {
 	setEnvironment("TEST");

@@ -265,13 +265,13 @@ describe("route builder handler method", () => {
 								floor: {},
 								param: HandlerStepFunctionParams<
 									| PredictedResponse<"200", "test", string>
-									| ServerSentEventsPredictedResponse<"200", "sse", ["message", string]>
+									| ServerSentEventsPredictedResponse<"200", "sse", { message: string }>
 									| StreamPredictedResponse<"200", "stream", number>
 									| StreamTextPredictedResponse<"200", "streamText">
 								>
 							): MaybePromise<
 								| PredictedResponse<"200", "test", string>
-								| ServerSentEventsPredictedResponse<"200", "sse", ["message", string]>
+								| ServerSentEventsPredictedResponse<"200", "sse", { message: string }>
 								| StreamPredictedResponse<"200", "stream", number>
 								| StreamTextPredictedResponse<"200", "streamText">
 							>;

@@ -43,6 +43,9 @@ export function aggregateStepContract(
 		A.filter(stepIdentifier(processStepKind)),
 		A.filter(
 			(step) => A.find(
+				step.definition.metadata,
+				IgnoreByCodeGeneratorMetadata.is,
+			) === undefined && A.find(
 				step.definition.process.definition.metadata,
 				IgnoreByCodeGeneratorMetadata.is,
 			) === undefined,

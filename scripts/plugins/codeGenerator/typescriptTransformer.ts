@@ -14,14 +14,16 @@ export const dateTransformer = createTransformer(
 		addImport("@duplojs/utils/date", "TheDate");
 		addImport("@duplojs/utils/date", "SerializedTheDate");
 
-		return success(Typescript.factory.createUnionTypeNode([
-			Typescript.factory.createTypeReferenceNode(
-				Typescript.factory.createIdentifier("SerializedTheDate"),
-			),
-			Typescript.factory.createTypeReferenceNode(
-				Typescript.factory.createIdentifier("TheDate"),
-			),
-		]));
+		return success(
+			Typescript.factory.createUnionTypeNode([
+				Typescript.factory.createTypeReferenceNode(
+					Typescript.factory.createIdentifier("SerializedTheDate"),
+				),
+				Typescript.factory.createTypeReferenceNode(
+					Typescript.factory.createIdentifier("TheDate"),
+				),
+			]),
+		);
 	},
 );
 
@@ -31,14 +33,16 @@ export const timeTransformer = createTransformer(
 		addImport("@duplojs/utils/date", "TheTime");
 		addImport("@duplojs/utils/date", "SerializedTheTime");
 
-		return success(Typescript.factory.createUnionTypeNode([
-			Typescript.factory.createTypeReferenceNode(
-				Typescript.factory.createIdentifier("SerializedTheTime"),
-			),
-			Typescript.factory.createTypeReferenceNode(
-				Typescript.factory.createIdentifier("TheTime"),
-			),
-		]));
+		return success(
+			Typescript.factory.createUnionTypeNode([
+				Typescript.factory.createTypeReferenceNode(
+					Typescript.factory.createIdentifier("SerializedTheTime"),
+				),
+				Typescript.factory.createTypeReferenceNode(
+					Typescript.factory.createIdentifier("TheTime"),
+				),
+			]),
+		);
 	},
 );
 

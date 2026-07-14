@@ -255,11 +255,8 @@ export namespace ResponseContract {
 				GenericContract["code"],
 				GenericContract["information"],
 				{
-					[Prop in keyof GenericContract["events"]]: [
-						Extract<Prop, string>,
-						DP.Output<GenericContract["events"][Prop]>,
-					]
-				}[keyof GenericContract["events"]]
+					[Prop in keyof GenericContract["events"]]: DP.Output<GenericContract["events"][Prop]>
+				}
 			>
 			: GenericContract extends StreamContract
 				? StreamPredictedResponse<
