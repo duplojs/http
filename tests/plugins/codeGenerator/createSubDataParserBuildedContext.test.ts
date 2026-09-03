@@ -1,7 +1,6 @@
 import { A, DP } from "@duplojs/utils";
-import { type DataParserToDataParser } from "@duplojs/data-parser-tools";
+import { type DataParserToDataParser, Typescript } from "@duplojs/data-parser-tools";
 import { createSubDataParserBuildedContext } from "@plugin-codeGenerator/createSubDataParserBuildedContext";
-import { factory } from "typescript";
 
 describe("createSubDataParserBuildedContext", () => {
 	it("creates one isolated sub-context per data parser with inherited imports and relative dependencies", () => {
@@ -15,17 +14,17 @@ describe("createSubDataParserBuildedContext", () => {
 				[
 					mainDataParser as never,
 					{
-						identifier: factory.createIdentifier("MainParser"),
-						expression: factory.createIdentifier("mainExpression"),
-						typeIdentifier: factory.createIdentifier("MainType"),
+						identifier: Typescript.factory.createIdentifier("MainParser"),
+						expression: Typescript.factory.createIdentifier("mainExpression"),
+						typeIdentifier: Typescript.factory.createIdentifier("MainType"),
 						dependencies: new Set([dependencyDataParser, DP.empty()]),
 					},
 				],
 				[
 					dependencyDataParser as never,
 					{
-						identifier: factory.createIdentifier("DependencyParser"),
-						expression: factory.createIdentifier("dependencyExpression"),
+						identifier: Typescript.factory.createIdentifier("DependencyParser"),
+						expression: Typescript.factory.createIdentifier("dependencyExpression"),
 						typeIdentifier: null,
 						dependencies: new Set([dependencyDataParser]),
 					},

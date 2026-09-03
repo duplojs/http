@@ -1,3 +1,3 @@
-export * from "./stepFunctionParams";
-export * from "./steps";
-export * from "./buildedStep";
+export type * from "./stepFunctionParams";
+export type * from "./steps";
+export type * from "./buildedStep";

@@ -16,7 +16,7 @@ export async function readRequestText<
 	| E.Left<"server-error", unknown>
 	| E.Error<Error>
 	| GenericOutputValue
-	> {
+> {
 	let result = "";
 	let size = 0;
 

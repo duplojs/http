@@ -1,6 +1,6 @@
 import "@duplojs/data-parser-tools/toJsonSchema";
 
-export * from "./types";
+export type * from "./types";
 
 export * from "./plugin";
 export * from "./routeToOpenApi";

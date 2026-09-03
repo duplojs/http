@@ -63,14 +63,14 @@ export function createPresetChecker<
 	checker: GenericChecker,
 	{ otherwise, ...definition }: GenericDefinition,
 ): PresetChecker<
-		O.AssignObjects<
-			Omit<GenericDefinition, "otherwise">,
-			{
-				readonly checker: GenericChecker;
-				readonly responseContract: GenericDefinition["otherwise"];
-			}
-		>
-	> {
+	O.AssignObjects<
+		Omit<GenericDefinition, "otherwise">,
+		{
+			readonly checker: GenericChecker;
+			readonly responseContract: GenericDefinition["otherwise"];
+		}
+	>
+> {
 	return pipe(
 		{
 			definition: {

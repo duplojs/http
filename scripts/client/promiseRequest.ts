@@ -41,7 +41,7 @@ type MaybeWantedResponse<
 			"request-error",
 			RequestErrorContent
 		>
-	);
+);
 
 export class PromiseRequest<
 	GenericHookParams extends Record<string, unknown> = Record<string, unknown>,
@@ -173,7 +173,7 @@ export class PromiseRequest<
 
 	public addRequestInterceptor(
 		callback: (
-			requestParams: GenericClientResponse["requestParams"]
+			requestParams: GenericClientResponse["requestParams"],
 		) => MaybePromise<GenericClientResponse["requestParams"]>,
 	) {
 		this.hooks.request ??= [];
@@ -389,7 +389,7 @@ export class PromiseRequest<
 			response: NeverCoalescing<
 				Extract<GenericClientResponse, ClientEventsResponseHandler<GenericEvent>>,
 				ClientEventsResponse
-			>
+			>,
 		) => MaybePromise<void>,
 
 	) {
@@ -424,7 +424,7 @@ export class PromiseRequest<
 			response: NeverCoalescing<
 				Extract<GenericClientResponse, ClientStreamResponseHandler>,
 				ClientStreamResponse
-			>
+			>,
 		) => MaybePromise<void>,
 
 	) {
@@ -464,15 +464,15 @@ export class PromiseRequest<
 	>(
 		information: GenericInformation | GenericInformation[],
 	): Promise<
-			MaybeWantedResponse<
-				GenericResponse,
+		MaybeWantedResponse<
+			GenericResponse,
 				| NeverCoalescing<
 					Exclude<GenericClientResponse, GenericResponse>,
 					AllClientResponse<GenericHookParams>
 				>
 				| AllNotPredictedClientResponse<GenericHookParams>
-			>
-		> {
+		>
+	> {
 		const formattedInformation: readonly string[] = AA.coalescing(information);
 
 		return this.then(
@@ -515,15 +515,15 @@ export class PromiseRequest<
 	>(
 		code: GenericCode | GenericCode[],
 	): Promise<
-			MaybeWantedResponse<
-				GenericResponse,
+		MaybeWantedResponse<
+			GenericResponse,
 				| NeverCoalescing<
 					Exclude<GenericClientResponse, GenericResponse>,
 					AllClientResponse<GenericHookParams>
 				>
 				| AllNotPredictedClientResponse<GenericHookParams>
-			>
-		> {
+		>
+	> {
 		const formattedCode: readonly SS.Number[] = AA.coalescing(code);
 
 		return this.then(
@@ -830,18 +830,18 @@ export class PromiseRequest<
 	>(
 		selector: GenericSelector,
 	): Promise<
-			MaybeWantedResponse<
-				NeverCoalescing<
-					GenericResponse,
-					AllClientResponse<GenericHookParams>
-				>,
+		MaybeWantedResponse<
+			NeverCoalescing<
+				GenericResponse,
+				AllClientResponse<GenericHookParams>
+			>,
 				| NeverCoalescing<
 					GenericUnexpectedResponse,
 					AllClientResponse<GenericHookParams>
 				>
 				| AllNotPredictedClientResponse<GenericHookParams>
-			>
-		> {
+		>
+	> {
 		return this.then(
 			EE.whenIsRight(
 				(response) => {
@@ -875,16 +875,16 @@ export class PromiseRequest<
 	>(
 		information: GenericInformation | GenericInformation[],
 	): Promise<
-			NeverCoalescing<
-				Extract<
-					GenericClientResponse,
-					GenericInformation extends any
-						? { information: GenericInformation }
-						: never
-				>,
-				AllClientResponse<GenericHookParams>
-			>
-		> {
+		NeverCoalescing<
+			Extract<
+				GenericClientResponse,
+				GenericInformation extends any
+					? { information: GenericInformation }
+					: never
+			>,
+			AllClientResponse<GenericHookParams>
+		>
+	> {
 		return this
 			.iWantInformation(information)
 			.then(
@@ -906,16 +906,16 @@ export class PromiseRequest<
 	>(
 		code: GenericCode | GenericCode[],
 	): Promise<
-			NeverCoalescing<
-				Extract<
-					GenericClientResponse,
-					GenericCode extends any
-						? { code: GenericCode }
-						: never
-				>,
-				AllClientResponse<GenericHookParams>
-			>
-		> {
+		NeverCoalescing<
+			Extract<
+				GenericClientResponse,
+				GenericCode extends any
+					? { code: GenericCode }
+					: never
+			>,
+			AllClientResponse<GenericHookParams>
+		>
+	> {
 		return this
 			.iWantCode(code)
 			.then(
@@ -1094,11 +1094,11 @@ export class PromiseRequest<
 	>(
 		selector: GenericSelector,
 	): Promise<
-			NeverCoalescing<
-				GenericResponse,
-				AllClientResponse<GenericHookParams>
-			>
-		> {
+		NeverCoalescing<
+			GenericResponse,
+			AllClientResponse<GenericHookParams>
+		>
+	> {
 		return this
 			.iSelectExpectedResponseByInformation(selector)
 			.then(

@@ -37,12 +37,12 @@ export class StaticPluginError extends kindHeritage(
 
 export function staticPlugin(
 	source: SF.FolderInterface,
-	params: StaticPluginFolderParams
+	params: StaticPluginFolderParams,
 ): HubPlugin;
 
 export function staticPlugin(
 	source: SF.FileInterface,
-	params: StaticPluginFileParams
+	params: StaticPluginFileParams,
 ): HubPlugin;
 
 export function staticPlugin(

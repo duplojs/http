@@ -1,6 +1,6 @@
 {
-	"test-tu": {
-		"prefix": "tu",
+	"test-ut": {
+		"prefix": "ut",
 		"scope": "typescript",
 		"body": [
 			"describe(\"$1\", () => {",
@@ -9,29 +9,29 @@
 			"\t});",
 			"});"
 		],
-		"description": "template tu",
+		"description": "template ut",
 	},
-	"test-tu-it": {
-		"prefix": "tuit",
+	"test-ut-it": {
+		"prefix": "utit",
 		"scope": "typescript",
 		"body": [
 			"it(\"$1\", () => {",
 			"\t$2",
 			"});",
 		],
-		"description": "template tu",
+		"description": "template ut",
 	},
 
 	"expect-type": {
-		"prefix": "tuet",
+		"prefix": "utet",
 		"scope": "typescript",
 		"body": [
-			"type Check = ExpectType<",
+			"type check = ExpectType<",
 			"\ttypeof $1,",
 			"\t$2,",
 			"\t\"strict\"",
 			">;",
 		],
-		"description": "template tu",
+		"description": "template ut",
 	},
 }

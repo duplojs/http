@@ -1,1 +1,1 @@
-export * from "./entrypointKey";
+export type * from "./entrypointKey";

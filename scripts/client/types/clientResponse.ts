@@ -66,7 +66,7 @@ export interface ClientEventsResponseHandler<
 				Extract<GenericServerEvent, { event: GenericEventName }>,
 				ServerEvent
 			>,
-			response: this
+			response: this,
 		) => MaybePromise<void>
 	): this;
 	onStreamEvent(event: "close", callback: (response: this) => MaybePromise<void>): this;

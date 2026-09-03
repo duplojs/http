@@ -7,7 +7,7 @@ import { buildRouteFunction, type BuildRouteFunctionParams, buildRouterFunction,
 import { createRouterElementSystem } from "./createRouterElementSystem";
 import { type RouterElementWrapper, type Router } from "./types";
 
-export * from "./types";
+export type * from "./types";
 export * from "./pathToRegExp";
 export * from "./buildError";
 export * from "./notFoundBodyReaderImplementationError";

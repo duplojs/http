@@ -9,8 +9,7 @@ export interface BuildStepResult {
 	readonly hooksRouteLifeCycle: readonly HookRouteLifeCycle[];
 }
 
-export type BuildStepSuccessEither<
-> = E.Right<"buildSuccess", BuildStepResult>;
+export type BuildStepSuccessEither = E.Right<"buildSuccess", BuildStepResult>;
 
 export type BuildStepNotSupportEither = E.Left<"stepNotSupport", Steps>;
 

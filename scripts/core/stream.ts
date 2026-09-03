@@ -28,7 +28,7 @@ export namespace Stream {
 
 	export function init(
 		startStream: (
-			params: StartSendingParams
+			params: StartSendingParams,
 		) => MaybePromise<void>,
 	) {
 		const abortSubscribers: Parameters<StartSendingParams["onAbort"]>[0][] = [];

@@ -32,7 +32,7 @@ declare module "./builder" {
 				floor: GenericFloor,
 				params: HandlerStepFunctionParams<
 					GenericResponse
-				>
+				>,
 			) => MaybePromise<GenericResponse>,
 			...metadata: GenericMetadata,
 		): Route<

@@ -1,13 +1,13 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-set -e
-
-ARGUMENTS="$@"
+set -euo pipefail
 
 # scripts
-eslint --quiet $ARGUMENTS scripts/
+oxlint --quiet "$@" scripts/
+
 # tests
-eslint --quiet $ARGUMENTS tests/
-eslint --quiet $ARGUMENTS integration/
+oxlint --quiet "$@" tests/
+oxlint --quiet "$@" integrations/
+
 # documentation
-eslint --quiet $ARGUMENTS docs/
+oxlint --quiet "$@" docs/

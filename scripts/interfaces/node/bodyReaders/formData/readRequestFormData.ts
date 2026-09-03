@@ -27,7 +27,7 @@ export interface ReadRequestFormDataStreamChunkEvent<
 > {
 	onReceiveChunk(chunk: Buffer): MaybePromise<void>;
 	onEndPart(valueAccumulator: GenericValueAccumulator): MaybePromise<GenericValueAccumulator>;
-	onError: ((error: unknown, valueAccumulator: GenericValueAccumulator) => MaybePromise<void>) | null ;
+	onError: ((error: unknown, valueAccumulator: GenericValueAccumulator) => MaybePromise<void>) | null;
 }
 
 export interface ReadRequestFormDataParams {
@@ -56,7 +56,7 @@ export async function readRequestFormData<
 	| GenericOutputHeader
 	| E.Error<Error>
 	| GenericValueAccumulator
-	> {
+> {
 	const boundary = S.extract(
 		request.headers["content-type"] ?? "",
 		regexBoundary,

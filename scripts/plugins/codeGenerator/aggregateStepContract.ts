@@ -3,7 +3,8 @@ import { A, DP, hasSomeKinds, innerPipe, O, P, pipe } from "@duplojs/utils";
 import { type EntrypointKey } from "./types";
 import { ResponseContract } from "@core/response";
 import { IgnoreByCodeGeneratorMetadata } from "./metadata";
-import { factory } from "typescript";
+import "@duplojs/data-parser-tools/toTypescript";
+import { Typescript } from "@duplojs/data-parser-tools/typescript";
 
 type EntrypointReduceResult = Record<
 	EntrypointKey,
@@ -20,9 +21,9 @@ export interface StepsToDataParserResult {
 }
 
 const defaultFluxStreamSchema = DP.unknown().setOverrideTypescriptTransformer(
-	factory.createTypeReferenceNode(
+	Typescript.factory.createTypeReferenceNode(
 		"Uint8Array",
-		[factory.createTypeReferenceNode("ArrayBuffer")],
+		[Typescript.factory.createTypeReferenceNode("ArrayBuffer")],
 	),
 );
 

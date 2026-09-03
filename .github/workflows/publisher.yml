@@ -2,7 +2,7 @@ name: Release Workflow
 
 on:
   release:
-    types: [created]
+    types: [published]
 
 permissions:
   id-token: write
@@ -13,25 +13,47 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - id: get_version
-        run: |
-          VERSION=$(echo "${{ github.event.release.tag_name }}" | sed -E 's/.*v([0-9.]+).*/\1/')
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-      - run: |
-          sed -i 's/"version":.*".*"/"version": "'${{ steps.get_version.outputs.version }}'"/' package.json
       - uses: actions/setup-node@v4
         with:
-          node-version: '24.x'
+          node-version: '24.18.0'
           registry-url: 'https://registry.npmjs.org/'
           scope: '@mathcovax'
+      - env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          PRERELEASE: ${{ github.event.release.prerelease }}
+        run: |
+          VERSION=$(echo "$RELEASE_TAG" | sed -nE 's/^v([^[:space:]]+)$/\1/p')
+
+          if [ -z "$VERSION" ]; then
+            echo "::error::Invalid release tag: $RELEASE_TAG"
+            exit 1
+          fi
+
+          if [[ "$VERSION" =~ -beta([.-]|$) ]]; then
+            HAS_BETA=true
+          else
+            HAS_BETA=false
+          fi
+
+          if [ "$PRERELEASE" != "$HAS_BETA" ]; then
+            echo "::error::Incoherent release: prerelease=$PRERELEASE, version=$VERSION"
+            exit 1
+          fi
+
+          sed -i "s/\"version\": *\"[^\"]*\"/\"version\": \"${VERSION}\"/" package.json
+          
       - run: npm install -g npm@latest
       - run: npm ci
       - run: npm run build
-      - run: |
-          if [ "${{ github.event.release.prerelease }}" = "true" ]; then
-            npm publish --tag beta --access public
-          else
-            npm publish --access public
-          fi
-        env:
+      - run: npm run test:types
+
+      - env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          PRERELEASE: ${{ github.event.release.prerelease }}
+        run: |
+          if [ "$PRERELEASE" = "true" ]; then
+            npm stage publish --tag beta --access public
+          else
+            npm stage publish --access public
+          fi
+       

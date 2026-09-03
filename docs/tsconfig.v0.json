@@ -1,19 +1,18 @@
 {
   "extends": "../tsconfig.app.json",
   "compilerOptions": {
-	"baseUrl": "./",
 	"paths": {
-		"@duplojs/http": ["libs/v0/core/index"],
-		"@duplojs/http/client": ["libs/v0/client/index"],
-		"@duplojs/http/node": ["libs/v0/interfaces/node/index"],
-		"@duplojs/http/codeGenerator": ["libs/v0/plugins/codeGenerator/index"],
-		"@duplojs/http/openApiGenerator": ["libs/v0/plugins/openApiGenerator/index"],
-		"@duplojs/http/static": ["libs/v0/plugins/static/index"],
-		"@duplojs/http/cors": ["libs/v0/plugins/cors/index"],
-		"@duplojs/http/cacheController": ["libs/v0/plugins/cacheController/index"],
-		"@duplojs/http/cookie": ["libs/v0/plugins/cookie/index"],
+		"@duplojs/http": ["./libs/v0/core/index"],
+		"@duplojs/http/client": ["./libs/v0/client/index"],
+		"@duplojs/http/node": ["./libs/v0/interfaces/node/index"],
+		"@duplojs/http/codeGenerator": ["./libs/v0/plugins/codeGenerator/index"],
+		"@duplojs/http/openApiGenerator": ["./libs/v0/plugins/openApiGenerator/index"],
+		"@duplojs/http/static": ["./libs/v0/plugins/static/index"],
+		"@duplojs/http/cors": ["./libs/v0/plugins/cors/index"],
+		"@duplojs/http/cacheController": ["./libs/v0/plugins/cacheController/index"],
+		"@duplojs/http/cookie": ["./libs/v0/plugins/cookie/index"],
 	},
 	"types": ["web"]
   },
-  "include": ["examples/v0/**/*.ts", "libs/v0/**/*.d.ts"],
+  "include": ["./examples/v0/**/*.ts", "./libs/v0/**/*.d.ts"],
 }

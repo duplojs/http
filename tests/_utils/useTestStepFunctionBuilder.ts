@@ -1,4 +1,4 @@
-import { buildStepFunction, type BuildStepFunctionParams, defaultCheckerStepFunctionBuilder, defaultCutStepFunctionBuilder, defaultExtractStepFunctionBuilder, defaultHandlerStepFunctionBuilder, type Steps } from "@core";
+import { buildStepFunction, type BuildStepFunctionParams, defaultCheckerStepFunctionBuilder, defaultCutStepFunctionBuilder, defaultExtractContract, defaultExtractStepFunctionBuilder, defaultHandlerStepFunctionBuilder, type Steps } from "@core";
 import { E, unwrap } from "@duplojs/utils";
 
 export async function useTestStepFunctionBuilder(
@@ -16,6 +16,7 @@ export async function useTestStepFunctionBuilder(
 				defaultHandlerStepFunctionBuilder,
 			],
 			...params,
+			defaultExtractContract: params.defaultExtractContract ?? defaultExtractContract,
 		},
 	);
 

@@ -10,7 +10,7 @@ export interface StepsCustom {
 }
 
 export type Steps = (
-	// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+	// oxlint-disable-next-line typescript/no-redundant-type-constituents
 	| StepsCustom[
 		keyof StepsCustom
 	]

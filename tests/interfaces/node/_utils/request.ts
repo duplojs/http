@@ -1,6 +1,4 @@
-/* eslint-disable require-yield */
-/* eslint-disable @typescript-eslint/only-throw-error */
-/* eslint-disable @typescript-eslint/require-await */
+// oxlint-disable require-yield typescript/only-throw-error typescript/require-await
 import { type RequestInitializationData, Request } from "@core";
 import httpMocks from "node-mocks-http";
 import type http from "http";

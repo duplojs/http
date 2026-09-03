@@ -267,8 +267,8 @@ describe("route builder extract method", () => {
 			);
 
 		type Check = ExpectType<
-			typeof routeBuilder extends RouteBuilder<any, infer F>
-				? F
+			typeof routeBuilder extends RouteBuilder<any, infer InferredFloor>
+				? InferredFloor
 				: never,
 			{
 				body: {

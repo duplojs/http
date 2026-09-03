@@ -24,7 +24,7 @@ export class StreamTextPredictedResponse<
 		code: GenericCode,
 		information: GenericInformation,
 		public startStream: (
-			params: Stream.StartSendingParams<string>
+			params: Stream.StartSendingParams<string>,
 		) => MaybePromise<void>,
 	) {
 		super(defaultParams, defaultParamsParent);

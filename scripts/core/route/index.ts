@@ -5,13 +5,13 @@ import { type ExtractStep, type CheckerStep, type CutStep, type HandlerStep, typ
 import { type HookRouteLifeCycle } from "./hooks";
 import { type Metadata } from "@core/metadata";
 
-export * from "./types";
+export type * from "./types";
 export * from "./hooks";
 
 export interface RouteStepsCustom {}
 
 export type RouteSteps = (
-	// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+	// oxlint-disable-next-line typescript/no-redundant-type-constituents
 	| RouteStepsCustom[
 		O.GetPropsWithValueExtends<
 			RouteStepsCustom,
@@ -29,7 +29,7 @@ export type RouteSteps = (
 export interface RoutePreFlightStepsCustom {}
 
 export type RoutePreFlightSteps = (
-	// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+	// oxlint-disable-next-line typescript/no-redundant-type-constituents
 	| RoutePreFlightStepsCustom[
 		O.GetPropsWithValueExtends<
 			RoutePreFlightStepsCustom,

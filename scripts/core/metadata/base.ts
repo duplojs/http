@@ -42,9 +42,9 @@ export function createMetadata<
 >(
 	name: GenericName,
 ): MetadataHandler<
-		GenericName,
-		GenericValue
-	> {
+	GenericName,
+	GenericValue
+> {
 	function metadataHandler(value: GenericValue) {
 		return metadataKind.setTo(
 			wrapValue(value),

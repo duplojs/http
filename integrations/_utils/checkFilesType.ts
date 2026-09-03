@@ -1,6 +1,6 @@
 import { getCurrentWorkDirectoryOrThrow } from "@duplojs/server-utils";
 import { Path } from "@duplojs/utils";
-import ts from "typescript";
+import ts from "@typescript/typescript6";
 
 export function assertTypeScriptProject(tsconfigPath: string) {
 	const resolvedTsconfigPath = Path.resolveRelative([getCurrentWorkDirectoryOrThrow(), tsconfigPath]);

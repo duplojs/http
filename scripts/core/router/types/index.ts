@@ -1,5 +1,5 @@
-export * from "./buildedRouter";
-export * from "./router";
-export * from "./routerElement";
-export * from "./routerElementSystem";
-export * from "./routerElementWrapper";
+export type * from "./buildedRouter";
+export type * from "./router";
+export type * from "./routerElement";
+export type * from "./routerElementSystem";
+export type * from "./routerElementWrapper";

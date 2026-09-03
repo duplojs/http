@@ -24,7 +24,7 @@ export type ExtractShape<
 				GenericRequest,
 				AnyFunction
 			>
-			// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+			// oxlint-disable-next-line typescript/no-redundant-type-constituents
 			| DisabledExtractKeys
 			| "body"
 			| "bodyReader"

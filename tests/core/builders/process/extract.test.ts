@@ -250,8 +250,8 @@ describe("process builder extract method", () => {
 			);
 
 		type Check = ExpectType<
-			typeof processBuilder extends ProcessBuilder<any, infer F>
-				? F
+			typeof processBuilder extends ProcessBuilder<any, infer InferredFloor>
+				? InferredFloor
 				: never,
 			{
 				body: {

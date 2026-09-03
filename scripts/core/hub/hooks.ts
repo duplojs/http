@@ -38,17 +38,17 @@ export async function launchHookBeforeBuildRoute(
 
 export type HookBeforeServerBuildRoutes = (
 	hub: Hub,
-	httpServerParams: HttpServerParams
+	httpServerParams: HttpServerParams,
 ) => MaybePromise<Hub | EscapeVoid>;
 
 export type HookBeforeStartServer = (
 	hub: Hub,
-	httpServerParams: HttpServerParams
+	httpServerParams: HttpServerParams,
 ) => MaybePromise<Hub | EscapeVoid>;
 
 export type HookAfterStartServer = (
 	hub: Hub,
-	httpServerParams: HttpServerParams
+	httpServerParams: HttpServerParams,
 ) => MaybePromise<Hub | EscapeVoid>;
 
 export async function launchHookServer(
@@ -69,7 +69,7 @@ export interface HttpServerErrorParams {
 }
 
 export type HookServerError = (
-	httpServerErrorParams: HttpServerErrorParams
+	httpServerErrorParams: HttpServerErrorParams,
 ) => MaybePromise<ServerHookExit | ServerHookNext>;
 
 const hookExit = hookServerExitKind.setTo({});

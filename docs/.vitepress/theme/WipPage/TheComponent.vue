@@ -14,12 +14,12 @@ const wip = computed(() => {
 
 function createIssueLink() {
 	const title = encodeURIComponent(
-	`[DOC]: Page creation request: ${page.value.title || page.value.relativePath}`
+		`[DOC]: Page creation request: ${page.value.title || page.value.relativePath}`,
 	);
 	const body = encodeURIComponent(
-	`**Path:** ${page.value.relativePath}\n**URL:** ${typeof window !== "undefined" ? window.location.href : ""}`
+		`**Path:** ${page.value.relativePath}\n**URL:** ${typeof window !== "undefined" ? window.location.href : ""}`,
 	);
-  
+
 	return `https://github.com/duplojs/http/issues/new?title=${title}&body=${body}`;
 }
 

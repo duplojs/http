@@ -1,11 +1,11 @@
-export * from "./types";
+export type * from "./types";
 
 export * from "./builders";
 export * from "./response";
 export * from "./route";
 export * from "./steps";
 export * from "./checker";
-export * from "./floor";
+export type * from "./floor";
 export * from "./kind";
 export * from "./process";
 export * from "./request";

@@ -34,10 +34,12 @@ export namespace ServerSentEvents {
 	}
 
 	const regexServerSentEventSplitStringData = /\r\n|\r|\n/;
+	// oxlint-disable-next-line no-control-regex
 	const nullIdRegexp = /\0|\n|\r/;
+
 	export function init(
 		startSendingEvents: (
-			params: StartSendingParams
+			params: StartSendingParams,
 		) => MaybePromise<void>,
 		initParams: InitParams,
 	) {

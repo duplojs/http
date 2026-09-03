@@ -1,7 +1,6 @@
 {
   "extends": "../../tsconfig.test.json",
   "compilerOptions": {
-	"baseUrl": "./",
 	"paths": {
 		"@core": ["../core/index.ts"],
 		"@utils": ["../_utils/index.ts"],

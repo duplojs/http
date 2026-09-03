@@ -26,7 +26,7 @@ type HttpClientRequestMethod<
 				ClientRequestParams<GenericHookParams>,
 				"method" | "path"
 			>
-		>
+		>,
 	) => PromiseRequest<
 		GenericHookParams,
 		AllClientResponse<GenericHookParams>
@@ -197,9 +197,9 @@ export function createHttpClient<
 >(
 	clientParams: CreateHttpClientParams,
 ): HttpClient<
-		GenericServerRoute,
-		GenericHookParams
-	> {
+	GenericServerRoute,
+	GenericHookParams
+> {
 	const cacheStore: ClientCacheStore = new Map(
 		clientParams.clientCacheInitialValues
 			? OO.entries(clientParams.clientCacheInitialValues)

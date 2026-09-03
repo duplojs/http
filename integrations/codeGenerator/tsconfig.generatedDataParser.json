@@ -1,7 +1,6 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-	"baseUrl": "./",
 	"paths": {},
   },
   "include": ["dataParser.generate/**/*.ts",],

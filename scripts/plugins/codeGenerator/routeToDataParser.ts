@@ -4,7 +4,7 @@ import { A, DP, E, innerPipe, O, P, pipe, S, unwrap } from "@duplojs/utils";
 import { type ResponseContract } from "@core/response";
 import { IgnoreByCodeGeneratorMetadata } from "./metadata";
 import { FormDataBodyController } from "@core/request";
-import { factory } from "typescript";
+import { Typescript } from "@duplojs/data-parser-tools/typescript";
 import { type TransformerBuildFunction } from "@duplojs/data-parser-tools/toTypescript";
 
 export interface RouteToDataParserParams {
@@ -21,7 +21,7 @@ export const bodyAsFormData: TransformerBuildFunction = (dataParser, { transform
 	addImport("@duplojs/utils", "TheFormData");
 
 	return success(
-		factory.createTypeReferenceNode(
+		Typescript.factory.createTypeReferenceNode(
 			"TheFormData",
 			[unwrap(result)],
 		),

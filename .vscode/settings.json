@@ -1,9 +1,16 @@
 {
+	"files.autoSave": "off",
+	"workbench.sash.size": 8,
+
 	"editor.tabSize": 4,
 	"editor.insertSpaces": false,
 	"editor.detectIndentation": false,
-
-	"files.autoSave": "off",
+	"editor.formatOnSave": false, 
+	"editor.defaultFormatter": "oxc.oxc-vscode",
+	"editor.codeActionsOnSave": {
+		"source.format.oxc": "always",
+		"source.fixAll.oxc": "always",
+	},
 
 	"[yaml]": {
 		"editor.tabSize": 2,
@@ -14,10 +21,24 @@
 		"editor.tabSize": 2,
 		"editor.insertSpaces": true,
 	},
-    
-	"editor.codeActionsOnSave": {
-		"source.fixAll.eslint": "explicit"
-	},
-	
+
 	"js/ts.tsdk.path": "node_modules/typescript/lib",
+	"js/ts.format.enabled": false,
+	"js/ts.experimental.useTsgo": true,
+	"js/ts.tsdk.promptToUseWorkspaceVersion": true,
+	"js/ts.updateImportsOnFileMove.enabled": "prompt",
+
+	"cSpell.words": [
+		"chrono",
+		"oxlint"
+	],
+	"cSpell.language": "en",
+  	"cSpell.overrides": [
+    	{
+     		"filename": [".agents/**", "AGENTS.md"],
+      		"language": "fr"
+    	}
+  	],
+	
+	"chss.stylesheetLocation": ".vscode/style-syntax.chss",
 }

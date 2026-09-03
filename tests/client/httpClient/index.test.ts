@@ -556,8 +556,8 @@ describe("httpClient", () => {
 
 		const infoHook: Hooks["information"][string][number] = vi.fn();
 		const codeHook: Hooks["code"][string][number] = vi.fn();
-		const requestHook: Hooks["request"][number] = vi.fn(forward);
-		const responseHook: Hooks["response"][number] = vi.fn(forward);
+		const requestHook: Hooks["request"][number] = vi.fn(forward) as never;
+		const responseHook: Hooks["response"][number] = vi.fn(forward) as never;
 		const responseTypeHook: Hooks["informationalResponseType"][number] = vi.fn();
 		const expectedHook: Hooks["expectedResponse"][number] = vi.fn();
 		const notPredictedHook: Hooks["notPredictedResponse"][number] = vi.fn();

@@ -1,1 +1,1 @@
-export * from "./cacheControlDirectives";
+export type * from "./cacheControlDirectives";

@@ -1,0 +1,7 @@
+<^="Generic"=typeParameter> {
+	color: #C96B86;
+}
+
+<^="Inferred"=typeParameter> {
+	color: #D7C27A;
+}

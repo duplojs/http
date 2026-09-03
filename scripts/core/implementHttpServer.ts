@@ -20,8 +20,8 @@ export type ExecRouteSystem = (
 	routerInitializationData: RouterParams,
 	whenUncaughtError: (
 		error: unknown,
-		routerInitializationData: RouterParams
-	) => MaybePromise<void>
+		routerInitializationData: RouterParams,
+	) => MaybePromise<void>,
 ) => Promise<void>;
 
 export interface InitHttpServerParams {

@@ -11,5 +11,5 @@ export type RouterParams = Omit<
 >;
 
 export type BuildedRouter = (
-	params: RouterParams
+	params: RouterParams,
 ) => Promise<void>;

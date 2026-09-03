@@ -1,1 +1,1 @@
-export * from "./buildedRoute";
+export type * from "./buildedRoute";

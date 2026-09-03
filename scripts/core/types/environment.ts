@@ -3,7 +3,7 @@ import { type O } from "@duplojs/utils";
 export interface EnvironmentCustom {}
 
 export type Environment = (
-	// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+	// oxlint-disable-next-line typescript/no-redundant-type-constituents
 	| EnvironmentCustom[
 		O.GetPropsWithValue<
 			EnvironmentCustom,

@@ -48,8 +48,8 @@ export function useCheckerBuilder<
 >(
 	params?: { options?: GenericOptions },
 ): CheckerBuilder<{
-		readonly options: NeverCoalescing<GenericOptions, undefined>;
-	}> {
+	readonly options: NeverCoalescing<GenericOptions, undefined>;
+}> {
 	return checkerBuilder.use({
 		options: undefined,
 		...params,

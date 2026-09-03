@@ -5,12 +5,12 @@ import { type Floor } from "../floor";
 import { type HookRouteLifeCycle } from "../route";
 import { type Metadata } from "@core/metadata";
 
-export * from "./types";
+export type * from "./types";
 
 export interface ProcessStepsCustom {}
 
 export type ProcessSteps = (
-	// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+	// oxlint-disable-next-line typescript/no-redundant-type-constituents
 	| ProcessStepsCustom[
 		O.GetPropsWithValueExtends<
 			ProcessStepsCustom,

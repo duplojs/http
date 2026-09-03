@@ -213,7 +213,7 @@ describe("createFormDataBodyReaderImplementation", () => {
 		});
 
 		expect(fspSpy.open).toHaveBeenCalledTimes(1);
-		const filePath = (fspSpy.open.mock.calls[0] as [string])[0];
+		const [[filePath]] = (fspSpy.open.mock.calls as [[string]]);
 		expect(fspSpy.open).toHaveBeenCalledWith(request.filesAttache?.[0], "wx");
 		expect(spyStreamWrite).toHaveBeenCalled();
 		expect(spyStreamEnd).toHaveBeenCalled();

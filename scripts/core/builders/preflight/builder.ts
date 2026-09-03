@@ -30,13 +30,13 @@ export function usePreflightBuilder<
 		metadata?: GenericMetadata;
 	},
 ): PreflightBuilder<
-		{
-			readonly preflightSteps: readonly [];
-			readonly hooks: GenericHooks;
-			readonly metadata: GenericMetadata;
-		},
-		{}
-	> {
+	{
+		readonly preflightSteps: readonly [];
+		readonly hooks: GenericHooks;
+		readonly metadata: GenericMetadata;
+	},
+	{}
+> {
 	return preflightBuilder.use({
 		preflightSteps: [],
 		hooks: options?.hooks ?? [],

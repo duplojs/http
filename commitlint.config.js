@@ -1,3 +1,3 @@
-export default {
-	extends: ["@commitlint/config-conventional"],
-};
+import { config } from "@duplojs/code-config/commitlint";
+
+export default config;

@@ -149,8 +149,8 @@ export namespace ResponseContract {
 		mainEventSchema: GenericMainEventSchema,
 		events: GenericEvents = {} as GenericEvents,
 	): ServerSentEventsContract<
-			"200",
-			GenericInformation,
+		"200",
+		GenericInformation,
 			& (
 				IsEqual<GenericEvents, Record<string, SupportedDataParser>> extends true
 					? {}
@@ -158,7 +158,7 @@ export namespace ResponseContract {
 			)
 			& { message: GenericMainEventSchema },
 			typeof defaultSchema
-		> {
+	> {
 		return serverSentEventsContractKind.setTo({
 			code: <const>"200",
 			information,
@@ -190,11 +190,11 @@ export namespace ResponseContract {
 		information: GenericInformation,
 		schema: GenericSchema,
 	): StreamContract<
-			"200",
-			GenericInformation,
-			GenericSchema,
+		"200",
+		GenericInformation,
+		GenericSchema,
 			typeof defaultSchema
-		> {
+	> {
 		return streamContractKind.setTo({
 			code: <const>"200",
 			information,
@@ -222,11 +222,11 @@ export namespace ResponseContract {
 	>(
 		information: GenericInformation,
 	): StreamTextContract<
-			"200",
-			GenericInformation,
+		"200",
+		GenericInformation,
 			typeof defaultStreamTextSchema,
 			typeof defaultSchema
-		> {
+	> {
 		return streamTextContractKind.setTo({
 			code: <const>"200",
 			information,

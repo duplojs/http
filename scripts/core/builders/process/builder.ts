@@ -27,16 +27,16 @@ export function useProcessBuilder<
 		metadata?: GenericMetadata;
 	},
 ): ProcessBuilder<
-		{
-			readonly steps: readonly [];
-			readonly options: NeverCoalescing<GenericOptions, undefined>;
-			readonly hooks: GenericHooks;
-			readonly metadata: GenericMetadata;
-		},
-		IsEqual<GenericOptions, never> extends true
-			? {}
-			: { options: GenericOptions }
-	> {
+	{
+		readonly steps: readonly [];
+		readonly options: NeverCoalescing<GenericOptions, undefined>;
+		readonly hooks: GenericHooks;
+		readonly metadata: GenericMetadata;
+	},
+	IsEqual<GenericOptions, never> extends true
+		? {}
+		: { options: GenericOptions }
+> {
 	return processBuilder.use({
 		options: undefined,
 		...params,

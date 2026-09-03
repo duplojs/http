@@ -17,8 +17,8 @@ declare module "@duplojs/utils/clean" {
 
 		toExtractParser<
 			GenericEntityProperties extends C.EntityProperties<GenericPropertiesDefinition>,
-			const GenericKey extends MaybeArray<keyof GenericEntityProperties>
-			= readonly (keyof GenericEntityProperties)[],
+			const GenericKey extends MaybeArray<keyof GenericEntityProperties> =
+				readonly (keyof GenericEntityProperties)[],
 		>(
 			keys?: GenericKey,
 			params?: ToExtractParserParams
@@ -36,8 +36,8 @@ declare module "@duplojs/utils/clean" {
 
 		toEndpointSchema<
 			GenericEntityRawProperties extends C.EntityRawProperties<GenericPropertiesDefinition>,
-			const GenericKey extends MaybeArray<keyof GenericEntityRawProperties>
-			= readonly (keyof GenericEntityRawProperties)[],
+			const GenericKey extends MaybeArray<keyof GenericEntityRawProperties> =
+				readonly (keyof GenericEntityRawProperties)[],
 			const GenericParams extends (ToEndpointSchemaParams) = {},
 		>(
 			keys?: GenericKey,

@@ -17,7 +17,9 @@ const closeReason = Symbol("CloseReason");
 const endMessageRegexp = /\n\n|\r\r|\r\n\r\n/;
 const eventPayloadRegexp = /^(?<field>event|data|id|retry|content-type): ?(?<value>.*)$/gm;
 const validRetryRegexp = /^[0-9]+$/;
+// oxlint-disable-next-line no-control-regex
 const nullIdRegexp = /\0|\n|\r/;
+
 export function makeClientEventsResponse(
 	response: ClientResponse,
 	fetchUrl: string,
@@ -29,7 +31,7 @@ export function makeClientEventsResponse(
 	const createEventResponse = (
 		eventsReaderGenerator: (
 			emitError: (error: unknown) => Promise<void>,
-			emitBeforeRetry: () => Promise<void>
+			emitBeforeRetry: () => Promise<void>,
 		) => AsyncGenerator<ServerEvent, void, unknown>,
 	): ClientEventsResponse => {
 		let closeServerEvent: CloseServerEventHook[] | undefined = undefined;

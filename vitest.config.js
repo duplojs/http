@@ -1,5 +1,4 @@
 import { defineConfig } from "vitest/config";
-import tsconfigPaths from 'vite-tsconfig-paths'
 
 export default defineConfig({
 	test: {
@@ -7,37 +6,43 @@ export default defineConfig({
 		globals: true,
 		include: [
 			"tests/**/*.test.ts",
-			"integration/**/*.test.ts",
+			"integrations/**/*.test.ts",
 		],
-		typecheck: {
-			include: [
-				"tests/**/*.test-d.ts",
-				"integration/**/*.test-d.ts",
-			],
-		},
 		coverage: {
 			provider: "istanbul",
 			reporter: ["text", "json", "html", "json-summary"],
 			reportsDirectory: "coverage",
 			include: ["scripts"],
 			exclude: [
-				"**/*.test.ts", 
-				"bin", 
+				"**/*.test.ts",
+				"bin",
+				"**/*.json",
 				"dist",
 			],
 			thresholds: {
 				lines: 100,
 				branches: 100,
 				functions: 100,
-				statements: 100
-			}
+				statements: 100,
+			},
 		},
 		benchmark: {
 			include: [
 				"tests/**/*.bench.ts",
-				"integration/**/*.bench.ts",
-			]
-		}
+				"integrations/**/*.bench.ts",
+			],
+		},
+		typecheck: {
+			enabled: true,
+			tsconfig: "./tsconfig.test.json",
+			include: [
+				"tests/**/*.test-d.ts",
+				"integrations/**/*.test-d.ts",
+			],
+			ignoreSourceErrors: true,
+		},
 	},
-	plugins: [tsconfigPaths()],
+	resolve: {
+		tsconfigPaths: true,
+	},
 });

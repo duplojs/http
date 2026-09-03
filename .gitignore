@@ -2,6 +2,7 @@ node_modules
 dist
 coverage
 cache
-
 **/*.generate.*
 **/*.generate
+.temp
+.DS_Store

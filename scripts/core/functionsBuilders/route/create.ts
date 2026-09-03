@@ -5,8 +5,7 @@ import { type BuildStepSuccessEither, type BuildStepNotSupportEither } from "../
 import { type Steps } from "@core/steps";
 import { type ResponseContract } from "@core/response";
 
-export type BuildRouteSuccessEither<
-> = E.Right<"buildSuccess", BuildedRoute>;
+export type BuildRouteSuccessEither = E.Right<"buildSuccess", BuildedRoute>;
 
 export type BuildRouteNotSupportEither = E.Left<"routeNotSupport", Route>;
 

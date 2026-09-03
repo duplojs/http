@@ -188,7 +188,7 @@ export class Hub<
 		theFunction: (
 			param: HandlerStepFunctionParams<
 				GenericResponse
-			>
+			>,
 		) => MaybePromise<GenericResponse>,
 	) {
 		this.notfoundHandler = createHandlerStep({
@@ -242,7 +242,7 @@ export class Hub<
 		theFunction: (
 			param: HandlerStepFunctionParams<
 				GenericResponse
-			>
+			>,
 		) => MaybePromise<GenericResponse>,
 	) {
 		this.malformedUrlHandler = createHandlerStep({

@@ -27,7 +27,7 @@ declare module "./builder" {
 				floor: GenericFloor,
 				param: CutStepFunctionParams<
 					GenericResponse
-				>
+				>,
 			) => MaybePromise<GenericOutput>,
 			...metadata: GenericMetadata
 		): ProcessBuilder<

@@ -29,19 +29,19 @@ export function useRouteBuilder<
 		bodyController?: GenericBodyController;
 	},
 ): RouteBuilder<
-		{
-			readonly method: GenericMethod;
-			readonly paths: GenericPaths extends string
-				? readonly [GenericPaths]
-				: GenericPaths;
-			readonly preflightSteps: readonly [];
-			readonly steps: readonly [];
-			readonly hooks: GenericHooks;
-			readonly metadata: GenericMetadata;
-			readonly bodyController: GenericBodyController;
-		},
-		{}
-	> {
+	{
+		readonly method: GenericMethod;
+		readonly paths: GenericPaths extends string
+			? readonly [GenericPaths]
+			: GenericPaths;
+		readonly preflightSteps: readonly [];
+		readonly steps: readonly [];
+		readonly hooks: GenericHooks;
+		readonly metadata: GenericMetadata;
+		readonly bodyController: GenericBodyController;
+	},
+	{}
+> {
 	return routeBuilderHandler.use({
 		method,
 		paths: A.coalescing(path),

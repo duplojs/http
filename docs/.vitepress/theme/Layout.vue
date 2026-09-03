@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { useData } from 'vitepress';
-import DefaultTheme, {VPHomeContent} from 'vitepress/theme'
-const { frontmatter } = useData()
+import { useData } from "vitepress";
+import DefaultTheme, { VPHomeContent } from "vitepress/theme";
+const { frontmatter } = useData();
 
-const { Layout } = DefaultTheme
+const { Layout } = DefaultTheme;
 
 </script>
 

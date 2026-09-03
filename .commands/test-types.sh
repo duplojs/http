@@ -1,23 +1,23 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-set -e
+set -euo pipefail
 
 # core
-tsc -p tests/core/tsconfig.json
+tsc -p tests/core/tsconfig.json "$@"
 # client
-tsc -p tests/client/tsconfig.json
+tsc -p tests/client/tsconfig.json "$@"
 # interfaces
-tsc -p tests/interfaces/node/tsconfig.json
-tsc -p tests/interfaces/bun/tsconfig.json
-tsc -p tests/interfaces/deno/tsconfig.json
+tsc -p tests/interfaces/node/tsconfig.json "$@"
+tsc -p tests/interfaces/bun/tsconfig.json "$@"
+tsc -p tests/interfaces/deno/tsconfig.json "$@"
 # plugins
-tsc -p tests/plugins/codeGenerator/tsconfig.json
-tsc -p tests/plugins/openApiGenerator/tsconfig.json
-tsc -p tests/plugins/cacheController/tsconfig.json
-tsc -p tests/plugins/static/tsconfig.json
-tsc -p tests/plugins/cors/tsconfig.json
-tsc -p tests/plugins/cookie/tsconfig.json
-# integration
-npm -w integration run test:types
+tsc -p tests/plugins/codeGenerator/tsconfig.json "$@"
+tsc -p tests/plugins/openApiGenerator/tsconfig.json "$@"
+tsc -p tests/plugins/cacheController/tsconfig.json "$@"
+tsc -p tests/plugins/static/tsconfig.json "$@"
+tsc -p tests/plugins/cors/tsconfig.json "$@"
+tsc -p tests/plugins/cookie/tsconfig.json "$@"
+# integrations
+npm -w integrations run test:types
 # documentation
 npm -w docs run test:types

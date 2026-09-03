@@ -62,7 +62,7 @@ export interface RouteHookErrorParams<
 }
 
 export type HookError = (
-	params: RouteHookErrorParams<Request>
+	params: RouteHookErrorParams<Request>,
 ) => MaybePromise<HookResponse | RouteHookExit | RouteHookNext>;
 
 export interface RouteHookParamsAfter {
@@ -73,15 +73,15 @@ export interface RouteHookParamsAfter {
 }
 
 export type HookBeforeSendResponse = (
-	params: RouteHookParamsAfter
+	params: RouteHookParamsAfter,
 ) => MaybePromise<RouteHookExit | RouteHookNext>;
 
 export type HookSendResponse = (
-	params: RouteHookParamsAfter
+	params: RouteHookParamsAfter,
 ) => MaybePromise<RouteHookExit | RouteHookNext>;
 
 export type HookAfterSendResponse = (
-	params: RouteHookParamsAfter
+	params: RouteHookParamsAfter,
 ) => MaybePromise<RouteHookExit | RouteHookNext>;
 
 export interface HookRouteLifeCycle {

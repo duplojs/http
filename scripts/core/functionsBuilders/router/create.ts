@@ -14,7 +14,7 @@ export interface RouterFunctionBuilderParams {
 }
 
 export type RouterFunctionBuilder = (
-	params: RouterFunctionBuilderParams
+	params: RouterFunctionBuilderParams,
 ) => MaybePromise<BuildedRouter>;
 
 export function createRouterFunctionBuilder(

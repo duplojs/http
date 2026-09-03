@@ -25,7 +25,7 @@ export class ServerSentEventsPredictedResponse<
 		code: GenericCode,
 		information: GenericInformation,
 		public startSendingEvents: (
-			params: ServerSentEvents.StartSendingParams<GenericEvents>
+			params: ServerSentEvents.StartSendingParams<GenericEvents>,
 		) => MaybePromise<void>,
 	) {
 		super(defaultParams, defaultParamsParent);
